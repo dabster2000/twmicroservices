@@ -1,6 +1,5 @@
 package dk.trustworks.web.views;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.vaadin.annotations.Push;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -27,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 
+import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -222,7 +222,7 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
             PdfContainer invoicePdf = invoiceClient.getInvoicePdf(gridInvoiceList.getSelectionModel().getFirstSelectedItem().get().getUuid());
 
             final StreamResource resource = new StreamResource(() ->
-                    new ByteInputStream(invoicePdf.pdf, invoicePdf.pdf.length), "invoice.pdf");
+                    new ByteArrayInputStream(invoicePdf.pdf), "invoice.pdf");
 
             SimpleFileDownloader downloader = new SimpleFileDownloader();
             addExtension(downloader);
