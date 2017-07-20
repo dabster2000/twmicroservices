@@ -1,0 +1,52 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: invoice-webui
+  logging:
+    pattern:
+      console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([${springAppName:-},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    level:
+      org.springframework: WARN
+      org.hibernate: WARN
+  cache:
+    caffeine:
+      spec: maximumSize=200,expireAfterAccess=600s
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: ${DISCOVERY_URL:http://localhost:8761}/eureka/
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+
+ribbon:
+  eureka:
+    enabled: true
+
+clientName:
+  ribbon:
+    retryableStatusCodes: 404, 500, 502
+
+feign:
+  client:
+    config:
+      time-service:
+        connectTimeout: 10000
+        readTimeout: 10000
+        loggerLevel: full
+  compression:
+    response:
+      enabled: true
+
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 5000
+
+management.security.enabled: false
+
+spring.rabbitmq.host: 127.0.0.1
+spring.rabbitmq.port: 5672
+spring.rabbitmq.username: guest
+spring.rabbitmq.password: guest

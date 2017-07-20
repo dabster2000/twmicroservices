@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout margin="false">
+   <vaadin-label style-name="h2" plain-text>
+     Projects 
+   </vaadin-label>
+   <vaadin-horizontal-layout description="Select period" width-full>
+    <vaadin-combo-box data-item-type="dk.trustworks.web.model.YearMonthSelect" _id="cbSelectYearMonth" :middle :right></vaadin-combo-box>
+   </vaadin-horizontal-layout>
+   <vaadin-grid width-full data-item-type="dk.trustworks.network.dto.ProjectSummary" _id="gridProjectSummaryList">
+    <table>
+     <colgroup>
+      <col column-id="clientname" sortable>
+      <col column-id="projectname" sortable>
+      <col column-id="description" sortable>
+      <col column-id="amount" sortable width="100">
+      <col column-id="invoices" sortable width="100">
+     </colgroup>
+     <thead>
+      <tr default>
+       <th plain-text column-ids="clientname">Client Name</th>
+       <th plain-text column-ids="projectname">Project Name</th>
+       <th plain-text column-ids="description">Description</th>
+       <th plain-text column-ids="amount">Hours</th>
+       <th plain-text column-ids="invoices">Invoices</th>
+      </tr>
+     </thead>
+     <tbody></tbody>
+    </table>
+   </vaadin-grid>
+   <vaadin-button enabled="false" plain-text _id="btnCreateInvoice">
+     Create invoices 
+   </vaadin-button>
+  </vaadin-vertical-layout>
+ </body>
+</html>

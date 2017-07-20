@@ -1,0 +1,55 @@
+@import "../valo/valo";
+@import "designs.scss";
+
+.invoice {
+  @include valo;
+
+  vaadin-grid {
+    height: auto;
+  }
+
+
+  // Your theme's rules go here
+  $v-app-loading-text: "Loading Resources...";
+  .label-project-description, .label-total-titel, .label-total-value {
+    background-color: #CCCCCC;
+  }
+
+  .invoice-preview {
+    box-shadow: 10px 10px 5px grey;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    padding: 20px;
+  }
+
+  .v-vertical.invoice-container {
+    padding: 20px;
+  }
+
+  .box-project-description {
+    background-color: #CCCCCC;
+    padding: 20px;
+    border: 1px solid black;
+  }
+
+  .box-border {
+    border-bottom: 1px solid black;
+  }
+
+  .invoice-details {
+    padding: 20px;
+  }
+
+  .v-generated-body {
+    // change the overflow from hidden to auto
+    overflow: auto;
+    // copy the rest as it was
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .modal-invoice-window {
+    overflow: auto;
+  }
+}

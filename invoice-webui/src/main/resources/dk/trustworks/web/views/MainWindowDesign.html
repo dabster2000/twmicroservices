@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout style-name="root-layout navigation-template-vaadin" responsive size-full>
+   <vaadin-css-layout style-name="header-bar" width-full _id="header_bar">
+    <vaadin-native-button icon="fonticon://FontAwesome/f078" style-name="user-menu" width="20px" height="20px" plain-text _id="user_menu"></vaadin-native-button>
+    <vaadin-label style-name="user-name-label" width="79px" plain-text _id="user_name_label">
+      John Smith 
+    </vaadin-label>
+    <vaadin-text-field icon="fonticon://FontAwesome/f002" style-name="search-field" input-prompt="Search..." _id="search_field"></vaadin-text-field>
+   </vaadin-css-layout>
+   <vaadin-horizontal-layout style-name="main-area-layout" size-full _id="main_area" :expand>
+    <vaadin-css-layout style-name="side-bar" height-full _id="side_bar">
+     <vaadin-native-button icon="fonticon://FontAwesome/f0f6" style-name="menu-button selected" width-full plain-text _id="menuButton1">
+       New invoice 
+     </vaadin-native-button>
+     <vaadin-native-button icon="fonticon://FontAwesome/f14b" style-name="menu-button" width-full plain-text _id="menuButton4">
+       Drafts 
+     </vaadin-native-button>
+     <vaadin-native-button icon="fonticon://FontAwesome/f16c" style-name="menu-button" width-full plain-text _id="menuButton2">
+       Invoice status 
+     </vaadin-native-button>
+     <vaadin-native-button icon="fonticon://FontAwesome/f1cd" style-name="menu-button" width-full plain-text _id="menuButton3">
+       help 
+     </vaadin-native-button>
+    </vaadin-css-layout>
+    <vaadin-panel style-name="scroll-panel" size-full _id="scroll_panel" :expand>
+     <vaadin-vertical-layout spacing="false" margin="false" _id="page_content"></vaadin-vertical-layout>
+    </vaadin-panel>
+   </vaadin-horizontal-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

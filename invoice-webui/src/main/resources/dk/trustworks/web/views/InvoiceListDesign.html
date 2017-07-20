@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout margin="false">
+   <vaadin-label style-name="h2" plain-text>
+     Draft Invoices 
+   </vaadin-label>
+   <vaadin-grid width-full data-item-type="dk.trustworks.network.dto.Invoice" _id="gridInvoiceList">
+    <table>
+     <colgroup>
+      <col column-id="clientname" sortable>
+      <col column-id="projectname" sortable>
+      <col column-id="invoicedate" sortable width="150">
+      <col column-id="type" sortable width="100">
+      <col column-id="errors" sortable width="100">
+     </colgroup>
+     <thead>
+      <tr default>
+       <th plain-text column-ids="clientname">Clientname</th>
+       <th plain-text column-ids="projectname">Projectname</th>
+       <th plain-text column-ids="invoicedate">Invoicedate</th>
+       <th plain-text column-ids="type">Type</th>
+       <th plain-text column-ids="errors">Errors</th>
+      </tr>
+     </thead>
+     <tbody></tbody>
+    </table>
+   </vaadin-grid>
+   <vaadin-button plain-text _id="btnDelete">
+     Delete 
+   </vaadin-button>
+  </vaadin-vertical-layout>
+ </body>
+</html>

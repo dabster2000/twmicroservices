@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-absolute-layout width="350px" height="500px">
+   <vaadin-vertical-layout :top="0px" :right="0px" :left="0px">
+    <vaadin-label style-name="h2" responsive plain-text :center>
+      INVOICE 
+    </vaadin-label>
+    <vaadin-vertical-layout spacing="false" responsive margin="false">
+     <vaadin-label width-full plain-text _id="lblClientname">
+       AP Pension 
+     </vaadin-label>
+     <vaadin-label style-name="tiny" width-full plain-text _id="lblStreet">
+       Østbanegade 135 
+     </vaadin-label>
+     <vaadin-label style-name="tiny" width-full plain-text _id="lblZipCity">
+       2100 København Ø 
+     </vaadin-label>
+     <vaadin-label style-name="tiny" width-full plain-text _id="lblCvrEan">
+       CVR: 18237385 
+     </vaadin-label>
+     <vaadin-label style-name="tiny bold" width-full plain-text _id="lblAttention">
+       ATT: Nicklas Grundager 
+     </vaadin-label>
+     <vaadin-label style-name="small bold label-project-description" width-full plain-text _id="lblDescription" :middle :center>
+       nærpension STP 
+     </vaadin-label>
+    </vaadin-vertical-layout>
+    <vaadin-grid-layout width-full _id="glInvoiceItems">
+     <row>
+      <column expand="1">
+       <vaadin-label plain-text :middle>
+         E.N. 
+       </vaadin-label>
+      </column>
+      <column>
+       <vaadin-label plain-text :middle :right>
+         123.125,00 kr 
+       </vaadin-label>
+      </column>
+     </row>
+     <row>
+      <column>
+       <vaadin-label plain-text>
+         H.L. 
+       </vaadin-label>
+      </column>
+      <column>
+       <vaadin-label plain-text :middle :right>
+         75.000 kr 
+       </vaadin-label>
+      </column>
+     </row>
+    </vaadin-grid-layout>
+    <vaadin-grid-layout width-full height="30px">
+     <row>
+      <column expand="1">
+       <vaadin-label style-name="bold label-total-titel" width-full plain-text :middle>
+         Total 
+       </vaadin-label>
+      </column>
+      <column>
+       <vaadin-label style-name="bold label-total-value" plain-text _id="lblTotal" :middle :right>
+         198.125,00 kr 
+       </vaadin-label>
+      </column>
+     </row>
+     <row></row>
+    </vaadin-grid-layout>
+   </vaadin-vertical-layout>
+   <vaadin-button style-name="friendly" plain-text _id="btnAction" :top="5px" :right="5px">
+     OPEN 
+   </vaadin-button>
+   <vaadin-label plain-text _id="lblStatus" :top="5px" :left="5px">
+     STATUS: INACTIVE 
+   </vaadin-label>
+  </vaadin-absolute-layout>
+ </body>
+</html>

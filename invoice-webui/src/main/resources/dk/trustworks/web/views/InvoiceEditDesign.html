@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-css-layout size-full>
+    <vaadin-horizontal-layout style-name="box-border" width-full height="100px">
+     <vaadin-label style-name="h2" plain-text :middle>
+       FAKTURA 
+     </vaadin-label>
+     <vaadin-horizontal-layout height-full :middle :right>
+      <vaadin-button style-name="danger" plain-text _id="btnCreateInvoice" :middle :center>
+        Create invoice 
+      </vaadin-button>
+      <vaadin-button style-name="primary" plain-text _id="btnSave" :middle :right>
+        Save 
+      </vaadin-button>
+      <vaadin-css-layout width="10px"></vaadin-css-layout>
+     </vaadin-horizontal-layout>
+    </vaadin-horizontal-layout>
+    <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
+    <vaadin-horizontal-layout width-full>
+     <vaadin-vertical-layout spacing="false" margin="false" :middle :expand="0.6">
+      <vaadin-label style-name="large bold" width-full plain-text _id="lblClientname">
+        AP Pension 
+      </vaadin-label>
+      <vaadin-label width-full plain-text _id="lblStreetname">
+        Østbanegade 135 
+      </vaadin-label>
+      <vaadin-label width-full plain-text _id="lblZipCity">
+        2100 København Ø 
+      </vaadin-label>
+      <vaadin-label width-full plain-text _id="lblCvrEan">
+        CVR 18237385 
+      </vaadin-label>
+      <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
+      <vaadin-label style-name="bold" width-full plain-text _id="lblAttention">
+        Att: Nicklas Grundager 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout spacing="false" margin="false" :expand="0.4">
+      <vaadin-label caption-as-html width-full>
+        TrustWorks ApS 
+       <br> Vendersgade 4, 4. sal 
+       <br> 1363 København K 
+       <br> Danmark 
+       <br> Phone: +45 2366 5345 
+       <br> E-mail: tobias.kjolsen@trustworks.dk 
+       <br>
+       <br> CVR-nr.: 35648941 
+      </vaadin-label>
+      <vaadin-label plain-text>
+        Faktura nr: 14-487 
+      </vaadin-label>
+      <vaadin-date-field range-start="2014-02-01" caption="Dato:" show-iso-week-numbers date-format="yyyy/MM/dd" _id="dfInvoiceDate"></vaadin-date-field>
+     </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
+    <vaadin-css-layout width-full height="10px"></vaadin-css-layout>
+    <vaadin-horizontal-layout style-name="box-project-description" width-full margin>
+     <vaadin-label style-name="bold" plain-text :middle>
+       Beskrivelse: 
+     </vaadin-label>
+     <vaadin-label width-full _id="lblDescription" :middle :expand>
+       Projektnr.: 2016-03 
+      <br> For perioden: juni 2017 
+     </vaadin-label>
+    </vaadin-horizontal-layout>
+    <vaadin-vertical-layout style-name="invoice-details">
+     <vaadin-css-layout width-full>
+      <vaadin-horizontal-layout width-full>
+       <vaadin-label style-name="h3 bold" plain-text>
+         Faktura detaljer 
+       </vaadin-label>
+      </vaadin-horizontal-layout>
+      <vaadin-grid-layout spacing width-full _id="gridInvoiceItems">
+       <row>
+        <column>
+         <vaadin-label style-name="bold" width-full plain-text>
+           Konsulent 
+         </vaadin-label>
+        </column>
+        <column>
+         <vaadin-label style-name="bold" width-full plain-text>
+           Opgave 
+         </vaadin-label>
+        </column>
+        <column>
+         <vaadin-label style-name="bold" width-full plain-text>
+           Timepris 
+         </vaadin-label>
+        </column>
+        <column>
+         <vaadin-label style-name="bold" width-full plain-text>
+           Timer 
+         </vaadin-label>
+        </column>
+        <column>
+         <vaadin-label style-name="bold" plain-text :middle :right>
+           Beløb 
+         </vaadin-label>
+        </column>
+       </row>
+       <row>
+        <column>
+         <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
+        </column>
+        <column>
+         <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
+        </column>
+        <column>
+         <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
+        </column>
+        <column>
+         <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
+        </column>
+        <column>
+         <vaadin-label plain-text :middle :right>
+           Label 
+         </vaadin-label>
+        </column>
+       </row>
+      </vaadin-grid-layout>
+     </vaadin-css-layout>
+    </vaadin-vertical-layout>
+    <vaadin-horizontal-layout style-name="box-project-description" width-full>
+     <vaadin-css-layout width-full :expand></vaadin-css-layout>
+     <vaadin-vertical-layout spacing="false" width="200px" margin="false">
+      <vaadin-label plain-text>
+        I alt 
+      </vaadin-label>
+      <vaadin-label plain-text>
+        + 25% Moms 
+      </vaadin-label>
+      <vaadin-label style-name="bold" plain-text>
+        Total inkl. moms DKK 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout spacing="false" size-auto margin="false">
+      <vaadin-label plain-text _id="lblSumNoTax" :right>
+        91.250,00 
+      </vaadin-label>
+      <vaadin-label plain-text _id="lblTax" :right>
+        22.812,50 
+      </vaadin-label>
+      <vaadin-label style-name="bold" plain-text _id="lblSumWithTax" :right>
+        114.062,50 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
+   </vaadin-css-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

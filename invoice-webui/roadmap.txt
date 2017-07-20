@@ -1,0 +1,6 @@
+- Feltet "error" skal skiftes ud med et trafiklys
+- Man skal kunne se, hvilke fejl der er i den dannede faktura
+- Man skal kunne logge ind
+- Det skal fremgå, hvem der er logget ind
+- Farverne skal skiftes fra blå til noget pænere
+- Vores TW logo skal sættes ind et sted
