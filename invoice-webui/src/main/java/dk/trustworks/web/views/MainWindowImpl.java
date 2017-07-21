@@ -15,7 +15,6 @@ import static dk.trustworks.network.dto.InvoiceStatus.DRAFT;
  */
 @SpringComponent
 @UIScope()
-@Theme("material")
 public class MainWindowImpl extends MainWindowDesign implements Broadcaster.BroadcastListener {
 
     private final InvoiceClient invoiceClient;

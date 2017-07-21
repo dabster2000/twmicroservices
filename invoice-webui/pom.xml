@@ -229,6 +229,7 @@
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
+                <version>8.1.0.rc1</version>
                 <configuration>
                     <extraJvmArgs>-Xmx2G -Xss1024k</extraJvmArgs>
                     <webappDirectory>
