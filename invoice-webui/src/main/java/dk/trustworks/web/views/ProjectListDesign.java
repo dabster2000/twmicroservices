@@ -23,6 +23,7 @@ public class ProjectListDesign extends VerticalLayout {
     protected ComboBox<dk.trustworks.web.model.YearMonthSelect> cbSelectYearMonth;
     protected Grid<dk.trustworks.network.dto.ProjectSummary> gridProjectSummaryList;
     protected Button btnCreateInvoice;
+    protected Button btnTour;
 
     public ProjectListDesign() {
         Design.read(this);

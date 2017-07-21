@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "time-service", fallback = WorkClientImpl.class, configuration = FeignConfiguration.class)
 public interface WorkClient {
 
-    @Cacheable("work")
+    //@Cacheable("work")
     @RequestMapping(method = RequestMethod.GET, value = "/work/search/findByYearAndMonth", consumes = "application/hal+json")
     Resources<Resource<Work>> findByYearAndMonth(@RequestParam("year") int year, @RequestParam("month") int month);
 
