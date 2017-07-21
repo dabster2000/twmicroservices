@@ -109,12 +109,16 @@ public class InvoiceListImpl extends InvoiceListDesign
 
     @Override
     public void receiveBroadcast(final String message) {
+        System.out.println("InvoiceListImpl.receiveBroadcast");
+        System.out.println("message = [" + message + "]");
         if(this.getUI() != null) {
             this.getUI().access(this::loadInvoicesToGrid);
         }
     }
 
     public void loadInvoicesToGrid() {
+        System.out.println("InvoiceListImpl.loadInvoicesToGrid");
+        System.out.println("");
         Resources<Invoice> invoices = invoiceClient.findByStatus(DRAFT);
         gridInvoiceList.setItems(invoices.getContent());
         gridInvoiceList.getDataProvider().refreshAll();

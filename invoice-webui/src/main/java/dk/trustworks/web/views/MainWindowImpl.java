@@ -3,6 +3,7 @@ package dk.trustworks.web.views;
 import com.vaadin.annotations.Theme;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.NativeButton;
 import dk.trustworks.network.clients.InvoiceClient;
 import dk.trustworks.network.dto.InvoiceStatus;
 import dk.trustworks.web.Broadcaster;
@@ -15,9 +16,9 @@ import static dk.trustworks.network.dto.InvoiceStatus.DRAFT;
  */
 @SpringComponent
 @UIScope()
-public class MainWindowImpl extends MainWindowDesign implements Broadcaster.BroadcastListener {
+public class MainWindowImpl extends MainWindowDesign {
 
-    private final InvoiceClient invoiceClient;
+    public final InvoiceClient invoiceClient;
     private final ProjectListImpl projectList;
     private final InvoiceListImpl invoiceList;
     private final InvoiceStatusListImpl invoiceStatusList;
@@ -29,7 +30,6 @@ public class MainWindowImpl extends MainWindowDesign implements Broadcaster.Broa
         this.invoiceList = invoiceList;
         this.invoiceStatusList = invoiceStatusList;
 
-        Broadcaster.register(this);
         System.out.println("MainWindowImpl.MainWindowImpl");
         page_content.addComponent(this.projectList);
 
@@ -57,7 +57,7 @@ public class MainWindowImpl extends MainWindowDesign implements Broadcaster.Broa
             invoiceStatusList.loadInvoicesToGrid();
         });
 
-        receiveBroadcast("");
+
     }
 
     private void clearButtonSelection() {
@@ -67,10 +67,7 @@ public class MainWindowImpl extends MainWindowDesign implements Broadcaster.Broa
         menuButton4.removeStyleName("selected");
     }
 
-    @Override
-    public void receiveBroadcast(String message) {
-        int numberOfDrafts = invoiceClient.findByStatus(DRAFT).getContent().size();
-        if(numberOfDrafts>0) menuButton4.setCaption("DRAFTS ("+numberOfDrafts+")");
-        else menuButton4.setCaption("DRAFTS");
+    public NativeButton getMenuButton4() {
+        return menuButton4;
     }
 }

@@ -10,11 +10,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TopicReceiver {
-
     @CacheEvict(cacheNames={"invoices","projectsummaries"}, allEntries=true)
     public void receiveMessage(String message) {
-        System.out.println("Received <" + message + ">");
+        System.out.println("TopicReceiver.receiveMessage");
+        System.out.println("message = [" + message + "]");
         Broadcaster.broadcast(message);
     }
-
 }

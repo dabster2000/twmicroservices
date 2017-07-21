@@ -1,8 +1,10 @@
-@import "../valo/valo";
+@import "../valo/valo.scss";
+@import "addons";
 @import "designs.scss";
 
 .invoice {
   @include valo;
+  @include addons;
 
   vaadin-grid {
     height: auto;

@@ -1631,6 +1631,36 @@ div.v-layout.v-horizontal.v-widget {
 	vertical-align: top;
 }
 
+@font-face {
+	font-family: "FontAwesomeLabelAddon";
+	src: url(../../../VAADIN/addons/font-awesome-label/fontawesome-webfont.eot?v=4.7.0);
+	src: url(../../../VAADIN/addons/font-awesome-label/fontawesome-webfont.eot?#iefix&v=4.7.0) format("embedded-opentype"), url(../../../VAADIN/addons/font-awesome-label/fontawesome-webfont.woff2?v=4.7.0) format("woff2"), url(../../../VAADIN/addons/font-awesome-label/fontawesome-webfont.woff?v=4.7.0) format("woff"), url(../../../VAADIN/addons/font-awesome-label/fontawesome-webfont.ttf?v=4.7.0) format("truetype"), url(../../../VAADIN/addons/font-awesome-label/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular) format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@-webkit-keyframes fa-spin {
+		0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+		100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+	}
+
+@keyframes fa-spin {
+		0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+		100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+	}
+
 .root-layout.navigation-template-vaadin {
 	background-color: #ffffff;
 }
@@ -1767,6 +1797,29 @@ div.v-layout.v-horizontal.v-widget {
 
 .navigation-template-vaadin[width-range~="321px-768px"] {
 	visibility: visible;
+}
+
+.invoice {
+	@-webkit-keyframes fa-spin {
+		0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+		100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+	}
+	@keyframes fa-spin {
+		0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+		100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+	}
 }
 
 .invoice.v-app, .invoice.v-app-loading {
@@ -14882,6 +14935,3726 @@ div.v-layout.v-horizontal.v-widget {
 	display: inline-block;
 	width: 19px;
 	overflow: hidden;
+}
+
+.invoice .v-button-wrap .v-icon.FontAwesomeLabelAddon {
+	line-height: inherit;
+}
+
+.invoice .fa, .invoice .FontAwesomeLabelAddon, .invoice .FontAwesomeIconAddon {
+	display: inline-block;
+	font: normal normal normal 14px/1 FontAwesomeLabelAddon;
+	font-size: inherit;
+	text-rendering: auto;
+	text-align: center;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.invoice .fa-lg {
+	font-size: 1.33333em;
+	line-height: 0.75em;
+	vertical-align: -15%;
+}
+
+.invoice .fa-2x {
+	font-size: 2em;
+}
+
+.invoice .fa-3x {
+	font-size: 3em;
+}
+
+.invoice .fa-4x {
+	font-size: 4em;
+}
+
+.invoice .fa-5x {
+	font-size: 5em;
+}
+
+.invoice .fa-6x {
+	font-size: 6em;
+}
+
+.invoice .fa-fw {
+	width: 1.28571em;
+	text-align: center;
+}
+
+.invoice .fa-ul {
+	padding-left: 0;
+	margin-left: 2.14286em;
+	list-style-type: none;
+}
+
+.invoice .fa-ul > li {
+	position: relative;
+}
+
+.invoice .fa-li {
+	position: absolute;
+	left: -2.14286em;
+	width: 2.14286em;
+	top: 0.14286em;
+	text-align: center;
+}
+
+.invoice .fa-li.fa-lg {
+	left: -1.85714em;
+}
+
+.invoice .fa-border {
+	padding: 0.2em 0.25em 0.15em;
+	border: solid 0.08em #eeeeee;
+	border-radius: 0.1em;
+}
+
+.invoice .fa-pull-left {
+	float: left;
+}
+
+.invoice .fa-pull-right {
+	float: right;
+}
+
+.invoice .fa.fa-pull-left {
+	margin-right: 0.3em;
+}
+
+.invoice .fa.fa-pull-right {
+	margin-left: 0.3em;
+}
+
+.invoice .pull-right {
+	float: right;
+}
+
+.invoice .pull-left {
+	float: left;
+}
+
+.invoice .fa.pull-left {
+	margin-right: 0.3em;
+}
+
+.invoice .fa.pull-right {
+	margin-left: 0.3em;
+}
+
+.invoice .fa-spin {
+	-webkit-animation: fa-spin 2s infinite linear;
+	animation: fa-spin 2s infinite linear;
+}
+
+.invoice .fa-pulse {
+	-webkit-animation: fa-spin 1s infinite steps(8);
+	animation: fa-spin 1s infinite steps(8);
+}
+
+.invoice .fa-rotate-90 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
+	-webkit-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+
+.invoice .fa-rotate-180 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
+	-webkit-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+
+.invoice .fa-rotate-270 {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+	-webkit-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	transform: rotate(270deg);
+}
+
+.invoice .fa-flip-horizontal {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";
+	-webkit-transform: scale(-1, 1);
+	-ms-transform: scale(-1, 1);
+	transform: scale(-1, 1);
+}
+
+.invoice .fa-flip-vertical {
+	-ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
+	-webkit-transform: scale(1, -1);
+	-ms-transform: scale(1, -1);
+	transform: scale(1, -1);
+}
+
+.invoice :root .fa-rotate-90, .invoice :root .fa-rotate-180, .invoice :root .fa-rotate-270, .invoice :root .fa-flip-horizontal, .invoice :root .fa-flip-vertical {
+	filter: none;
+}
+
+.invoice .fa-stack {
+	position: relative;
+	display: inline-block;
+	width: 2em;
+	height: 2em;
+	line-height: 2em;
+	vertical-align: middle;
+}
+
+.invoice .fa-stack-1x, .invoice .fa-stack-2x {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	text-align: center;
+}
+
+.invoice .fa-stack-1x {
+	line-height: inherit;
+}
+
+.invoice .fa-stack-2x {
+	font-size: 2em;
+}
+
+.invoice .fa-inverse {
+	color: #ffffff;
+}
+
+.invoice .fa-glass:before {
+	content: "\f000";
+}
+
+.invoice .fa-music:before {
+	content: "\f001";
+}
+
+.invoice .fa-search:before {
+	content: "\f002";
+}
+
+.invoice .fa-envelope-o:before {
+	content: "\f003";
+}
+
+.invoice .fa-heart:before {
+	content: "\f004";
+}
+
+.invoice .fa-star:before {
+	content: "\f005";
+}
+
+.invoice .fa-star-o:before {
+	content: "\f006";
+}
+
+.invoice .fa-user:before {
+	content: "\f007";
+}
+
+.invoice .fa-film:before {
+	content: "\f008";
+}
+
+.invoice .fa-th-large:before {
+	content: "\f009";
+}
+
+.invoice .fa-th:before {
+	content: "\f00a";
+}
+
+.invoice .fa-th-list:before {
+	content: "\f00b";
+}
+
+.invoice .fa-check:before {
+	content: "\f00c";
+}
+
+.invoice .fa-remove:before, .invoice .fa-close:before, .invoice .fa-times:before {
+	content: "\f00d";
+}
+
+.invoice .fa-search-plus:before {
+	content: "\f00e";
+}
+
+.invoice .fa-search-minus:before {
+	content: "\f010";
+}
+
+.invoice .fa-power-off:before {
+	content: "\f011";
+}
+
+.invoice .fa-signal:before {
+	content: "\f012";
+}
+
+.invoice .fa-gear:before, .invoice .fa-cog:before {
+	content: "\f013";
+}
+
+.invoice .fa-trash-o:before {
+	content: "\f014";
+}
+
+.invoice .fa-home:before {
+	content: "\f015";
+}
+
+.invoice .fa-file-o:before {
+	content: "\f016";
+}
+
+.invoice .fa-clock-o:before {
+	content: "\f017";
+}
+
+.invoice .fa-road:before {
+	content: "\f018";
+}
+
+.invoice .fa-download:before {
+	content: "\f019";
+}
+
+.invoice .fa-arrow-circle-o-down:before {
+	content: "\f01a";
+}
+
+.invoice .fa-arrow-circle-o-up:before {
+	content: "\f01b";
+}
+
+.invoice .fa-inbox:before {
+	content: "\f01c";
+}
+
+.invoice .fa-play-circle-o:before {
+	content: "\f01d";
+}
+
+.invoice .fa-rotate-right:before, .invoice .fa-repeat:before {
+	content: "\f01e";
+}
+
+.invoice .fa-refresh:before {
+	content: "\f021";
+}
+
+.invoice .fa-list-alt:before {
+	content: "\f022";
+}
+
+.invoice .fa-lock:before {
+	content: "\f023";
+}
+
+.invoice .fa-flag:before {
+	content: "\f024";
+}
+
+.invoice .fa-headphones:before {
+	content: "\f025";
+}
+
+.invoice .fa-volume-off:before {
+	content: "\f026";
+}
+
+.invoice .fa-volume-down:before {
+	content: "\f027";
+}
+
+.invoice .fa-volume-up:before {
+	content: "\f028";
+}
+
+.invoice .fa-qrcode:before {
+	content: "\f029";
+}
+
+.invoice .fa-barcode:before {
+	content: "\f02a";
+}
+
+.invoice .fa-tag:before {
+	content: "\f02b";
+}
+
+.invoice .fa-tags:before {
+	content: "\f02c";
+}
+
+.invoice .fa-book:before {
+	content: "\f02d";
+}
+
+.invoice .fa-bookmark:before {
+	content: "\f02e";
+}
+
+.invoice .fa-print:before {
+	content: "\f02f";
+}
+
+.invoice .fa-camera:before {
+	content: "\f030";
+}
+
+.invoice .fa-font:before {
+	content: "\f031";
+}
+
+.invoice .fa-bold:before {
+	content: "\f032";
+}
+
+.invoice .fa-italic:before {
+	content: "\f033";
+}
+
+.invoice .fa-text-height:before {
+	content: "\f034";
+}
+
+.invoice .fa-text-width:before {
+	content: "\f035";
+}
+
+.invoice .fa-align-left:before {
+	content: "\f036";
+}
+
+.invoice .fa-align-center:before {
+	content: "\f037";
+}
+
+.invoice .fa-align-right:before {
+	content: "\f038";
+}
+
+.invoice .fa-align-justify:before {
+	content: "\f039";
+}
+
+.invoice .fa-list:before {
+	content: "\f03a";
+}
+
+.invoice .fa-dedent:before, .invoice .fa-outdent:before {
+	content: "\f03b";
+}
+
+.invoice .fa-indent:before {
+	content: "\f03c";
+}
+
+.invoice .fa-video-camera:before {
+	content: "\f03d";
+}
+
+.invoice .fa-photo:before, .invoice .fa-image:before, .invoice .fa-picture-o:before {
+	content: "\f03e";
+}
+
+.invoice .fa-pencil:before {
+	content: "\f040";
+}
+
+.invoice .fa-map-marker:before {
+	content: "\f041";
+}
+
+.invoice .fa-adjust:before {
+	content: "\f042";
+}
+
+.invoice .fa-tint:before {
+	content: "\f043";
+}
+
+.invoice .fa-edit:before, .invoice .fa-pencil-square-o:before {
+	content: "\f044";
+}
+
+.invoice .fa-share-square-o:before {
+	content: "\f045";
+}
+
+.invoice .fa-check-square-o:before {
+	content: "\f046";
+}
+
+.invoice .fa-arrows:before {
+	content: "\f047";
+}
+
+.invoice .fa-step-backward:before {
+	content: "\f048";
+}
+
+.invoice .fa-fast-backward:before {
+	content: "\f049";
+}
+
+.invoice .fa-backward:before {
+	content: "\f04a";
+}
+
+.invoice .fa-play:before {
+	content: "\f04b";
+}
+
+.invoice .fa-pause:before {
+	content: "\f04c";
+}
+
+.invoice .fa-stop:before {
+	content: "\f04d";
+}
+
+.invoice .fa-forward:before {
+	content: "\f04e";
+}
+
+.invoice .fa-fast-forward:before {
+	content: "\f050";
+}
+
+.invoice .fa-step-forward:before {
+	content: "\f051";
+}
+
+.invoice .fa-eject:before {
+	content: "\f052";
+}
+
+.invoice .fa-chevron-left:before {
+	content: "\f053";
+}
+
+.invoice .fa-chevron-right:before {
+	content: "\f054";
+}
+
+.invoice .fa-plus-circle:before {
+	content: "\f055";
+}
+
+.invoice .fa-minus-circle:before {
+	content: "\f056";
+}
+
+.invoice .fa-times-circle:before {
+	content: "\f057";
+}
+
+.invoice .fa-check-circle:before {
+	content: "\f058";
+}
+
+.invoice .fa-question-circle:before {
+	content: "\f059";
+}
+
+.invoice .fa-info-circle:before {
+	content: "\f05a";
+}
+
+.invoice .fa-crosshairs:before {
+	content: "\f05b";
+}
+
+.invoice .fa-times-circle-o:before {
+	content: "\f05c";
+}
+
+.invoice .fa-check-circle-o:before {
+	content: "\f05d";
+}
+
+.invoice .fa-ban:before {
+	content: "\f05e";
+}
+
+.invoice .fa-arrow-left:before {
+	content: "\f060";
+}
+
+.invoice .fa-arrow-right:before {
+	content: "\f061";
+}
+
+.invoice .fa-arrow-up:before {
+	content: "\f062";
+}
+
+.invoice .fa-arrow-down:before {
+	content: "\f063";
+}
+
+.invoice .fa-mail-forward:before, .invoice .fa-share:before {
+	content: "\f064";
+}
+
+.invoice .fa-expand:before {
+	content: "\f065";
+}
+
+.invoice .fa-compress:before {
+	content: "\f066";
+}
+
+.invoice .fa-plus:before {
+	content: "\f067";
+}
+
+.invoice .fa-minus:before {
+	content: "\f068";
+}
+
+.invoice .fa-asterisk:before {
+	content: "\f069";
+}
+
+.invoice .fa-exclamation-circle:before {
+	content: "\f06a";
+}
+
+.invoice .fa-gift:before {
+	content: "\f06b";
+}
+
+.invoice .fa-leaf:before {
+	content: "\f06c";
+}
+
+.invoice .fa-fire:before {
+	content: "\f06d";
+}
+
+.invoice .fa-eye:before {
+	content: "\f06e";
+}
+
+.invoice .fa-eye-slash:before {
+	content: "\f070";
+}
+
+.invoice .fa-warning:before, .invoice .fa-exclamation-triangle:before {
+	content: "\f071";
+}
+
+.invoice .fa-plane:before {
+	content: "\f072";
+}
+
+.invoice .fa-calendar:before {
+	content: "\f073";
+}
+
+.invoice .fa-random:before {
+	content: "\f074";
+}
+
+.invoice .fa-comment:before {
+	content: "\f075";
+}
+
+.invoice .fa-magnet:before {
+	content: "\f076";
+}
+
+.invoice .fa-chevron-up:before {
+	content: "\f077";
+}
+
+.invoice .fa-chevron-down:before {
+	content: "\f078";
+}
+
+.invoice .fa-retweet:before {
+	content: "\f079";
+}
+
+.invoice .fa-shopping-cart:before {
+	content: "\f07a";
+}
+
+.invoice .fa-folder:before {
+	content: "\f07b";
+}
+
+.invoice .fa-folder-open:before {
+	content: "\f07c";
+}
+
+.invoice .fa-arrows-v:before {
+	content: "\f07d";
+}
+
+.invoice .fa-arrows-h:before {
+	content: "\f07e";
+}
+
+.invoice .fa-bar-chart-o:before, .invoice .fa-bar-chart:before {
+	content: "\f080";
+}
+
+.invoice .fa-twitter-square:before {
+	content: "\f081";
+}
+
+.invoice .fa-facebook-square:before {
+	content: "\f082";
+}
+
+.invoice .fa-camera-retro:before {
+	content: "\f083";
+}
+
+.invoice .fa-key:before {
+	content: "\f084";
+}
+
+.invoice .fa-gears:before, .invoice .fa-cogs:before {
+	content: "\f085";
+}
+
+.invoice .fa-comments:before {
+	content: "\f086";
+}
+
+.invoice .fa-thumbs-o-up:before {
+	content: "\f087";
+}
+
+.invoice .fa-thumbs-o-down:before {
+	content: "\f088";
+}
+
+.invoice .fa-star-half:before {
+	content: "\f089";
+}
+
+.invoice .fa-heart-o:before {
+	content: "\f08a";
+}
+
+.invoice .fa-sign-out:before {
+	content: "\f08b";
+}
+
+.invoice .fa-linkedin-square:before {
+	content: "\f08c";
+}
+
+.invoice .fa-thumb-tack:before {
+	content: "\f08d";
+}
+
+.invoice .fa-external-link:before {
+	content: "\f08e";
+}
+
+.invoice .fa-sign-in:before {
+	content: "\f090";
+}
+
+.invoice .fa-trophy:before {
+	content: "\f091";
+}
+
+.invoice .fa-github-square:before {
+	content: "\f092";
+}
+
+.invoice .fa-upload:before {
+	content: "\f093";
+}
+
+.invoice .fa-lemon-o:before {
+	content: "\f094";
+}
+
+.invoice .fa-phone:before {
+	content: "\f095";
+}
+
+.invoice .fa-square-o:before {
+	content: "\f096";
+}
+
+.invoice .fa-bookmark-o:before {
+	content: "\f097";
+}
+
+.invoice .fa-phone-square:before {
+	content: "\f098";
+}
+
+.invoice .fa-twitter:before {
+	content: "\f099";
+}
+
+.invoice .fa-facebook-f:before, .invoice .fa-facebook:before {
+	content: "\f09a";
+}
+
+.invoice .fa-github:before {
+	content: "\f09b";
+}
+
+.invoice .fa-unlock:before {
+	content: "\f09c";
+}
+
+.invoice .fa-credit-card:before {
+	content: "\f09d";
+}
+
+.invoice .fa-feed:before, .invoice .fa-rss:before {
+	content: "\f09e";
+}
+
+.invoice .fa-hdd-o:before {
+	content: "\f0a0";
+}
+
+.invoice .fa-bullhorn:before {
+	content: "\f0a1";
+}
+
+.invoice .fa-bell:before {
+	content: "\f0f3";
+}
+
+.invoice .fa-certificate:before {
+	content: "\f0a3";
+}
+
+.invoice .fa-hand-o-right:before {
+	content: "\f0a4";
+}
+
+.invoice .fa-hand-o-left:before {
+	content: "\f0a5";
+}
+
+.invoice .fa-hand-o-up:before {
+	content: "\f0a6";
+}
+
+.invoice .fa-hand-o-down:before {
+	content: "\f0a7";
+}
+
+.invoice .fa-arrow-circle-left:before {
+	content: "\f0a8";
+}
+
+.invoice .fa-arrow-circle-right:before {
+	content: "\f0a9";
+}
+
+.invoice .fa-arrow-circle-up:before {
+	content: "\f0aa";
+}
+
+.invoice .fa-arrow-circle-down:before {
+	content: "\f0ab";
+}
+
+.invoice .fa-globe:before {
+	content: "\f0ac";
+}
+
+.invoice .fa-wrench:before {
+	content: "\f0ad";
+}
+
+.invoice .fa-tasks:before {
+	content: "\f0ae";
+}
+
+.invoice .fa-filter:before {
+	content: "\f0b0";
+}
+
+.invoice .fa-briefcase:before {
+	content: "\f0b1";
+}
+
+.invoice .fa-arrows-alt:before {
+	content: "\f0b2";
+}
+
+.invoice .fa-group:before, .invoice .fa-users:before {
+	content: "\f0c0";
+}
+
+.invoice .fa-chain:before, .invoice .fa-link:before {
+	content: "\f0c1";
+}
+
+.invoice .fa-cloud:before {
+	content: "\f0c2";
+}
+
+.invoice .fa-flask:before {
+	content: "\f0c3";
+}
+
+.invoice .fa-cut:before, .invoice .fa-scissors:before {
+	content: "\f0c4";
+}
+
+.invoice .fa-copy:before, .invoice .fa-files-o:before {
+	content: "\f0c5";
+}
+
+.invoice .fa-paperclip:before {
+	content: "\f0c6";
+}
+
+.invoice .fa-save:before, .invoice .fa-floppy-o:before {
+	content: "\f0c7";
+}
+
+.invoice .fa-square:before {
+	content: "\f0c8";
+}
+
+.invoice .fa-navicon:before, .invoice .fa-reorder:before, .invoice .fa-bars:before {
+	content: "\f0c9";
+}
+
+.invoice .fa-list-ul:before {
+	content: "\f0ca";
+}
+
+.invoice .fa-list-ol:before {
+	content: "\f0cb";
+}
+
+.invoice .fa-strikethrough:before {
+	content: "\f0cc";
+}
+
+.invoice .fa-underline:before {
+	content: "\f0cd";
+}
+
+.invoice .fa-table:before {
+	content: "\f0ce";
+}
+
+.invoice .fa-magic:before {
+	content: "\f0d0";
+}
+
+.invoice .fa-truck:before {
+	content: "\f0d1";
+}
+
+.invoice .fa-pinterest:before {
+	content: "\f0d2";
+}
+
+.invoice .fa-pinterest-square:before {
+	content: "\f0d3";
+}
+
+.invoice .fa-google-plus-square:before {
+	content: "\f0d4";
+}
+
+.invoice .fa-google-plus:before {
+	content: "\f0d5";
+}
+
+.invoice .fa-money:before {
+	content: "\f0d6";
+}
+
+.invoice .fa-caret-down:before {
+	content: "\f0d7";
+}
+
+.invoice .fa-caret-up:before {
+	content: "\f0d8";
+}
+
+.invoice .fa-caret-left:before {
+	content: "\f0d9";
+}
+
+.invoice .fa-caret-right:before {
+	content: "\f0da";
+}
+
+.invoice .fa-columns:before {
+	content: "\f0db";
+}
+
+.invoice .fa-unsorted:before, .invoice .fa-sort:before {
+	content: "\f0dc";
+}
+
+.invoice .fa-sort-down:before, .invoice .fa-sort-desc:before {
+	content: "\f0dd";
+}
+
+.invoice .fa-sort-up:before, .invoice .fa-sort-asc:before {
+	content: "\f0de";
+}
+
+.invoice .fa-envelope:before {
+	content: "\f0e0";
+}
+
+.invoice .fa-linkedin:before {
+	content: "\f0e1";
+}
+
+.invoice .fa-rotate-left:before, .invoice .fa-undo:before {
+	content: "\f0e2";
+}
+
+.invoice .fa-legal:before, .invoice .fa-gavel:before {
+	content: "\f0e3";
+}
+
+.invoice .fa-dashboard:before, .invoice .fa-tachometer:before {
+	content: "\f0e4";
+}
+
+.invoice .fa-comment-o:before {
+	content: "\f0e5";
+}
+
+.invoice .fa-comments-o:before {
+	content: "\f0e6";
+}
+
+.invoice .fa-flash:before, .invoice .fa-bolt:before {
+	content: "\f0e7";
+}
+
+.invoice .fa-sitemap:before {
+	content: "\f0e8";
+}
+
+.invoice .fa-umbrella:before {
+	content: "\f0e9";
+}
+
+.invoice .fa-paste:before, .invoice .fa-clipboard:before {
+	content: "\f0ea";
+}
+
+.invoice .fa-lightbulb-o:before {
+	content: "\f0eb";
+}
+
+.invoice .fa-exchange:before {
+	content: "\f0ec";
+}
+
+.invoice .fa-cloud-download:before {
+	content: "\f0ed";
+}
+
+.invoice .fa-cloud-upload:before {
+	content: "\f0ee";
+}
+
+.invoice .fa-user-md:before {
+	content: "\f0f0";
+}
+
+.invoice .fa-stethoscope:before {
+	content: "\f0f1";
+}
+
+.invoice .fa-suitcase:before {
+	content: "\f0f2";
+}
+
+.invoice .fa-bell-o:before {
+	content: "\f0a2";
+}
+
+.invoice .fa-coffee:before {
+	content: "\f0f4";
+}
+
+.invoice .fa-cutlery:before {
+	content: "\f0f5";
+}
+
+.invoice .fa-file-text-o:before {
+	content: "\f0f6";
+}
+
+.invoice .fa-building-o:before {
+	content: "\f0f7";
+}
+
+.invoice .fa-hospital-o:before {
+	content: "\f0f8";
+}
+
+.invoice .fa-ambulance:before {
+	content: "\f0f9";
+}
+
+.invoice .fa-medkit:before {
+	content: "\f0fa";
+}
+
+.invoice .fa-fighter-jet:before {
+	content: "\f0fb";
+}
+
+.invoice .fa-beer:before {
+	content: "\f0fc";
+}
+
+.invoice .fa-h-square:before {
+	content: "\f0fd";
+}
+
+.invoice .fa-plus-square:before {
+	content: "\f0fe";
+}
+
+.invoice .fa-angle-double-left:before {
+	content: "\f100";
+}
+
+.invoice .fa-angle-double-right:before {
+	content: "\f101";
+}
+
+.invoice .fa-angle-double-up:before {
+	content: "\f102";
+}
+
+.invoice .fa-angle-double-down:before {
+	content: "\f103";
+}
+
+.invoice .fa-angle-left:before {
+	content: "\f104";
+}
+
+.invoice .fa-angle-right:before {
+	content: "\f105";
+}
+
+.invoice .fa-angle-up:before {
+	content: "\f106";
+}
+
+.invoice .fa-angle-down:before {
+	content: "\f107";
+}
+
+.invoice .fa-desktop:before {
+	content: "\f108";
+}
+
+.invoice .fa-laptop:before {
+	content: "\f109";
+}
+
+.invoice .fa-tablet:before {
+	content: "\f10a";
+}
+
+.invoice .fa-mobile-phone:before, .invoice .fa-mobile:before {
+	content: "\f10b";
+}
+
+.invoice .fa-circle-o:before {
+	content: "\f10c";
+}
+
+.invoice .fa-quote-left:before {
+	content: "\f10d";
+}
+
+.invoice .fa-quote-right:before {
+	content: "\f10e";
+}
+
+.invoice .fa-spinner:before {
+	content: "\f110";
+}
+
+.invoice .fa-circle:before {
+	content: "\f111";
+}
+
+.invoice .fa-mail-reply:before, .invoice .fa-reply:before {
+	content: "\f112";
+}
+
+.invoice .fa-github-alt:before {
+	content: "\f113";
+}
+
+.invoice .fa-folder-o:before {
+	content: "\f114";
+}
+
+.invoice .fa-folder-open-o:before {
+	content: "\f115";
+}
+
+.invoice .fa-smile-o:before {
+	content: "\f118";
+}
+
+.invoice .fa-frown-o:before {
+	content: "\f119";
+}
+
+.invoice .fa-meh-o:before {
+	content: "\f11a";
+}
+
+.invoice .fa-gamepad:before {
+	content: "\f11b";
+}
+
+.invoice .fa-keyboard-o:before {
+	content: "\f11c";
+}
+
+.invoice .fa-flag-o:before {
+	content: "\f11d";
+}
+
+.invoice .fa-flag-checkered:before {
+	content: "\f11e";
+}
+
+.invoice .fa-terminal:before {
+	content: "\f120";
+}
+
+.invoice .fa-code:before {
+	content: "\f121";
+}
+
+.invoice .fa-mail-reply-all:before, .invoice .fa-reply-all:before {
+	content: "\f122";
+}
+
+.invoice .fa-star-half-empty:before, .invoice .fa-star-half-full:before, .invoice .fa-star-half-o:before {
+	content: "\f123";
+}
+
+.invoice .fa-location-arrow:before {
+	content: "\f124";
+}
+
+.invoice .fa-crop:before {
+	content: "\f125";
+}
+
+.invoice .fa-code-fork:before {
+	content: "\f126";
+}
+
+.invoice .fa-unlink:before, .invoice .fa-chain-broken:before {
+	content: "\f127";
+}
+
+.invoice .fa-question:before {
+	content: "\f128";
+}
+
+.invoice .fa-info:before {
+	content: "\f129";
+}
+
+.invoice .fa-exclamation:before {
+	content: "\f12a";
+}
+
+.invoice .fa-superscript:before {
+	content: "\f12b";
+}
+
+.invoice .fa-subscript:before {
+	content: "\f12c";
+}
+
+.invoice .fa-eraser:before {
+	content: "\f12d";
+}
+
+.invoice .fa-puzzle-piece:before {
+	content: "\f12e";
+}
+
+.invoice .fa-microphone:before {
+	content: "\f130";
+}
+
+.invoice .fa-microphone-slash:before {
+	content: "\f131";
+}
+
+.invoice .fa-shield:before {
+	content: "\f132";
+}
+
+.invoice .fa-calendar-o:before {
+	content: "\f133";
+}
+
+.invoice .fa-fire-extinguisher:before {
+	content: "\f134";
+}
+
+.invoice .fa-rocket:before {
+	content: "\f135";
+}
+
+.invoice .fa-maxcdn:before {
+	content: "\f136";
+}
+
+.invoice .fa-chevron-circle-left:before {
+	content: "\f137";
+}
+
+.invoice .fa-chevron-circle-right:before {
+	content: "\f138";
+}
+
+.invoice .fa-chevron-circle-up:before {
+	content: "\f139";
+}
+
+.invoice .fa-chevron-circle-down:before {
+	content: "\f13a";
+}
+
+.invoice .fa-html5:before {
+	content: "\f13b";
+}
+
+.invoice .fa-css3:before {
+	content: "\f13c";
+}
+
+.invoice .fa-anchor:before {
+	content: "\f13d";
+}
+
+.invoice .fa-unlock-alt:before {
+	content: "\f13e";
+}
+
+.invoice .fa-bullseye:before {
+	content: "\f140";
+}
+
+.invoice .fa-ellipsis-h:before {
+	content: "\f141";
+}
+
+.invoice .fa-ellipsis-v:before {
+	content: "\f142";
+}
+
+.invoice .fa-rss-square:before {
+	content: "\f143";
+}
+
+.invoice .fa-play-circle:before {
+	content: "\f144";
+}
+
+.invoice .fa-ticket:before {
+	content: "\f145";
+}
+
+.invoice .fa-minus-square:before {
+	content: "\f146";
+}
+
+.invoice .fa-minus-square-o:before {
+	content: "\f147";
+}
+
+.invoice .fa-level-up:before {
+	content: "\f148";
+}
+
+.invoice .fa-level-down:before {
+	content: "\f149";
+}
+
+.invoice .fa-check-square:before {
+	content: "\f14a";
+}
+
+.invoice .fa-pencil-square:before {
+	content: "\f14b";
+}
+
+.invoice .fa-external-link-square:before {
+	content: "\f14c";
+}
+
+.invoice .fa-share-square:before {
+	content: "\f14d";
+}
+
+.invoice .fa-compass:before {
+	content: "\f14e";
+}
+
+.invoice .fa-toggle-down:before, .invoice .fa-caret-square-o-down:before {
+	content: "\f150";
+}
+
+.invoice .fa-toggle-up:before, .invoice .fa-caret-square-o-up:before {
+	content: "\f151";
+}
+
+.invoice .fa-toggle-right:before, .invoice .fa-caret-square-o-right:before {
+	content: "\f152";
+}
+
+.invoice .fa-euro:before, .invoice .fa-eur:before {
+	content: "\f153";
+}
+
+.invoice .fa-gbp:before {
+	content: "\f154";
+}
+
+.invoice .fa-dollar:before, .invoice .fa-usd:before {
+	content: "\f155";
+}
+
+.invoice .fa-rupee:before, .invoice .fa-inr:before {
+	content: "\f156";
+}
+
+.invoice .fa-cny:before, .invoice .fa-rmb:before, .invoice .fa-yen:before, .invoice .fa-jpy:before {
+	content: "\f157";
+}
+
+.invoice .fa-ruble:before, .invoice .fa-rouble:before, .invoice .fa-rub:before {
+	content: "\f158";
+}
+
+.invoice .fa-won:before, .invoice .fa-krw:before {
+	content: "\f159";
+}
+
+.invoice .fa-bitcoin:before, .invoice .fa-btc:before {
+	content: "\f15a";
+}
+
+.invoice .fa-file:before {
+	content: "\f15b";
+}
+
+.invoice .fa-file-text:before {
+	content: "\f15c";
+}
+
+.invoice .fa-sort-alpha-asc:before {
+	content: "\f15d";
+}
+
+.invoice .fa-sort-alpha-desc:before {
+	content: "\f15e";
+}
+
+.invoice .fa-sort-amount-asc:before {
+	content: "\f160";
+}
+
+.invoice .fa-sort-amount-desc:before {
+	content: "\f161";
+}
+
+.invoice .fa-sort-numeric-asc:before {
+	content: "\f162";
+}
+
+.invoice .fa-sort-numeric-desc:before {
+	content: "\f163";
+}
+
+.invoice .fa-thumbs-up:before {
+	content: "\f164";
+}
+
+.invoice .fa-thumbs-down:before {
+	content: "\f165";
+}
+
+.invoice .fa-youtube-square:before {
+	content: "\f166";
+}
+
+.invoice .fa-youtube:before {
+	content: "\f167";
+}
+
+.invoice .fa-xing:before {
+	content: "\f168";
+}
+
+.invoice .fa-xing-square:before {
+	content: "\f169";
+}
+
+.invoice .fa-youtube-play:before {
+	content: "\f16a";
+}
+
+.invoice .fa-dropbox:before {
+	content: "\f16b";
+}
+
+.invoice .fa-stack-overflow:before {
+	content: "\f16c";
+}
+
+.invoice .fa-instagram:before {
+	content: "\f16d";
+}
+
+.invoice .fa-flickr:before {
+	content: "\f16e";
+}
+
+.invoice .fa-adn:before {
+	content: "\f170";
+}
+
+.invoice .fa-bitbucket:before {
+	content: "\f171";
+}
+
+.invoice .fa-bitbucket-square:before {
+	content: "\f172";
+}
+
+.invoice .fa-tumblr:before {
+	content: "\f173";
+}
+
+.invoice .fa-tumblr-square:before {
+	content: "\f174";
+}
+
+.invoice .fa-long-arrow-down:before {
+	content: "\f175";
+}
+
+.invoice .fa-long-arrow-up:before {
+	content: "\f176";
+}
+
+.invoice .fa-long-arrow-left:before {
+	content: "\f177";
+}
+
+.invoice .fa-long-arrow-right:before {
+	content: "\f178";
+}
+
+.invoice .fa-apple:before {
+	content: "\f179";
+}
+
+.invoice .fa-windows:before {
+	content: "\f17a";
+}
+
+.invoice .fa-android:before {
+	content: "\f17b";
+}
+
+.invoice .fa-linux:before {
+	content: "\f17c";
+}
+
+.invoice .fa-dribbble:before {
+	content: "\f17d";
+}
+
+.invoice .fa-skype:before {
+	content: "\f17e";
+}
+
+.invoice .fa-foursquare:before {
+	content: "\f180";
+}
+
+.invoice .fa-trello:before {
+	content: "\f181";
+}
+
+.invoice .fa-female:before {
+	content: "\f182";
+}
+
+.invoice .fa-male:before {
+	content: "\f183";
+}
+
+.invoice .fa-gittip:before, .invoice .fa-gratipay:before {
+	content: "\f184";
+}
+
+.invoice .fa-sun-o:before {
+	content: "\f185";
+}
+
+.invoice .fa-moon-o:before {
+	content: "\f186";
+}
+
+.invoice .fa-archive:before {
+	content: "\f187";
+}
+
+.invoice .fa-bug:before {
+	content: "\f188";
+}
+
+.invoice .fa-vk:before {
+	content: "\f189";
+}
+
+.invoice .fa-weibo:before {
+	content: "\f18a";
+}
+
+.invoice .fa-renren:before {
+	content: "\f18b";
+}
+
+.invoice .fa-pagelines:before {
+	content: "\f18c";
+}
+
+.invoice .fa-stack-exchange:before {
+	content: "\f18d";
+}
+
+.invoice .fa-arrow-circle-o-right:before {
+	content: "\f18e";
+}
+
+.invoice .fa-arrow-circle-o-left:before {
+	content: "\f190";
+}
+
+.invoice .fa-toggle-left:before, .invoice .fa-caret-square-o-left:before {
+	content: "\f191";
+}
+
+.invoice .fa-dot-circle-o:before {
+	content: "\f192";
+}
+
+.invoice .fa-wheelchair:before {
+	content: "\f193";
+}
+
+.invoice .fa-vimeo-square:before {
+	content: "\f194";
+}
+
+.invoice .fa-turkish-lira:before, .invoice .fa-try:before {
+	content: "\f195";
+}
+
+.invoice .fa-plus-square-o:before {
+	content: "\f196";
+}
+
+.invoice .fa-space-shuttle:before {
+	content: "\f197";
+}
+
+.invoice .fa-slack:before {
+	content: "\f198";
+}
+
+.invoice .fa-envelope-square:before {
+	content: "\f199";
+}
+
+.invoice .fa-wordpress:before {
+	content: "\f19a";
+}
+
+.invoice .fa-openid:before {
+	content: "\f19b";
+}
+
+.invoice .fa-institution:before, .invoice .fa-bank:before, .invoice .fa-university:before {
+	content: "\f19c";
+}
+
+.invoice .fa-mortar-board:before, .invoice .fa-graduation-cap:before {
+	content: "\f19d";
+}
+
+.invoice .fa-yahoo:before {
+	content: "\f19e";
+}
+
+.invoice .fa-google:before {
+	content: "\f1a0";
+}
+
+.invoice .fa-reddit:before {
+	content: "\f1a1";
+}
+
+.invoice .fa-reddit-square:before {
+	content: "\f1a2";
+}
+
+.invoice .fa-stumbleupon-circle:before {
+	content: "\f1a3";
+}
+
+.invoice .fa-stumbleupon:before {
+	content: "\f1a4";
+}
+
+.invoice .fa-delicious:before {
+	content: "\f1a5";
+}
+
+.invoice .fa-digg:before {
+	content: "\f1a6";
+}
+
+.invoice .fa-pied-piper-pp:before {
+	content: "\f1a7";
+}
+
+.invoice .fa-pied-piper-alt:before {
+	content: "\f1a8";
+}
+
+.invoice .fa-drupal:before {
+	content: "\f1a9";
+}
+
+.invoice .fa-joomla:before {
+	content: "\f1aa";
+}
+
+.invoice .fa-language:before {
+	content: "\f1ab";
+}
+
+.invoice .fa-fax:before {
+	content: "\f1ac";
+}
+
+.invoice .fa-building:before {
+	content: "\f1ad";
+}
+
+.invoice .fa-child:before {
+	content: "\f1ae";
+}
+
+.invoice .fa-paw:before {
+	content: "\f1b0";
+}
+
+.invoice .fa-spoon:before {
+	content: "\f1b1";
+}
+
+.invoice .fa-cube:before {
+	content: "\f1b2";
+}
+
+.invoice .fa-cubes:before {
+	content: "\f1b3";
+}
+
+.invoice .fa-behance:before {
+	content: "\f1b4";
+}
+
+.invoice .fa-behance-square:before {
+	content: "\f1b5";
+}
+
+.invoice .fa-steam:before {
+	content: "\f1b6";
+}
+
+.invoice .fa-steam-square:before {
+	content: "\f1b7";
+}
+
+.invoice .fa-recycle:before {
+	content: "\f1b8";
+}
+
+.invoice .fa-automobile:before, .invoice .fa-car:before {
+	content: "\f1b9";
+}
+
+.invoice .fa-cab:before, .invoice .fa-taxi:before {
+	content: "\f1ba";
+}
+
+.invoice .fa-tree:before {
+	content: "\f1bb";
+}
+
+.invoice .fa-spotify:before {
+	content: "\f1bc";
+}
+
+.invoice .fa-deviantart:before {
+	content: "\f1bd";
+}
+
+.invoice .fa-soundcloud:before {
+	content: "\f1be";
+}
+
+.invoice .fa-database:before {
+	content: "\f1c0";
+}
+
+.invoice .fa-file-pdf-o:before {
+	content: "\f1c1";
+}
+
+.invoice .fa-file-word-o:before {
+	content: "\f1c2";
+}
+
+.invoice .fa-file-excel-o:before {
+	content: "\f1c3";
+}
+
+.invoice .fa-file-powerpoint-o:before {
+	content: "\f1c4";
+}
+
+.invoice .fa-file-photo-o:before, .invoice .fa-file-picture-o:before, .invoice .fa-file-image-o:before {
+	content: "\f1c5";
+}
+
+.invoice .fa-file-zip-o:before, .invoice .fa-file-archive-o:before {
+	content: "\f1c6";
+}
+
+.invoice .fa-file-sound-o:before, .invoice .fa-file-audio-o:before {
+	content: "\f1c7";
+}
+
+.invoice .fa-file-movie-o:before, .invoice .fa-file-video-o:before {
+	content: "\f1c8";
+}
+
+.invoice .fa-file-code-o:before {
+	content: "\f1c9";
+}
+
+.invoice .fa-vine:before {
+	content: "\f1ca";
+}
+
+.invoice .fa-codepen:before {
+	content: "\f1cb";
+}
+
+.invoice .fa-jsfiddle:before {
+	content: "\f1cc";
+}
+
+.invoice .fa-life-bouy:before, .invoice .fa-life-buoy:before, .invoice .fa-life-saver:before, .invoice .fa-support:before, .invoice .fa-life-ring:before {
+	content: "\f1cd";
+}
+
+.invoice .fa-circle-o-notch:before {
+	content: "\f1ce";
+}
+
+.invoice .fa-ra:before, .invoice .fa-resistance:before, .invoice .fa-rebel:before {
+	content: "\f1d0";
+}
+
+.invoice .fa-ge:before, .invoice .fa-empire:before {
+	content: "\f1d1";
+}
+
+.invoice .fa-git-square:before {
+	content: "\f1d2";
+}
+
+.invoice .fa-git:before {
+	content: "\f1d3";
+}
+
+.invoice .fa-y-combinator-square:before, .invoice .fa-yc-square:before, .invoice .fa-hacker-news:before {
+	content: "\f1d4";
+}
+
+.invoice .fa-tencent-weibo:before {
+	content: "\f1d5";
+}
+
+.invoice .fa-qq:before {
+	content: "\f1d6";
+}
+
+.invoice .fa-wechat:before, .invoice .fa-weixin:before {
+	content: "\f1d7";
+}
+
+.invoice .fa-send:before, .invoice .fa-paper-plane:before {
+	content: "\f1d8";
+}
+
+.invoice .fa-send-o:before, .invoice .fa-paper-plane-o:before {
+	content: "\f1d9";
+}
+
+.invoice .fa-history:before {
+	content: "\f1da";
+}
+
+.invoice .fa-circle-thin:before {
+	content: "\f1db";
+}
+
+.invoice .fa-header:before {
+	content: "\f1dc";
+}
+
+.invoice .fa-paragraph:before {
+	content: "\f1dd";
+}
+
+.invoice .fa-sliders:before {
+	content: "\f1de";
+}
+
+.invoice .fa-share-alt:before {
+	content: "\f1e0";
+}
+
+.invoice .fa-share-alt-square:before {
+	content: "\f1e1";
+}
+
+.invoice .fa-bomb:before {
+	content: "\f1e2";
+}
+
+.invoice .fa-soccer-ball-o:before, .invoice .fa-futbol-o:before {
+	content: "\f1e3";
+}
+
+.invoice .fa-tty:before {
+	content: "\f1e4";
+}
+
+.invoice .fa-binoculars:before {
+	content: "\f1e5";
+}
+
+.invoice .fa-plug:before {
+	content: "\f1e6";
+}
+
+.invoice .fa-slideshare:before {
+	content: "\f1e7";
+}
+
+.invoice .fa-twitch:before {
+	content: "\f1e8";
+}
+
+.invoice .fa-yelp:before {
+	content: "\f1e9";
+}
+
+.invoice .fa-newspaper-o:before {
+	content: "\f1ea";
+}
+
+.invoice .fa-wifi:before {
+	content: "\f1eb";
+}
+
+.invoice .fa-calculator:before {
+	content: "\f1ec";
+}
+
+.invoice .fa-paypal:before {
+	content: "\f1ed";
+}
+
+.invoice .fa-google-wallet:before {
+	content: "\f1ee";
+}
+
+.invoice .fa-cc-visa:before {
+	content: "\f1f0";
+}
+
+.invoice .fa-cc-mastercard:before {
+	content: "\f1f1";
+}
+
+.invoice .fa-cc-discover:before {
+	content: "\f1f2";
+}
+
+.invoice .fa-cc-amex:before {
+	content: "\f1f3";
+}
+
+.invoice .fa-cc-paypal:before {
+	content: "\f1f4";
+}
+
+.invoice .fa-cc-stripe:before {
+	content: "\f1f5";
+}
+
+.invoice .fa-bell-slash:before {
+	content: "\f1f6";
+}
+
+.invoice .fa-bell-slash-o:before {
+	content: "\f1f7";
+}
+
+.invoice .fa-trash:before {
+	content: "\f1f8";
+}
+
+.invoice .fa-copyright:before {
+	content: "\f1f9";
+}
+
+.invoice .fa-at:before {
+	content: "\f1fa";
+}
+
+.invoice .fa-eyedropper:before {
+	content: "\f1fb";
+}
+
+.invoice .fa-paint-brush:before {
+	content: "\f1fc";
+}
+
+.invoice .fa-birthday-cake:before {
+	content: "\f1fd";
+}
+
+.invoice .fa-area-chart:before {
+	content: "\f1fe";
+}
+
+.invoice .fa-pie-chart:before {
+	content: "\f200";
+}
+
+.invoice .fa-line-chart:before {
+	content: "\f201";
+}
+
+.invoice .fa-lastfm:before {
+	content: "\f202";
+}
+
+.invoice .fa-lastfm-square:before {
+	content: "\f203";
+}
+
+.invoice .fa-toggle-off:before {
+	content: "\f204";
+}
+
+.invoice .fa-toggle-on:before {
+	content: "\f205";
+}
+
+.invoice .fa-bicycle:before {
+	content: "\f206";
+}
+
+.invoice .fa-bus:before {
+	content: "\f207";
+}
+
+.invoice .fa-ioxhost:before {
+	content: "\f208";
+}
+
+.invoice .fa-angellist:before {
+	content: "\f209";
+}
+
+.invoice .fa-cc:before {
+	content: "\f20a";
+}
+
+.invoice .fa-shekel:before, .invoice .fa-sheqel:before, .invoice .fa-ils:before {
+	content: "\f20b";
+}
+
+.invoice .fa-meanpath:before {
+	content: "\f20c";
+}
+
+.invoice .fa-buysellads:before {
+	content: "\f20d";
+}
+
+.invoice .fa-connectdevelop:before {
+	content: "\f20e";
+}
+
+.invoice .fa-dashcube:before {
+	content: "\f210";
+}
+
+.invoice .fa-forumbee:before {
+	content: "\f211";
+}
+
+.invoice .fa-leanpub:before {
+	content: "\f212";
+}
+
+.invoice .fa-sellsy:before {
+	content: "\f213";
+}
+
+.invoice .fa-shirtsinbulk:before {
+	content: "\f214";
+}
+
+.invoice .fa-simplybuilt:before {
+	content: "\f215";
+}
+
+.invoice .fa-skyatlas:before {
+	content: "\f216";
+}
+
+.invoice .fa-cart-plus:before {
+	content: "\f217";
+}
+
+.invoice .fa-cart-arrow-down:before {
+	content: "\f218";
+}
+
+.invoice .fa-diamond:before {
+	content: "\f219";
+}
+
+.invoice .fa-ship:before {
+	content: "\f21a";
+}
+
+.invoice .fa-user-secret:before {
+	content: "\f21b";
+}
+
+.invoice .fa-motorcycle:before {
+	content: "\f21c";
+}
+
+.invoice .fa-street-view:before {
+	content: "\f21d";
+}
+
+.invoice .fa-heartbeat:before {
+	content: "\f21e";
+}
+
+.invoice .fa-venus:before {
+	content: "\f221";
+}
+
+.invoice .fa-mars:before {
+	content: "\f222";
+}
+
+.invoice .fa-mercury:before {
+	content: "\f223";
+}
+
+.invoice .fa-intersex:before, .invoice .fa-transgender:before {
+	content: "\f224";
+}
+
+.invoice .fa-transgender-alt:before {
+	content: "\f225";
+}
+
+.invoice .fa-venus-double:before {
+	content: "\f226";
+}
+
+.invoice .fa-mars-double:before {
+	content: "\f227";
+}
+
+.invoice .fa-venus-mars:before {
+	content: "\f228";
+}
+
+.invoice .fa-mars-stroke:before {
+	content: "\f229";
+}
+
+.invoice .fa-mars-stroke-v:before {
+	content: "\f22a";
+}
+
+.invoice .fa-mars-stroke-h:before {
+	content: "\f22b";
+}
+
+.invoice .fa-neuter:before {
+	content: "\f22c";
+}
+
+.invoice .fa-genderless:before {
+	content: "\f22d";
+}
+
+.invoice .fa-facebook-official:before {
+	content: "\f230";
+}
+
+.invoice .fa-pinterest-p:before {
+	content: "\f231";
+}
+
+.invoice .fa-whatsapp:before {
+	content: "\f232";
+}
+
+.invoice .fa-server:before {
+	content: "\f233";
+}
+
+.invoice .fa-user-plus:before {
+	content: "\f234";
+}
+
+.invoice .fa-user-times:before {
+	content: "\f235";
+}
+
+.invoice .fa-hotel:before, .invoice .fa-bed:before {
+	content: "\f236";
+}
+
+.invoice .fa-viacoin:before {
+	content: "\f237";
+}
+
+.invoice .fa-train:before {
+	content: "\f238";
+}
+
+.invoice .fa-subway:before {
+	content: "\f239";
+}
+
+.invoice .fa-medium:before {
+	content: "\f23a";
+}
+
+.invoice .fa-yc:before, .invoice .fa-y-combinator:before {
+	content: "\f23b";
+}
+
+.invoice .fa-optin-monster:before {
+	content: "\f23c";
+}
+
+.invoice .fa-opencart:before {
+	content: "\f23d";
+}
+
+.invoice .fa-expeditedssl:before {
+	content: "\f23e";
+}
+
+.invoice .fa-battery-4:before, .invoice .fa-battery:before, .invoice .fa-battery-full:before {
+	content: "\f240";
+}
+
+.invoice .fa-battery-3:before, .invoice .fa-battery-three-quarters:before {
+	content: "\f241";
+}
+
+.invoice .fa-battery-2:before, .invoice .fa-battery-half:before {
+	content: "\f242";
+}
+
+.invoice .fa-battery-1:before, .invoice .fa-battery-quarter:before {
+	content: "\f243";
+}
+
+.invoice .fa-battery-0:before, .invoice .fa-battery-empty:before {
+	content: "\f244";
+}
+
+.invoice .fa-mouse-pointer:before {
+	content: "\f245";
+}
+
+.invoice .fa-i-cursor:before {
+	content: "\f246";
+}
+
+.invoice .fa-object-group:before {
+	content: "\f247";
+}
+
+.invoice .fa-object-ungroup:before {
+	content: "\f248";
+}
+
+.invoice .fa-sticky-note:before {
+	content: "\f249";
+}
+
+.invoice .fa-sticky-note-o:before {
+	content: "\f24a";
+}
+
+.invoice .fa-cc-jcb:before {
+	content: "\f24b";
+}
+
+.invoice .fa-cc-diners-club:before {
+	content: "\f24c";
+}
+
+.invoice .fa-clone:before {
+	content: "\f24d";
+}
+
+.invoice .fa-balance-scale:before {
+	content: "\f24e";
+}
+
+.invoice .fa-hourglass-o:before {
+	content: "\f250";
+}
+
+.invoice .fa-hourglass-1:before, .invoice .fa-hourglass-start:before {
+	content: "\f251";
+}
+
+.invoice .fa-hourglass-2:before, .invoice .fa-hourglass-half:before {
+	content: "\f252";
+}
+
+.invoice .fa-hourglass-3:before, .invoice .fa-hourglass-end:before {
+	content: "\f253";
+}
+
+.invoice .fa-hourglass:before {
+	content: "\f254";
+}
+
+.invoice .fa-hand-grab-o:before, .invoice .fa-hand-rock-o:before {
+	content: "\f255";
+}
+
+.invoice .fa-hand-stop-o:before, .invoice .fa-hand-paper-o:before {
+	content: "\f256";
+}
+
+.invoice .fa-hand-scissors-o:before {
+	content: "\f257";
+}
+
+.invoice .fa-hand-lizard-o:before {
+	content: "\f258";
+}
+
+.invoice .fa-hand-spock-o:before {
+	content: "\f259";
+}
+
+.invoice .fa-hand-pointer-o:before {
+	content: "\f25a";
+}
+
+.invoice .fa-hand-peace-o:before {
+	content: "\f25b";
+}
+
+.invoice .fa-trademark:before {
+	content: "\f25c";
+}
+
+.invoice .fa-registered:before {
+	content: "\f25d";
+}
+
+.invoice .fa-creative-commons:before {
+	content: "\f25e";
+}
+
+.invoice .fa-gg:before {
+	content: "\f260";
+}
+
+.invoice .fa-gg-circle:before {
+	content: "\f261";
+}
+
+.invoice .fa-tripadvisor:before {
+	content: "\f262";
+}
+
+.invoice .fa-odnoklassniki:before {
+	content: "\f263";
+}
+
+.invoice .fa-odnoklassniki-square:before {
+	content: "\f264";
+}
+
+.invoice .fa-get-pocket:before {
+	content: "\f265";
+}
+
+.invoice .fa-wikipedia-w:before {
+	content: "\f266";
+}
+
+.invoice .fa-safari:before {
+	content: "\f267";
+}
+
+.invoice .fa-chrome:before {
+	content: "\f268";
+}
+
+.invoice .fa-firefox:before {
+	content: "\f269";
+}
+
+.invoice .fa-opera:before {
+	content: "\f26a";
+}
+
+.invoice .fa-internet-explorer:before {
+	content: "\f26b";
+}
+
+.invoice .fa-tv:before, .invoice .fa-television:before {
+	content: "\f26c";
+}
+
+.invoice .fa-contao:before {
+	content: "\f26d";
+}
+
+.invoice .fa-500px:before {
+	content: "\f26e";
+}
+
+.invoice .fa-amazon:before {
+	content: "\f270";
+}
+
+.invoice .fa-calendar-plus-o:before {
+	content: "\f271";
+}
+
+.invoice .fa-calendar-minus-o:before {
+	content: "\f272";
+}
+
+.invoice .fa-calendar-times-o:before {
+	content: "\f273";
+}
+
+.invoice .fa-calendar-check-o:before {
+	content: "\f274";
+}
+
+.invoice .fa-industry:before {
+	content: "\f275";
+}
+
+.invoice .fa-map-pin:before {
+	content: "\f276";
+}
+
+.invoice .fa-map-signs:before {
+	content: "\f277";
+}
+
+.invoice .fa-map-o:before {
+	content: "\f278";
+}
+
+.invoice .fa-map:before {
+	content: "\f279";
+}
+
+.invoice .fa-commenting:before {
+	content: "\f27a";
+}
+
+.invoice .fa-commenting-o:before {
+	content: "\f27b";
+}
+
+.invoice .fa-houzz:before {
+	content: "\f27c";
+}
+
+.invoice .fa-vimeo:before {
+	content: "\f27d";
+}
+
+.invoice .fa-black-tie:before {
+	content: "\f27e";
+}
+
+.invoice .fa-fonticons:before {
+	content: "\f280";
+}
+
+.invoice .fa-reddit-alien:before {
+	content: "\f281";
+}
+
+.invoice .fa-edge:before {
+	content: "\f282";
+}
+
+.invoice .fa-credit-card-alt:before {
+	content: "\f283";
+}
+
+.invoice .fa-codiepie:before {
+	content: "\f284";
+}
+
+.invoice .fa-modx:before {
+	content: "\f285";
+}
+
+.invoice .fa-fort-awesome:before {
+	content: "\f286";
+}
+
+.invoice .fa-usb:before {
+	content: "\f287";
+}
+
+.invoice .fa-product-hunt:before {
+	content: "\f288";
+}
+
+.invoice .fa-mixcloud:before {
+	content: "\f289";
+}
+
+.invoice .fa-scribd:before {
+	content: "\f28a";
+}
+
+.invoice .fa-pause-circle:before {
+	content: "\f28b";
+}
+
+.invoice .fa-pause-circle-o:before {
+	content: "\f28c";
+}
+
+.invoice .fa-stop-circle:before {
+	content: "\f28d";
+}
+
+.invoice .fa-stop-circle-o:before {
+	content: "\f28e";
+}
+
+.invoice .fa-shopping-bag:before {
+	content: "\f290";
+}
+
+.invoice .fa-shopping-basket:before {
+	content: "\f291";
+}
+
+.invoice .fa-hashtag:before {
+	content: "\f292";
+}
+
+.invoice .fa-bluetooth:before {
+	content: "\f293";
+}
+
+.invoice .fa-bluetooth-b:before {
+	content: "\f294";
+}
+
+.invoice .fa-percent:before {
+	content: "\f295";
+}
+
+.invoice .fa-gitlab:before {
+	content: "\f296";
+}
+
+.invoice .fa-wpbeginner:before {
+	content: "\f297";
+}
+
+.invoice .fa-wpforms:before {
+	content: "\f298";
+}
+
+.invoice .fa-envira:before {
+	content: "\f299";
+}
+
+.invoice .fa-universal-access:before {
+	content: "\f29a";
+}
+
+.invoice .fa-wheelchair-alt:before {
+	content: "\f29b";
+}
+
+.invoice .fa-question-circle-o:before {
+	content: "\f29c";
+}
+
+.invoice .fa-blind:before {
+	content: "\f29d";
+}
+
+.invoice .fa-audio-description:before {
+	content: "\f29e";
+}
+
+.invoice .fa-volume-control-phone:before {
+	content: "\f2a0";
+}
+
+.invoice .fa-braille:before {
+	content: "\f2a1";
+}
+
+.invoice .fa-assistive-listening-systems:before {
+	content: "\f2a2";
+}
+
+.invoice .fa-asl-interpreting:before, .invoice .fa-american-sign-language-interpreting:before {
+	content: "\f2a3";
+}
+
+.invoice .fa-deafness:before, .invoice .fa-hard-of-hearing:before, .invoice .fa-deaf:before {
+	content: "\f2a4";
+}
+
+.invoice .fa-glide:before {
+	content: "\f2a5";
+}
+
+.invoice .fa-glide-g:before {
+	content: "\f2a6";
+}
+
+.invoice .fa-signing:before, .invoice .fa-sign-language:before {
+	content: "\f2a7";
+}
+
+.invoice .fa-low-vision:before {
+	content: "\f2a8";
+}
+
+.invoice .fa-viadeo:before {
+	content: "\f2a9";
+}
+
+.invoice .fa-viadeo-square:before {
+	content: "\f2aa";
+}
+
+.invoice .fa-snapchat:before {
+	content: "\f2ab";
+}
+
+.invoice .fa-snapchat-ghost:before {
+	content: "\f2ac";
+}
+
+.invoice .fa-snapchat-square:before {
+	content: "\f2ad";
+}
+
+.invoice .fa-pied-piper:before {
+	content: "\f2ae";
+}
+
+.invoice .fa-first-order:before {
+	content: "\f2b0";
+}
+
+.invoice .fa-yoast:before {
+	content: "\f2b1";
+}
+
+.invoice .fa-themeisle:before {
+	content: "\f2b2";
+}
+
+.invoice .fa-google-plus-circle:before, .invoice .fa-google-plus-official:before {
+	content: "\f2b3";
+}
+
+.invoice .fa-fa:before, .invoice .fa-font-awesome:before {
+	content: "\f2b4";
+}
+
+.invoice .fa-handshake-o:before {
+	content: "\f2b5";
+}
+
+.invoice .fa-envelope-open:before {
+	content: "\f2b6";
+}
+
+.invoice .fa-envelope-open-o:before {
+	content: "\f2b7";
+}
+
+.invoice .fa-linode:before {
+	content: "\f2b8";
+}
+
+.invoice .fa-address-book:before {
+	content: "\f2b9";
+}
+
+.invoice .fa-address-book-o:before {
+	content: "\f2ba";
+}
+
+.invoice .fa-vcard:before, .invoice .fa-address-card:before {
+	content: "\f2bb";
+}
+
+.invoice .fa-vcard-o:before, .invoice .fa-address-card-o:before {
+	content: "\f2bc";
+}
+
+.invoice .fa-user-circle:before {
+	content: "\f2bd";
+}
+
+.invoice .fa-user-circle-o:before {
+	content: "\f2be";
+}
+
+.invoice .fa-user-o:before {
+	content: "\f2c0";
+}
+
+.invoice .fa-id-badge:before {
+	content: "\f2c1";
+}
+
+.invoice .fa-drivers-license:before, .invoice .fa-id-card:before {
+	content: "\f2c2";
+}
+
+.invoice .fa-drivers-license-o:before, .invoice .fa-id-card-o:before {
+	content: "\f2c3";
+}
+
+.invoice .fa-quora:before {
+	content: "\f2c4";
+}
+
+.invoice .fa-free-code-camp:before {
+	content: "\f2c5";
+}
+
+.invoice .fa-telegram:before {
+	content: "\f2c6";
+}
+
+.invoice .fa-thermometer-4:before, .invoice .fa-thermometer:before, .invoice .fa-thermometer-full:before {
+	content: "\f2c7";
+}
+
+.invoice .fa-thermometer-3:before, .invoice .fa-thermometer-three-quarters:before {
+	content: "\f2c8";
+}
+
+.invoice .fa-thermometer-2:before, .invoice .fa-thermometer-half:before {
+	content: "\f2c9";
+}
+
+.invoice .fa-thermometer-1:before, .invoice .fa-thermometer-quarter:before {
+	content: "\f2ca";
+}
+
+.invoice .fa-thermometer-0:before, .invoice .fa-thermometer-empty:before {
+	content: "\f2cb";
+}
+
+.invoice .fa-shower:before {
+	content: "\f2cc";
+}
+
+.invoice .fa-bathtub:before, .invoice .fa-s15:before, .invoice .fa-bath:before {
+	content: "\f2cd";
+}
+
+.invoice .fa-podcast:before {
+	content: "\f2ce";
+}
+
+.invoice .fa-window-maximize:before {
+	content: "\f2d0";
+}
+
+.invoice .fa-window-minimize:before {
+	content: "\f2d1";
+}
+
+.invoice .fa-window-restore:before {
+	content: "\f2d2";
+}
+
+.invoice .fa-times-rectangle:before, .invoice .fa-window-close:before {
+	content: "\f2d3";
+}
+
+.invoice .fa-times-rectangle-o:before, .invoice .fa-window-close-o:before {
+	content: "\f2d4";
+}
+
+.invoice .fa-bandcamp:before {
+	content: "\f2d5";
+}
+
+.invoice .fa-grav:before {
+	content: "\f2d6";
+}
+
+.invoice .fa-etsy:before {
+	content: "\f2d7";
+}
+
+.invoice .fa-imdb:before {
+	content: "\f2d8";
+}
+
+.invoice .fa-ravelry:before {
+	content: "\f2d9";
+}
+
+.invoice .fa-eercast:before {
+	content: "\f2da";
+}
+
+.invoice .fa-microchip:before {
+	content: "\f2db";
+}
+
+.invoice .fa-snowflake-o:before {
+	content: "\f2dc";
+}
+
+.invoice .fa-superpowers:before {
+	content: "\f2dd";
+}
+
+.invoice .fa-wpexplorer:before {
+	content: "\f2de";
+}
+
+.invoice .fa-meetup:before {
+	content: "\f2e0";
+}
+
+.invoice .sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
+.invoice .sr-only-focusable:active, .invoice .sr-only-focusable:focus {
+	position: static;
+	width: auto;
+	height: auto;
+	margin: 0;
+	overflow: visible;
+	clip: auto;
+}
+
+.invoice.v-app.shepherd-active.shepherd-modal {
+	pointer-events: none !important;
+}
+
+.invoice.v-app.shepherd-active.shepherd-modal .shepherd-target.shepherd-enabled {
+	box-shadow: 0 0 0 99999px rgba(14, 14, 14, 0.72);
+	pointer-events: auto;
+	position: relative;
+	z-index: 20000;
+	-webkit-animation: valo-animate-in-fade 400ms 100ms backwards;
+	-moz-animation: valo-animate-in-fade 400ms 100ms backwards;
+	animation: valo-animate-in-fade 400ms 100ms backwards;
+}
+
+.v-op12 .invoice.v-app.shepherd-active.shepherd-modal .shepherd-target.shepherd-enabled {
+	-webkit-animation: none;
+	-moz-animation: none;
+	animation: none;
+}
+
+.invoice .shepherd-element-attached-bottom.shepherd-element-attached-right.shepherd-target-attached-top.shepherd-target-attached-left .shepherd-content:before, .invoice .shepherd-element-attached-bottom.shepherd-element-attached-left.shepherd-target-attached-top.shepherd-target-attached-right .shepherd-content:before, .invoice .shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-bottom.shepherd-target-attached-left .shepherd-content:before, .invoice .shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-bottom.shepherd-target-attached-right .shepherd-content:before {
+	display: none;
+}
+
+.invoice .shepherd-element, .invoice .shepherd-element:after, .invoice .shepherd-element:before, .invoice .shepherd-element *, .invoice .shepherd-element *:after, .invoice .shepherd-element *:before {
+	box-sizing: border-box;
+}
+
+.invoice .shepherd-element {
+	position: absolute;
+	display: none;
+}
+
+.invoice .shepherd-element.shepherd-open {
+	display: block;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content {
+	border-radius: 5px;
+	position: relative;
+	font-family: inherit;
+	background: white;
+	
+	padding: 1em;
+	font-size: 1em;
+	line-height: 1.5em;
+	transform: translateZ(0);
+	-webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+	filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content:before, .invoice .shepherd-element.shepherd-theme-valo .shepherd-content:after {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-width: 14.8px;
+	border-style: solid;
+	pointer-events: none;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content:before {
+	z-index: 1;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content:after {
+	z-index: 0;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-center .shepherd-content {
+	margin-bottom: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-center .shepherd-content:before, .invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-center .shepherd-content:after {
+	top: 100%;
+	left: 50%;
+	margin-left: -14.8px;
+	border-top-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-center .shepherd-content:before {
+	margin-top: -1px;
+	border-top-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-center .shepherd-content:after {
+	margin-top: 1px;
+	border-top-color: #d5d5d5;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-center .shepherd-content {
+	margin-top: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-center .shepherd-content:before, .invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-center .shepherd-content:after {
+	bottom: 100%;
+	left: 50%;
+	margin-left: -14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-center .shepherd-content:before {
+	margin-bottom: -1px;
+	border-bottom-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-center .shepherd-content:after {
+	margin-bottom: 1px;
+	border-bottom-color: #d5d5d5;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-right.shepherd-element-attached-middle .shepherd-content {
+	margin-right: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-right.shepherd-element-attached-middle .shepherd-content:before, .invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-right.shepherd-element-attached-middle .shepherd-content:after {
+	left: 100%;
+	top: 50%;
+	margin-top: -14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-right.shepherd-element-attached-middle .shepherd-content:before {
+	margin-left: -1px;
+	border-left-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-right.shepherd-element-attached-middle .shepherd-content:after {
+	margin-left: 1px;
+	border-left-color: #d5d5d5;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-left.shepherd-element-attached-middle .shepherd-content {
+	margin-left: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-left.shepherd-element-attached-middle .shepherd-content:before, .invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-left.shepherd-element-attached-middle .shepherd-content:after {
+	right: 100%;
+	top: 50%;
+	margin-top: -14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-left.shepherd-element-attached-middle .shepherd-content:before {
+	margin-right: -1px;
+	border-right-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-left.shepherd-element-attached-middle .shepherd-content:after {
+	margin-right: 1px;
+	border-right-color: #d5d5d5;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-left.shepherd-target-attached-center .shepherd-content {
+	left: -29.6px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-right.shepherd-target-attached-center .shepherd-content {
+	left: 29.6px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-middle .shepherd-content {
+	margin-top: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-middle .shepherd-content:before {
+	bottom: 100%;
+	left: 14.8px;
+	border-bottom-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-middle .shepherd-content {
+	margin-top: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-middle .shepherd-content:before {
+	bottom: 100%;
+	right: 14.8px;
+	border-bottom-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-left.shepherd-target-attached-middle .shepherd-content {
+	margin-bottom: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-left.shepherd-target-attached-middle .shepherd-content:before {
+	top: 100%;
+	left: 14.8px;
+	border-top-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-right.shepherd-target-attached-middle .shepherd-content {
+	margin-bottom: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-right.shepherd-target-attached-middle .shepherd-content:before {
+	top: 100%;
+	right: 14.8px;
+	border-top-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-bottom .shepherd-content {
+	margin-top: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-bottom .shepherd-content:before {
+	bottom: 100%;
+	left: 14.8px;
+	border-bottom-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-bottom .shepherd-content {
+	margin-top: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-bottom .shepherd-content:before {
+	bottom: 100%;
+	right: 14.8px;
+	border-bottom-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-left.shepherd-target-attached-top .shepherd-content {
+	margin-bottom: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-left.shepherd-target-attached-top .shepherd-content:before {
+	top: 100%;
+	left: 14.8px;
+	border-top-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-right.shepherd-target-attached-top .shepherd-content {
+	margin-bottom: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-right.shepherd-target-attached-top .shepherd-content:before {
+	top: 100%;
+	right: 14.8px;
+	border-top-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-left .shepherd-content {
+	margin-right: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-left .shepherd-content:before {
+	top: 14.8px;
+	left: 100%;
+	border-left-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-right .shepherd-content {
+	margin-left: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-right .shepherd-content:before {
+	top: 14.8px;
+	right: 100%;
+	border-right-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-right.shepherd-target-attached-left .shepherd-content {
+	margin-right: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-right.shepherd-target-attached-left .shepherd-content:before {
+	bottom: 14.8px;
+	left: 100%;
+	border-left-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-left.shepherd-target-attached-right .shepherd-content {
+	margin-left: 14.8px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-bottom.shepherd-element-attached-left.shepherd-target-attached-right .shepherd-content:before {
+	bottom: 14.8px;
+	right: 100%;
+	border-right-color: white;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo {
+	z-index: 20000;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-center.shepherd-has-title .shepherd-content:before, .invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-right.shepherd-target-attached-bottom.shepherd-has-title .shepherd-content:before, .invoice .shepherd-element.shepherd-theme-valo.shepherd-element-attached-top.shepherd-element-attached-left.shepherd-target-attached-bottom.shepherd-has-title .shepherd-content:before {
+	border-bottom-color: #fafafa;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-has-title .shepherd-content header {
+	padding: 1em;
+	box-sizing: border-box;
+	padding: 0 12px;
+	line-height: 36px;
+	border-bottom: 1px solid #d5d5d5;
+	background-color: #fafafa;
+	background-image: -webkit-linear-gradient(top, #fafafa 2%, #f6f6f6 98%);
+	background-image: linear-gradient(to bottom,#fafafa 2%, #f6f6f6 98%);
+	color: #464646;
+	font-weight: 400;
+	font-size: 14px;
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #eeeeee;
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #eeeeee;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo.shepherd-has-title .shepherd-content header a.shepherd-cancel-link {
+	padding: 0;
+	margin-bottom: 0;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content {
+	display: flex;
+	flex-direction: column;
+	max-width: 100%;
+	padding: 0;
+	background: white;
+	color: #474747;
+	border-radius: 4px;
+	border: 1px solid #d5d5d5;
+	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-webkit-filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.05));
+	filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.05));
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content * {
+	font-size: inherit;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content header {
+	*zoom: 1;
+	border-radius: 4px 4px 0 0;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content header:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content header a.shepherd-cancel-link {
+	float: right;
+	text-decoration: none;
+	line-height: 36px;
+	font-weight: normal;
+	color: #323232;
+	opacity: 0.25;
+	position: relative;
+	padding-right: 12px;
+	margin-bottom: -12px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content header a.shepherd-cancel-link:hover {
+	opacity: 1;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content .shepherd-text {
+	flex: auto;
+	overflow-y: auto;
+	padding: 12px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content .shepherd-text p {
+	margin: 0 0 0.5em 0;
+	line-height: 1.3em;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content .shepherd-text p:last-child {
+	margin-bottom: 0;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer {
+	padding: 0 12px 12px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons {
+	text-align: right;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li {
+	display: inline;
+	padding: 0;
+	margin: 0;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button {
+	display: inline-block;
+	vertical-align: middle;
+	*vertical-align: auto;
+	*zoom: 1;
+	*display: inline;
+	text-decoration: none;
+	position: relative;
+	text-align: center;
+	white-space: nowrap;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	cursor: pointer;
+	height: 37px;
+	padding: 0 16px;
+	color: #191919;
+	font-weight: 400;
+	
+	
+	border-radius: 4px;
+	border: 1px solid #c5c5c5;
+	border-top-color: #c5c5c5;
+	border-bottom-color: #bcbcbc;
+	background-color: #fafafa;
+	background-image: -webkit-linear-gradient(top, #fafafa 2%, #efefef 98%);
+	background-image: linear-gradient(to bottom,#fafafa 2%, #efefef 98%);
+	-webkit-box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #e7e7e7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 white, inset 0 -1px 0 #e7e7e7, 0 2px 3px rgba(0, 0, 0, 0.05);
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+	padding: 0 19px;
+	margin-top: 12px;
+	margin-left: 12px;
+	min-width: 81px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:before {
+	content: "";
+	display: inline-block;
+	width: 0;
+	height: 100%;
+	vertical-align: middle;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button > div {
+	vertical-align: middle;
+}
+
+.v-sa .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:before {
+	height: 110%;
+}
+
+.v-ff .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:before {
+	height: 107%;
+}
+
+.v-ie .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:before {
+	margin-top: 4px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border-radius: inherit;
+	-webkit-transition: box-shadow 180ms, border 180ms;
+	-moz-transition: box-shadow 180ms, border 180ms;
+	transition: box-shadow 180ms, border 180ms;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:focus:after {
+	-webkit-transition: none;
+	-moz-transition: none;
+	transition: none;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.v-disabled {
+	opacity: 0.5;
+	filter: alpha(opacity=50) ;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.v-disabled:after {
+	display: none;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:hover:after {
+	background-color: rgba(186, 186, 186, 0.1);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:focus:after {
+	border-color: #197de1;
+	-webkit-box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+	box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:active:after {
+	background-color: rgba(125, 125, 125, 0.2);
+}
+
+.v-ie8 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button {
+	min-width: 43px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary {
+	height: 37px;
+	padding: 0 16px;
+	color: #ecf2f8;
+	font-weight: 400;
+	
+	
+	border-radius: 4px;
+	border: 1px solid #1362b1;
+	border-top-color: #156ab3;
+	border-bottom-color: #1156a8;
+	background-color: #197de1;
+	background-image: -webkit-linear-gradient(top, #1b87e3 2%, #166ed5 98%);
+	background-image: linear-gradient(to bottom,#1b87e3 2%, #166ed5 98%);
+	-webkit-box-shadow: inset 0 1px 0 #4d98e6, inset 0 -1px 0 #166bca, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 #4d98e6, inset 0 -1px 0 #166bca, 0 2px 3px rgba(0, 0, 0, 0.05);
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
+	font-weight: bold;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary:hover:after {
+	background-color: rgba(90, 163, 237, 0.1);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary:focus:after {
+	border: inherit;
+	-webkit-box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+	box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary:active:after {
+	background-color: rgba(2, 62, 122, 0.2);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.friendly {
+	height: 37px;
+	padding: 0 16px;
+	color: #eaf4e9;
+	font-weight: 400;
+	
+	
+	border-radius: 4px;
+	border: 1px solid #227719;
+	border-top-color: #257d1a;
+	border-bottom-color: #1e6b15;
+	background-color: #2c9720;
+	background-image: -webkit-linear-gradient(top, #2f9f22 2%, #26881b 98%);
+	background-image: linear-gradient(to bottom,#2f9f22 2%, #26881b 98%);
+	-webkit-box-shadow: inset 0 1px 0 #46b33a, inset 0 -1px 0 #26811b, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 #46b33a, inset 0 -1px 0 #26811b, 0 2px 3px rgba(0, 0, 0, 0.05);
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.friendly:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.friendly:hover:after {
+	background-color: rgba(65, 211, 48, 0.1);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.friendly:focus:after {
+	border: inherit;
+	-webkit-box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+	box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.friendly:active:after {
+	background-color: rgba(14, 86, 6, 0.2);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.danger {
+	height: 37px;
+	padding: 0 16px;
+	color: #f9f0ef;
+	font-weight: 400;
+	
+	
+	border-radius: 4px;
+	border: 1px solid #bb382e;
+	border-top-color: #bc3c31;
+	border-bottom-color: #b13028;
+	background-color: #ed473b;
+	background-image: -webkit-linear-gradient(top, #ee4c3f 2%, #e13e33 98%);
+	background-image: linear-gradient(to bottom,#ee4c3f 2%, #e13e33 98%);
+	-webkit-box-shadow: inset 0 1px 0 #ef786f, inset 0 -1px 0 #da3c31, 0 2px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 0 #ef786f, inset 0 -1px 0 #da3c31, 0 2px 3px rgba(0, 0, 0, 0.05);
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.danger:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.danger:hover:after {
+	background-color: rgba(243, 137, 129, 0.1);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.danger:focus:after {
+	border: inherit;
+	-webkit-box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+	box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.danger:active:after {
+	background-color: rgba(146, 12, 2, 0.2);
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless {
+	border: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	background: transparent;
+	color: inherit;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless:hover:after {
+	background: transparent;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless:active:not(.v-disabled) {
+	opacity: 0.7;
+	filter: alpha(opacity=70) ;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless:active:not(.v-disabled):after {
+	background: transparent;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless-colored {
+	border: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	background: transparent;
+	color: #197de1;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless-colored:hover {
+	color: #4396ea;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless-colored:hover:after {
+	background: transparent;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless-colored:active:not(.v-disabled) {
+	opacity: 0.7;
+	filter: alpha(opacity=70) ;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless-colored:active:not(.v-disabled):after {
+	background: transparent;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.quiet {
+	visibility: hidden;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.quiet:focus, .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.quiet:hover {
+	visibility: visible;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.quiet [class*="wrap"] {
+	visibility: visible;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.quiet [class*="caption"] {
+	display: inline-block;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link {
+	border: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	color: #197de1;
+	text-decoration: underline;
+	font-weight: inherit;
+	-webkit-transition: color 140ms;
+	-moz-transition: color 140ms;
+	transition: color 140ms;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link:hover:after {
+	background: transparent;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link:active:not(.v-disabled) {
+	opacity: 0.7;
+	filter: alpha(opacity=70) ;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link:active:not(.v-disabled):after {
+	background: transparent;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link:hover {
+	color: #4396ea;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link.v-disabled {
+	opacity: 0.5;
+	filter: alpha(opacity=50) ;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.tiny {
+	height: 28px;
+	padding: 0 13px;
+	
+	
+	font-size: 12px;
+	
+	border-radius: 4px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.tiny:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.small {
+	height: 31px;
+	padding: 0 14px;
+	
+	
+	font-size: 14px;
+	
+	border-radius: 4px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.small:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.large {
+	height: 44px;
+	padding: 0 19px;
+	
+	
+	font-size: 20px;
+	
+	border-radius: 4px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.large:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.huge {
+	height: 59px;
+	padding: 0 26px;
+	
+	
+	font-size: 26px;
+	
+	border-radius: 4px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.huge:after {
+	border: inherit;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.disabled {
+	cursor: default !important;
+	opacity: 0.5;
+	filter: alpha(opacity=50) ;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.disabled:after {
+	display: none;
+}
+
+.invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li:first-child .shepherd-button {
+	margin-left: 0;
 }
 
 .invoice vaadin-grid {

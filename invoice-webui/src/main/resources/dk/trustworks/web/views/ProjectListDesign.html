@@ -7,9 +7,14 @@
  </head>
  <body>
   <vaadin-vertical-layout margin="false">
-   <vaadin-label style-name="h2" plain-text>
-     Projects 
-   </vaadin-label>
+   <vaadin-horizontal-layout width-full>
+    <vaadin-label style-name="h2" plain-text>
+      Projects 
+    </vaadin-label>
+    <vaadin-button style-name="friendly" plain-text _id="btnTour" :middle :right>
+      Tour 
+    </vaadin-button>
+   </vaadin-horizontal-layout>
    <vaadin-horizontal-layout description="Select period" width-full>
     <vaadin-combo-box data-item-type="dk.trustworks.web.model.YearMonthSelect" _id="cbSelectYearMonth" :middle :right></vaadin-combo-box>
    </vaadin-horizontal-layout>
@@ -36,9 +41,6 @@
    </vaadin-grid>
    <vaadin-button enabled="false" plain-text _id="btnCreateInvoice">
      Create invoices 
-   </vaadin-button>
-   <vaadin-button plain-text _id="btnTour">
-     Tour 
    </vaadin-button>
   </vaadin-vertical-layout>
  </body>

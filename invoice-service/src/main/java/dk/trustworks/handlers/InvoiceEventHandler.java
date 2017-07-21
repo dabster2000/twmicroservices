@@ -36,6 +36,7 @@ public class InvoiceEventHandler {
         System.out.println("InvoiceEventHandler.handleInvoiceSave");
         System.out.println("invoice = [" + invoice + "]");
         if(invoice.status.equals(InvoiceStatus.CREATED) && invoice.invoicenumber == 0) {
+            System.out.println("invoice.status = " + invoice.status + " && "+ invoice.invoicenumber);
             invoice.invoicenumber = invoiceRepository.getMaxInvoiceNumber() + 1;
             invoice.pdf = invoicePdfGenerator.createInvoice(invoice);
         }
@@ -65,7 +66,7 @@ public class InvoiceEventHandler {
     }
 
     @HandleBeforeCreate
-    public void handleBeforeCreate(Invoice invoice) {
+    public void handleAfterCreate(Invoice invoice) {
         System.out.println("InvoiceEventHandler.handleBeforeCreate");
         System.out.println("invoice = [" + invoice + "]");
         rabbitTemplate.convertAndSend(InvoiceApplication.queueName, "invoice");

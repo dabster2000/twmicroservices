@@ -101,6 +101,11 @@
             <version>8.1.0.rc1</version>
         </dependency>
         <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>product-tour</artifactId>
+            <version>0.5</version>
+        </dependency>
+        <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>LATEST</version>
