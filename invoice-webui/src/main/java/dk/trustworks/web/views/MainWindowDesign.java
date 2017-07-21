@@ -7,7 +7,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 
@@ -26,7 +25,6 @@ public class MainWindowDesign extends VerticalLayout {
     protected CssLayout header_bar;
     protected NativeButton user_menu;
     protected Label user_name_label;
-    protected TextField search_field;
     protected HorizontalLayout main_area;
     protected CssLayout side_bar;
     protected NativeButton menuButton1;
