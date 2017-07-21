@@ -2,20 +2,12 @@ package dk.trustworks.web.views;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.ItemCaptionGenerator;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.network.clients.ProjectSummaryClient;
 import dk.trustworks.network.dto.ProjectSummary;
 import dk.trustworks.web.Broadcaster;
 import dk.trustworks.web.model.YearMonthSelect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.addons.producttour.actions.TourActions;
-import org.vaadin.addons.producttour.button.StepButton;
-import org.vaadin.addons.producttour.step.StepBuilder;
-import org.vaadin.addons.producttour.tour.Tour;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -104,26 +96,5 @@ public class ProjectListImpl extends ProjectListDesign
     }
 
     private void addTour() {
-        Tour tour = new Tour();
-
-        //Button button = new Button("Click to start tour", e -> tour.start());
-        //this.addComponent(button);
-        btnTour.addClickListener(e -> tour.start());
-
-        tour.addStep(new StepBuilder()
-                .withAttachTo(cbSelectYearMonth)
-                .withTitle("Step 1: title")
-                .withText("Step text")
-                .addButton(new StepButton("Back", TourActions::back))
-                .addButton(new StepButton("Next", ValoTheme.BUTTON_PRIMARY, TourActions::next))
-                .build());
-
-        tour.addStep(new StepBuilder()
-                .withAttachTo(gridProjectSummaryList)
-                .withTitle("Step 2: title")
-                .withText("Step text")
-                .addButton(new StepButton("Back", TourActions::back))
-                .addButton(new StepButton("Finish", ValoTheme.BUTTON_PRIMARY, TourActions::next))
-                .build());
     }
 }
