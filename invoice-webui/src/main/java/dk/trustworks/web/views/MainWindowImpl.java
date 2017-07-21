@@ -1,5 +1,6 @@
 package dk.trustworks.web.views;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import dk.trustworks.network.clients.InvoiceClient;
@@ -13,7 +14,8 @@ import static dk.trustworks.network.dto.InvoiceStatus.DRAFT;
  * Created by hans on 11/07/2017.
  */
 @SpringComponent
-@UIScope
+@UIScope()
+@Theme("material")
 public class MainWindowImpl extends MainWindowDesign implements Broadcaster.BroadcastListener {
 
     private final InvoiceClient invoiceClient;

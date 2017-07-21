@@ -134,7 +134,7 @@ public class InvoicePdfGenerator {
                 .setFontAndSize(PdfFontFactory.createFont(FontConstants.HELVETICA_BOLD), 12)
                 .setLeading(12 * 1.2f)
                 .moveText(380, -222);
-        canvas.newlineShowText("Faktura nr: "+invoice.invoicenumber);
+        canvas.newlineShowText("Faktura nr: "+getIntegerWithHyphens(invoice.invoicenumber));
         canvas.newlineShowText("Dato: "+invoice.invoicedate);
         canvas.endText();
 
@@ -183,4 +183,10 @@ public class InvoicePdfGenerator {
         return outputStream.toByteArray();
     }
 
+    private String getIntegerWithHyphens(int number) {
+        return NumberFormat.getNumberInstance()
+                .format(number)
+                .replace(",", "-")
+                .replace(".", "-");
+    }
 }

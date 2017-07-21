@@ -75,7 +75,7 @@ public class ProjectListImpl extends ProjectListDesign
 
         gridProjectSummaryList.setSizeFull();
         reloadData();
-        addTour();
+        //addTour();
     }
 
     public void reloadData() {
