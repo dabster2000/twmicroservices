@@ -6,10 +6,12 @@ import com.vaadin.data.ValidationException;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.LocalDateRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.network.clients.InvoiceClient;
 import dk.trustworks.network.dto.Invoice;
 import dk.trustworks.network.dto.InvoiceItem;
@@ -18,6 +20,12 @@ import dk.trustworks.web.Broadcaster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
 import org.springframework.web.client.RestTemplate;
+import org.vaadin.addons.producttour.actions.TourActions;
+import org.vaadin.addons.producttour.button.StepButton;
+import org.vaadin.addons.producttour.shared.step.StepAnchor;
+import org.vaadin.addons.producttour.step.Step;
+import org.vaadin.addons.producttour.step.StepBuilder;
+import org.vaadin.addons.producttour.tour.Tour;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -97,6 +105,8 @@ public class InvoiceListImpl extends InvoiceListDesign
                 invoiceClient.deleteInvoice(selectedInvoice.getUuid());
             }
         });
+
+        addTour();
     }
 
     public void saveFormToInvoiceBean(Invoice invoice, InvoiceEditImpl invoiceEdit) throws ValidationException {
@@ -122,5 +132,73 @@ public class InvoiceListImpl extends InvoiceListDesign
         Resources<Invoice> invoices = invoiceClient.findByStatus(DRAFT);
         gridInvoiceList.setItems(invoices.getContent());
         gridInvoiceList.getDataProvider().refreshAll();
+    }
+
+    private void addTour() {
+        btnTour.addClickListener(e -> {
+            Tour tour = new Tour();
+            tour.addStep(getStep1(gridInvoiceList));
+            tour.addStep(getStep2(gridInvoiceList));
+            tour.addStep(getStep3(btnDelete));
+            tour.start();
+        });
+    }
+
+    private Step getStep1(AbstractComponent attachTo) {
+        return new StepBuilder()
+                //.withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(280, Unit.PIXELS)
+                .withTitle("Drafts!")
+                .withText(
+                        "On this page you can see the draft invoices you created on the previous page. You may " +
+                                "still edit invoices with a status of \"DRAFT\". If there are things you can't edit " +
+                                "it's because of one of two things. Either its a computer generated value (like invoice " +
+                                "number) og it's something you edit using the TimeManager (like description or client information.")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Next", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .build();
+    }
+
+    private Step getStep2(AbstractComponent attachTo) {
+        return new StepBuilder()
+                .withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(510, Unit.PIXELS)
+                .withTitle("Editing invoices")
+                .withText("Double click an invoice in this grid if you want to see or edit an invoice. After you double click an invoice " +
+                        "a window opens with a preview of the invoice. In this window you can edit all the fields you want. " +
+                        "<br />" +
+                        "<br />" +
+                        "You may also add new invoice lines by clicking the + button. If you leave \"varer nr\" blank the invoice line " +
+                        "will get deleted during the next save." +
+                        "<br />" +
+                        "<br />" +
+                        "When you are finished you can click save to save changes to your draft. " +
+                        "<br />" +
+                        "<br />" +
+                        "You may also click \"Create Invoice\" to create a new invoice - which actually means setting the invoice state to " +
+                        "CREATED and creating an invoice number. This is IRREVERSIBLE and invoices cannot be changed after this point. So make sure " +
+                        "that everything is correct before clicking that button." +
+                        "<br />" +
+                        "Invoices can now be seen on the next page - INVOICE STATUS")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Next", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .withAnchor(StepAnchor.BOTTOM)
+                .build();
+    }
+
+    private Step getStep3(AbstractComponent attachTo) {
+        return new StepBuilder()
+                .withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(200, Unit.PIXELS)
+                .withTitle("Project list")
+                .withText("Since invoices with status DRAFT are in fact... drafts, you may delete them again. This is done " +
+                        "by selecting one or more invoice drafts and clicking the Delete button.")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Finished", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .withAnchor(StepAnchor.LEFT)
+                .build();
     }
 }

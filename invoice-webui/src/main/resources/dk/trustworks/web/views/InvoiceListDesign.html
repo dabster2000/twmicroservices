@@ -7,9 +7,14 @@
  </head>
  <body>
   <vaadin-vertical-layout margin="false">
-   <vaadin-label style-name="h2" plain-text>
-     Draft Invoices 
-   </vaadin-label>
+   <vaadin-horizontal-layout width-full>
+    <vaadin-label style-name="h2" plain-text>
+     Draft Invoices
+    </vaadin-label>
+    <vaadin-button style-name="friendly" plain-text _id="btnTour" :middle :right>
+     Tour
+    </vaadin-button>
+   </vaadin-horizontal-layout>
    <vaadin-grid width-full data-item-type="dk.trustworks.network.dto.Invoice" _id="gridInvoiceList">
     <table>
      <colgroup>

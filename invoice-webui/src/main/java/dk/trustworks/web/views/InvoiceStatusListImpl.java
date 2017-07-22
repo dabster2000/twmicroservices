@@ -9,6 +9,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
@@ -24,6 +25,12 @@ import dk.trustworks.web.Broadcaster;
 import dk.trustworks.web.model.SubTotal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
+import org.vaadin.addons.producttour.actions.TourActions;
+import org.vaadin.addons.producttour.button.StepButton;
+import org.vaadin.addons.producttour.shared.step.StepAnchor;
+import org.vaadin.addons.producttour.step.Step;
+import org.vaadin.addons.producttour.step.StepBuilder;
+import org.vaadin.addons.producttour.tour.Tour;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 
 import java.io.ByteArrayInputStream;
@@ -239,6 +246,8 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
         });
 
         gridInvoiceList.getDataProvider().refreshAll();
+
+        addTour();
     }
 
     private TextField getColumnFilterField() {
@@ -274,5 +283,93 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
             }
         }
         return invoices;
+    }
+
+    private void addTour() {
+        btnTour.addClickListener(e -> {
+            Tour tour = new Tour();
+            tour.addStep(getStep1(gridInvoiceList));
+            tour.addStep(getStep2(gridInvoiceList));
+            tour.addStep(getStep3(btnDownloadPdf));
+            tour.addStep(getStep4(btnCreateCreditNota));
+            tour.addStep(getStep5(gridSubTotals));
+            tour.start();
+        });
+    }
+
+    private Step getStep1(AbstractComponent attachTo) {
+        return new StepBuilder()
+                //.withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(220, Unit.PIXELS)
+                .withTitle("Invoice Status Page!")
+                .withText(
+                        "This page gives an overview of all the created invoices including a monthly view of the invoice totals. From this page you may " +
+                                "change invoice status, download invoice pdf's, and create new credit notes.")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Next", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .build();
+    }
+
+    private Step getStep2(AbstractComponent attachTo) {
+        return new StepBuilder()
+                .withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(350, Unit.PIXELS)
+                .withTitle("Inovice Status")
+                .withText("This grid gives an overview of all invoices which have on of the following statuses: CREATED, SENT, PAID, or CREDIT NOTE. " +
+                        "You can also see the invoice number, invoice date, and the amount with or without tax. " +
+                        "If you double-click an invoice you can change the invoice status - remember to press save when you are finished." +
+                        "<br />" +
+                        "<br />" +
+                        "Finally the invoice type is shown, this can be either INVOICE or CREDIT NOTE. I'll get back to credit notes...")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Next", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .withAnchor(StepAnchor.BOTTOM)
+                .build();
+    }
+
+    private Step getStep3(AbstractComponent attachTo) {
+        return new StepBuilder()
+                .withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(200, Unit.PIXELS)
+                .withTitle("Download invoice pdf")
+                .withText("When an invoice is created a pdf is generated as well. This an be downloaded by selecting the invoice from the list and clicking this button.")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Next", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .withAnchor(StepAnchor.LEFT)
+                .build();
+    }
+
+    private Step getStep4(AbstractComponent attachTo) {
+        return new StepBuilder()
+                .withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(350, Unit.PIXELS)
+                .withTitle("Credit Note")
+                .withText("If you need to create a credit note, select the invoice that need to be credit'et and click this button (Create Credit Note). The selected " +
+                        "invoice status changes to CREDIT NOTE. " +
+                        "<br />" +
+                        "<br />" +
+                        "A new credit note draft is also created and is found along with the other draft invoices under DRAFTS. This follows the same flow as a normal invoice" +
+                        " but has another PDF template.")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Next", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .withAnchor(StepAnchor.LEFT)
+                .build();
+    }
+
+    private Step getStep5(AbstractComponent attachTo) {
+        return new StepBuilder()
+                .withAttachTo(attachTo)
+                .withWidth(400, Unit.PIXELS)
+                .withHeight(200, Unit.PIXELS)
+                .withTitle("Credit Note")
+                .withText("This table shows invoice sums by month without tax. Invoices with credit notes aren't counted.")
+                .addButton(new StepButton("Cancel", TourActions::back))
+                .addButton(new StepButton("Finished", ValoTheme.BUTTON_PRIMARY, TourActions::next))
+                .withAnchor(StepAnchor.TOP)
+                .build();
     }
 }
