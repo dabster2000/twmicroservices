@@ -16,7 +16,7 @@ public interface ProjectSummaryClient {
     //@RequestMapping(value = "/invoices/search/findByYearAndMonth", method = RequestMethod.GET)
     //List<Invoice> findByYearAndMonth(@RequestParam("year") int year, @RequestParam("month") int month);
 
-    @Cacheable("projectsummaries")
+    //@Cacheable("projectsummaries")
     @RequestMapping(method = RequestMethod.GET, value = "/projectsummaries/search/loadProjectSummaryByYearAndMonth")
     List<ProjectSummary> loadProjectSummaryByYearAndMonth(@RequestParam("year") int year, @RequestParam("month") int month);
 

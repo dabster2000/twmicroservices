@@ -22,11 +22,11 @@ public interface InvoiceClient {
     @RequestMapping(method = GET, value = "/projectsummaries/onMethod/createInvoiceFromProject")
     void createInvoiceFromProject(@RequestParam("projectuuid") String projectuuid, @RequestParam("year") int year, @RequestParam("month") int month);
 
-    @Cacheable("invoices")
+    //@Cacheable("invoices")
     @RequestMapping(method = GET, value = "/invoices/search/findByStatus")
     Resources<Invoice> findByStatus(@RequestParam("status") InvoiceStatus status);
 
-    @Cacheable("invoices")
+    //@Cacheable("invoices")
     @RequestMapping(method = GET, value = "/invoices/search/findByStatusIn")
     Resources<Invoice> findByStatusIn(@RequestParam("statuses") InvoiceStatus... statuses);
 
