@@ -4,6 +4,7 @@ import dk.trustworks.network.dto.Invoice;
 import dk.trustworks.network.dto.ProjectSummary;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ public interface ProjectSummaryClient {
     @RequestMapping(method = RequestMethod.GET, value = "/projectsummaries/onMethod/createInvoiceFromProject")
     void createInvoiceFromProject(@RequestParam("projectuuid") String projectuuid, @RequestParam("year") int year, @RequestParam("month") int month);
 
+    @Async
     @RequestMapping(value = "/invoices/methodOn/createCreditNota", method = RequestMethod.POST)
-    void createCreditNota(@RequestBody Invoice invoice);
+    void createCreditNote(@RequestBody Invoice invoice);
 }

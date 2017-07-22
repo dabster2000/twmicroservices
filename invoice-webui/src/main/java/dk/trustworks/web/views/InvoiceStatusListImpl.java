@@ -242,7 +242,7 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
             Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
             System.out.println("invoice = " + invoice);
             if(invoice.uuid == null && invoice.uuid.trim().length() == 0) return;
-            projectSummaryClient.createCreditNota(invoice);
+            projectSummaryClient.createCreditNote(invoice);
         });
 
         gridInvoiceList.getDataProvider().refreshAll();

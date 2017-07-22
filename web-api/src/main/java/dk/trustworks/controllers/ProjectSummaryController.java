@@ -94,7 +94,6 @@ public class ProjectSummaryController {
         return projectSummaryMap.values();
     }
 
-    @Async
     @RequestMapping(value = "/onMethod/createInvoiceFromProject", method = RequestMethod.GET)
     public void createInvoiceFromProject(@RequestParam("projectuuid") String projectuuid, @RequestParam("year") int year, @RequestParam("month") int month) {
         logger.info("InvoiceController.createInvoiceFromProject");
