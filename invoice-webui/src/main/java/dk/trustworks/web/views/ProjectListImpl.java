@@ -1,5 +1,6 @@
 package dk.trustworks.web.views;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
@@ -26,6 +27,7 @@ import java.util.Set;
 /**
  * Created by hans on 12/07/2017.
  */
+@Push
 @SpringComponent
 @UIScope
 public class ProjectListImpl extends ProjectListDesign {

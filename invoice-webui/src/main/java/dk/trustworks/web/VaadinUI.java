@@ -1,5 +1,6 @@
 package dk.trustworks.web;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -13,6 +14,7 @@ import static dk.trustworks.network.dto.InvoiceStatus.DRAFT;
 /**
  * Created by hans on 02/07/2017.
  */
+@Push
 @SpringUI
 @Theme("invoice")
 public class VaadinUI extends UI implements Broadcaster.BroadcastListener {
@@ -53,8 +55,12 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener {
         System.out.println("message = " + message);
         projectList.reloadData();
         int numberOfDrafts = mainWindow.invoiceClient.findByStatus(DRAFT).getContent().size();
-        if(numberOfDrafts>0) mainWindow.getMenuButton4().setCaption("DRAFTS ("+numberOfDrafts+")");
-        else mainWindow.getMenuButton4().setCaption("DRAFTS");
+        System.out.println("numberOfDrafts = " + numberOfDrafts);
+        getUI().access(() -> {
+            if(numberOfDrafts>0) mainWindow.getMenuButton4().setCaption("DRAFTS ("+numberOfDrafts+")");
+            else mainWindow.getMenuButton4().setCaption("DRAFTS");
+        });
+
     }
 
 

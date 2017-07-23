@@ -213,7 +213,7 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
         Registration registration = dataProvider.addDataProviderListener(event -> {
             double sum = event.getSource()
                     .fetch(new Query<>())
-                    .filter(invoice -> invoice.type != InvoiceType.CREDIT_NOTE && invoice.status != CREDIT_NOTE)
+                    .filter(invoice -> invoice.type != InvoiceType.CREDIT_NOTE || invoice.status != CREDIT_NOTE)
                     .mapToDouble(Invoice::getSumNoTax).sum();
             FooterCell sumNoTaxFooter = footer.getCell("sumNoTax");
             sumNoTaxFooter.setText(kronerFormat.format(sum));
