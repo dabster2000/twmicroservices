@@ -36,8 +36,8 @@ import java.util.Locale;
 @Component
 public class InvoicePdfGenerator {
 
-    private final String INVOICE_IMAGE = "invoice-high.png";
-    private final String CREDIT_NOTE_IMAGE = "credit-note-high.png";
+    private final String INVOICE_IMAGE = "~/invoice-service/invoice-high.png";
+    private final String CREDIT_NOTE_IMAGE = "~/invoice-service/credit-note-high.png";
 
     public byte[] createInvoice(Invoice invoice) throws IOException {
         NumberFormat kronerFormat = NumberFormat.getNumberInstance(new Locale("da", "DK"));
