@@ -5,6 +5,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.UI;
 import dk.trustworks.web.views.MainWindowImpl;
+import dk.trustworks.web.views.ProjectListImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static dk.trustworks.network.dto.InvoiceStatus.DRAFT;
@@ -18,11 +19,13 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener {
 
     //private final InvoiceListView invoiceView;
     //private final InvoiceListImpl invoiceList;
+    private final ProjectListImpl projectList;
     private final MainWindowImpl mainWindow;
 
 
     @Autowired
-    public VaadinUI(MainWindowImpl mainWindow) {
+    public VaadinUI(ProjectListImpl projectList, MainWindowImpl mainWindow) {
+        this.projectList = projectList;
         this.mainWindow = mainWindow;
     }
 
@@ -48,6 +51,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener {
     public void receiveBroadcast(String message) {
         System.out.println("MainWindowImpl.receiveBroadcast");
         System.out.println("message = " + message);
+        projectList.reloadData();
         int numberOfDrafts = mainWindow.invoiceClient.findByStatus(DRAFT).getContent().size();
         if(numberOfDrafts>0) mainWindow.getMenuButton4().setCaption("DRAFTS ("+numberOfDrafts+")");
         else mainWindow.getMenuButton4().setCaption("DRAFTS");

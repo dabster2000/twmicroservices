@@ -1,17 +1,17 @@
 package dk.trustworks.web.views;
 
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.network.clients.ProjectSummaryClient;
 import dk.trustworks.network.dto.ProjectSummary;
-import dk.trustworks.web.Broadcaster;
 import dk.trustworks.web.model.YearMonthSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addons.producttour.actions.TourActions;
 import org.vaadin.addons.producttour.button.StepButton;
-import org.vaadin.addons.producttour.shared.step.ContentMode;
 import org.vaadin.addons.producttour.shared.step.StepAnchor;
 import org.vaadin.addons.producttour.step.Step;
 import org.vaadin.addons.producttour.step.StepBuilder;
@@ -28,15 +28,13 @@ import java.util.Set;
  */
 @SpringComponent
 @UIScope
-public class ProjectListImpl extends ProjectListDesign
-        implements Broadcaster.BroadcastListener {
+public class ProjectListImpl extends ProjectListDesign {
 
     private final ProjectSummaryClient projectSummaryClient;
 
     @Autowired
     public ProjectListImpl(ProjectSummaryClient projectSummaryClient) {
         super();
-        Broadcaster.register(this);
         this.projectSummaryClient = projectSummaryClient;
         List<YearMonthSelect> yearMonthList = createYearMonthSelector();
         cbSelectYearMonth.setItems(yearMonthList);
@@ -79,8 +77,9 @@ public class ProjectListImpl extends ProjectListDesign
     }
 
     public void reloadData() {
+        System.out.println("ProjectListImpl.reloadData");
         List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
-        gridProjectSummaryList.setItems(projectSummaries);
+        gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
         gridProjectSummaryList.getDataProvider().refreshAll();
     }
 
@@ -94,15 +93,6 @@ public class ProjectListImpl extends ProjectListDesign
         }
 
         return yearMonthSelectList;
-    }
-
-    @Override
-    public void receiveBroadcast(final String message) {
-        System.out.println("ProjectListImpl.receiveBroadcast");
-        System.out.println("message = [" + message + "]");
-        if(this.getUI() != null) {
-            this.getUI().access(this::reloadData);
-        }
     }
 
     private void addTour() {
