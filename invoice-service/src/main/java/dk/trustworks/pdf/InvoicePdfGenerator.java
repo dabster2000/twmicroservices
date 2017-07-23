@@ -22,6 +22,8 @@ import dk.trustworks.model.InvoiceItem;
 import dk.trustworks.model.InvoiceType;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -36,8 +38,8 @@ import java.util.Locale;
 @Component
 public class InvoicePdfGenerator {
 
-    private final String INVOICE_IMAGE = "~/invoice-service/invoice-high.png";
-    private final String CREDIT_NOTE_IMAGE = "~/invoice-service/credit-note-high.png";
+    private final String INVOICE_IMAGE = "/resources/invoice-high.png";
+    private final String CREDIT_NOTE_IMAGE = "/resources/credit-note-high.png";
 
     public byte[] createInvoice(Invoice invoice) throws IOException {
         NumberFormat kronerFormat = NumberFormat.getNumberInstance(new Locale("da", "DK"));
@@ -53,7 +55,7 @@ public class InvoicePdfGenerator {
         PdfCanvas canvas = new PdfCanvas(pdf.addNewPage());
 
         if(invoice.type.equals(InvoiceType.INVOICE))
-            canvas.addImage(ImageDataFactory.create(INVOICE_IMAGE), pageSize, false);
+            canvas.addImage(ImageDataFactory.create(InvoicePdfGenerator.class.getResource(INVOICE_IMAGE).getFile()), pageSize, false);
         else
             canvas.addImage(ImageDataFactory.create(CREDIT_NOTE_IMAGE), pageSize, false);
         canvas.concatMatrix(1, 0, 0, 1, 0, PageSize.A4.getHeight());
@@ -188,5 +190,15 @@ public class InvoicePdfGenerator {
                 .format(number)
                 .replace(",", "-")
                 .replace(".", "-");
+    }
+
+    private BufferedImage loadImage(String imageFilename) {
+        BufferedImage img = null;
+        try {
+            img = javax.imageio.ImageIO.read(getClass().getResourceAsStream(imageFilename));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return img;
     }
 }
