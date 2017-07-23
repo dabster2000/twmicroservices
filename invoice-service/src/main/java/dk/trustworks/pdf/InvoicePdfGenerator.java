@@ -55,9 +55,9 @@ public class InvoicePdfGenerator {
         PdfCanvas canvas = new PdfCanvas(pdf.addNewPage());
 
         if(invoice.type.equals(InvoiceType.INVOICE))
-            canvas.addImage(ImageDataFactory.create(getClass().getResource(INVOICE_IMAGE).getFile()), pageSize, false);
+            canvas.addImage(ImageDataFactory.create(getClass().getResource  (INVOICE_IMAGE)), pageSize, false);
         else
-            canvas.addImage(ImageDataFactory.create(getClass().getResource(CREDIT_NOTE_IMAGE).getFile()), pageSize, false);
+            canvas.addImage(ImageDataFactory.create(getClass().getResource(CREDIT_NOTE_IMAGE)), pageSize, false);
         canvas.concatMatrix(1, 0, 0, 1, 0, PageSize.A4.getHeight());
 
         float[] tableColumns = {112.0f, 153.0f, 113.0f, 80.0f, 70.0f};
