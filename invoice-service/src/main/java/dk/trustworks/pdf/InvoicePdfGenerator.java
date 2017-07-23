@@ -38,8 +38,8 @@ import java.util.Locale;
 @Component
 public class InvoicePdfGenerator {
 
-    private final String INVOICE_IMAGE = "/resources/invoice-high.png";
-    private final String CREDIT_NOTE_IMAGE = "/resources/credit-note-high.png";
+    private final String INVOICE_IMAGE = "/invoice-high.png";
+    private final String CREDIT_NOTE_IMAGE = "/credit-note-high.png";
 
     public byte[] createInvoice(Invoice invoice) throws IOException {
         NumberFormat kronerFormat = NumberFormat.getNumberInstance(new Locale("da", "DK"));
@@ -55,9 +55,9 @@ public class InvoicePdfGenerator {
         PdfCanvas canvas = new PdfCanvas(pdf.addNewPage());
 
         if(invoice.type.equals(InvoiceType.INVOICE))
-            canvas.addImage(ImageDataFactory.create(InvoicePdfGenerator.class.getResource(INVOICE_IMAGE).getFile()), pageSize, false);
+            canvas.addImage(ImageDataFactory.create(getClass().getResource(INVOICE_IMAGE).getFile()), pageSize, false);
         else
-            canvas.addImage(ImageDataFactory.create(CREDIT_NOTE_IMAGE), pageSize, false);
+            canvas.addImage(ImageDataFactory.create(getClass().getResource(CREDIT_NOTE_IMAGE).getFile()), pageSize, false);
         canvas.concatMatrix(1, 0, 0, 1, 0, PageSize.A4.getHeight());
 
         float[] tableColumns = {112.0f, 153.0f, 113.0f, 80.0f, 70.0f};
