@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("user-service")
 public interface UserClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/users/search/findByUsernameAndPassword", consumes = "application/hal+json")
+    @RequestMapping(method = RequestMethod.GET, value = "/users/search/findByUsernameAndPassword")
     Resource<User> findByUsernameAndPassword(@RequestParam("username") String username, @RequestParam("password") String password);
 
 }
