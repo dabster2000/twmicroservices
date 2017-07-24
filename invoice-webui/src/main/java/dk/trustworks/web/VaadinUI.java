@@ -1,10 +1,12 @@
 package dk.trustworks.web;
 
 import com.vaadin.annotations.Push;
+import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.web.views.MainWindowImpl;
 import dk.trustworks.web.views.ProjectListImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,8 @@ import static dk.trustworks.network.dto.InvoiceStatus.DRAFT;
  */
 @Push
 @SpringUI
-@Theme("invoice")
+@Theme("valo")
+//@StyleSheet("valo-theme-ui.css")
 public class VaadinUI extends UI implements Broadcaster.BroadcastListener {
 
     //private final InvoiceListView invoiceView;
@@ -47,6 +50,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener {
         //VerticalLayout mainLayout = new VerticalLayout(invoiceList);
         setContent(mainWindow);
         receiveBroadcast("");
+        setTheme("invoice");
     }
 
     @Override

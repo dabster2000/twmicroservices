@@ -3,6 +3,7 @@ package dk.trustworks.network.clients;
 import dk.trustworks.network.dto.Invoice;
 import dk.trustworks.network.dto.InvoiceStatus;
 import dk.trustworks.network.dto.PdfContainer;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.netflix.feign.FeignClient;

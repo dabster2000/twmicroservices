@@ -10,6 +10,7 @@
         <setting name="compilerParameters" value="-deploy $MODULE_DIR$/target/gwt-deploy" />
         <setting name="compilerMaxHeapSize" value="2048" />
         <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="gwtSdkUrl" value="file://$USER_HOME$/Downloads/gwt-2.8.1" />
       </configuration>
     </facet>
   </component>
@@ -29,7 +30,6 @@
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-spring:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:1.5.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:1.5.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-themes:8.1.0.rc1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:1.5.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:1.5.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-logging:1.5.4.RELEASE" level="project" />
@@ -159,6 +159,7 @@
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-shared:8.1.0.rc1" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.8.3" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external:gentyref:1.2.0.vaadin1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.appreciated:material:0.9.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-push:8.1.0.rc1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.atmosphere:atmosphere-runtime:2.4.11.vaadin1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.slf4j:vaadin-slf4j-jdk14:1.6.1" level="project" />
@@ -185,6 +186,7 @@
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.6" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-themes:8.1.0.rc1" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:fontawesomelabel:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:simplefiledownloader:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-cache:1.5.4.RELEASE" level="project" />

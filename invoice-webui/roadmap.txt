@@ -5,4 +5,3 @@
 - Farverne skal skiftes fra blå til noget pænere
 - Vores TW logo skal sættes ind et sted
 - Caching af "work" virker ikke ordentligt
-- Tilføj Tour guide

@@ -99,6 +99,7 @@ public class ProjectSummaryController {
         logger.info("InvoiceController.createInvoiceFromProject");
         logger.info("projectuuid = [" + projectuuid + "], year = [" + year + "], month = [" + month + "]");
         Resources<Resource<Work>> workResources = workClient.findByYearAndMonth(year, month);
+        System.out.println("workResources = " + workResources);
         System.out.println("workResources.getContent().size() = " + workResources.getContent().size());
         //Map<String, Invoice> invoiceMap = new HashMap<>();
         Invoice invoice = null;

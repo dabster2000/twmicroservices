@@ -12,7 +12,7 @@ spring:
       org.hibernate: WARN
   cache:
     caffeine:
-      spec: maximumSize=200,expireAfterAccess=600s
+      spec: maximumSize=200,expireAfterAccess=10s,recordStats,
 
 eureka:
   client:

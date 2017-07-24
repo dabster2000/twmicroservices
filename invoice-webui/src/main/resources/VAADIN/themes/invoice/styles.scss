@@ -1,10 +1,15 @@
 @import "../valo/valo.scss";
+//@import "variables";
 @import "addons";
 @import "designs.scss";
+@import "../material/material.scss";
+
+
 
 .invoice {
   @include valo;
   @include addons;
+  @include material;
 
   vaadin-grid {
     height: auto;
@@ -15,6 +20,10 @@
   $v-app-loading-text: "Loading Resources...";
   .label-project-description, .label-total-titel, .label-total-value {
     background-color: #CCCCCC;
+  }
+
+  .btnTour {
+    background-color: #fbb14d;
   }
 
   .invoice-preview {

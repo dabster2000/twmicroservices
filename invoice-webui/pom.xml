@@ -91,6 +91,11 @@
             <version>8.1.0.rc1</version>
         </dependency>
         <dependency>
+            <groupId>com.github.appreciated</groupId>
+            <artifactId>material</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-push</artifactId>
             <version>8.1.0.rc1</version>
@@ -142,6 +147,12 @@
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-httpclient</artifactId>
             <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>8.1.0.rc1</version>
         </dependency>
 
         <!-- FontAwesome -->
@@ -220,9 +231,9 @@
                     <webappDirectory>
                         ${basedir}/src/main/resources/VAADIN/widgetsets
                     </webappDirectory>
-                    <!--                 <hostedWebapp>
-                                         ${basedir}/src/main/resources/VAADIN/widgetsets
-                                     </hostedWebapp>-->
+                    <hostedWebapp>
+                        ${basedir}/src/main/resources/VAADIN/widgetsets
+                    </hostedWebapp>
                     <warSourceDirectory>${basedir}/src/main/resources</warSourceDirectory>
                     <persistentunitcachedir>${project.build.directory}
                     </persistentunitcachedir>
