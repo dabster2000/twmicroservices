@@ -60,6 +60,13 @@
             <artifactId>spring-cloud-sleuth-zipkin</artifactId>
         </dependency>
 
+        <!-- metrics -->
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
         <!-- spring admin -->
         <dependency>
             <groupId>de.codecentric</groupId>

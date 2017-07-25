@@ -123,6 +123,13 @@
             <version>1.5.2</version>
         </dependency>
 
+        <!-- metrics -->
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
         <!-- NETWORK -->
         <!-- Apache RabbitMQ -->
         <dependency>
