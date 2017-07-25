@@ -19,6 +19,8 @@ spring:
     hikari:
       maximum-pool-size: 2
 
+management.security.enabled: false
+
 eureka:
   client:
     enabled: true

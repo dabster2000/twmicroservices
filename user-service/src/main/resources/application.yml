@@ -33,3 +33,4 @@ ribbon:
     enabled: true
 
 
+management.security.enabled: false

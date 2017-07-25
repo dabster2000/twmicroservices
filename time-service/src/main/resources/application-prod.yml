@@ -41,3 +41,5 @@ logging:
           client:
             hypermedia: DEBUG
 
+
+management.security.enabled: false

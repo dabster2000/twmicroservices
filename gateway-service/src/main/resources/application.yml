@@ -9,6 +9,7 @@ endpoints:
 zuul:
   prefix: /api
 
+management.security.enabled: false
 
 ribbon:
   eureka:
@@ -18,7 +19,7 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-    registerWithEureka: false
+    registerWithEureka: true
 
 server:
   port: 8765

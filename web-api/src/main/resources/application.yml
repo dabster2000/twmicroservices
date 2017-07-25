@@ -14,6 +14,8 @@ spring:
     caffeine:
       spec: maximumSize=200,expireAfterAccess=10s,recordStats,
 
+management.security.enabled: false
+
 eureka:
   client:
     enabled: true

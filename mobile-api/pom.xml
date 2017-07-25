@@ -105,6 +105,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>1.5.2</version>
+        </dependency>
 
         <!-- caching provider -->
         <dependency>

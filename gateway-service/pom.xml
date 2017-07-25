@@ -59,6 +59,18 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-sleuth-zipkin</artifactId>
         </dependency>
+
+        <!-- spring admin -->
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-server</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-server-ui</artifactId>
+            <version>1.5.2</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

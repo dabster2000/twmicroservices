@@ -19,7 +19,6 @@ spring:
     hikari:
       maximum-pool-size: 2
 
-
 eureka:
   client:
     serviceUrl:
