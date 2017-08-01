@@ -17,6 +17,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <vaadin.version>8.1.0</vaadin.version>
     </properties>
 
     <dependencies>
@@ -98,12 +99,12 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-push</artifactId>
-            <version>8.1.0.rc1</version>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
-            <version>8.1.0.rc1</version>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.vaadin.addons</groupId>
@@ -152,7 +153,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
-            <version>8.1.0.rc1</version>
+            <version>${vaadin.version}</version>
         </dependency>
 
         <!-- FontAwesome -->
@@ -197,7 +198,7 @@
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
-                <version>8.1.0.rc1</version>
+                <version>${vaadin.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -238,7 +239,7 @@
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>8.1.0.rc1</version>
+                <version>${vaadin.version}</version>
                 <configuration>
                     <extraJvmArgs>-Xmx2G -Xss1024k</extraJvmArgs>
                     <webappDirectory>
