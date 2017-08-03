@@ -37,6 +37,7 @@ import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -229,8 +230,17 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
             if(!gridInvoiceList.getSelectionModel().getFirstSelectedItem().isPresent()) return;
             PdfContainer invoicePdf = invoiceClient.getInvoicePdf(gridInvoiceList.getSelectionModel().getFirstSelectedItem().get().getUuid());
 
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
             final StreamResource resource = new StreamResource(() ->
-                    new ByteArrayInputStream(invoicePdf.pdf), "invoice.pdf");
+                    new ByteArrayInputStream(invoicePdf.pdf),
+                    invoicePdf.invoicenumber +
+                            " " + invoicePdf.type +
+                            " - " + invoicePdf.clientname +
+                            " - " + invoicePdf.projectname +
+                            " - " + dateTimeFormatter.format(invoicePdf.invoicedate) +
+                            ".pdf"
+            );
 
             SimpleFileDownloader downloader = new SimpleFileDownloader();
             addExtension(downloader);
