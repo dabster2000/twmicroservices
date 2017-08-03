@@ -144,7 +144,8 @@ public class ProjectSummaryController {
                         clientdata.getCvr(),
                         clientdata.getContactperson(),
                         LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).getMonth().maxLength()),
-                        project.getCustomerreference());
+                        project.getCustomerreference(),
+                        "");
                 invoice.uuid = UUID.randomUUID().toString();
                 logger.info("Created new invoice: "+invoice);
             }
@@ -160,8 +161,8 @@ public class ProjectSummaryController {
                 continue;
             }
             if(!invoiceItemMap.containsKey(project.getUuid()+taskworkerconstraint.getUuid())) {
-                InvoiceItem invoiceItem = new InvoiceItem(task.getName(),
-                        user.getFirstname() + " " + user.getLastname(),
+                InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
+                        task.getName(),
                         taskworkerconstraint.getPrice(),
                         0.0);
                 invoiceItem.uuid = UUID.randomUUID().toString();

@@ -42,11 +42,6 @@ public class InvoicePdfGenerator {
     private final String CREDIT_NOTE_IMAGE = "/credit-note-high.png";
 
     public byte[] createInvoice(Invoice invoice) throws IOException {
-        NumberFormat kronerFormat = NumberFormat.getNumberInstance(new Locale("da", "DK"));
-        kronerFormat.setMaximumFractionDigits(2);
-        kronerFormat.setMinimumFractionDigits(2);
-
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdf = new PdfDocument(writer);
@@ -60,7 +55,7 @@ public class InvoicePdfGenerator {
             canvas.addImage(ImageDataFactory.create(getClass().getResource(CREDIT_NOTE_IMAGE)), pageSize, false);
         canvas.concatMatrix(1, 0, 0, 1, 0, PageSize.A4.getHeight());
 
-        float[] tableColumns = {112.0f, 153.0f, 113.0f, 80.0f, 70.0f};
+        float[] tableColumns = {112.0f, 153.0f, 83.0f, 110.0f, 70.0f};
 
         double sumNoTax = 0.0;
         Table table = new Table(tableColumns, false);
@@ -78,17 +73,17 @@ public class InvoicePdfGenerator {
 
             table.addCell(new Cell(1, 1)
                     .setTextAlignment(TextAlignment.LEFT)
-                    .add(invoiceitem.hours+"")
+                    .add(convertDoubleToDanish(invoiceitem.rate))
                     .setBorder(Border.NO_BORDER));
 
             table.addCell(new Cell(1, 1)
                     .setTextAlignment(TextAlignment.LEFT)
-                    .add(invoiceitem.rate+"")
+                    .add(convertDoubleToDanish(invoiceitem.hours) + " timer")
                     .setBorder(Border.NO_BORDER));
 
             table.addCell(new Cell(1, 1)
                     .setTextAlignment(TextAlignment.RIGHT)
-                    .add(kronerFormat.format(invoiceitem.hours * invoiceitem.rate))
+                    .add(convertDoubleToDanish(invoiceitem.hours * invoiceitem.rate))
                     .setBorder(Border.NO_BORDER));
         }
 /*
@@ -142,10 +137,11 @@ public class InvoicePdfGenerator {
 
         // 129, 296
         canvas.beginText()
-                .setFontAndSize(PdfFontFactory.createFont(FontConstants.HELVETICA_BOLD), 14)
+                .setFontAndSize(PdfFontFactory.createFont(FontConstants.HELVETICA), 14)
                 .setLeading(14 * 1.2f)
-                .moveText(129, -296).setLineWidth(345);
+                .moveText(135, -288).setLineWidth(345);
         canvas.showText(invoice.description);
+        canvas.newlineShowText(invoice.specificdescription);
         canvas.endText();
 
 
@@ -160,20 +156,20 @@ public class InvoicePdfGenerator {
                 .setTextAlignment(TextAlignment.RIGHT)
                 .setPaddingTop(0.0f)
                 .setPaddingBottom(0.0f)
-                .add(kronerFormat.format(sumNoTax))
+                .add(convertDoubleToDanish(sumNoTax))
                 .setBorder(Border.NO_BORDER));
         table2.addCell(new Cell(1, 1)
                 .setTextAlignment(TextAlignment.RIGHT)
                 .setPaddingTop(0.0f)
                 .setPaddingBottom(0.0f)
-                .add(kronerFormat.format(sumNoTax * 0.25))
+                .add(convertDoubleToDanish(sumNoTax * 0.25))
                 .setBorder(Border.NO_BORDER));
         table2.addCell(new Cell(1, 1)
                 .setTextAlignment(TextAlignment.RIGHT)
                 .setPaddingTop(0.0f)
                 .setPaddingBottom(0.0f)
                 .setBold()
-                .add(kronerFormat.format(sumNoTax * 1.25))
+                .add(convertDoubleToDanish(sumNoTax * 1.25))
                 .setBorder(Border.NO_BORDER));
         table2.setBorder(Border.NO_BORDER);
         table2.setFixedPosition(498, -652-(table2.getNumberOfRows()*16), 70);
@@ -200,5 +196,12 @@ public class InvoicePdfGenerator {
             ex.printStackTrace();
         }
         return img;
+    }
+
+    private String convertDoubleToDanish(double aDouble) {
+        NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
+        formatter.setMaximumFractionDigits(2);
+        formatter.setMinimumFractionDigits(2);
+        return formatter.format(aDouble);
     }
 }

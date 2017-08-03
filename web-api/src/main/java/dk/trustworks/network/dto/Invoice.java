@@ -32,6 +32,7 @@ public class Invoice {
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate invoicedate;
     public String description;
+    public String specificdescription;
     public List<InvoiceItem> invoiceitems;
     public boolean errors;
     public InvoiceType type;
@@ -42,7 +43,7 @@ public class Invoice {
         this.errors = false;
     }
 
-    public Invoice(InvoiceType type, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String description) {
+    public Invoice(InvoiceType type, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String description, String specificdescription) {
         this();
         this.type = type;
         this.otheraddressinfo = otheraddressinfo;
@@ -59,6 +60,7 @@ public class Invoice {
         this.attention = attention;
         this.invoicedate = invoicedate;
         this.description = description;
+        this.specificdescription = specificdescription;
     }
 
     @Override

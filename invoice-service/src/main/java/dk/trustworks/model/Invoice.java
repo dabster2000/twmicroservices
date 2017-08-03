@@ -36,6 +36,7 @@ public class Invoice {
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate invoicedate;
     public String description;
+    public String specificdescription;
     @OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="invoiceuuid")
     public List<InvoiceItem> invoiceitems;

@@ -33,6 +33,7 @@ public class Invoice extends ResourceSupport {
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate invoicedate;
     public String description;
+    public String specificdescription;
     public List<InvoiceItem> invoiceitems;
     public boolean errors;
     public InvoiceType type;
@@ -45,12 +46,13 @@ public class Invoice extends ResourceSupport {
         this.errors = false;
     }
 
-    public Invoice(InvoiceType type, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String description) {
+    public Invoice(InvoiceType type, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String description, String specificdescription) {
         this();
         this.type = type;
         this.otheraddressinfo = otheraddressinfo;
         this.ean = ean;
         this.cvr = cvr;
+        this.specificdescription = specificdescription;
         this.status = InvoiceStatus.DRAFT;
         this.projectuuid = projectuuid;
         this.projectname = projectname;
@@ -214,6 +216,14 @@ public class Invoice extends ResourceSupport {
 
     public void setEan(String ean) {
         this.ean = ean;
+    }
+
+    public String getSpecificdescription() {
+        return specificdescription;
+    }
+
+    public void setSpecificdescription(String specificdescription) {
+        this.specificdescription = specificdescription;
     }
 
     @Override

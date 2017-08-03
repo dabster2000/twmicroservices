@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
+import java.util.Locale;
+
 @SpringBootApplication
 @EnableDiscoveryClient
 @EntityScan(
@@ -16,6 +18,7 @@ public class InvoiceApplication {
 	public final static String queueName = "update-queue";
 
 	public static void main(String[] args) {
+		Locale.setDefault(new Locale("da", "DK"));
 		SpringApplication.run(InvoiceApplication.class, args);
 	}
 

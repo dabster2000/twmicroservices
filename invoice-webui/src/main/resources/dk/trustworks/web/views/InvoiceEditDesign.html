@@ -64,10 +64,12 @@
      <vaadin-label style-name="bold" plain-text :middle>
        Beskrivelse: 
      </vaadin-label>
-     <vaadin-label width-full _id="lblDescription" :middle :expand>
-       Projektnr.: 2016-03 
-      <br> For perioden: juni 2017 
-     </vaadin-label>
+     <vaadin-vertical-layout spacing="false" margin="false" :expand>
+      <vaadin-label width-full _id="lblDescription">
+        Projektnr.: 2016-03 For perioden: juni 2017 
+      </vaadin-label>
+      <vaadin-text-field description="description" width-full _id="txtSpecificDescription"></vaadin-text-field>
+     </vaadin-vertical-layout>
     </vaadin-horizontal-layout>
     <vaadin-vertical-layout style-name="invoice-details">
      <vaadin-css-layout width-full>
@@ -79,27 +81,27 @@
       <vaadin-grid-layout spacing width-full _id="gridInvoiceItems">
        <row>
         <column>
-         <vaadin-label style-name="bold" width-full plain-text>
+         <vaadin-label style-name="bold" width="139px" plain-text>
            Varenr. 
          </vaadin-label>
         </column>
         <column>
-         <vaadin-label style-name="bold" width-full plain-text>
+         <vaadin-label style-name="bold" width="171px" plain-text>
            Beskrivelse 
          </vaadin-label>
         </column>
         <column>
-         <vaadin-label style-name="bold" width-full plain-text>
+         <vaadin-label style-name="bold" width="90px" plain-text>
            Pris 
          </vaadin-label>
         </column>
         <column>
-         <vaadin-label style-name="bold" width-full plain-text>
-           Antal 
+         <vaadin-label style-name="bold" width="100px" plain-text>
+           Antal (timer) 
          </vaadin-label>
         </column>
         <column>
-         <vaadin-label style-name="bold" plain-text :middle :right>
+         <vaadin-label style-name="bold" width="114px" plain-text :middle :right>
            Beløb 
          </vaadin-label>
         </column>

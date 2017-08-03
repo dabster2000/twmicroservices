@@ -152,18 +152,18 @@
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-hateoas:1.5.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.plugin:spring-plugin-core:1.2.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.retry:spring-retry:1.2.0.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-server:8.1.0.rc1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-server:8.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-sass-compiler:0.9.13" level="project" />
     <orderEntry type="library" name="Maven: org.w3c.css:sac:1.3" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.flute:flute:1.3.0.gg2" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-shared:8.1.0.rc1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-shared:8.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.8.3" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external:gentyref:1.2.0.vaadin1" level="project" />
     <orderEntry type="library" name="Maven: com.github.appreciated:material:0.9.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-push:8.1.0.rc1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-push:8.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.atmosphere:atmosphere-runtime:2.4.11.vaadin1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.slf4j:vaadin-slf4j-jdk14:1.6.1" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-client-compiled:8.1.0.rc1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-client-compiled:8.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:product-tour:0.5" level="project" />
     <orderEntry type="library" name="Maven: com.jayway.jsonpath:json-path:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: net.minidev:json-smart:2.3" level="project" />
@@ -182,11 +182,11 @@
     <orderEntry type="library" name="Maven: com.rabbitmq:amqp-client:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.amqp:spring-amqp:1.7.3.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.3.9.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: io.github.openfeign:feign-httpclient:9.5.0" level="project" />
+    <orderEntry type="library" name="Maven: io.github.openfeign:feign-httpclient:9.5.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.6" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-themes:8.1.0.rc1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-themes:8.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:fontawesomelabel:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:simplefiledownloader:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-cache:1.5.4.RELEASE" level="project" />
