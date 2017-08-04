@@ -22,7 +22,10 @@ spring:
 
 eureka:
   client:
+    use-dns-for-fetching-service-urls: true
+    availability-zones: eu-west-1a
     serviceUrl:
+      eu-west-1a: http://ec2-52-210-106-144.eu-west-1.compute.amazonaws.com:8761/eureka/
       defaultZone: ${DISCOVERY_URL:http://localhost:8761}/eureka/
   instance:
     leaseRenewalIntervalInSeconds: 1
