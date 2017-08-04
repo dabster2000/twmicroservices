@@ -25,12 +25,6 @@ eureka:
     use-dns-for-fetching-service-urls: true
     serviceUrl:
       defaultZone: ${DISCOVERY_URL:http://localhost:8761}/eureka/
-    region: eu-west-1
-    availability-zones:
-      eu-west-1: eu-west-1a
-    prefer-same-zone-eureka: true
-    fetch-registry: true
-    register-with-eureka: true
   instance:
     leaseRenewalIntervalInSeconds: 1
     leaseExpirationDurationInSeconds: 2
