@@ -53,6 +53,6 @@ management.security.enabled: false
 
 spring.rabbitmq.host: ${RABBITMQ_HOST:127.0.0.1}
 spring.rabbitmq.port: ${RABBITMQ_PORT:5672}
-spring.rabbitmq.username: guest
-spring.rabbitmq.password: guest
+spring.rabbitmq.username: ${RABBIT_USERNAME:guest}
+spring.rabbitmq.password: ${RABBIT_PASSWORD:guest}
 
