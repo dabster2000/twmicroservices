@@ -13,6 +13,9 @@ spring:
   cache:
     caffeine:
       spec: maximumSize=200,expireAfterAccess=10s,recordStats,
+  cloud:
+    zookeeper:
+      connect-string: ${ZOOKEEPER_HOST:localhost}:2181
 
 management.security.enabled: false
 

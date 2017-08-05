@@ -13,11 +13,14 @@ spring:
   jpa:
     hibernate.ddl-auto: none
   datasource:
-    url: jdbc:mysql://localhost:3306/invoicemanager?noDatetimeStringSync=true&characterEncoding=utf8
-    username: root
-    password:
-    hikari:
-      maximum-pool-size: 2
+      url: ${URL:jdbc:mysql://localhost:3306/invoicemanager?noDatetimeStringSync=true&characterEncoding=utf8}
+      username: ${USERNAME:root}
+      password: ${PASSWORD:}
+      hikari:
+        maximum-pool-size: 2
+    cloud:
+      zookeeper:
+        connect-string: ${ZOOKEEPER_HOST:localhost}:2181
 
 eureka:
   client:
