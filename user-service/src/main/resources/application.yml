@@ -18,7 +18,9 @@ spring:
     password: ${PASSWORD}
     hikari:
       maximum-pool-size: 2
-
+  cloud:
+    zookeeper:
+      connect-string: ${ZOOKEEPER_HOST:localhost}:2181
 
 eureka:
   client:
