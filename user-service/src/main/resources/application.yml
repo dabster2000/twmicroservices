@@ -21,6 +21,8 @@ spring:
   cloud:
     zookeeper:
       connect-string: ${ZOOKEEPER_HOST:localhost}:2181
+  zipkin:
+    base-url: http://${ZIPKIN_HOST:localhost}:9411/
 
 eureka:
   client:
@@ -34,6 +36,7 @@ eureka:
 ribbon:
   eureka:
     enabled: true
+
 
 
 management.security.enabled: false
