@@ -95,7 +95,18 @@ public class ProjectSummaryController {
                 continue;
             }
             Project project = projectMap.get(task.getProjectuuid());
+            if(project==null) {
+                System.out.println("task = " + task);
+                System.out.println("workResource = " + workResource.getContent());
+                continue;
+            }
             Client client = clientMap.get(project.getClientuuid());
+            if(client==null) {
+                System.out.println("project = " + project);
+                System.out.println("task = " + task);
+                System.out.println("workResource = " + workResource.getContent());
+                continue;
+            }
             //Resource<Task> taskResource = taskClient.findTaskByRestLink(taskLink.getHref());
             //Resource<Project> projectResource = projectClient.findProjectByRestLink(taskResource.getLink("project").getHref());
             //Resource<Client> clientResource = clientClient.findClientByRestLink(projectResource.getLink("client").getHref());
