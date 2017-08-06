@@ -5,7 +5,7 @@ package dk.trustworks.repositories;
  */
 
 import dk.trustworks.model.Project;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -13,7 +13,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import java.util.List;
 
 @RepositoryRestResource(collectionResourceRel = "projects",path="projects")
-public interface ProjectRepository extends PagingAndSortingRepository<Project, String> {
+public interface ProjectRepository extends CrudRepository<Project, String> {
 
     List<Project> findProjectsByUuidIn(@Param("uuid") String[] uuids);
 

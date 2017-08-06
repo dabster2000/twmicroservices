@@ -43,22 +43,23 @@ public class Task {
         this.project = project;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Task{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", type='").append(type).append('\'');
-        sb.append(", project=").append(project);
-        sb.append('}');
-        return sb.toString();
-    }
-
     public String getProjectuuid() {
         return projectuuid;
     }
 
     public void setProjectuuid(String projectuuid) {
         this.projectuuid = projectuuid;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Task{");
+        sb.append("uuid='").append(uuid).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", type='").append(type).append('\'');
+        sb.append(", projectuuid='").append(projectuuid).append('\'');
+        sb.append(", project=").append(project);
+        sb.append('}');
+        return sb.toString();
     }
 }
