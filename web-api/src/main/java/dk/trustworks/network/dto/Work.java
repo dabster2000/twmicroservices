@@ -48,17 +48,6 @@ public class Work {
         this.workduration = workduration;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Work{");
-        sb.append(", day=").append(day);
-        sb.append(", month=").append(month);
-        sb.append(", year=").append(year);
-        sb.append(", workduration=").append(workduration);
-        sb.append('}');
-        return sb.toString();
-    }
-
     public String getUuid() {
         return uuid;
     }
@@ -81,5 +70,19 @@ public class Work {
 
     public void setUseruuid(String useruuid) {
         this.useruuid = useruuid;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Work{");
+        sb.append("uuid='").append(uuid).append('\'');
+        sb.append(", day=").append(day);
+        sb.append(", month=").append(month);
+        sb.append(", year=").append(year);
+        sb.append(", workduration=").append(workduration);
+        sb.append(", taskuuid='").append(taskuuid).append('\'');
+        sb.append(", useruuid='").append(useruuid).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
