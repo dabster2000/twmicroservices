@@ -34,5 +34,7 @@ ribbon:
   eureka:
     enabled: true
 
-
-
+spring.rabbitmq.host: ${RABBITMQ_HOST:127.0.0.1}
+spring.rabbitmq.port: ${RABBITMQ_PORT:5672}
+spring.rabbitmq.username: ${RABBIT_USERNAME:guest}
+spring.rabbitmq.password: ${RABBIT_PASSWORD:guest}
