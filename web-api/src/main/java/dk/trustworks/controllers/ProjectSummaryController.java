@@ -90,7 +90,10 @@ public class ProjectSummaryController {
         for (Resource<Work> workResource : workResources) {
             Link taskLink = workResource.getLink("task");
             Task task = taskMap.get(workResource.getContent().getTaskuuid());
-            if(task==null) System.out.println("workResource = " + workResource.getContent());
+            if(task==null) {
+                System.out.println("workResource = " + workResource.getContent());
+                continue;
+            }
             Project project = projectMap.get(task.getProjectuuid());
             Client client = clientMap.get(project.getClientuuid());
             //Resource<Task> taskResource = taskClient.findTaskByRestLink(taskLink.getHref());
