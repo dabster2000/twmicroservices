@@ -34,16 +34,25 @@ public class ProjectSummaryController {
     private TaskClient taskClient;
 
     @Autowired
+    private TaskClientImpl taskClientImpl;
+
+    @Autowired
     private TaskworkerconstraintClient taskworkerconstraintClient;
 
     @Autowired
     private ProjectClient projectClient;
 
     @Autowired
+    private ProjectClientImpl projectClientImpl;
+
+    @Autowired
     private ClientdataClient clientdataClient;
 
     @Autowired
     private ClientClient clientClient;
+
+    @Autowired
+    private ClientClientImpl clientClientImpl;
 
     @Autowired
     private WorkClient workClient;
@@ -127,11 +136,11 @@ public class ProjectSummaryController {
             Link taskLink = workResource.getLink("task");
             Link userLink = workResource.getLink("user");
 
-            Resource<Task> taskResource = taskClient.findTaskByRestLink(taskLink.getHref());
+            Resource<Task> taskResource = taskClientImpl.findTaskByRestLink(taskLink.getHref());
             Task task = taskResource.getContent();
             logger.info("task = " + task);
 
-            Resource<Project> projectResource = projectClient.findProjectByRestLink(taskResource.getLink("project").getHref());
+            Resource<Project> projectResource = projectClientImpl.findProjectByRestLink(taskResource.getLink("project").getHref());
             Project project = projectResource.getContent();
             if(!project.getUuid().equals(projectuuid)) continue;
             logger.info("project = " + project);
@@ -143,7 +152,7 @@ public class ProjectSummaryController {
             Resource<Clientdata> clientdataResource = clientdataClient.findClientdataByRestLink(projectResource.getLink("clientData").getHref());
             Clientdata clientdata = (clientdataResource!=null)?clientdataResource.getContent():new Clientdata();
 
-            Resource<Client> clientResource = clientClient.findClientByRestLink(projectResource.getLink("client").getHref());
+            Resource<Client> clientResource = clientClientImpl.findClientByRestLink(projectResource.getLink("client").getHref());
             Client client = clientResource.getContent();
 
             Resources<Resource<Taskworkerconstraint>> taskworkerconstraintResources = taskworkerconstraintClient.findTaskworkerconstraintsByRestLink(taskResource.getLink("taskworkerconstraint").getHref());
