@@ -1,6 +1,6 @@
 package dk.trustworks.controllers;
 
-import dk.trustworks.network.clients.InvoiceClient;
+import dk.trustworks.network.clients.feign.InvoiceClient;
 import dk.trustworks.network.dto.Invoice;
 import dk.trustworks.network.dto.InvoiceItem;
 import dk.trustworks.network.dto.InvoiceStatus;

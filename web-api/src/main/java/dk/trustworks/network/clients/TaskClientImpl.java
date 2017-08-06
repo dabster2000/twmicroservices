@@ -1,11 +1,12 @@
 package dk.trustworks.network.clients;
 
-import dk.trustworks.network.dto.Project;
 import dk.trustworks.network.dto.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -15,14 +16,14 @@ import org.springframework.web.client.RestTemplate;
  */
 
 @Component
-public class ProjectClient {
+public class TaskClientImpl {
 
     @Autowired
     RestTemplate restTemplate;
 
-    @Cacheable("project")
-    public Resource<Project> findProjectByRestLink(String link) {
-        return restTemplate.exchange(link, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Project>>() {}).getBody();
+    @Cacheable("task")
+    public Resource<Task> findTaskByRestLink(String link) {
+        return restTemplate.exchange(link, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Task>>() {}).getBody();
     }
 
 }

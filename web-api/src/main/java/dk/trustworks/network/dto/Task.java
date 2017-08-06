@@ -8,6 +8,7 @@ public class Task {
     private String uuid;
     private String name;
     private String type;
+    private String projectuuid;
     private Resource<Project> project;
 
     public String getUuid() {
@@ -51,5 +52,13 @@ public class Task {
         sb.append(", project=").append(project);
         sb.append('}');
         return sb.toString();
+    }
+
+    public String getProjectuuid() {
+        return projectuuid;
+    }
+
+    public void setProjectuuid(String projectuuid) {
+        this.projectuuid = projectuuid;
     }
 }

@@ -18,6 +18,7 @@ public class Project {
     private Date startdate;
     private Date enddate;
     private Resource<Client> client;
+    private String clientuuid;
 
 
     public String getUuid() {
@@ -106,5 +107,13 @@ public class Project {
         sb.append(", client=").append(client);
         sb.append('}');
         return sb.toString();
+    }
+
+    public String getClientuuid() {
+        return clientuuid;
+    }
+
+    public void setClientuuid(String clientuuid) {
+        this.clientuuid = clientuuid;
     }
 }

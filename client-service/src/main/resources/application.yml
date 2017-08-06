@@ -15,7 +15,7 @@ spring:
   datasource:
     url: ${URL:jdbc:mysql://localhost:3306/clientmanager?noDatetimeStringSync=true&characterEncoding=utf8}
     username: ${USERNAME:root}
-    password: ${PASSWORD}
+    password: ${PASSWORD:}
     hikari:
       maximum-pool-size: 2
   cloud:

@@ -5,11 +5,13 @@ package dk.trustworks.network.dto;
  */
 public class Work {
 
-    //private String uuid;
+    private String uuid;
     private int day;
     private int month;
     private int year;
     private double workduration;
+    private String taskuuid;
+    private String useruuid;
 
     public Work() {
     }
@@ -55,5 +57,29 @@ public class Work {
         sb.append(", workduration=").append(workduration);
         sb.append('}');
         return sb.toString();
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getTaskuuid() {
+        return taskuuid;
+    }
+
+    public void setTaskuuid(String taskuuid) {
+        this.taskuuid = taskuuid;
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

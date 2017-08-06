@@ -1,7 +1,7 @@
 package dk.trustworks.network.clients;
 
-import dk.trustworks.network.dto.Client;
 import dk.trustworks.network.dto.Project;
+import dk.trustworks.network.dto.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,14 +15,14 @@ import org.springframework.web.client.RestTemplate;
  */
 
 @Component
-public class ClientClient {
+public class ProjectClientImpl {
 
     @Autowired
     RestTemplate restTemplate;
 
-    @Cacheable("client")
-    public Resource<Client> findClientByRestLink(String link) {
-        return restTemplate.exchange(link, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Client>>() {}).getBody();
+    @Cacheable("project")
+    public Resource<Project> findProjectByRestLink(String link) {
+        return restTemplate.exchange(link, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Project>>() {}).getBody();
     }
 
 }

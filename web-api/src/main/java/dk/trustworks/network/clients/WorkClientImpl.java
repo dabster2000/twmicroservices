@@ -1,5 +1,6 @@
 package dk.trustworks.network.clients;
 
+import dk.trustworks.network.clients.feign.WorkClient;
 import dk.trustworks.network.dto.Work;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;

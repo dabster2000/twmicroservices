@@ -11,6 +11,9 @@ public class Task {
     private String name;
     private String type;
 
+    @Column(insertable=false, updatable=false)
+    private String projectuuid;
+
     @OneToMany(mappedBy = "task")
     @JsonIgnore private List<Taskworkerconstraint> taskworkerconstraint;
 
@@ -69,4 +72,11 @@ public class Task {
         this.budget = budget;
     }
 
+    public String getProjectuuid() {
+        return projectuuid;
+    }
+
+    public void setProjectuuid(String projectuuid) {
+        this.projectuuid = projectuuid;
+    }
 }

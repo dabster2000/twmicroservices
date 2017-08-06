@@ -1,9 +1,7 @@
 package dk.trustworks.controllers;
 
-import dk.trustworks.network.dto.Invoice;
-import dk.trustworks.network.dto.InvoiceItem;
-import dk.trustworks.network.dto.InvoiceType;
 import dk.trustworks.network.clients.*;
+import dk.trustworks.network.clients.feign.*;
 import dk.trustworks.network.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by hans on 06/07/2017.
@@ -63,14 +63,32 @@ public class ProjectSummaryController {
 
         Map<String, ProjectSummary> projectSummaryMap = new HashMap<>();
 
+        Map<String, Task> taskMap = new HashMap<>();
+        for (Resource<Task> taskResource : taskClient.findAll().getContent()) {
+            taskMap.put(taskResource.getContent().getUuid(), taskResource.getContent());
+        }
+
+        Map<String, Project> projectMap = new HashMap<>();
+        for (Resource<Project> projectResource : projectClient.findAll().getContent()) {
+            projectMap.put(projectResource.getContent().getUuid(), projectResource.getContent());
+        }
+
+        Map<String, Client> clientMap = new HashMap<>();
+        for (Resource<Client> clientResource : clientClient.findAll().getContent()) {
+            clientMap.put(clientResource.getContent().getUuid(), clientResource.getContent());
+        }
+
         for (Resource<Work> workResource : workResources) {
             Link taskLink = workResource.getLink("task");
-            Resource<Task> taskResource = taskClient.findTaskByRestLink(taskLink.getHref());
-            Resource<Project> projectResource = projectClient.findProjectByRestLink(taskResource.getLink("project").getHref());
-            Resource<Client> clientResource = clientClient.findClientByRestLink(projectResource.getLink("client").getHref());
+            Task task = taskMap.get(workResource.getContent().getTaskuuid());
+            Project project = projectMap.get(task.getProjectuuid());
+            Client client = clientMap.get(project.getClientuuid());
+            //Resource<Task> taskResource = taskClient.findTaskByRestLink(taskLink.getHref());
+            //Resource<Project> projectResource = projectClient.findProjectByRestLink(taskResource.getLink("project").getHref());
+            //Resource<Client> clientResource = clientClient.findClientByRestLink(projectResource.getLink("client").getHref());
 
-            Project project = projectResource.getContent();
-            Client client = clientResource.getContent();
+            //Project project = projectResource.getContent();
+            //Client client = clientResource.getContent();
 
             int numberOfInvoicesRelatedToProject = 0;
             for (Resource<Invoice> invoice : invoices) {

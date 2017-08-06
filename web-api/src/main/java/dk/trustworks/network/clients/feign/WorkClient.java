@@ -1,4 +1,4 @@
-package dk.trustworks.network.clients;
+package dk.trustworks.network.clients.feign;
 
 import dk.trustworks.network.FeignConfiguration;
 import dk.trustworks.network.dto.Work;
