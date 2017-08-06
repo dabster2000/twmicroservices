@@ -11,18 +11,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapt
 
 @Configuration
 @ComponentScan("dk.trustworks")
-public class ClientConfiguration extends RepositoryRestConfigurerAdapter {
-
-	@Override
-	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-		config.exposeIdsFor(Task.class);
-		config.exposeIdsFor(Project.class);
-		config.exposeIdsFor(Client.class);
-		config.exposeIdsFor(Taskworkerconstraint.class);
-		config.exposeIdsFor(Budget.class);
-		config.exposeIdsFor(Clientdata.class);
-	}
-
+public class ClientConfiguration {
 
 	@Bean
 	public AlwaysSampler defaultSampler() {

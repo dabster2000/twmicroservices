@@ -9,7 +9,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 /**
  * Created by hans on 23/06/2017.
  */
-@RepositoryRestResource(collectionResourceRel = "network", path = "network")
+@RepositoryRestResource(collectionResourceRel = "clients", path = "clients")
 public interface ClientRepository extends PagingAndSortingRepository<Client, String> {
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Client entity);

@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Bean;
  * Created by hans on 25/06/2017.
  */
 
-@EnableCircuitBreaker
 @SpringBootApplication
 @EnableDiscoveryClient
 public class ClientmanagerApplication {

@@ -30,17 +30,35 @@ public class TimemanagerApplication extends RepositoryRestMvcConfiguration {
 
     @Autowired
     private DiscoveryClient discoveryClient;
-
+/*
     @Bean(name="userResource")
     public DiscoveredResource usersByUUIDResource() {
         return new DiscoveredResource(new DynamicServiceInstanceProvider(discoveryClient, "user-service")
                 , traverson -> traverson.follow("users", "search", "findByUuid"));
     }
-
+*/
     @Bean(name="taskResource")
     public DiscoveredResource taskByUUIDResource() {
         return new DiscoveredResource(new DynamicServiceInstanceProvider(discoveryClient, "client-service")
-                , traverson -> traverson.follow("tasks", "search", "findByUuid"));
+                , traverson -> {
+            System.out.println("TimemanagerApplication.taskByUUIDResource");
+            return traverson.follow("tasks", "search", "findByUuid");
+        });
+    }
+
+    @Bean(name="userResource")
+    public DiscoveredResource usersByUUIDResource(ServiceInstanceProvider provider) {
+        System.out.println("TimemanagerApplication.usersByUUIDResource");
+        return new DiscoveredResource(provider, traverson -> traverson.follow("users", "search", "findByUuid"));
+    }
+
+    @EnableDiscoveryClient
+    static class CloudConfiguration {
+        @Bean
+        public DynamicServiceInstanceProvider dynamicServiceProvider(DiscoveryClient client) {
+            System.out.println("CloudConfiguration.dynamicServiceProvider");
+            return new DynamicServiceInstanceProvider(client, "user-service");
+        }
     }
 
 /*
