@@ -23,7 +23,7 @@
                 <pattern>
                     <pattern>
                         {
-                        "serviceName": "web-api"
+                        "serviceName": "invoice-webui"
                         }
                     </pattern>
                 </pattern>

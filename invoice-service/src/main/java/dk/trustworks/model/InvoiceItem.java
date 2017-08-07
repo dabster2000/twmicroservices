@@ -18,6 +18,7 @@ public class InvoiceItem {
     public String description;
     public double rate;
     public double hours;
+    //public String invoiceuuid;
 
     public InvoiceItem() {
 
@@ -39,6 +40,7 @@ public class InvoiceItem {
         sb.append(", description='").append(description).append('\'');
         sb.append(", rate=").append(rate);
         sb.append(", hours=").append(hours);
+        //sb.append(", invoiceuuid='").append(invoiceuuid).append('\'');
         sb.append('}');
         return sb.toString();
     }

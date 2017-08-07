@@ -87,7 +87,7 @@ public class InvoiceListImpl extends InvoiceListDesign
                 invoiceEdit.btnSave.addClickListener(clickEvent -> {
                     try {
                         saveFormToInvoiceBean(invoice, invoiceEdit);
-                        restTemplate.patchForObject(invoice.getLink("self").getHref(), invoice, String.class);
+                        restTemplate.put(invoice.getLink("self").getHref(), invoice, String.class);
                     } catch (ValidationException e) {
                         Notification.show("Invoice could not be saved, " +
                                 "please check error messages for each field.");
