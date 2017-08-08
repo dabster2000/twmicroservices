@@ -27,4 +27,7 @@ public interface InvoiceClient {
 
     @RequestMapping(method = PATCH, value = "/invoices/{uuid}")
     void updateInvoice(@PathVariable("uuid") String uuid, @RequestBody Invoice invoice);
+
+    @RequestMapping(method = GET, value = "/invoices/search/findByLatestInvoiceByProjectuuid")
+    Invoice findByLatestInvoiceByProjectuuid(String projectuuid);
 }

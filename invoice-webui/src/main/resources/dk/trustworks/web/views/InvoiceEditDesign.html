@@ -68,7 +68,10 @@
       <vaadin-label width-full _id="lblDescription">
         Projektnr.: 2016-03 For perioden: juni 2017 
       </vaadin-label>
-      <vaadin-text-field description="description" width-full _id="txtSpecificDescription"></vaadin-text-field>
+      <vaadin-horizontal-layout width-full>
+       <vaadin-text-field description="description" width-full _id="txtSpecificDescription" :expand></vaadin-text-field>
+       <vaadin-button icon="fonticon://Vaadin-Icons/e7d4" description="Insert last invoice description" style-name="icon-only borderless" plain-text _id="btnCopyDescription"></vaadin-button>
+      </vaadin-horizontal-layout>
      </vaadin-vertical-layout>
     </vaadin-horizontal-layout>
     <vaadin-vertical-layout style-name="invoice-details">

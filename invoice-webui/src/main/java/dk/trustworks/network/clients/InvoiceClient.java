@@ -44,4 +44,8 @@ public interface InvoiceClient {
     @CacheEvict(cacheNames={"invoices", "projectsummaries"}, allEntries=true)
     @RequestMapping(method = PATCH)
     public void updateInvoice(@RequestBody Invoice invoice);
+
+    @RequestMapping(method = GET, value = "/invoices/search/findByLatestInvoiceByProjectuuid")
+    Invoice findByLatestInvoiceByProjectuuid(@RequestParam("projectuuid") String projectuuid);
+
 }

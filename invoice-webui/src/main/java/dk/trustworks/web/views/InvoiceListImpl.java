@@ -71,7 +71,13 @@ public class InvoiceListImpl extends InvoiceListDesign
 
                 Invoice invoice = event.getItem();
 
-                InvoiceEditImpl invoiceEdit = new InvoiceEditImpl(invoice, restTemplate);
+                InvoiceEditImpl invoiceEdit = new InvoiceEditImpl(invoice);
+
+                invoiceEdit.btnCopyDescription.addClickListener(clickEvent -> {
+                    System.out.println("invoice.projectuuid = " + invoice.projectuuid);
+                    Invoice latestInvoiceByProjectuuid = invoiceClient.findByLatestInvoiceByProjectuuid(invoice.projectuuid);
+                    invoiceEdit.setSpecificDescription(latestInvoiceByProjectuuid.specificdescription);
+                });
 
                 invoiceEdit.btnCreateInvoice.addClickListener(clickEvent -> {
                     try {

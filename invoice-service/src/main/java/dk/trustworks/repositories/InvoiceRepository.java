@@ -21,6 +21,13 @@ public interface InvoiceRepository extends PagingAndSortingRepository<Invoice, S
     List<Invoice> findByStatus(@Param("status") InvoiceStatus status);
     List<Invoice> findByStatusIn(@Param("statuses") Collection<InvoiceStatus> statuses);
 
+    @Query(value = "SELECT * FROM invoicemanager.invoices i " +
+            "WHERE i.projectuuid LIKE :projectuuid " +
+            "AND i.status IN ('CREATED', 'SUBMITTED', 'PAID', 'CREDIT_NOTE') " +
+            "order by i.year, i.month desc " +
+            "LIMIT 1", nativeQuery = true)
+    Invoice findByLatestInvoiceByProjectuuid(@Param("projectuuid") String projectuuid);
+
     @Query(value = "SELECT MAX(i.invoicenumber) FROM invoicemanager.invoices i", nativeQuery = true)
     Integer getMaxInvoiceNumber();
 

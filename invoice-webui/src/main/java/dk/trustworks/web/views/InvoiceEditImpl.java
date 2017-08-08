@@ -26,7 +26,7 @@ public class InvoiceEditImpl extends InvoiceEditDesign {
     Binder<Invoice> invoiceBinder;
     private Invoice invoice;
 
-    public InvoiceEditImpl(Invoice invoice, RestTemplate restTemplate) {
+    public InvoiceEditImpl(Invoice invoice) {
         this.invoice = invoice;
         this.lblAttention.setValue("ATT: "+invoice.attention);
         this.lblClientname.setValue(invoice.clientname);
@@ -197,6 +197,10 @@ public class InvoiceEditImpl extends InvoiceEditDesign {
             formatter.setMinimumFractionDigits(2);
             return String.valueOf(formatter.format(aDouble));
         }
+    }
+
+    public void setSpecificDescription(String description) {
+        txtSpecificDescription.setValue(description);
     }
 
 }

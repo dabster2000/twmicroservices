@@ -32,6 +32,7 @@ public class InvoiceEditDesign extends VerticalLayout {
     protected DateField dfInvoiceDate;
     protected Label lblDescription;
     protected TextField txtSpecificDescription;
+    protected Button btnCopyDescription;
     protected GridLayout gridInvoiceItems;
     protected Label lblSumNoTax;
     protected Label lblTax;
