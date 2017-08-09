@@ -30,9 +30,37 @@ eureka:
     leaseRenewalIntervalInSeconds: 1
     leaseExpirationDurationInSeconds: 2
 
+invoice-service:
+  ribbon:
+    ServerListRefreshInterval: 2000
+    retryableStatusCodes: 404, 500, 502
+    MaxAutoRetries: 5
+    ConnectTimeout: 5000
+    ReadTimeout: 5000
+
+client-service:
+  ribbon:
+    ServerListRefreshInterval: 2000
+    retryableStatusCodes: 404, 500, 502
+    MaxAutoRetries: 5
+    ConnectTimeout: 5000
+    ReadTimeout: 5000
+
+time-service:
+  ribbon:
+    ServerListRefreshInterval: 2000
+    retryableStatusCodes: 404, 500, 502
+    MaxAutoRetries: 5
+    ConnectTimeout: 5000
+    ReadTimeout: 5000
+
 ribbon:
   eureka:
     enabled: true
+
+
+# Increase the Hystrix timeout to 60s (globally)
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
 
 feign:
   client:
