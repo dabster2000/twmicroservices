@@ -83,7 +83,7 @@ public class InvoiceListImpl extends InvoiceListDesign
                     try {
                         saveFormToInvoiceBean(invoice, invoiceEdit);
                         invoice.setStatus(InvoiceStatus.CREATED);
-                        restTemplate.patchForObject(invoice.getLink("self").getHref(), invoice, String.class);
+                        restTemplate.put(invoice.getLink("self").getHref(), invoice, String.class);
                         window.close();
                     } catch (ValidationException e) {
                         e.printStackTrace();

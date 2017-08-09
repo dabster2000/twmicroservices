@@ -40,6 +40,9 @@ public class ProjectSummaryController {
     private TaskworkerconstraintClient taskworkerconstraintClient;
 
     @Autowired
+    private TaskworkerconstraintClientImpl taskworkerconstraintClientImpl;
+
+    @Autowired
     private ProjectClient projectClient;
 
     @Autowired
@@ -87,50 +90,68 @@ public class ProjectSummaryController {
             clientMap.put(clientResource.getContent().getUuid(), clientResource.getContent());
         }
 
+        Map<String, Taskworkerconstraint> taskworkerconstraintMap = new HashMap<>();
+        for (Resource<Taskworkerconstraint> taskworkerconstraintResource : taskworkerconstraintClient.findAll()) {
+            System.out.println("taskworkerconstraintResource.getContent() = " + taskworkerconstraintResource.getContent());
+            taskworkerconstraintMap.put(
+                    taskworkerconstraintResource.getContent().getUseruuid()+"_"
+                    +taskworkerconstraintResource.getContent().getTaskuuid(),
+                    taskworkerconstraintResource.getContent()
+            );
+        }
+
+
         for (Resource<Work> workResource : workResources) {
-            Link taskLink = workResource.getLink("task");
             Task task = taskMap.get(workResource.getContent().getTaskuuid());
             if(task==null) {
-                System.out.println("workResource = " + workResource.getContent());
                 continue;
             }
             Project project = projectMap.get(task.getProjectuuid());
             if(project==null) {
-                System.out.println("task = " + task);
-                System.out.println("workResource = " + workResource.getContent());
                 continue;
             }
             Client client = clientMap.get(project.getClientuuid());
             if(client==null) {
-                System.out.println("project = " + project);
-                System.out.println("task = " + task);
-                System.out.println("workResource = " + workResource.getContent());
                 continue;
             }
-            //Resource<Task> taskResource = taskClient.findTaskByRestLink(taskLink.getHref());
-            //Resource<Project> projectResource = projectClient.findProjectByRestLink(taskResource.getLink("project").getHref());
-            //Resource<Client> clientResource = clientClient.findClientByRestLink(projectResource.getLink("client").getHref());
 
-            //Project project = projectResource.getContent();
-            //Client client = clientResource.getContent();
-
-            int numberOfInvoicesRelatedToProject = 0;
-            for (Resource<Invoice> invoice : invoices) {
-                if(invoice.getContent().projectuuid.equals(project.getUuid())) numberOfInvoicesRelatedToProject++;
-            }
+            double invoicedamount = 0.0;
 
             if(!projectSummaryMap.containsKey(project.getUuid())) {
+                int numberOfInvoicesRelatedToProject = 0;
+                for (Resource<Invoice> invoice : invoices) {
+                    if(invoice.getContent().projectuuid.equals(project.getUuid()) && (
+                            invoice.getContent().status.equals(InvoiceStatus.CREATED)
+                            || invoice.getContent().status.equals(InvoiceStatus.SUBMITTED)
+                            || invoice.getContent().status.equals(InvoiceStatus.PAID)
+                            || invoice.getContent().status.equals(InvoiceStatus.CREDIT_NOTE))) {
+                        numberOfInvoicesRelatedToProject++;
+                        for (InvoiceItem invoiceitem : invoice.getContent().invoiceitems) {
+                            invoicedamount += (invoice.getContent().type.equals(InvoiceType.INVOICE)?
+                                    (invoiceitem.hours*invoiceitem.rate):
+                                    -(invoiceitem.hours*invoiceitem.rate));
+                        }
+                    }
+                }
                 ProjectSummary projectSummary = new ProjectSummary(
                         project.getUuid(),
                         project.getName(),
                         client.getName(),
                         project.getCustomerreference(),
                         0,
-                        numberOfInvoicesRelatedToProject);
+                        invoicedamount, numberOfInvoicesRelatedToProject);
                 projectSummaryMap.put(project.getUuid(), projectSummary);
                 logger.info("Created new projectSummary: " + projectSummary);
             }
-            projectSummaryMap.get(project.getUuid()).addAmount(workResource.getContent().getWorkduration());
+            System.out.println("workResource.getContent() = " + workResource.getContent());
+            if(taskworkerconstraintMap.containsKey(workResource.getContent().getUseruuid()+"_"+workResource.getContent().getTaskuuid())) {
+                projectSummaryMap.get(project.getUuid()).addAmount(
+                        workResource.getContent().getWorkduration() *
+                                (taskworkerconstraintMap.get(
+                                        (workResource.getContent().getUseruuid() + "_" + workResource.getContent().getTaskuuid())
+                                ).getPrice())
+                );
+            }
 
         }
         return projectSummaryMap.values();
@@ -141,9 +162,6 @@ public class ProjectSummaryController {
         logger.info("InvoiceController.createInvoiceFromProject");
         logger.info("projectuuid = [" + projectuuid + "], year = [" + year + "], month = [" + month + "]");
         Resources<Resource<Work>> workResources = workClient.findByYearAndMonth(year, month);
-        System.out.println("workResources = " + workResources);
-        System.out.println("workResources.getContent().size() = " + workResources.getContent().size());
-        //Map<String, Invoice> invoiceMap = new HashMap<>();
         Invoice invoice = null;
         Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 
@@ -170,7 +188,7 @@ public class ProjectSummaryController {
             Resource<Client> clientResource = clientClientImpl.findClientByRestLink(projectResource.getLink("client").getHref());
             Client client = clientResource.getContent();
 
-            Resources<Resource<Taskworkerconstraint>> taskworkerconstraintResources = taskworkerconstraintClient.findTaskworkerconstraintsByRestLink(taskResource.getLink("taskworkerconstraint").getHref());
+            Resources<Resource<Taskworkerconstraint>> taskworkerconstraintResources = taskworkerconstraintClientImpl.findTaskworkerconstraintsByRestLink(taskResource.getLink("taskworkerconstraint").getHref());
 
             if(invoice == null) {
                 invoice = new Invoice(InvoiceType.INVOICE,

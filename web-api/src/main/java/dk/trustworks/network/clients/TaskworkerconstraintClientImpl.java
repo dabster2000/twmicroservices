@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
  */
 
 @Component
-public class TaskworkerconstraintClient {
+public class TaskworkerconstraintClientImpl {
 
     @Autowired
     RestTemplate restTemplate;

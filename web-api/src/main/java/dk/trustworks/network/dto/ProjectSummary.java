@@ -1,7 +1,5 @@
 package dk.trustworks.network.dto;
 
-import java.time.LocalDate;
-
 /**
  * Created by hans on 12/07/2017.
  */
@@ -11,18 +9,20 @@ public class ProjectSummary {
     private String projectname;
     private String clientname;
     private String description;
-    private double amount;
+    private double registeredamount;
+    private double invoicedamount;
     private int invoices;
 
     public ProjectSummary() {
     }
 
-    public ProjectSummary(String projectuuid, String projectname, String clientname, String description, double amount, int invoices) {
+    public ProjectSummary(String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices) {
         this.projectuuid = projectuuid;
         this.projectname = projectname;
         this.clientname = clientname;
         this.description = description;
-        this.amount = amount;
+        this.registeredamount = registeredamount;
+        this.invoicedamount = invoicedamount;
         this.invoices = invoices;
     }
 
@@ -58,12 +58,12 @@ public class ProjectSummary {
         this.description = description;
     }
 
-    public double getAmount() {
-        return amount;
+    public double getRegisteredamount() {
+        return registeredamount;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setRegisteredamount(double registeredamount) {
+        this.registeredamount = registeredamount;
     }
 
     public int getInvoices() {
@@ -74,6 +74,18 @@ public class ProjectSummary {
         this.invoices = invoices;
     }
 
+    public void addAmount(double workduration) {
+        this.registeredamount += workduration;
+    }
+
+    public double getInvoicedamount() {
+        return invoicedamount;
+    }
+
+    public void setInvoicedamount(double invoicedamount) {
+        this.invoicedamount = invoicedamount;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ProjectSummary{");
@@ -81,13 +93,10 @@ public class ProjectSummary {
         sb.append(", projectname='").append(projectname).append('\'');
         sb.append(", clientname='").append(clientname).append('\'');
         sb.append(", description='").append(description).append('\'');
-        sb.append(", amount=").append(amount);
+        sb.append(", registeredamount=").append(registeredamount);
+        sb.append(", invoicedamount=").append(invoicedamount);
         sb.append(", invoices=").append(invoices);
         sb.append('}');
         return sb.toString();
-    }
-
-    public void addAmount(double workduration) {
-        this.amount += workduration;
     }
 }
