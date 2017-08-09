@@ -23,7 +23,8 @@ public interface WorkRepository extends CrudRepository<Work, String> {
                                                               @Param("taskuuid") String taskuuid,
                                                               @Param("useruuid") String useruuid);
 
-    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM timemanager.work_latest w WHERE w.year = :year AND w.month = :month", nativeQuery = true)
+    //@Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM timemanager.work_latest w WHERE w.year = :year AND w.month = :month", nativeQuery = true)
+    @Query(value = "SELECT uuid, day, month, year, taskuuid, useruuid, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM timemanager.work_latest w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
     List<Work> findByYearAndMonth(@Param("year") int year,
                                   @Param("month") int month);
 
