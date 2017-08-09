@@ -43,9 +43,7 @@ public class ProjectListImpl extends ProjectListDesign {
         cbSelectYearMonth.setItemCaptionGenerator(c -> c.getDate().format(DateTimeFormatter.ofPattern("MMMM yyyy")));
         cbSelectYearMonth.setEmptySelectionAllowed(false);
         cbSelectYearMonth.setSelectedItem(yearMonthList.get(1));
-        cbSelectYearMonth.addValueChangeListener(event -> {
-            reloadData();
-        });
+        cbSelectYearMonth.addValueChangeListener(event -> reloadData());
 
         gridProjectSummaryList.setSelectionMode(Grid.SelectionMode.MULTI);
         gridProjectSummaryList.addSelectionListener(event -> {

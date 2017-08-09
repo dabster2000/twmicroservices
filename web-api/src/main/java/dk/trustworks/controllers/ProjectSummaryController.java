@@ -128,10 +128,10 @@ public class ProjectSummaryController {
                         0,
                         numberOfInvoicesRelatedToProject);
                 projectSummaryMap.put(project.getUuid(), projectSummary);
-                logger.info("Created new projectSummary: "+projectSummary);
-            } else {
-                projectSummaryMap.get(project.getUuid()).addAmount(workResource.getContent().getWorkduration());
+                logger.info("Created new projectSummary: " + projectSummary);
             }
+            projectSummaryMap.get(project.getUuid()).addAmount(workResource.getContent().getWorkduration());
+
         }
         return projectSummaryMap.values();
     }
