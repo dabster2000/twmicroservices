@@ -196,7 +196,7 @@ public class ProjectSummaryController {
                         project.getName(),
                         year,
                         month,
-                        client.getName(),
+                        clientdata.getClientname(),
                         clientdata.getStreetnamenumber(),
                         clientdata.getOtheraddressinfo(),
                         clientdata.getPostalcode()+" "+ clientdata.getCity(),
