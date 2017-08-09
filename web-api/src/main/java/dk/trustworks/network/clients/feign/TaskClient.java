@@ -20,7 +20,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @FeignClient("client-service")
 public interface TaskClient {
-    @Async
     @Cacheable("task")
     @RequestMapping(value = "/tasks", method = GET)
     Resources<Resource<Task>> findAll();
