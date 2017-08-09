@@ -49,6 +49,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener {
 */
         //VerticalLayout mainLayout = new VerticalLayout(invoiceList);
         setContent(mainWindow);
+        mainWindow.init();
         receiveBroadcast("");
         setTheme("invoice");
     }

@@ -6,6 +6,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.network.clients.ProjectSummaryClient;
 import dk.trustworks.network.dto.ProjectSummary;
@@ -18,6 +19,7 @@ import org.vaadin.addons.producttour.step.Step;
 import org.vaadin.addons.producttour.step.StepBuilder;
 import org.vaadin.addons.producttour.tour.Tour;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -72,15 +74,25 @@ public class ProjectListImpl extends ProjectListDesign {
         });
 
         gridProjectSummaryList.setSizeFull();
-        reloadData();
+
         addTour();
+    }
+
+    public void init() {
+        reloadData();
     }
 
     public void reloadData() {
         System.out.println("ProjectListImpl.reloadData");
-        List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
-        gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
-        gridProjectSummaryList.getDataProvider().refreshAll();
+        long start = System.currentTimeMillis();
+        System.out.println("start = " + start);
+        UI.getCurrent().access(() -> {
+            List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
+            gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
+            gridProjectSummaryList.getDataProvider().refreshAll();
+        });
+        double end = System.currentTimeMillis() - start;
+        System.out.println("end = " + end);
     }
 
     private List<YearMonthSelect> createYearMonthSelector() {

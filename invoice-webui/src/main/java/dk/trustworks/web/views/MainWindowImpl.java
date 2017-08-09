@@ -23,6 +23,10 @@ public class MainWindowImpl extends MainWindowDesign {
     private final InvoiceListImpl invoiceList;
     private final InvoiceStatusListImpl invoiceStatusList;
 
+    public void init() {
+        projectList.init();
+    }
+
     @Autowired
     public MainWindowImpl(InvoiceClient invoiceClient, ProjectListImpl projectList, InvoiceListImpl invoiceList, InvoiceStatusListImpl invoiceStatusList) {
         this.invoiceClient = invoiceClient;
