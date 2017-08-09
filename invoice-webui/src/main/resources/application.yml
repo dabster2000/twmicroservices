@@ -63,8 +63,8 @@ web-api:
     ServerListRefreshInterval: 2000
     retryableStatusCodes: 404, 500, 502
     MaxAutoRetries: 5
-    ConnectTimeout: 5000
-    ReadTimeout: 5000
+    ConnectTimeout: 10000
+    ReadTimeout: 10000
 
 invoice-service:
   ribbon:
