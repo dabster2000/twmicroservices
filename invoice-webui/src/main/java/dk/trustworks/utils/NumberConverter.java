@@ -8,9 +8,6 @@ import java.util.Locale;
  */
 public class NumberConverter {
 
-    {
-        Locale.setDefault(new Locale("da", "DK"));
-    }
 
     public static NumberFormat getCurrencyInstance() {
         return NumberFormat.getCurrencyInstance();

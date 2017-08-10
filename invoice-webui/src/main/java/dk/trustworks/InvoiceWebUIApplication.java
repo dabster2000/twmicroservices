@@ -42,6 +42,7 @@ public class InvoiceWebUIApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(InvoiceWebUIApplication.class);
+        Locale.setDefault(new Locale("da", "DK"));
     }
 
     @Bean
