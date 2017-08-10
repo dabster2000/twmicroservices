@@ -41,7 +41,6 @@ public class InvoiceWebUIApplication {
     private static final Logger log = LoggerFactory.getLogger(InvoiceWebUIApplication.class);
 
     public static void main(String[] args) {
-        Locale.setDefault(new Locale("da", "DK"));
         SpringApplication.run(InvoiceWebUIApplication.class);
     }
 

@@ -7,9 +7,11 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.network.clients.ProjectSummaryClient;
 import dk.trustworks.network.dto.ProjectSummary;
+import dk.trustworks.utils.NumberConverter;
 import dk.trustworks.web.model.YearMonthSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addons.producttour.actions.TourActions;
@@ -46,6 +48,14 @@ public class ProjectListImpl extends ProjectListDesign {
         cbSelectYearMonth.setEmptySelectionAllowed(false);
         cbSelectYearMonth.setSelectedItem(yearMonthList.get(1));
         cbSelectYearMonth.addValueChangeListener(event -> reloadData());
+
+        Grid.Column colRegisteredAmount = gridProjectSummaryList.getColumn("registeredamount");
+        colRegisteredAmount.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
+        colRegisteredAmount.setStyleGenerator(item -> "v-align-right");
+
+        Grid.Column colInvoicedAmount = gridProjectSummaryList.getColumn("invoicedamount");
+        colInvoicedAmount.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
+        colInvoicedAmount.setStyleGenerator(item -> "v-align-right");
 
         gridProjectSummaryList.setSelectionMode(Grid.SelectionMode.MULTI);
         gridProjectSummaryList.addSelectionListener(event -> {

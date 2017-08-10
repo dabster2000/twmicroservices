@@ -22,6 +22,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.network.clients.InvoiceClient;
 import dk.trustworks.network.clients.ProjectSummaryClient;
 import dk.trustworks.network.dto.*;
+import dk.trustworks.utils.NumberConverter;
 import dk.trustworks.web.Broadcaster;
 import dk.trustworks.web.model.SubTotal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,16 +62,12 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
 
     private Resources<Invoice> invoices;
 
-    private NumberFormat kronerFormat;
-
     @Autowired
     public InvoiceStatusListImpl(InvoiceClient invoiceClient, ProjectSummaryClient projectSummaryClient) {
         this.projectSummaryClient = projectSummaryClient;
         this.invoiceClient = invoiceClient;
 
         Broadcaster.register(this);
-
-        kronerFormat = NumberFormat.getCurrencyInstance();
 
         createInvoiceTable();
 
@@ -131,7 +128,7 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
         for (Grid.Column subTotalColumn : gridSubTotals.getColumns()) {
             if(subTotalColumn.getId().equals("year")) continue;
             subTotalColumn.setStyleGenerator(item -> "v-align-right");
-            subTotalColumn.setRenderer(new NumberRenderer(kronerFormat));
+            subTotalColumn.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
         }
 
         gridSubTotals.getDataProvider().refreshAll();
@@ -199,11 +196,11 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
         invoiceNumber.setStyleGenerator(item -> "v-align-right");
 
         Grid.Column sumNoTax = gridInvoiceList.getColumn("sumNoTax");
-        sumNoTax.setRenderer(new NumberRenderer(kronerFormat));
+        sumNoTax.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
         sumNoTax.setStyleGenerator(item -> "v-align-right");
 
         Grid.Column sumWithTax = gridInvoiceList.getColumn("sumWithTax");
-        sumWithTax.setRenderer(new NumberRenderer(kronerFormat));
+        sumWithTax.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
         sumWithTax.setStyleGenerator(item -> "v-align-right");
 
         FooterRow footer = gridInvoiceList.appendFooterRow();
@@ -217,11 +214,11 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
                     .filter(invoice -> invoice.type != InvoiceType.CREDIT_NOTE || invoice.status != CREDIT_NOTE)
                     .mapToDouble(Invoice::getSumNoTax).sum();
             FooterCell sumNoTaxFooter = footer.getCell("sumNoTax");
-            sumNoTaxFooter.setText(kronerFormat.format(sum));
+            sumNoTaxFooter.setText(NumberConverter.formatCurrency(sum));
             sumNoTaxFooter.setStyleName("v-align-right");
 
             FooterCell sumWithTaxFooter = footer.getCell("sumWithTax");
-            sumWithTaxFooter.setText(kronerFormat.format(sum*1.25));
+            sumWithTaxFooter.setText(NumberConverter.formatCurrency(sum*1.25));
             sumWithTaxFooter.setStyleName("v-align-right");
         });
         // Fire a data change event to initialize the summary footer
