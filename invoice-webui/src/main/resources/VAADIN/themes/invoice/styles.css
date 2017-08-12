@@ -1081,7 +1081,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "8.1.1";
+	content: "${project.version}";
 }
 
 .v-widget {
@@ -1660,144 +1660,6 @@ div.v-layout.v-horizontal.v-widget {
 		transform: rotate(359deg);
 	}
 	}
-
-.root-layout.navigation-template-vaadin {
-	background-color: #ffffff;
-}
-
-.root-layout.navigation-template-vaadin .header-bar .v-nativebutton, .root-layout.navigation-template-vaadin .side-bar .v-nativebutton {
-	background: none;
-	border: none;
-}
-
-.root-layout.navigation-template-vaadin .header-bar .v-nativebutton:hover, .root-layout.navigation-template-vaadin .side-bar .v-nativebutton:hover {
-	cursor: pointer;
-}
-
-.root-layout.navigation-template-vaadin .scroll-panel {
-	background-color: #ffffff;
-	border: none;
-	border-radius: 0;
-}
-
-.root-layout.navigation-template-vaadin .header-bar {
-	background-color: #2C586D;
-	padding: 0px 15px 0 15px;
-	vertical-align: middle;
-	height: 65px;
-}
-
-.root-layout.navigation-template-vaadin .header-bar  > * {
-	color: #fff;
-	float: right;
-	padding: 0;
-	line-height: 20px;
-	margin-left: 15px;
-	font-size: 16px;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;/** Vertically center everything **/
-	position: relative;
-	top: 50%;
-	-webkit-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
-	transform: translateY(-50%);
-}
-
-.root-layout.navigation-template-vaadin .header-bar  > .search-field {
-	background: none;
-	color: #fff;
-	padding-left: 5px;
-	box-shadow: none;
-	border: 0;
-	border-bottom: solid 2px #fff;
-	border-radius: 0;
-	font-style: italic;
-}
-
-.root-layout.navigation-template-vaadin .header-bar .user-name-label {
-	color: #fff;
-}
-
-.root-layout.navigation-template-vaadin .side-bar {
-	background-color: #000;
-	width: 100px;
-}
-
-.root-layout.navigation-template-vaadin .side-bar  > .menu-button {
-	position: relative;
-	color: #fff;
-	height: 90px;
-}
-
-.root-layout.navigation-template-vaadin .side-bar  > .menu-button.selected {
-	background-color: #ffffff;
-}
-
-.root-layout.navigation-template-vaadin .side-bar  > .menu-button.selected .v-nativebutton-caption {
-	color: #1A1314;
-}
-
-.root-layout.navigation-template-vaadin .side-bar  > .menu-button .v-nativebutton-caption {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 0.7em;
-	text-transform: uppercase;
-	position: absolute;
-	bottom: 8px;
-	text-align: center;
-	left: 0;
-	right: 0;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.root-layout.navigation-template-vaadin .side-bar  > .menu-button .v-icon {
-	color: #2C586D;
-	position: absolute;
-	font-size: 35px;
-	margin-left: auto;
-	margin-right: auto;
-	top: 10px;
-	left: 0;
-	right: 0;
-}
-
-.root-layout.navigation-template-vaadin .dashboard-layout {
-	padding: 60px 60px 0 60px;
-}
-
-.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .dashboard-layout {
-	padding: 10px;
-}
-
-.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .dashboard-item {
-	width: 100% !important;
-	min-width: 321px;
-	margin: 0;
-}
-
-.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar {
-	width: 60px;
-}
-
-.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar  > .menu-button {
-	height: 50px;
-}
-
-.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar  > .menu-button  > .v-nativebutton-caption {
-	visibility: hidden;
-}
-
-.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar  > .menu-button  > .v-icon {
-	top: 0;
-}
-
-.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .header-bar {
-	height: 45px;
-	padding: 2px;
-}
-
-.navigation-template-vaadin[width-range~="321px-768px"] {
-	visibility: visible;
-}
 
 /**
  * Checks if a list contains a certain value.
@@ -2619,36 +2481,40 @@ div.v-layout.v-horizontal.v-widget {
  * @group valo-menu
  */
 
-body:not(.v-touch) :not(.v-upload) > * > .v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.link):not(.quiet):not(.border):not(.primary):not(.friendly):not(.danger):not(.custom):not(.floating-action):hover {
-	background: #ededed;
+:not(.v-upload) > * > .v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.link):not(.quiet):not(.border):not(.primary):not(.friendly):not(.danger):not(.custom):not(.floating-action) {
+	background: white;
 }
 
-body:not(.v-touch) :not(.v-upload) > :not(.v-component-group) > .v-button:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.floating-action).v-button:hover, body.v-touch :not(.v-component-group) > .v-button:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.floating-action).v-button:active {
+body:not(.v-touch) :not(.v-upload) > * > .v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.border):not(.primary):not(.friendly):not(.danger):not(.link):not(.custom):not(.floating-action):hover {
+	background: #e1e1e1;
+}
+
+body:not(.v-touch) :not(.v-upload) > :not(.v-component-group) > .v-button:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.link):not(.floating-action).v-button:hover, body.v-touch:not(.v-component-group) > .v-button:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.link):not(.floating-action).v-button:active {
 	box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -1px rgba(0, 0, 0, 0.2);
 }
 
 body:not(.v-touch) .friendly.v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #37ae29;
+	background: #20cb0d;
 }
 
 body:not(.v-touch) .custom.v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #318ae3;
+	background: #1a8afa;
 }
 
 body:not(.v-touch) .danger.v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #eb5d53;
+	background: #fc4e41;
 }
 
 body:not(.v-touch) .primary.v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #318ae3;
+	background: #1a8afa;
 }
 
 body:not(.v-touch) :not(.v-upload) > * > .v-button.borderless:not(.v-disabled):not(.borderless-colored):not(.primary):not(.friendly):not(.danger):not(.custom):hover {
-	background: rgba(0, 0, 0, 0.1);
+	background: #e1e1e1;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).floating-action:hover {
-	background: #318ae3;
+	background: #1a8afa;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).floating-action:not(.flat):hover, body.v-touch .v-button.floating-action:not(.flat):active {
@@ -2656,11 +2522,11 @@ body:not(.v-touch) .v-button:not(.v-disabled).floating-action:not(.flat):hover, 
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).floating-action:not(.flat).friendly:hover {
-	background: #37ae29;
+	background: #20cb0d;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).floating-action:not(.flat).danger:hover {
-	background: #eb5d53;
+	background: #fc4e41;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).border:hover {
@@ -2689,19 +2555,23 @@ body:not(.v-touch) .v-button:not(.v-disabled).border.danger:hover {
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).borderless.primary:hover, body:not(.v-touch) .v-button:not(.v-disabled).borderless-colored:hover {
-	background: rgba(25, 125, 225, 0.2) !important;
+	background: #1a8afa !important;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).borderless.friendly:hover {
-	background: rgba(44, 151, 32, 0.2) !important;
+	background: #20cb0d !important;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).borderless.danger:hover {
-	background: rgba(237, 71, 59, 0.2) !important;
+	background: #fc4e41 !important;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).borderless.custom:hover {
-	background: rgba(25, 125, 225, 0.2) !important;
+	background: #1a8afa !important;
+}
+
+body:not(.v-touch) .v-filterselect:not(.v-disabled) > .v-filterselect-button:hover {
+	background: #ededed;
 }
 
 body:not(.v-touch) .v-grid-editor-save:hover, body:not(.v-touch) .v-grid-editor-cancel:hover {
@@ -2712,7 +2582,7 @@ body:not(.v-touch) .v-upload:not(.v-disabled):not(.borderless):not(.borderless-c
 	background: #ededed !important;
 }
 
-body:not(.v-touch) .v-upload:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.floating-action-upload):hover, body.v-touch :not(.v-component-group) > .v-upload:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.floating-action-upload):active {
+body:not(.v-touch) .v-upload:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.floating-action-upload):hover, body.v-touch:not(.v-component-group) > .v-upload:not(.v-disabled):not(.borderless):not(.flat):not(.borderless-colored):not(.floating-action-upload):active {
 	box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -1px rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -2799,6 +2669,144 @@ body:not(.v-touch) .v-upload:not(.v-disabled).borderless.custom:hover {
 
 body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+}
+
+.root-layout.navigation-template-vaadin {
+	background-color: #ffffff;
+}
+
+.root-layout.navigation-template-vaadin .header-bar .v-nativebutton, .root-layout.navigation-template-vaadin .side-bar .v-nativebutton {
+	background: none;
+	border: none;
+}
+
+.root-layout.navigation-template-vaadin .header-bar .v-nativebutton:hover, .root-layout.navigation-template-vaadin .side-bar .v-nativebutton:hover {
+	cursor: pointer;
+}
+
+.root-layout.navigation-template-vaadin .scroll-panel {
+	background-color: #ffffff;
+	border: none;
+	border-radius: 0;
+}
+
+.root-layout.navigation-template-vaadin .header-bar {
+	background-color: #5AAAFA;
+	padding: 0px 15px 0 15px;
+	vertical-align: middle;
+	height: 65px;
+}
+
+.root-layout.navigation-template-vaadin .header-bar  > * {
+	color: #fff;
+	float: right;
+	padding: 0;
+	line-height: 20px;
+	margin-left: 15px;
+	font-size: 16px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;/** Vertically center everything **/
+	position: relative;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+.root-layout.navigation-template-vaadin .header-bar  > .search-field {
+	background: none;
+	color: #fff;
+	padding-left: 5px;
+	box-shadow: none;
+	border: 0;
+	border-bottom: solid 2px #fff;
+	border-radius: 0;
+	font-style: italic;
+}
+
+.root-layout.navigation-template-vaadin .header-bar .user-name-label {
+	color: #fff;
+}
+
+.root-layout.navigation-template-vaadin .side-bar {
+	background-color: #000;
+	width: 100px;
+}
+
+.root-layout.navigation-template-vaadin .side-bar  > .menu-button {
+	position: relative;
+	color: #fff;
+	height: 90px;
+}
+
+.root-layout.navigation-template-vaadin .side-bar  > .menu-button.selected {
+	background-color: #ffffff;
+}
+
+.root-layout.navigation-template-vaadin .side-bar  > .menu-button.selected .v-nativebutton-caption {
+	color: #1A1314;
+}
+
+.root-layout.navigation-template-vaadin .side-bar  > .menu-button .v-nativebutton-caption {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 0.7em;
+	text-transform: uppercase;
+	position: absolute;
+	bottom: 8px;
+	text-align: center;
+	left: 0;
+	right: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.root-layout.navigation-template-vaadin .side-bar  > .menu-button .v-icon {
+	color: #5AAAFA;
+	position: absolute;
+	font-size: 35px;
+	margin-left: auto;
+	margin-right: auto;
+	top: 10px;
+	left: 0;
+	right: 0;
+}
+
+.root-layout.navigation-template-vaadin .dashboard-layout {
+	padding: 60px 60px 0 60px;
+}
+
+.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .dashboard-layout {
+	padding: 10px;
+}
+
+.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .dashboard-item {
+	width: 100% !important;
+	min-width: 321px;
+	margin: 0;
+}
+
+.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar {
+	width: 60px;
+}
+
+.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar  > .menu-button {
+	height: 50px;
+}
+
+.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar  > .menu-button  > .v-nativebutton-caption {
+	visibility: hidden;
+}
+
+.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .side-bar  > .menu-button  > .v-icon {
+	top: 0;
+}
+
+.root-layout.navigation-template-vaadin[width-range~="321px-768px"] .header-bar {
+	height: 45px;
+	padding: 2px;
+}
+
+.navigation-template-vaadin[width-range~="321px-768px"] {
+	visibility: visible;
 }
 
 .invoice {
@@ -3132,9 +3140,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -3284,7 +3292,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -3405,7 +3413,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-small > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -3526,7 +3534,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-large > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -3666,7 +3674,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -3777,6 +3785,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-filterselect .v-icon {
 	position: absolute;
 	pointer-events: none;
+}
+
+.invoice .v-filterselect .v-icon.FontAwesome {
+	margin-left: 0px;
 }
 
 .invoice .v-filterselect-error .v-filterselect-input {
@@ -4001,7 +4013,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -4813,7 +4825,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -5513,7 +5525,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-editor {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-grid-editor-footer {
@@ -5767,7 +5779,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -6205,7 +6217,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -6430,7 +6442,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -6694,7 +6706,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-popup td[class*="year"] button:hover:before, .invoice .v-datefield-popup td[class*="month"] button:hover:before {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-popup td[class*="year"] button.outside-range, .invoice .v-datefield-popup td[class*="month"] button.outside-range {
@@ -6875,7 +6887,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice td[class*="year"] button:hover:before, .invoice td[class*="month"] button:hover:before {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice td[class*="year"] button.outside-range, .invoice td[class*="month"] button.outside-range {
@@ -7526,7 +7538,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice td[class*="year"] button:hover:before, .invoice td[class*="month"] button:hover:before {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice td[class*="year"] button.outside-range, .invoice td[class*="month"] button.outside-range {
@@ -7693,7 +7705,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-menubar  > .v-menubar-menuitem {
@@ -8080,7 +8092,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-radiobutton > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -8234,7 +8246,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-checkbox > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -8354,7 +8366,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-radiobutton > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -8508,7 +8520,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-checkbox > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -8628,7 +8640,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-radiobutton > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -9260,7 +9272,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tree-node-focused:after {
 	opacity: 1;
-	border: 1px solid #197de1;
+	border: 1px solid #00BCD4;
 }
 
 .invoice .v-tree-node-selected {
@@ -9284,10 +9296,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	font-size: 32px;
 	line-height: 2px;
-	color: #197de1;
+	color: #00BCD4;
 	text-indent: -4px;
 	text-shadow: 0 0 1px #fafafa, 0 0 1px #fafafa;
 	opacity: 1;
@@ -9299,8 +9311,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree-node-caption-drag-center {
-	-webkit-box-shadow: 0 0 0 2px #197de1;
-	box-shadow: 0 0 0 2px #197de1;
+	-webkit-box-shadow: 0 0 0 2px #00BCD4;
+	box-shadow: 0 0 0 2px #00BCD4;
 	position: relative;
 	border-radius: 2px;
 }
@@ -9961,7 +9973,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-editor {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-tree8-editor-footer {
@@ -11008,7 +11020,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-editor {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-treegrid-editor-footer {
@@ -11545,7 +11557,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-focus {
-	outline: 1px solid #197de1;
+	outline: 1px solid #00BCD4;
 	outline-offset: -1px;
 }
 
@@ -11563,14 +11575,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-focus-slot-right {
-	border-right: 3px solid #197de1;
+	border-right: 3px solid #00BCD4;
 	right: -2px;
 	margin-left: -11px !important;
 }
 
 .invoice .v-table-focus-slot-left {
 	float: left;
-	border-left: 3px solid #197de1;
+	border-left: 3px solid #00BCD4;
 	left: -1px;
 	right: auto;
 	margin-left: 0 !important;
@@ -11622,7 +11634,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-column-selector:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-table-column-selector:active:after {
@@ -11719,9 +11731,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-drag .v-table-body {
-	-webkit-box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
-	box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
-	border-color: #197de1;
+	-webkit-box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5);
+	box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5);
+	border-color: #00BCD4;
 }
 
 .invoice .v-table-drag .v-table-body .v-table-focus {
@@ -11729,12 +11741,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-row-drag-middle .v-table-cell-content {
-	background-color: #d1e5f9;
-	color: #214060;
+	background-color: #ccf1f6;
+	color: #23555b;
 }
 
 .invoice .v-table-row-drag-bottom td.v-table-cell-content {
-	border-bottom: 2px solid #197de1;
+	border-bottom: 2px solid #00BCD4;
 	height: 35px;
 }
 
@@ -11743,7 +11755,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-row-drag-top td.v-table-cell-content {
-	border-top: 2px solid #197de1;
+	border-top: 2px solid #00BCD4;
 	height: 36px;
 }
 
@@ -11969,7 +11981,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:active:after {
@@ -12019,7 +12031,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before:active:after {
@@ -12066,7 +12078,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:active:after {
@@ -12130,7 +12142,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before:active:after {
@@ -12202,9 +12214,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -12311,7 +12323,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-slider-handle:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-slider-handle:before:active:after {
@@ -12320,7 +12332,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-slider-handle:after {
 	border: 0 solid #afafaf;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	opacity: 0;
 	-webkit-transition: opacity 200ms;
 	-moz-transition: opacity 200ms;
@@ -12620,9 +12632,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 20px !important;
 	width: 20px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -13349,7 +13361,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-bottom-spacer:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-calendar-day-number {
@@ -13363,17 +13375,17 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-day-number:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-calendar-month-day-today {
-	background: #eef3f8;
+	background: #edf6f8;
 }
 
 .invoice .v-calendar-month-day-today .v-calendar-day-number {
 	font-weight: 400;
-	color: #197de1;
-	border-top: 2px solid #197de1;
+	color: #00BCD4;
+	border-top: 2px solid #00BCD4;
 	line-height: 24px;
 	margin: 0;
 	padding: 0 5px;
@@ -13450,7 +13462,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-current-time {
-	background: #197de1;
+	background: #00BCD4;
 	line-height: 1px;
 	pointer-events: none;
 	opacity: 0.5;
@@ -13459,7 +13471,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-calendar-current-time:before {
 	content: "\2022";
-	color: #197de1;
+	color: #00BCD4;
 	font-size: 22px;
 	margin-left: -0.07em;
 }
@@ -13802,9 +13814,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -13856,7 +13868,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: -1px;
 	bottom: -1px;
 	left: -1px;
-	border: 0 solid #197de1;
+	border: 0 solid #00BCD4;
 }
 
 .invoice .v-ddwrapper-over-top:before {
@@ -13884,7 +13896,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-vertical-drag-hints .v-ddwrapper-over-bottom:before, .invoice .no-vertical-drag-hints.v-ddwrapper-over-bottom:before {
@@ -13896,7 +13908,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-horizontal-drag-hints.v-ddwrapper-over-left:before, .invoice .no-horizontal-drag-hints .v-ddwrapper-over-left:before {
@@ -13908,7 +13920,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-horizontal-drag-hints.v-ddwrapper-over-right:before, .invoice .no-horizontal-drag-hints .v-ddwrapper-over-right:before {
@@ -13920,7 +13932,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .v-ddwrapper-over-middle:after, .invoice .v-ddwrapper-over-center:after {
@@ -13928,7 +13940,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-box-drag-hints.v-ddwrapper:after, .invoice .no-box-drag-hints .v-ddwrapper:after {
@@ -14041,9 +14053,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -18651,7 +18663,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button:active:after {
@@ -19258,9 +19270,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -19410,7 +19422,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -19531,7 +19543,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-small > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -19652,7 +19664,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-large > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -19792,7 +19804,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -19903,6 +19915,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-filterselect .v-icon {
 	position: absolute;
 	pointer-events: none;
+}
+
+.invoice .v-filterselect .v-icon.FontAwesome {
+	margin-left: 0px;
 }
 
 .invoice .v-filterselect-error .v-filterselect-input {
@@ -20127,7 +20143,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -20939,7 +20955,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
@@ -21639,7 +21655,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-editor {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-grid-editor-footer {
@@ -21893,7 +21909,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -22331,7 +22347,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -22556,7 +22572,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	
 	
 }
@@ -22820,7 +22836,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-popup td[class*="year"] button:hover:before, .invoice .v-datefield-popup td[class*="month"] button:hover:before {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-popup td[class*="year"] button.outside-range, .invoice .v-datefield-popup td[class*="month"] button.outside-range {
@@ -23001,7 +23017,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice td[class*="year"] button:hover:before, .invoice td[class*="month"] button:hover:before {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice td[class*="year"] button.outside-range, .invoice td[class*="month"] button.outside-range {
@@ -23652,7 +23668,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice td[class*="year"] button:hover:before, .invoice td[class*="month"] button:hover:before {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice td[class*="year"] button.outside-range, .invoice td[class*="month"] button.outside-range {
@@ -23819,7 +23835,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-menubar  > .v-menubar-menuitem {
@@ -24206,7 +24222,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-radiobutton > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -24360,7 +24376,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-checkbox > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -24480,7 +24496,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-radiobutton > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -24634,7 +24650,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-checkbox > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -24754,7 +24770,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-radiobutton > input:focus ~ label:before {
-	border-color: #197de1;
+	border-color: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -25386,7 +25402,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tree-node-focused:after {
 	opacity: 1;
-	border: 1px solid #197de1;
+	border: 1px solid #00BCD4;
 }
 
 .invoice .v-tree-node-selected {
@@ -25410,10 +25426,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	font-size: 32px;
 	line-height: 2px;
-	color: #197de1;
+	color: #00BCD4;
 	text-indent: -4px;
 	text-shadow: 0 0 1px #fafafa, 0 0 1px #fafafa;
 	opacity: 1;
@@ -25425,8 +25441,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree-node-caption-drag-center {
-	-webkit-box-shadow: 0 0 0 2px #197de1;
-	box-shadow: 0 0 0 2px #197de1;
+	-webkit-box-shadow: 0 0 0 2px #00BCD4;
+	box-shadow: 0 0 0 2px #00BCD4;
 	position: relative;
 	border-radius: 2px;
 }
@@ -26087,7 +26103,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-editor {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-tree8-editor-footer {
@@ -27134,7 +27150,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-editor {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-treegrid-editor-footer {
@@ -27671,7 +27687,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-focus {
-	outline: 1px solid #197de1;
+	outline: 1px solid #00BCD4;
 	outline-offset: -1px;
 }
 
@@ -27689,14 +27705,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-focus-slot-right {
-	border-right: 3px solid #197de1;
+	border-right: 3px solid #00BCD4;
 	right: -2px;
 	margin-left: -11px !important;
 }
 
 .invoice .v-table-focus-slot-left {
 	float: left;
-	border-left: 3px solid #197de1;
+	border-left: 3px solid #00BCD4;
 	left: -1px;
 	right: auto;
 	margin-left: 0 !important;
@@ -27748,7 +27764,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-column-selector:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-table-column-selector:active:after {
@@ -27845,9 +27861,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-drag .v-table-body {
-	-webkit-box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
-	box-shadow: 0 0 0 2px rgba(25, 125, 225, 0.5);
-	border-color: #197de1;
+	-webkit-box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5);
+	box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5);
+	border-color: #00BCD4;
 }
 
 .invoice .v-table-drag .v-table-body .v-table-focus {
@@ -27855,12 +27871,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-row-drag-middle .v-table-cell-content {
-	background-color: #d1e5f9;
-	color: #214060;
+	background-color: #ccf1f6;
+	color: #23555b;
 }
 
 .invoice .v-table-row-drag-bottom td.v-table-cell-content {
-	border-bottom: 2px solid #197de1;
+	border-bottom: 2px solid #00BCD4;
 	height: 35px;
 }
 
@@ -27869,7 +27885,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table-row-drag-top td.v-table-cell-content {
-	border-top: 2px solid #197de1;
+	border-top: 2px solid #00BCD4;
 	height: 36px;
 }
 
@@ -28095,7 +28111,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-horizontal  > div > .v-splitpanel-hsplitter div:before:active:after {
@@ -28145,7 +28161,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-vertical  > div > .v-splitpanel-vsplitter div:before:active:after {
@@ -28192,7 +28208,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-horizontal.large  > div > .v-splitpanel-hsplitter div:before:active:after {
@@ -28256,7 +28272,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-splitpanel-vertical.large  > div > .v-splitpanel-vsplitter div:before:active:after {
@@ -28328,9 +28344,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -28437,7 +28453,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-slider-handle:before:focus:after {
-	border-color: #197de1;
+	border-color: #00BCD4;
 }
 
 .invoice .v-slider-handle:before:active:after {
@@ -28446,7 +28462,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-slider-handle:after {
 	border: 0 solid #afafaf;
-	border-color: #197de1;
+	border-color: #00BCD4;
 	opacity: 0;
 	-webkit-transition: opacity 200ms;
 	-moz-transition: opacity 200ms;
@@ -28746,9 +28762,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 20px !important;
 	width: 20px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -29475,7 +29491,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-bottom-spacer:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-calendar-day-number {
@@ -29489,17 +29505,17 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-day-number:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-calendar-month-day-today {
-	background: #eef3f8;
+	background: #edf6f8;
 }
 
 .invoice .v-calendar-month-day-today .v-calendar-day-number {
 	font-weight: 400;
-	color: #197de1;
-	border-top: 2px solid #197de1;
+	color: #00BCD4;
+	border-top: 2px solid #00BCD4;
 	line-height: 24px;
 	margin: 0;
 	padding: 0 5px;
@@ -29576,7 +29592,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-current-time {
-	background: #197de1;
+	background: #00BCD4;
 	line-height: 1px;
 	pointer-events: none;
 	opacity: 0.5;
@@ -29585,7 +29601,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-calendar-current-time:before {
 	content: "\2022";
-	color: #197de1;
+	color: #00BCD4;
 	font-size: 22px;
 	margin-left: -0.07em;
 }
@@ -29928,9 +29944,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -29982,7 +29998,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: -1px;
 	bottom: -1px;
 	left: -1px;
-	border: 0 solid #197de1;
+	border: 0 solid #00BCD4;
 }
 
 .invoice .v-ddwrapper-over-top:before {
@@ -30010,7 +30026,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-vertical-drag-hints .v-ddwrapper-over-bottom:before, .invoice .no-vertical-drag-hints.v-ddwrapper-over-bottom:before {
@@ -30022,7 +30038,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-horizontal-drag-hints.v-ddwrapper-over-left:before, .invoice .no-horizontal-drag-hints .v-ddwrapper-over-left:before {
@@ -30034,7 +30050,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-horizontal-drag-hints.v-ddwrapper-over-right:before, .invoice .no-horizontal-drag-hints .v-ddwrapper-over-right:before {
@@ -30046,7 +30062,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .v-ddwrapper-over-middle:after, .invoice .v-ddwrapper-over-center:after {
@@ -30054,7 +30070,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-radius: 2px;
 	opacity: 0.3;
 	filter: alpha(opacity=30.0) ;
-	background: #8abef2;
+	background: #6aeeff;
 }
 
 .invoice .no-box-drag-hints.v-ddwrapper:after, .invoice .no-box-drag-hints .v-ddwrapper:after {
@@ -30167,9 +30183,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 24px !important;
 	width: 24px !important;
 	box-sizing: border-box;
-	border: 2px solid rgba(25, 125, 225, 0.2);
-	border-top-color: #197de1;
-	border-right-color: #197de1;
+	border: 2px solid rgba(0, 188, 212, 0.2);
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
 	border-radius: 100%;
 	-webkit-animation: v-rotate-360 500ms infinite linear;
 	-moz-animation: v-rotate-360 500ms infinite linear;
@@ -31392,7 +31408,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	background: transparent;
 }
 
-.invoice .material-border, .invoice .floating-border, .invoice .card-0, .invoice .card-0-5, .invoice .card-1, .invoice .card-1-5, .invoice .card-2, .invoice .card-3, .invoice .card-4, .invoice .card-5, .invoice .card-hoverable, .invoice :not(.v-component-group) > .v-textfield.floating, .invoice .v-filterselect.floating, .invoice .v-slider-feedback, .invoice .v-datefield.floating, .invoice .v-inline-datefield:not(.borderless), .invoice .v-textarea:not(.borderless), .invoice .v-richtextarea:not(.borderless), .invoice .v-table:not(.borderless), .invoice .v-grid:not(.borderless), .invoice .v-grid-editor, .invoice .v-select-twincol select:not(.borderless), .invoice select.v-select-select:not(.borderless), .invoice .v-splitpanel-horizontal:not(.borderless), .invoice .v-splitpanel-vertical:not(.borderless), .invoice .v-Notification, .invoice .v-tooltip, .invoice .v-reconnect-dialog {
+.invoice .material-border, .invoice .floating-border, .invoice .card-0, .invoice .card-0-5, .invoice .card-1, .invoice .card-1-5, .invoice .card-2, .invoice .card-3, .invoice .card-4, .invoice .card-5, .invoice .card-hoverable, .invoice :not(.v-component-group) > .v-textfield.floating, .invoice .v-filterselect.floating, .invoice .v-datefield.floating, .invoice .v-inline-datefield:not(.borderless), .invoice .v-textarea:not(.borderless), .invoice .v-richtextarea:not(.borderless), .invoice .v-table:not(.borderless), .invoice .v-grid:not(.borderless), .invoice .v-grid-editor, .invoice .v-select-twincol select:not(.borderless), .invoice select.v-select-select:not(.borderless), .invoice .v-splitpanel-horizontal:not(.borderless), .invoice .v-splitpanel-vertical:not(.borderless), .invoice .v-component-group.material, .invoice .v-Notification, .invoice .v-tooltip, .invoice .v-reconnect-dialog {
 	border-radius: 2px;
 	border: none;
 	background: white;
@@ -31403,11 +31419,11 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	box-shadow: 0 0px 0px 0 transparent, 0 0px 0px 0 transparent, 0 0px 0px 0px transparent;
 }
 
-.invoice .z-depth-0-5, .invoice .card-0-5, .invoice .v-grid-header {
+.invoice .z-depth-0-5, .invoice .card-0-5, .invoice .v-table:not(.borderless) .v-table-header, .invoice .v-grid:not(.borderless) .v-grid-header {
 	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 3px 1px -3px rgba(0, 0, 0, 0.15);
 }
 
-.invoice .z-depth-1, .invoice .floating-border, .invoice .card-1, .invoice .v-label-success:not(.borderless), .invoice .v-label-failure:not(.borderless), .invoice .v-select-twincol-buttons:not(.borderless) .v-button, .invoice .v-upload:not(.floating-action-upload):not(.flat):not(.borderless):not(.border):not(.borderless-colored):not(.quiet):not(.link), .invoice :not(.v-component-group) > .v-textfield.floating, .invoice .v-filterselect.floating, .invoice .v-slider-feedback, .invoice .v-datefield.floating, .invoice .v-inline-datefield:not(.borderless), .invoice .v-textarea:not(.borderless), .invoice .v-richtextarea:not(.borderless), .invoice .v-table:not(.borderless), .invoice .v-grid:not(.borderless), .invoice .v-grid-editor, .invoice .v-select-twincol select:not(.borderless), .invoice select.v-select-select:not(.borderless), .invoice .v-splitpanel-horizontal:not(.borderless), .invoice .v-splitpanel-vertical:not(.borderless), .invoice .v-Notification, .invoice .v-tooltip {
+.invoice .z-depth-1, .invoice .floating-border, .invoice .card-1, .invoice .v-label-success:not(.borderless), .invoice .v-label-failure:not(.borderless), .invoice .v-table:not(.borderless) .v-table-footer, .invoice .v-select-twincol-buttons:not(.borderless) .v-button, .invoice .v-upload:not(.v-disabled):not(.floating-action-upload):not(.flat):not(.borderless):not(.border):not(.borderless-colored):not(.quiet):not(.link), .invoice :not(.v-component-group) > .v-textfield.floating, .invoice .v-filterselect.floating, .invoice .v-datefield.floating, .invoice .v-inline-datefield:not(.borderless), .invoice .v-textarea:not(.borderless), .invoice .v-richtextarea:not(.borderless), .invoice .v-table:not(.borderless), .invoice .v-grid:not(.borderless), .invoice .v-grid-editor, .invoice .v-select-twincol select:not(.borderless), .invoice select.v-select-select:not(.borderless), .invoice .v-splitpanel-horizontal:not(.borderless), .invoice .v-splitpanel-vertical:not(.borderless), .invoice .v-component-group.material, .invoice .v-Notification, .invoice .v-tooltip {
 	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
 }
 
@@ -31419,11 +31435,11 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
 
-.invoice .z-depth-3, .invoice .card-3, .invoice .v-upload.floating-action-upload:not(.flat) {
+.invoice .z-depth-3, .invoice .card-3, .invoice .v-upload.floating-action-upload:not(.v-disabled):not(.flat) {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
 }
 
-.invoice .z-depth-4, .invoice .card-4, .invoice .v-slider-feedback, .invoice .v-Notification, .invoice .v-tooltip {
+.invoice .z-depth-4, .invoice .card-4, .invoice .v-Notification, .invoice .v-tooltip {
 	box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.3);
 }
 
@@ -31548,12 +31564,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	background: #f7f7f7;
 }
 
-.invoice :not(.v-upload) > * > .v-button:not(.v-disabled):not(.valo-menu-toggle), .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled), .invoice .v-upload:not(.v-disabled), .invoice .valo-menu-item:not(.v-disabled), .invoice .v-accordion-item-caption:not(.v-disabled) {
+.invoice :not(.v-upload) > * > .v-button:not(.v-disabled):not(.valo-menu-toggle), .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled), .invoice .ripple, .invoice .v-upload:not(.v-disabled), .invoice .valo-menu-item:not(.v-disabled), .invoice .v-accordion-item-caption:not(.v-disabled) {
 	position: relative;
 	transform: translate3d(0, 0, 0);
 }
 
-.invoice :not(.v-upload) > * > .v-button:not(.v-disabled):after, .invoice .v-upload:not(.v-disabled):after, .invoice .valo-menu-item:after, .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):after, .invoice .v-accordion-item-caption:not(.v-disabled):after {
+.invoice :not(.v-upload) > * > .v-button:not(.v-disabled):after, .invoice .v-upload:not(.v-disabled):after, .invoice .valo-menu-item:after, .invoice .ripple:after, .invoice .v-tabsheet-tabitem:after, .invoice .v-tabsheet-tabitem-focus:after, .invoice .v-datefield [class*="button"]:after, .invoice .v-filterselect .v-filterselect-button:after, .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):after, .invoice .v-accordion-item-caption:not(.v-disabled):after {
 	content: "";
 	display: block;
 	position: absolute;
@@ -31569,49 +31585,58 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	transition: background 0.5s, opacity 1s;
 }
 
-.invoice :not(.v-upload) > * > .v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.border):not(.primary):not(.friendly):not(.danger):not(.custom):not(.floating-action):after, .invoice .v-upload:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.border):not(.primary):not(.friendly):not(.danger):not(.custom):not(.floating-action-upload):after, .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):after, .invoice .valo-menu-item:not(.v-disabled):after, .invoice .v-accordion-item-caption:not(.v-disabled):after {
+.invoice :not(.v-upload) > * > .v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.border):not(.primary):not(.friendly):not(.danger):not(.custom):not(.floating-action):after, .invoice .v-upload:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.border):not(.primary):not(.friendly):not(.danger):not(.custom):not(.floating-action-upload):after, .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):after, .invoice .valo-menu-item:not(.v-disabled):after, .invoice .v-datefield [class*="button"]:after, .invoice .v-tabsheet-tabitem:after, .invoice .v-tabsheet-tabitem-focus:after, .invoice .ripple:after, .invoice .v-accordion-item-caption:not(.v-disabled):after {
 	
-	background-image: -webkit-radial-gradient(circle, #999999 20%, transparent 10%);
-	background-image: radial-gradient( circle, #999999 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #404040 20%, transparent 10%);
+	background-image: radial-gradient( circle, #404040 20%, transparent 10%);
 }
 
-.invoice .v-button.borderless:after, .invoice .v-upload.borderless:after {
+.invoice .v-button.borderless:after, .invoice .v-upload.borderless:after, .invoice .v-filterselect .v-filterselect-button:after {
 	
-	background-image: -webkit-radial-gradient(circle, #949494 20%, transparent 10%);
-	background-image: radial-gradient( circle, #949494 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #3f3f3f 20%, transparent 10%);
+	background-image: radial-gradient( circle, #3f3f3f 20%, transparent 10%);
 }
 
 .invoice .v-button.border:not(.primary):not(.friendly):not(.danger):not(.custom):after, .invoice .v-upload.border:not(.primary):not(.friendly):not(.danger):not(.custom):after {
 	
-	background-image: -webkit-radial-gradient(circle, #999999 20%, transparent 10%);
-	background-image: radial-gradient( circle, #999999 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #bfbfbf 20%, transparent 10%);
+	background-image: radial-gradient( circle, #bfbfbf 20%, transparent 10%);
 }
 
 .invoice .v-button.primary:after, .invoice .v-button.floating-action:after, .invoice .v-button.borderless-colored:after, .invoice .v-upload.floating-action-upload:after, .invoice .v-upload.primary:after {
 	
-	background-image: -webkit-radial-gradient(circle, white 20%, transparent 10%);
-	background-image: radial-gradient( circle, white 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #0c3338 20%, transparent 10%);
+	background-image: radial-gradient( circle, #0c3338 20%, transparent 10%);
+	border-radius: 2px;
+}
+
+.invoice .v-button.floating-action:after, .invoice .v-upload.floating-action-upload:after {
+	border-radius: 100%;
 }
 
 .invoice .v-button.friendly:after, .invoice .v-upload.friendly:after {
 	
-	background-image: -webkit-radial-gradient(circle, #effbee 20%, transparent 10%);
-	background-image: radial-gradient( circle, #effbee 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #c3edbf 20%, transparent 10%);
+	background-image: radial-gradient( circle, #c3edbf 20%, transparent 10%);
 }
 
 .invoice .v-button.danger:after, .invoice .v-upload.danger:after {
 	
-	background-image: -webkit-radial-gradient(circle, white 20%, transparent 10%);
-	background-image: radial-gradient( circle, white 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #f5d6d3 20%, transparent 10%);
+	background-image: radial-gradient( circle, #f5d6d3 20%, transparent 10%);
 }
 
 .invoice .v-button.custom:after, .invoice .v-upload.custom:after {
 	
-	background-image: -webkit-radial-gradient(circle, white 20%, transparent 10%);
-	background-image: radial-gradient( circle, white 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #cadef2 20%, transparent 10%);
+	background-image: radial-gradient( circle, #cadef2 20%, transparent 10%);
 }
 
-.invoice .v-button:not(.v-disabled):active:after, .invoice .v-upload:not(.v-disabled):active:after, .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):active:after, .invoice .valo-menu-item:not(.v-disabled):active:after, .invoice .v-accordion-item-caption:not(.v-disabled):active:after {
+.invoice .v-button.round:after, .invoice .v-upload.round:after {
+	border-radius: 30px;
+}
+
+.invoice .v-button:not(.v-disabled):active:after, .invoice .ripple:active:after, .invoice .v-datefield [class*="button"]:active:after, .invoice .v-upload:not(.v-disabled):active:after, .invoice .v-tabsheet-tabitem:active:after, .invoice .v-tabsheet-tabitem-focus:active:after, .invoice .v-filterselect .v-filterselect-button:active:after, .invoice .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):active:after, .invoice .valo-menu-item:not(.v-disabled):active:after, .invoice .v-accordion-item-caption:not(.v-disabled):active:after {
 	opacity: 0.2;
 	background-size: 0% 0%;
 	transition: 0s;
@@ -31657,12 +31682,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	padding-bottom: 5px;
 }
 
-.invoice :not(.v-upload) > * > .v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.link):not(.quiet):not(.border):not(.primary):not(.friendly):not(.danger):not(.custom):not(.floating-action) {
-	background: white;
-}
-
 .invoice :not(.v-upload) > * > .v-button:not(.borderless):not(.border).primary {
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 }
 
@@ -31690,7 +31711,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-button.borderless-colored, .invoice .v-button.link {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-button.round {
@@ -31705,12 +31726,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-button.border.primary {
-	border: 1px solid #197de1;
-	color: #197de1;
+	border: 1px solid #00BCD4;
+	color: #00BCD4;
 }
 
 .invoice .v-button.border:after {
-	border: 0px solid #197de1;
+	border: 0px solid #00BCD4;
 }
 
 .invoice .v-button.border.friendly {
@@ -31737,7 +31758,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-button.borderless.primary {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-button.borderless.friendly {
@@ -31875,7 +31896,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 31px;
 }
 
-.invoice .v-filterselect-focus:not(.borderless):not(.floating):not(.custom) [class*="input"] {
+.invoice .v-filterselect-focus:not(.borderless):not(.floating):not(.custom):not(.v-readonly) [class*="input"] {
 	border-bottom: 1px solid #197de1;
 	box-shadow: 0 1px 0 0 #197de1;
 }
@@ -31899,7 +31920,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	line-height: 37px;
 	text-align: center;
 	margin-top: 0;
+	margin-left: 0;
 	padding-top: 0;
+}
+
+.invoice .v-filterselect:not(.v-disabled) > .v-filterselect-button {
+	transition: background 0.3s;
+}
+
+.invoice :not(.v-component-group) > .v-filterselect:not(.v-disabled):not(.floating) > .v-filterselect-button {
+	bottom: 1px;
 }
 
 .invoice .v-filterselect-suggestpopup [class$="suggestmenu"] {
@@ -31951,6 +31981,22 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	color: #464646;
 }
 
+.invoice .v-filterselect-borderless.v-filterselect-prompt .v-filterselect-input {
+	opacity: 1;
+}
+
+.invoice .v-filterselect-error .v-filterselect-button {
+	opacity: 0.7;
+}
+
+.invoice .v-filterselect-error [class$="button"]:before {
+	color: #ed473b !important;
+}
+
+.invoice .v-filterselect .v-filterselect-button:hover {
+	opacity: 1;
+}
+
 .invoice .v-progressbar-wrapper {
 	height: 5px;
 	border-radius: 0px;
@@ -31966,6 +32012,34 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-slider-base {
 	border-radius: 0px;
+}
+
+.invoice .v-slider:not(.no-indicator) .v-slider-handle-active:before {
+	transform: scale(0);
+}
+
+.invoice .v-slider-handle:before {
+	transform: scale(1);
+	transition: transform 0.2s ease;
+}
+
+.invoice .v-slider-base:after {
+	border-radius: 0px;
+}
+
+.invoice .v-slider-feedback {
+	padding: 0px;
+	width: 30px !important;
+	height: 30px !important;
+	border-radius: 2px;
+	background: #00BCD4;
+	color: white;
+	animation: valo-animate-in-fade 0.3s ease;
+}
+
+.invoice .v-slider-feedback .popupContent {
+	text-align: center;
+	line-height: 30px;
 }
 
 .invoice .v-slider-handle:before {
@@ -32012,16 +32086,17 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 18px;
 }
 
-.invoice .v-slider-feedback {
-	color: black;
+.invoice .v-label-spinner {
+	border: 2px solid #e1e1e1;
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
+	-webkit-animation: v-rotate-360 750ms infinite linear;
+	-moz-animation: v-rotate-360 750ms infinite linear;
+	animation: v-rotate-360 750ms infinite linear;
 }
 
-.invoice .v-accordion-item-caption {
+.invoice .v-accordion-item:not(:last-child) {
 	border-bottom: 1px solid #cccccc;
-}
-
-.invoice .v-accordion-item:not(.v-accordion-item-open):last-child > .v-accordion-item-caption {
-	border: none;
 }
 
 .invoice .v-menubar:not(.primary):not(.borderless):not(.custom):not(.v-menubar-user-menu) {
@@ -32048,7 +32123,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-borderless.primary .v-menubar-menuitem {
-	color: #197de1 !important;
+	color: #00BCD4 !important;
 }
 
 .invoice .v-menubar.primary > .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):hover, .invoice .v-menubar.primary > .v-menubar-menuitem-selected, .invoice .v-menubar.primary > .v-menubar-menuitem-checked {
@@ -32221,8 +32296,25 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	line-height: 32px;
 }
 
-.invoice .v-inline-datefield-calendarpanel-day-selected {
+.invoice .v-inline-datefield-calendarpanel-day-selected, .invoice .v-datefield-calendarpanel-day-selected {
 	color: white !important;
+}
+
+.invoice .v-datefield-error .v-datefield-button {
+	color: #d32f2f;
+	opacity: 0.7;
+}
+
+.invoice .v-datefield-error [class*="button"]:hover {
+	color: #d32f2f;
+}
+
+.invoice .v-datefield-error .v-datefield-button:hover {
+	opacity: 1;
+}
+
+.invoice .v-datefield [class*="button"]:active:after {
+	background-color: transparent;
 }
 
 .invoice .h1 {
@@ -32263,12 +32355,18 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	color: white;
 }
 
+.invoice .v-textarea {
+	overflow: auto !important;
+}
+
 .invoice .v-richtextarea .gwt-RichTextToolbar {
 	padding: 5px;
 }
 
 .invoice .v-table-header {
 	color: #666666;
+	position: relative;
+	z-index: 2;
 }
 
 .invoice .v-table-row-odd {
@@ -32289,6 +32387,11 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	background-color: #d9d9d9 !important;
 }
 
+.invoice .v-table:not(.borderless) .v-table-footer {
+	position: relative;
+	z-index: 1;
+}
+
 .invoice .v-table-focus {
 	outline: unset;
 	outline-offset: 0;
@@ -32300,6 +32403,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-table [class*="-row"].v-selected .v-table-cell-content {
 	border-color: #d9d9d9;
+}
+
+.invoice .v-grid.borderless {
+	overflow: hidden;
 }
 
 .invoice .v-grid-row-selected > .v-grid-cell {
@@ -32337,6 +32444,18 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	box-shadow: none;
 }
 
+.invoice .v-grid-tablewrapper {
+	overflow: visible;
+}
+
+.invoice .v-grid-header {
+	width: auto;
+}
+
+.invoice .v-grid-header {
+	right: -19px;
+}
+
 .invoice .last-frozen {
 	border-right: 1px solid #d9d9d9 !important;
 }
@@ -32357,7 +32476,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-grid-editor-save, .invoice .v-grid-editor-cancel {
 	height: 31px;
-	color: #197de1;
+	color: #00BCD4;
 	transition: box-shadow 0.3s ease-out, background 0.3s;
 	padding: 0 20px;
 	border-radius: 2px;
@@ -32395,7 +32514,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 	border-radius: 2px;
 	border: 2px solid #575757;
-	transition: background 0.2s ease, border 0.2s ease;
+	transition: background 0.1s ease, border 0.1s ease;
 }
 
 .invoice .v-grid-select-all-checkbox label:after, .invoice .v-grid-selection-checkbox label:after {
@@ -32426,6 +32545,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border-color: #197de1;
 }
 
+.invoice .v-select .v-select-select, .invoice .v-select-twincol .v-select-twincol-options, .invoice .v-select-twincol .v-select-twincol-selections {
+	overflow: auto !important;
+}
+
+.invoice .v-select .v-select-select option, .invoice .v-select-twincol .v-select-twincol-options option, .invoice .v-select-twincol .v-select-twincol-selections option {
+	display: table;
+}
+
 .invoice .v-select-twincol-buttons {
 	min-width: 4.5em;
 }
@@ -32448,15 +32575,15 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: 2px solid #197de1;
 }
 
-.invoice .v-checkbox:not(.large):not(.small) > input:checked ~ label:after {
+.invoice .v-select-optiongroup:not(.large):not(.small) .v-checkbox > input:checked ~ label:after, .invoice .v-checkbox:not(.large):not(.small) > input:checked ~ label:after {
 	line-height: 16.5px;
 }
 
-.invoice .v-checkbox.large > input:checked ~ label:after {
+.invoice .v-select-optiongroup.large .v-checkbox > input:checked ~ label:after, .invoice .v-checkbox.large > input:checked ~ label:after {
 	line-height: 20px;
 }
 
-.invoice .v-checkbox.small > input:checked ~ label:after {
+.invoice .v-select-optiongroup.small .v-checkbox > input:checked ~ label:after, .invoice .v-checkbox.small > input:checked ~ label:after {
 	line-height: 13.5px;
 }
 
@@ -32466,7 +32593,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-checkbox > input ~ label:after {
-	transition: all 0.2s ease !important;
+	transition: all 0.1s ease !important;
 }
 
 .invoice .v-radiobutton > input ~ label:before {
@@ -32478,9 +32605,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 19px !important;
 }
 
-.invoice .v-select-optiongroup .v-radiobutton > input:checked ~ label:after {
-	width: 11px;
-	height: 11px;
+.invoice .v-select-optiongroup .v-radiobutton > input ~ label:after {
+	width: 11px !important;
+	height: 11px !important;
 	top: 4px !important;
 	left: 4px !important;
 }
@@ -32490,7 +32617,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 16px !important;
 }
 
-.invoice .v-select-optiongroup-small .v-radiobutton > input:checked ~ label:after {
+.invoice .v-select-optiongroup-small .v-radiobutton > input ~ label:after {
 	width: 8px !important;
 	height: 8px !important;
 }
@@ -32500,13 +32627,19 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 22px !important;
 }
 
-.invoice .v-select-optiongroup-large .v-radiobutton > input:checked ~ label:after {
+.invoice .v-select-optiongroup-large .v-radiobutton > input ~ label:after {
 	width: 14px !important;
 	height: 14px !important;
 }
 
-.invoice .v-radiobutton > input:checked ~ label:after {
+.invoice .v-radiobutton > input ~ label:after {
 	background: #197de1 !important;
+	transform: scale(0);
+	transition: transform 0.2s ease-out !important;
+}
+
+.invoice .v-radiobutton > input:checked ~ label:after {
+	transform: scale(1);
 }
 
 .invoice .v-radiobutton > input:checked ~ label:before {
@@ -32608,6 +32741,38 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	margin-left: 5px;
 }
 
+.invoice .v-tabsheet-framed.padded-tabbar > .v-tabsheet-tabcontainer {
+	background: transparent;
+}
+
+.invoice .v-tabsheet-content > .v-tabsheet-tabsheetpanel {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+}
+
+.invoice .v-tabsheet-content-right-aligned-tabs > .v-tabsheet-tabsheetpanel {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 0px;
+}
+
+.invoice .v-tabsheet-content-padded-tabbar > .v-tabsheet-tabsheetpanel, .invoice .v-tabsheet-content-centered-tabs > .v-tabsheet-tabsheetpanel {
+	border-radius: 2px;
+}
+
+.invoice .v-tabsheet-deco {
+	z-index: 2;
+}
+
+.invoice .v-tabsheet-tabitem-focus:after {
+	z-index: 4;
+}
+
+.invoice .v-tabsheet:not(.v-tabsheet-framed) > .v-tabsheet-tabcontainer .v-tabsheet-tabitem {
+	position: relative;
+}
+
 .invoice .v-window {
 	background-color: white;
 	color: #474747;
@@ -32650,15 +32815,33 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-component-group .v-widget:not(.v-label) {
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
 	border: none;
 	overflow: hidden;
 }
 
 .invoice .v-component-group .v-widget:not(.v-label):hover {
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
 	border: none;
 	overflow: hidden;
+}
+
+.invoice .v-component-group:not(.flat):not(.material) .v-widget:not(.v-label) {
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+.invoice .v-component-group:not(.flat):not(.material) .v-widget:not(.v-label):hover {
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+.invoice .v-component-group.flat .v-widget:not(.v-label), .invoice .v-component-group.material .v-widget:not(.v-label) {
+	box-shadow: 0 0px 0px transparent !important;
+}
+
+.invoice .v-component-group.flat .v-widget:not(.v-label):hover, .invoice .v-component-group.material .v-widget:not(.v-label):hover {
+	box-shadow: 0 0px 0px transparent !important;
+}
+
+.invoice .v-csslayout-v-component-group.material .v-widget, .invoice .v-csslayout-v-component-group.flat .v-widget {
+	margin-left: 0px;
 }
 
 .invoice .v-component-group .v-button {
@@ -32721,9 +32904,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	padding: 0 20px;
 }
 
+.invoice .v-upload-immediate:not(.v-disabled) .gwt-FileUpload {
+	width: 100%;
+}
+
 .invoice .v-upload .v-button.v-disabled {
 	background: transparent;
-	color: inital;
+	color: initial;
 	opacity: 1;
 }
 
@@ -32773,7 +32960,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-upload:not(.borderless):not(.border).primary {
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 }
 
@@ -32797,12 +32984,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-upload:not(.borderless):not(.border).primary {
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 }
 
 .invoice .v-upload.borderless-colored, .invoice .v-upload.link {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-upload.round {
@@ -32816,12 +33003,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-upload.border.primary {
-	border: 1px solid #197de1;
-	color: #197de1;
+	border: 1px solid #00BCD4;
+	color: #00BCD4;
 }
 
 .invoice .v-upload.border:after {
-	border: 0px solid #197de1;
+	border: 0px solid #00BCD4;
 }
 
 .invoice .v-upload.border.friendly {
@@ -32844,7 +33031,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-upload.borderless.primary {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-upload.borderless.friendly {
@@ -32982,11 +33169,61 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-responsive[width-range~="0-800px"] .valo-menuitems {
-	box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 19px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0px 0px 0px transparent, 0px 0px 0px 0px transparent, 0 0px 0px 0px transparent;
+}
+
+.invoice .valo-menu-responsive[width-range~="0-800px"] .valo-menu-visible .valo-menuitems {
+	box-shadow: 0 24px 24px 2px rgba(0, 0, 0, 0.3), 0px 30px 30px 5px rgba(0, 0, 0, 0.4), 0 8px 10px -5px rgba(0, 0, 0, 0.5);
+}
+
+.invoice .v-app-loading:before {
+	width: 3em;
+	height: 3em;
+	border-radius: 100%;
+	pointer-events: none;
+	border: 3px solid #e1e1e1;
+	background: #fafafa;
+	border-top-color: #00BCD4;
+	border-right-color: #00BCD4;
+	border-radius: 100%;
+	-webkit-animation: v-rotate-360 750ms infinite linear;
+	-moz-animation: v-rotate-360 750ms infinite linear;
+	animation: v-rotate-360 750ms infinite linear;
+	pointer-events: none;
+}
+
+.v-ie8 .invoice .v-app-loading:before, .v-ie9 .invoice .v-app-loading:before {
+	border: none;
+	border-radius: 2px;
+	background: #fff url(../material/components/img/spinner.gif) no-repeat 50% 50%;
+	background-size: 80%;
+}
+
+.v-ie8 .invoice .v-app-loading:before {
+	min-width: 30px;
+	min-height: 30px;
 }
 
 .invoice vaadin-grid {
 	height: auto;
+}
+
+.invoice .loginBox {
+	max-width: 300px;
+}
+
+.invoice .holder {
+	display: inline;
+}
+
+.invoice .holder img {
+	height: 300px;
+	width: auto;
+	object-fit: cover;
+}
+
+.invoice .top-bar {
+	background-color: #8dacbf;
 }
 
 .invoice .label-project-description, .invoice .label-total-titel, .invoice .label-total-value {

@@ -1,9 +1,10 @@
+
 // Styles imported from NavigationTemplateVaadin.html
 .root-layout.navigation-template-vaadin {
 	$root-background-color: #ffffff;
 	$template-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 	
 	
-	$header-bar-background: #2C586D;
+	$header-bar-background: #5AAAFA;
 	$header-bar-font-size: 16px;
 	$header-bar-text-color: #fff;
 	
@@ -17,7 +18,7 @@
 	$menu-button-selected-text-color: #1A1314;
 	$menu-button-selected-background: $root-background-color;
 	$menu-button-text-color: #fff;
-	$menu-button-icon-color: #2C586D;
+	$menu-button-icon-color: #5AAAFA;
 	
 	
 	background-color: $root-background-color;
@@ -163,3 +164,4 @@
 .navigation-template-vaadin[width-range~="321px-768px"]{
 	visibility: visible;
 }
+

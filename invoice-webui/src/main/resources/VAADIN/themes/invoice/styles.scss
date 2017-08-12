@@ -1,10 +1,10 @@
-@import "../valo/valo.scss";
-//@import "variables";
+@import "../valo/_valo.scss";
 @import "addons";
-@import "designs.scss";
 @import "../material/material.scss";
+@import "designs.scss";
 
-
+$mat-background-color: #fafafa; // #fafafa for a light and #303030 for a dark theme
+$v-focus-color: #00BCD4;
 
 .invoice {
   @include valo;
@@ -13,6 +13,24 @@
 
   vaadin-grid {
     height: auto;
+  }
+
+  .loginBox {
+    max-width: 300px;
+  }
+
+  .holder {
+    //overflow: hidden;
+    display: inline;
+  }
+  .holder img {
+    height: 300px;
+    width: auto;
+    object-fit: cover;
+  }
+
+  .top-bar {
+    background-color: #8dacbf;
   }
 
 

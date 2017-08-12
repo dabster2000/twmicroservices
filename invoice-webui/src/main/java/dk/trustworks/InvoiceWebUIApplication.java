@@ -1,5 +1,6 @@
 package dk.trustworks;
 
+import com.vaadin.spring.annotation.EnableVaadin;
 import dk.trustworks.network.queue.TopicReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import java.util.Locale;
 @EnableHystrix
 @EnableAsync
 @EnableCaching
+@EnableVaadin
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class InvoiceWebUIApplication {
 
