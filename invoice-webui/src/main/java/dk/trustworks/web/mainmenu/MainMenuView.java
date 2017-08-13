@@ -6,6 +6,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.web.mainmenu.cards.MenuItemCardImpl;
 
@@ -56,13 +57,24 @@ public class MainMenuView extends VerticalLayout implements View {
             getUI().getNavigator().navigateTo("client");
         });
 
+        MenuItemCardImpl projectCard = new MenuItemCardImpl(
+                "project-card.png",
+                "Project Manager",
+                "Project Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."
+        );
+        projectCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
+            getUI().getNavigator().navigateTo("project");
+        });
+
 
         board.addRow(
                 timeCard,
                 clientCard,
-                new MenuItemCardImpl("map-card.jpg", "Map Manager", "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."),
-                invoiceCard
+                projectCard,
+                new MenuItemCardImpl("map-card.jpg", "Map Manager", "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments.")
                 );
+
+        board.addRow(invoiceCard, new Label(""), new Label(""), new Label(""));
         this.addComponent(board);
     }
 
