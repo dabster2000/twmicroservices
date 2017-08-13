@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-vertical-layout style-name="card-2 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-label style-name="h4" plain-text :middle :center>
+      Contact Information 
+    </vaadin-label>
+    <vaadin-form-layout margin>
+     <vaadin-text-field caption="Name" width-full _id="txtName"></vaadin-text-field>
+     <vaadin-text-field caption="Contact" width-full _id="txtContactName"></vaadin-text-field>
+    </vaadin-form-layout>
+    <vaadin-button style-name="flat" width-full plain-text _id="btnEdit">
+      Edit 
+    </vaadin-button>
+    <vaadin-css-layout visible="false" width-full _id="cssHider">
+     <vaadin-form-layout margin-left margin-right margin-top="false" _id="formLayout">
+      <vaadin-text-field caption="CVR" width-full _id="txtCvr"></vaadin-text-field>
+      <vaadin-text-field caption="EAN" width-full _id="txtEan"></vaadin-text-field>
+      <vaadin-text-field caption="Street" width-full _id="txtStreetname"></vaadin-text-field>
+      <vaadin-text-field caption="Postal code" width-full _id="txtPostalCode"></vaadin-text-field>
+      <vaadin-text-field caption="City" width-full _id="txtCity"></vaadin-text-field>
+      <vaadin-text-field caption="Other" width-full _id="txtOther"></vaadin-text-field>
+     </vaadin-form-layout>
+     <vaadin-css-layout width-full height="200px" _id="mapHolder"></vaadin-css-layout>
+     <vaadin-css-layout width-full>
+      <vaadin-button style-name="primary flat" width="50%" plain-text _id="btnSave">
+        Save 
+      </vaadin-button>
+      <vaadin-button style-name="danger flat" width="50%" plain-text _id="btnDelete">
+        Delete 
+      </vaadin-button>
+     </vaadin-css-layout>
+    </vaadin-css-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

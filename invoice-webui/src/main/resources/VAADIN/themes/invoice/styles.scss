@@ -29,6 +29,16 @@ $v-focus-color: #00BCD4;
     object-fit: cover;
   }
 
+  .card-block {
+    max-height: 300px;
+  }
+
+  .cut_text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
   .top-bar {
     background-color: #8dacbf;
   }

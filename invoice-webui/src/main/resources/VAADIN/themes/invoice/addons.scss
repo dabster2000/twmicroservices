@@ -9,9 +9,14 @@
 @import "../../../VAADIN/addons/producttour/scss/product-tour.scss";
 
 
+/* Provided by materialicons-3.0.1.jar */
+@import "../../../VAADIN/addons/materialicons/materialicons.scss";
+
+
 /* Import and include this mixin into your project theme to include the addon themes */
 @mixin addons {
 	@include font-awesome;
 	@include product-tour;
+	@include materialicons;
 }
 

@@ -1,5 +1,5 @@
 function AppWidgetset(){
-  var $intern_0 = 'bootstrap', $intern_1 = 'begin', $intern_2 = 'gwt.codesvr.AppWidgetset=', $intern_3 = 'gwt.codesvr=', $intern_4 = 'AppWidgetset', $intern_5 = 'startup', $intern_6 = 'DUMMY', $intern_7 = 0, $intern_8 = 1, $intern_9 = 'iframe', $intern_10 = 'javascript:""', $intern_11 = 'position:absolute; width:0; height:0; border:none; left: -1000px;', $intern_12 = ' top: -1000px;', $intern_13 = 'CSS1Compat', $intern_14 = '<!doctype html>', $intern_15 = '', $intern_16 = '<html><head><\/head><body><\/body><\/html>', $intern_17 = 'undefined', $intern_18 = 'readystatechange', $intern_19 = 10, $intern_20 = 'script', $intern_21 = 'javascript', $intern_22 = 'Failed to load ', $intern_23 = 'moduleStartup', $intern_24 = 'scriptTagAdded', $intern_25 = 'moduleRequested', $intern_26 = 'meta', $intern_27 = 'name', $intern_28 = 'AppWidgetset::', $intern_29 = '::', $intern_30 = 'gwt:property', $intern_31 = 'content', $intern_32 = '=', $intern_33 = 'gwt:onPropertyErrorFn', $intern_34 = 'Bad handler "', $intern_35 = '" for "gwt:onPropertyErrorFn"', $intern_36 = 'gwt:onLoadErrorFn', $intern_37 = '" for "gwt:onLoadErrorFn"', $intern_38 = '#', $intern_39 = '?', $intern_40 = '/', $intern_41 = 'img', $intern_42 = 'clear.cache.gif', $intern_43 = 'baseUrl', $intern_44 = 'AppWidgetset.nocache.js', $intern_45 = 'base', $intern_46 = '//', $intern_47 = 'modernie', $intern_48 = 'MSIE', $intern_49 = 'Trident', $intern_50 = 'yes', $intern_51 = 'none', $intern_52 = 'selectingPermutation', $intern_53 = 'AppWidgetset.devmode.js', $intern_54 = '99FD787000D03C1D2A1A2A84BE7D59A0', $intern_55 = ':', $intern_56 = '.cache.js', $intern_57 = 'loadExternalRefs', $intern_58 = 'end', $intern_59 = 'http:', $intern_60 = 'file:', $intern_61 = '_gwt_dummy_', $intern_62 = '__gwtDevModeHook:AppWidgetset', $intern_63 = 'Ignoring non-whitelisted Dev Mode URL: ', $intern_64 = ':moduleBase', $intern_65 = 'head';
+  var $intern_0 = 'bootstrap', $intern_1 = 'begin', $intern_2 = 'gwt.codesvr.AppWidgetset=', $intern_3 = 'gwt.codesvr=', $intern_4 = 'AppWidgetset', $intern_5 = 'startup', $intern_6 = 'DUMMY', $intern_7 = 0, $intern_8 = 1, $intern_9 = 'iframe', $intern_10 = 'javascript:""', $intern_11 = 'position:absolute; width:0; height:0; border:none; left: -1000px;', $intern_12 = ' top: -1000px;', $intern_13 = 'CSS1Compat', $intern_14 = '<!doctype html>', $intern_15 = '', $intern_16 = '<html><head><\/head><body><\/body><\/html>', $intern_17 = 'undefined', $intern_18 = 'readystatechange', $intern_19 = 10, $intern_20 = 'script', $intern_21 = 'javascript', $intern_22 = 'Failed to load ', $intern_23 = 'moduleStartup', $intern_24 = 'scriptTagAdded', $intern_25 = 'moduleRequested', $intern_26 = 'meta', $intern_27 = 'name', $intern_28 = 'AppWidgetset::', $intern_29 = '::', $intern_30 = 'gwt:property', $intern_31 = 'content', $intern_32 = '=', $intern_33 = 'gwt:onPropertyErrorFn', $intern_34 = 'Bad handler "', $intern_35 = '" for "gwt:onPropertyErrorFn"', $intern_36 = 'gwt:onLoadErrorFn', $intern_37 = '" for "gwt:onLoadErrorFn"', $intern_38 = '#', $intern_39 = '?', $intern_40 = '/', $intern_41 = 'img', $intern_42 = 'clear.cache.gif', $intern_43 = 'baseUrl', $intern_44 = 'AppWidgetset.nocache.js', $intern_45 = 'base', $intern_46 = '//', $intern_47 = 'modernie', $intern_48 = 'MSIE', $intern_49 = 'Trident', $intern_50 = 'yes', $intern_51 = 'none', $intern_52 = 'selectingPermutation', $intern_53 = 'AppWidgetset.devmode.js', $intern_54 = 'A029AE29080CCAD4E4CA79AEBD7E2E21', $intern_55 = ':', $intern_56 = '.cache.js', $intern_57 = 'link', $intern_58 = 'rel', $intern_59 = 'stylesheet', $intern_60 = 'href', $intern_61 = 'head', $intern_62 = 'loadExternalRefs', $intern_63 = 'gwtol3/gwt-ol3.css', $intern_64 = 'vol3/styles.css', $intern_65 = 'locationtextfield/styles.css', $intern_66 = 'end', $intern_67 = 'http:', $intern_68 = 'file:', $intern_69 = '_gwt_dummy_', $intern_70 = '__gwtDevModeHook:AppWidgetset', $intern_71 = 'Ignoring non-whitelisted Dev Mode URL: ', $intern_72 = ':moduleBase';
   var $wnd = window;
   var $doc = document;
   sendStats($intern_0, $intern_1);
@@ -364,8 +364,21 @@ function AppWidgetset(){
     if (!$wnd.__gwt_stylesLoaded) {
       $wnd.__gwt_stylesLoaded = {};
     }
-    sendStats($intern_57, $intern_1);
-    sendStats($intern_57, $intern_58);
+    function installOneStylesheet(stylesheetUrl){
+      if (!__gwt_stylesLoaded[stylesheetUrl]) {
+        var l = $doc.createElement($intern_57);
+        l.setAttribute($intern_58, $intern_59);
+        l.setAttribute($intern_60, computeUrlForResource(stylesheetUrl));
+        $doc.getElementsByTagName($intern_61)[$intern_7].appendChild(l);
+        __gwt_stylesLoaded[stylesheetUrl] = true;
+      }
+    }
+
+    sendStats($intern_62, $intern_1);
+    installOneStylesheet($intern_63);
+    installOneStylesheet($intern_64);
+    installOneStylesheet($intern_65);
+    sendStats($intern_62, $intern_66);
   }
 
   processMetas();
@@ -373,10 +386,10 @@ function AppWidgetset(){
   activeModules[$intern_4].moduleBase = AppWidgetset.__moduleBase;
   var filename = getCompiledCodeFilename();
   if ($wnd) {
-    var devModePermitted = !!($wnd.location.protocol == $intern_59 || $wnd.location.protocol == $intern_60);
+    var devModePermitted = !!($wnd.location.protocol == $intern_67 || $wnd.location.protocol == $intern_68);
     $wnd.__gwt_activeModules[$intern_4].canRedirect = devModePermitted;
     function supportsSessionStorage(){
-      var key = $intern_61;
+      var key = $intern_69;
       try {
         $wnd.sessionStorage.setItem(key, key);
         $wnd.sessionStorage.removeItem(key);
@@ -388,27 +401,27 @@ function AppWidgetset(){
     }
 
     if (devModePermitted && supportsSessionStorage()) {
-      var devModeKey = $intern_62;
+      var devModeKey = $intern_70;
       var devModeUrl = $wnd.sessionStorage[devModeKey];
       if (!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/.*$/.test(devModeUrl)) {
         if (devModeUrl && (window.console && console.log)) {
-          console.log($intern_63 + devModeUrl);
+          console.log($intern_71 + devModeUrl);
         }
         devModeUrl = $intern_15;
       }
       if (devModeUrl && !$wnd[devModeKey]) {
         $wnd[devModeKey] = true;
-        $wnd[devModeKey + $intern_64] = computeScriptBase();
+        $wnd[devModeKey + $intern_72] = computeScriptBase();
         var devModeScript = $doc.createElement($intern_20);
         devModeScript.src = devModeUrl;
-        var head = $doc.getElementsByTagName($intern_65)[$intern_7];
+        var head = $doc.getElementsByTagName($intern_61)[$intern_7];
         head.insertBefore(devModeScript, head.firstElementChild || head.children[$intern_7]);
         return false;
       }
     }
   }
   loadExternalStylesheets();
-  sendStats($intern_0, $intern_58);
+  sendStats($intern_0, $intern_66);
   installScript(filename);
   return true;
 }

@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-2 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
+    <vaadin-css-layout width-full height="200px" _id="cssMapHolder"></vaadin-css-layout>
+    <vaadin-vertical-layout spacing="false" size-full :expand>
+     <vaadin-label style-name="h5 bold" width-full plain-text _id="lblHeading">
+       Client Name that is really long 
+     </vaadin-label>
+    </vaadin-vertical-layout>
+    <vaadin-css-layout width-full>
+     <vaadin-button style-name="flat primary" width="50%" plain-text _id="btnEdit">
+       Edit 
+     </vaadin-button>
+     <vaadin-button style-name="danger flat" width="50%" plain-text _id="btnDelete">
+       Delete 
+     </vaadin-button>
+    </vaadin-css-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

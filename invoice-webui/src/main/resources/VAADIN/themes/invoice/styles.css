@@ -1661,6 +1661,13 @@ div.v-layout.v-horizontal.v-widget {
 	}
 	}
 
+@font-face {
+	font-family: "MaterialIcons";
+	font-style: normal;
+	font-weight: 400;
+	src: local("Material Icons"), local("MaterialIcons-Regular"), url(../../../VAADIN/addons/materialicons/MaterialIcons-Regular.woff2) format("woff2"), url(../../../VAADIN/addons/materialicons/MaterialIcons-Regular.woff) format("woff"), url(../../../VAADIN/addons/materialicons/MaterialIcons-Regular.ttf) format("truetype");
+}
+
 /**
  * Checks if a list contains a certain value.
  * 
@@ -18960,6 +18967,20 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li:first-child .shepherd-button {
 	margin-left: 0;
+}
+
+.invoice .MaterialIcons {
+	font-family: "MaterialIcons";
+	font-weight: normal;
+	text-transform: none;
+	letter-spacing: normal;
+	word-wrap: normal;
+	white-space: nowrap;
+	direction: ltr;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	-moz-osx-font-smoothing: grayscale;
+	font-feature-settings: "liga";
 }
 
 .invoice.v-app, .invoice.v-app-loading {

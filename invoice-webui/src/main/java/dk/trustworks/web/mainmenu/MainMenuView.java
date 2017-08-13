@@ -47,9 +47,19 @@ public class MainMenuView extends VerticalLayout implements View {
             getUI().getNavigator().navigateTo("invoice");
         });
 
+        MenuItemCardImpl clientCard = new MenuItemCardImpl(
+                "client-card.jpg",
+                "Client Manager",
+                "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."
+        );
+        clientCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
+            getUI().getNavigator().navigateTo("client");
+        });
+
+
         board.addRow(
                 timeCard,
-                new MenuItemCardImpl("client-card.jpg", "Client Manager", "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."),
+                clientCard,
                 new MenuItemCardImpl("map-card.jpg", "Map Manager", "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."),
                 invoiceCard
                 );
