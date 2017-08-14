@@ -17,6 +17,8 @@ public interface ProjectRepository extends CrudRepository<Project, String> {
 
     List<Project> findProjectsByUuidIn(@Param("uuid") String[] uuids);
 
+    List<Project> findByClientdatauuid(@Param("clientdatauuid") String clientdatauuid);
+
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Project entity);
 }

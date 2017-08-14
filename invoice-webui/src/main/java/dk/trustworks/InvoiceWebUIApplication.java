@@ -1,7 +1,7 @@
 package dk.trustworks;
 
 import com.vaadin.spring.annotation.EnableVaadin;
-import dk.trustworks.network.queue.TopicReceiver;
+import dk.trustworks.invoicewebui.network.queue.TopicReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Binding;

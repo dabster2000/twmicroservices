@@ -19,6 +19,9 @@ public class Project {
     @Column(insertable=false, updatable=false)
     private String clientuuid;
 
+    @Column(insertable=false, updatable=false)
+    private String clientdatauuid;
+
     @ManyToOne()
     @JoinColumn(name = "clientuuid")
     private Client client;
@@ -124,5 +127,13 @@ public class Project {
 
     public void setClientuuid(String clientuuid) {
         this.clientuuid = clientuuid;
+    }
+
+    public String getClientdatauuid() {
+        return clientdatauuid;
+    }
+
+    public void setClientdatauuid(String clientdatauuid) {
+        this.clientdatauuid = clientdatauuid;
     }
 }

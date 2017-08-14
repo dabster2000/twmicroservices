@@ -33243,6 +33243,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	object-fit: cover;
 }
 
+.invoice .card-block {
+	max-height: 300px;
+}
+
+.invoice .cut_text {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
 .invoice .top-bar {
 	background-color: #8dacbf;
 }

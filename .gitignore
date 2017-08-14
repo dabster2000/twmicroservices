@@ -72,3 +72,6 @@ zipkin-service/target/
 /timemanager-webui/timemanager-webui.iml
 /user-service/user-service.iml
 /zipkin-service/zipkin-service.iml
+invoice-webui/src/main/resources/VAADIN/addons/
+invoice-webui/src/main/resources/VAADIN/themes/material/
+invoice-webui/src/main/resources/VAADIN/themes/valo/
