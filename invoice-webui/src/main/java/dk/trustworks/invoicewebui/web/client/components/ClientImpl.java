@@ -20,11 +20,11 @@ import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 public class ClientImpl extends ClientDesign {
 
     private ClientClient clientClient;
-    private Resource<Client> clientResource;
+    private Client client;
 
-    public ClientImpl(ClientClient clientClient, Resource<Client> clientResource) {
+    public ClientImpl(ClientClient clientClient, Client client) {
         this.clientClient = clientClient;
-        this.clientResource = clientResource;
+        this.client = client;
         UploadComponent uploadComponent = new UploadComponent(this::uploadReceived);
         uploadComponent.setStartedCallback(this::uploadStarted);
         uploadComponent.setProgressCallback(this::uploadProgress);
@@ -41,9 +41,9 @@ public class ClientImpl extends ClientDesign {
         try {
             byte[] bytes = Files.readAllBytes(file);
             System.out.println("bytes.length = " + bytes.length);
-            clientResource.getContent().setLogo(bytes);
-            System.out.println("clientResource = " + clientResource.getContent());
-            clientClient.save(clientResource.getContent().getUuid(), clientResource.getContent());
+            client.setLogo(bytes);
+            System.out.println("clientResource = " + client);
+            clientClient.save(client.getUuid(), client);
         } catch (IOException e) {
             uploadFailed(fileName, file);
         }

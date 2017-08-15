@@ -149,6 +149,9 @@
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-shared:8.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.8.3" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external:gentyref:1.2.0.vaadin1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-charts:4.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-charts-model:4.0.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:1.4" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-push:8.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.atmosphere:atmosphere-runtime:2.4.11.vaadin1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.slf4j:vaadin-slf4j-jdk14:1.6.1" level="project" />
@@ -183,6 +186,9 @@
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-context-menu:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:locationtextfield:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20140107" level="project" />
+    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:2.5.1" level="project" />
+    <orderEntry type="library" name="Maven: org.sql2o:sql2o:1.5.4" level="project" />
+    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.37" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:fontawesomelabel:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:drop-or-choose-upload:2.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:simplefiledownloader:2.0.2" level="project" />
@@ -201,5 +207,6 @@
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.9" level="project" />
   </component>
 </module>

@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.web.client.views;
 
+import com.jarektoro.responsivelayout.ResponsiveLayout;
+import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.board.Board;
 import com.vaadin.board.Row;
 import com.vaadin.navigator.View;
@@ -28,6 +30,9 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Created by hans on 12/08/2017.
@@ -58,7 +63,7 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
     @PostConstruct
     void init() {
         createClientListViev();
-        showClientListView();
+        //showClientListView();
     }
 
     private void showClientListView() {
@@ -66,6 +71,44 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
     }
 
     private void createClientListViev() {
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout();
+        addComponent(responsiveLayout);
+        Image image = createTopBarImage();
+        responsiveLayout.addRow()
+                .withAlignment(Alignment.TOP_CENTER)
+                .addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(image);
+
+        int rowItemCount = 1;
+        ResponsiveRow row = responsiveLayout.addRow();
+        for (Resource<Client> clientResource : clientClient.findAllClients()) {
+            Client client = clientResource.getContent();
+            ClientCardImpl clientCard = new ClientCardImpl(client);
+            clientCard.getBtnEdit().addClickListener(event -> {
+                createClientDetailsView(clientResource);
+            });
+            row.addColumn().withDisplayRules(12, 6, 3, 3).withComponent(clientCard);
+            //row.addComponent(clientCard);
+            rowItemCount++;
+            if(rowItemCount > 4) {
+                rowItemCount = 1;
+                row = responsiveLayout.addRow();
+                //clientListBoard.addRow(row);
+            }
+        }
+
+        AddClientCardDesign addClientCardDesign = new AddClientCardDesign();
+        addClientCardDesign.getBtnAddClient().addClickListener(event -> {
+            final Window window = new Window("Window");
+            window.setWidth(600.0f, Unit.PIXELS);
+            window.setHeight("500px");
+            window.setModal(true);
+            createClientBlock(new Client());
+        });
+        responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 12, 12).withComponent(addClientCardDesign);
+
+        /*
         Image image = createTopBarImage();
         clientListBoard.addRow(image);
         int rowItemCount = 1;
@@ -85,7 +128,16 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
                 clientListBoard.addRow(row);
             }
         }
-        clientListBoard.addRow(new AddClientCardDesign());
+        AddClientCardDesign addClientCardDesign = new AddClientCardDesign();
+        addClientCardDesign.getBtnAddClient().addClickListener(event -> {
+            final Window window = new Window("Window");
+            window.setWidth(600.0f, Unit.PIXELS);
+            window.setHeight("500px");
+            window.setModal(true);
+            createClientBlock(new Client());
+        });
+        clientListBoard.addRow(addClientCardDesign);
+        */
     }
 
     private void createClientDetailsView(Resource<Client> clientResource) {
@@ -125,7 +177,7 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
         clientDetailBoard.addRow(image);
 
         Image logo = createCompanyLogo(clientResource);
-        ClientImpl clientComponent = createClientBlock(clientResource);
+        ClientImpl clientComponent = createClientBlock(clientResource.getContent());
 
         Row row = new Row(clientComponent, logo);
         row.setComponentSpan(clientComponent, 2);
@@ -183,13 +235,19 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
         return rowContactInformation;
     }
 
-    private ClientImpl createClientBlock(Resource<Client> clientResource) {
-        ClientImpl clientComponent = new ClientImpl(clientClient, clientResource);
-        clientComponent.getTxtName().setValue(clientResource.getContent().getName());
+    private ClientImpl createClientBlock(Client client) {
+        ClientImpl clientComponent = new ClientImpl(clientClient, client);
+        clientComponent.getTxtName().setValue(client.getName());
         clientComponent.getTxtName().addValueChangeListener(event -> {
-            clientResource.getContent().setName(event.getValue());
-            System.out.println("clientResource = " + clientResource.getContent());
-            clientClient.save(clientResource.getContent().getUuid(), clientResource.getContent());
+            client.setName(event.getValue());
+            System.out.println("client = " + client);
+            if(client.getUuid() == null || client.getUuid().equals("")) {
+                client.setUuid(UUID.randomUUID().toString());
+                client.setCreated(Timestamp.from(Instant.now()));
+                clientClient.create(client);
+            } else {
+                clientClient.save(client.getUuid(), client);
+            }
         });
         return clientComponent;
     }

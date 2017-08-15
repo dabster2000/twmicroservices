@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @FeignClient("client-service")
 public interface ClientClient {
@@ -20,5 +21,6 @@ public interface ClientClient {
     @RequestMapping(method = PATCH, value = "/clients/{uuid}")
     void save(@PathVariable("uuid") String uuid, @RequestBody Client client);
 
-
+    @RequestMapping(method = POST, value = "/clients")
+    void create(@RequestBody Client client);
 }

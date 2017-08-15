@@ -33,26 +33,38 @@ public class MainMenuView extends VerticalLayout implements View {
         MenuItemCardImpl timeCard = new MenuItemCardImpl(
                 "time-card.jpg",
                 "Time Manager",
-                "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."
+                "NOT IMPLEMENTED YET!!!"
         );
         timeCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
             System.out.println("layoutClickEvent = " + layoutClickEvent.toString());
         });
+        timeCard.setHeight("100%");
 
         MenuItemCardImpl invoiceCard = new MenuItemCardImpl(
                 "invoice-card.jpg",
                 "Invoice Manager",
-                "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."
+                "Invoice Manager is a simple and powerful online invoicing solution for Trustworks. Create PDF invoices, (eventually) send over email, and register online payments."
         );
         invoiceCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
             getUI().getNavigator().navigateTo("invoice");
         });
 
+        MenuItemCardImpl resourcePlanningCard = new MenuItemCardImpl(
+                "resource-planning-card.jpg",
+                "Resource Planner",
+                "Get the ultimate birds eye view of our team with Resource Planner . View availability, capacity and schedule our resources on projects."
+        );
+        resourcePlanningCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
+            getUI().getNavigator().navigateTo("resourceplanning");
+            //getUI().getPage().setLocation("http://stats.trustworks.dk:9098");
+        });
+
         MenuItemCardImpl clientCard = new MenuItemCardImpl(
                 "client-card.jpg",
                 "Client Manager",
-                "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."
+                "Client Manager is where all Trustworks clients live, including their contact information and logos."
         );
+
         clientCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
             getUI().getNavigator().navigateTo("client");
         });
@@ -60,21 +72,27 @@ public class MainMenuView extends VerticalLayout implements View {
         MenuItemCardImpl projectCard = new MenuItemCardImpl(
                 "project-card.png",
                 "Project Manager",
-                "Project Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments."
+                "Project Manager is to projects what Client Manager is to clients. Create and manage projects, budgets, and rates. NOT IMPLEMENTED YET."
         );
         projectCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
             getUI().getNavigator().navigateTo("project");
         });
 
+        MenuItemCardImpl mapCard = new MenuItemCardImpl("map-card.jpg",
+                "Map Manager",
+                "With Map Manager you can follow your fellow colegues. Which customers are they working with and where on earth (probably Copenhagen) are they located.");
+        mapCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
+            getUI().getPage().setLocation("http://map.trustworks.dk:9096/map");
+        });
+        mapCard.setHeight("100%");
 
         board.addRow(
                 timeCard,
                 clientCard,
                 projectCard,
-                new MenuItemCardImpl("map-card.jpg", "Map Manager", "Time Manager is a simple and powerful online invoicing solution for Joomla. Create PDF invoices, send over email, manage contacts and collect online payments.")
-                );
+                mapCard);
 
-        board.addRow(invoiceCard, new Label(""), new Label(""), new Label(""));
+        board.addRow(invoiceCard, resourcePlanningCard, new Label(""), new Label(""));
         this.addComponent(board);
     }
 
