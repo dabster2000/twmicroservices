@@ -24,9 +24,9 @@ public class ConnectionHelper {
         //props.setProperty("dataSource.databaseName", "mydb");
 
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://localhost:3306/clientmanager?noDatetimeStringSync=true&characterEncoding=utf8");
-        config.setUsername("root");
-        //config.setPassword(props.getProperty("db.password"));
+        config.setJdbcUrl(props.getProperty("db.url"));
+        config.setUsername(props.getProperty("db.username"));
+        config.setPassword(props.getProperty("db.password"));
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
