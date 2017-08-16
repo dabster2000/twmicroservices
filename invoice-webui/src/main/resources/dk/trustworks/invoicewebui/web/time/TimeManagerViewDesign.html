@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;material&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-vertical-layout style-name="card-2" size-auto :middle :center>
+    <vaadin-css-layout style-name="v-component-group flat" width-full>
+     <vaadin-button icon="fonticon://Vaadin-Icons/e7f6" plain-text _id="btnWeekNumberDecr"></vaadin-button>
+     <vaadin-text-field style-name="small align-center" width="35px" value="52" _id="txtWeekNumber"></vaadin-text-field>
+     <vaadin-button icon="fonticon://Vaadin-Icons/e801" plain-text _id="btnWeekNumberIncr"></vaadin-button>
+     <vaadin-css-layout width="50px" height="30px"></vaadin-css-layout>
+     <vaadin-button icon="fonticon://Vaadin-Icons/e7f6" plain-text _id="btnYearDecr"></vaadin-button>
+     <vaadin-text-field style-name="small align-center" width="55px" height="56px" value="2017" _id="txtYear"></vaadin-text-field>
+     <vaadin-button icon="fonticon://Vaadin-Icons/e801" plain-text _id="btnYearIncr"></vaadin-button>
+     <vaadin-css-layout width="160px" height="30px"></vaadin-css-layout>
+     <vaadin-combo-box style-name="align-right" data-item-type="java.lang.String" _id="selActiveUser">
+      <option item="Option1">Hans Lassen</option>
+     </vaadin-combo-box>
+     <vaadin-css-layout width="252px" height="30px"></vaadin-css-layout>
+     <vaadin-button style-name="flat" plain-text _id="btnAddTask">
+       add task 
+     </vaadin-button>
+    </vaadin-css-layout>
+    <vaadin-grid width="1000px" _id="gridTimeTable">
+     <table>
+      <colgroup>
+       <col column-id="taskname" sortable>
+       <col column-id="mon" sortable="false">
+       <col column-id="tue" sortable="false">
+       <col column-id="wed" sortable="false">
+       <col column-id="thu" sortable="false">
+       <col column-id="fri" sortable="false">
+       <col column-id="sat" sortable="false">
+       <col column-id="sun" sortable="false">
+       <col column-id="budgetleft" sortable="false">
+      </colgroup>
+      <thead>
+       <tr default>
+        <th plain-text column-ids="taskname">Task name</th>
+        <th plain-text column-ids="mon">monday</th>
+        <th plain-text column-ids="tue">tuesday</th>
+        <th plain-text column-ids="wed">wednesday</th>
+        <th plain-text column-ids="thu">thursday</th>
+        <th plain-text column-ids="fri">friday</th>
+        <th plain-text column-ids="sat">saturday</th>
+        <th plain-text column-ids="sun">sunday</th>
+        <th plain-text column-ids="budgetleft">budget left</th>
+       </tr>
+      </thead>
+      <tbody></tbody>
+     </table>
+    </vaadin-grid>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

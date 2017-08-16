@@ -36,7 +36,7 @@ public class MainMenuView extends VerticalLayout implements View {
                 "NOT IMPLEMENTED YET!!!"
         );
         timeCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
-            System.out.println("layoutClickEvent = " + layoutClickEvent.toString());
+            getUI().getNavigator().navigateTo("time");
         });
         timeCard.setHeight("100%");
 

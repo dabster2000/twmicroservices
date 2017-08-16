@@ -23,6 +23,13 @@ public interface WorkRepository extends CrudRepository<Work, String> {
                                                               @Param("taskuuid") String taskuuid,
                                                               @Param("useruuid") String useruuid);
 
+    @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',w.month,'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM timemanager.work_latest w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate AND w.taskuuid LIKE :taskuuid AND w.useruuid LIKE :useruuid", nativeQuery = true)
+    List<Work> findByPeriodAndTaskUUIDAndUserUUID(@Param("fromdate") int fromdate,
+                                                  @Param("todate") int todate,
+                                                  @Param("taskuuid") String taskuuid,
+                                                  @Param("useruuid") String useruuid);
+
+
     //@Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM timemanager.work_latest w WHERE w.year = :year AND w.month = :month", nativeQuery = true)
     @Query(value = "SELECT uuid, day, month, year, taskuuid, useruuid, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM timemanager.work_latest w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
     List<Work> findByYearAndMonth(@Param("year") int year,
