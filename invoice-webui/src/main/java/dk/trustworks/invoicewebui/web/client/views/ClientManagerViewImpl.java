@@ -10,7 +10,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.network.clients.ClientClient;
+import dk.trustworks.invoicewebui.network.clients.ClientClientImpl;
 import dk.trustworks.invoicewebui.network.clients.ClientdataClient;
 import dk.trustworks.invoicewebui.network.clients.ProjectClient;
 import dk.trustworks.invoicewebui.network.dto.Client;
@@ -43,7 +43,7 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
     public static final String VIEW_NAME = "client";
 
     @Autowired
-    ClientClient clientClient;
+    ClientClientImpl clientClient;
 
     @Autowired
     ProjectClient projectClient;
@@ -82,11 +82,12 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
 
         int rowItemCount = 1;
         ResponsiveRow row = responsiveLayout.addRow();
-        for (Resource<Client> clientResource : clientClient.findAllClients()) {
-            Client client = clientResource.getContent();
-            ClientCardImpl clientCard = new ClientCardImpl(client);
+
+        Resources<Resource<Client>> clients = clientClient.findAllClientsAndLogo();
+        for (Resource<Client> client : clients) {
+            ClientCardImpl clientCard = new ClientCardImpl(client.getContent());
             clientCard.getBtnEdit().addClickListener(event -> {
-                createClientDetailsView(clientResource);
+                createClientDetailsView(client);
             });
             row.addColumn().withDisplayRules(12, 6, 3, 3).withComponent(clientCard);
             //row.addComponent(clientCard);

@@ -1,28 +1,25 @@
 package dk.trustworks.invoicewebui.web.client.components;
 
 import com.vaadin.ui.Notification;
-import dk.trustworks.invoicewebui.network.clients.ClientClient;
+import dk.trustworks.invoicewebui.network.clients.ClientClientImpl;
 import dk.trustworks.invoicewebui.network.dto.Client;
-import org.springframework.hateoas.Resource;
 import server.droporchoose.UploadComponent;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
-import static com.vaadin.ui.Notification.Type.HUMANIZED_MESSAGE;
-import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
+import static com.vaadin.ui.Notification.Type.*;
 
 /**
  * Created by hans on 13/08/2017.
  */
 public class ClientImpl extends ClientDesign {
 
-    private ClientClient clientClient;
+    private ClientClientImpl clientClient;
     private Client client;
 
-    public ClientImpl(ClientClient clientClient, Client client) {
+    public ClientImpl(ClientClientImpl clientClient, Client client) {
         this.clientClient = clientClient;
         this.client = client;
         UploadComponent uploadComponent = new UploadComponent(this::uploadReceived);

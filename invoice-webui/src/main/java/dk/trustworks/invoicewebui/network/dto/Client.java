@@ -1,8 +1,7 @@
 package dk.trustworks.invoicewebui.network.dto;
 
 
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Client {
     private String uuid;
@@ -12,9 +11,7 @@ public class Client {
     private String name;
     private Double latitude;
     private Double longitude;
-    //private List<Clientdata> clientdata;
-    //private List<Project> projects;
-    private byte[] logo;
+    @JsonIgnore private byte[] logo;
 
     public String getUuid() {
         return uuid;
@@ -64,14 +61,6 @@ public class Client {
         this.longitude = longitude;
     }
 
-    public byte[] getLogo() {
-        return logo;
-    }
-
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Client{");
@@ -82,7 +71,6 @@ public class Client {
         sb.append(", name='").append(name).append('\'');
         sb.append(", latitude=").append(latitude);
         sb.append(", longitude=").append(longitude);
-        sb.append(", logo=").append(Arrays.toString(logo));
         sb.append('}');
         return sb.toString();
     }
@@ -93,5 +81,13 @@ public class Client {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public byte[] getLogo() {
+        return logo;
+    }
+
+    public void setLogo(byte[] logo) {
+        this.logo = logo;
     }
 }

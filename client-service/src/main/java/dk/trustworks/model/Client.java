@@ -1,11 +1,8 @@
 package dk.trustworks.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import java.util.List;
 
@@ -23,8 +20,6 @@ public class Client {
     private List<Clientdata> clientdata;
     @OneToMany(mappedBy = "client")
     private List<Project> projects;
-    @Lob
-    private byte[] logo;
 
     public String getUuid() {
         return uuid;
@@ -80,14 +75,6 @@ public class Client {
 
     public void setClientdata(List<Clientdata> clientdata) {
         this.clientdata = clientdata;
-    }
-
-    public byte[] getLogo() {
-        return logo;
-    }
-
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
     }
 
     public boolean isActive() {

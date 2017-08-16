@@ -19,5 +19,6 @@ public class ExposeEntityIdRestConfiguration extends RepositoryRestConfigurerAda
         config.exposeIdsFor(Project.class);
         config.exposeIdsFor(Task.class);
         config.exposeIdsFor(Taskworkerconstraint.class);
+        config.exposeIdsFor(Logo.class);
     }
 }
