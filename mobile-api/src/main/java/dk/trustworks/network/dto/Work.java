@@ -10,6 +10,8 @@ public class Work {
     private int month;
     private int year;
     private double workduration;
+    private String taskuuid;
+    private String useruuid;
 
     public Work() {
     }
@@ -52,6 +54,22 @@ public class Work {
 
     public void setWorkduration(double workduration) {
         this.workduration = workduration;
+    }
+
+    public String getTaskuuid() {
+        return taskuuid;
+    }
+
+    public void setTaskuuid(String taskuuid) {
+        this.taskuuid = taskuuid;
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 
     @Override

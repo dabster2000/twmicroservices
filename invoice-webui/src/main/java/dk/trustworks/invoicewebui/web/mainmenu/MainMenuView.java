@@ -9,6 +9,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.web.mainmenu.cards.MenuItemCardImpl;
+import dk.trustworks.invoicewebui.web.security.Authorizer;
 
 import javax.annotation.PostConstruct;
 
@@ -98,6 +99,6 @@ public class MainMenuView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        // This view is constructed in the init() method()
+        Authorizer.authorize(this);
     }
 }

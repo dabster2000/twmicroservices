@@ -2,13 +2,18 @@
 <html>
  <head>
   <meta charset="UTF-8">
-  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;material&quot;}">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
   <meta name="vaadin-version" content="8.0.5">
  </head>
  <body>
   <vaadin-vertical-layout size-full>
-   <vaadin-vertical-layout style-name="card-2" size-auto :middle :center>
-    <vaadin-css-layout style-name="v-component-group flat" width-full>
+   <vaadin-vertical-layout style-name="card-2 blue-bg" size-auto :middle :center>
+    <vaadin-css-layout :center>
+     <vaadin-label style-name="tiny" plain-text _id="lblCurrentDate">
+       21. may 2017 
+     </vaadin-label>
+    </vaadin-css-layout>
+    <vaadin-css-layout style-name="v-component-group flat white-bg" width-full>
      <vaadin-button icon="fonticon://Vaadin-Icons/e7f6" plain-text _id="btnWeekNumberDecr"></vaadin-button>
      <vaadin-text-field style-name="small align-center" width="35px" value="52" _id="txtWeekNumber"></vaadin-text-field>
      <vaadin-button icon="fonticon://Vaadin-Icons/e801" plain-text _id="btnWeekNumberIncr"></vaadin-button>
@@ -17,15 +22,13 @@
      <vaadin-text-field style-name="small align-center" width="55px" height="56px" value="2017" _id="txtYear"></vaadin-text-field>
      <vaadin-button icon="fonticon://Vaadin-Icons/e801" plain-text _id="btnYearIncr"></vaadin-button>
      <vaadin-css-layout width="160px" height="30px"></vaadin-css-layout>
-     <vaadin-combo-box style-name="align-right" data-item-type="java.lang.String" _id="selActiveUser">
-      <option item="Option1">Hans Lassen</option>
-     </vaadin-combo-box>
-     <vaadin-css-layout width="252px" height="30px"></vaadin-css-layout>
+     <vaadin-combo-box style-name="align-right" data-item-type="dk.trustworks.invoicewebui.network.dto.User" data-property-id="username" _id="selActiveUser"></vaadin-combo-box>
+     <vaadin-css-layout width="263px" height="30px"></vaadin-css-layout>
      <vaadin-button style-name="flat" plain-text _id="btnAddTask">
        add task 
      </vaadin-button>
     </vaadin-css-layout>
-    <vaadin-grid width="1000px" _id="gridTimeTable">
+    <vaadin-grid width="1000px" data-item-type="dk.trustworks.invoicewebui.web.time.model.WeekItem" _id="gridTimeTable" :middle :center>
      <table>
       <colgroup>
        <col column-id="taskname" sortable>
@@ -36,24 +39,30 @@
        <col column-id="fri" sortable="false">
        <col column-id="sat" sortable="false">
        <col column-id="sun" sortable="false">
-       <col column-id="budgetleft" sortable="false">
+       <col column-id="budgetleft" sortable>
       </colgroup>
       <thead>
        <tr default>
-        <th plain-text column-ids="taskname">Task name</th>
-        <th plain-text column-ids="mon">monday</th>
-        <th plain-text column-ids="tue">tuesday</th>
-        <th plain-text column-ids="wed">wednesday</th>
-        <th plain-text column-ids="thu">thursday</th>
-        <th plain-text column-ids="fri">friday</th>
-        <th plain-text column-ids="sat">saturday</th>
-        <th plain-text column-ids="sun">sunday</th>
-        <th plain-text column-ids="budgetleft">budget left</th>
+        <th plain-text column-ids="taskname">Taskname</th>
+        <th plain-text column-ids="mon">Mon</th>
+        <th plain-text column-ids="tue">Tue</th>
+        <th plain-text column-ids="wed">Wed</th>
+        <th plain-text column-ids="thu">Thu</th>
+        <th plain-text column-ids="fri">Fri</th>
+        <th plain-text column-ids="sat">Sat</th>
+        <th plain-text column-ids="sun">Sun</th>
+        <th plain-text column-ids="budgetleft">Budgetleft</th>
        </tr>
       </thead>
       <tbody></tbody>
      </table>
     </vaadin-grid>
+    <vaadin-css-layout style-name="v-component-group flat white-bg" width="130px" :middle :right>
+     <vaadin-text-field style-name="align-center" placeholder="" width="64px" readonly value="37"></vaadin-text-field>
+     <vaadin-label style-name="align-center" width="61px" height="24px" plain-text>
+       hours 
+     </vaadin-label>
+    </vaadin-css-layout>
    </vaadin-vertical-layout>
   </vaadin-vertical-layout>
  </body>

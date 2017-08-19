@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -23,10 +24,9 @@ public interface WorkRepository extends CrudRepository<Work, String> {
                                                               @Param("taskuuid") String taskuuid,
                                                               @Param("useruuid") String useruuid);
 
-    @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',w.month,'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM timemanager.work_latest w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate AND w.taskuuid LIKE :taskuuid AND w.useruuid LIKE :useruuid", nativeQuery = true)
-    List<Work> findByPeriodAndTaskUUIDAndUserUUID(@Param("fromdate") int fromdate,
-                                                  @Param("todate") int todate,
-                                                  @Param("taskuuid") String taskuuid,
+    @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',w.month,'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM timemanager.work_latest w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate AND k.useruuid LIKE :useruuid", nativeQuery = true)
+    List<Work> findByPeriodAndUserUUID(@Param("fromdate") String fromdate,
+                                                  @Param("todate") String todate,
                                                   @Param("useruuid") String useruuid);
 
 

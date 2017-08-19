@@ -1,10 +1,12 @@
+$mat-background-color: #fafafa; // #fafafa for a light and #303030 for a dark theme
+$v-focus-color: #00BCD4;
+
 @import "../valo/_valo.scss";
 @import "addons";
 @import "../material/material.scss";
 @import "designs.scss";
 
-$mat-background-color: #fafafa; // #fafafa for a light and #303030 for a dark theme
-$v-focus-color: #00BCD4;
+
 
 .invoice {
   @include valo;
@@ -17,6 +19,22 @@ $v-focus-color: #00BCD4;
 
   .loginBox {
     max-width: 300px;
+  }
+
+  .v-grid-cell {
+    font-size: small;
+  }
+
+  .v-grid-cell.centeralign {
+    text-align: center;
+  }
+
+  .blue-bg {
+    background-color: #8dacbf;
+  }
+
+  .white-bg {
+    background-color: #ffffff;
   }
 
   .holder {

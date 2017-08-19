@@ -21,7 +21,12 @@ public interface WorkClient {
                                                                              @RequestParam("useruuid") String useruuid,
                                                                              @RequestParam("taskuuid") String taskuuid);
 
+    @RequestMapping(method = RequestMethod.GET, value = "/work/search/findByPeriodAndUserUUID")
+    Resources<Resource<Work>> findByPeriodAndUserUUID(@RequestParam("fromdate") String fromdate,
+                                                      @RequestParam("todate") String todate,
+                                                      @RequestParam("useruuid") String useruuid);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/")
+
+    @RequestMapping(method = RequestMethod.POST, value = "/work")
     Resource<Work> saveWork(Work work);
 }

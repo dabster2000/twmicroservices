@@ -2505,7 +2505,7 @@ body:not(.v-touch) .friendly.v-button:not(.v-disabled):not(.borderless):not(.bor
 }
 
 body:not(.v-touch) .custom.v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #1a8afa;
+	background: #00d6f2;
 }
 
 body:not(.v-touch) .danger.v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
@@ -2513,7 +2513,7 @@ body:not(.v-touch) .danger.v-button:not(.v-disabled):not(.borderless):not(.borde
 }
 
 body:not(.v-touch) .primary.v-button:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #1a8afa;
+	background: #00d6f2;
 }
 
 body:not(.v-touch) :not(.v-upload) > * > .v-button.borderless:not(.v-disabled):not(.borderless-colored):not(.primary):not(.friendly):not(.danger):not(.custom):hover {
@@ -2521,7 +2521,7 @@ body:not(.v-touch) :not(.v-upload) > * > .v-button.borderless:not(.v-disabled):n
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).floating-action:hover {
-	background: #1a8afa;
+	background: #00d6f2;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).floating-action:not(.flat):hover, body.v-touch .v-button.floating-action:not(.flat):active {
@@ -2543,12 +2543,12 @@ body:not(.v-touch) .v-button:not(.v-disabled).border:hover {
 
 body:not(.v-touch) .v-button:not(.v-disabled).border.custom:hover {
 	color: white;
-	background: #197de1 !important;
+	background: #00BCD4 !important;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).border.primary:hover {
 	color: white;
-	background: #197de1 !important;
+	background: #00BCD4 !important;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).border.friendly:hover {
@@ -2562,7 +2562,7 @@ body:not(.v-touch) .v-button:not(.v-disabled).border.danger:hover {
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).borderless.primary:hover, body:not(.v-touch) .v-button:not(.v-disabled).borderless-colored:hover {
-	background: #1a8afa !important;
+	background: #00d6f2 !important;
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).borderless.friendly:hover {
@@ -2574,7 +2574,7 @@ body:not(.v-touch) .v-button:not(.v-disabled).borderless.danger:hover {
 }
 
 body:not(.v-touch) .v-button:not(.v-disabled).borderless.custom:hover {
-	background: #1a8afa !important;
+	background: #00d6f2 !important;
 }
 
 body:not(.v-touch) .v-filterselect:not(.v-disabled) > .v-filterselect-button:hover {
@@ -2582,7 +2582,7 @@ body:not(.v-touch) .v-filterselect:not(.v-disabled) > .v-filterselect-button:hov
 }
 
 body:not(.v-touch) .v-grid-editor-save:hover, body:not(.v-touch) .v-grid-editor-cancel:hover {
-	background: rgba(25, 125, 225, 0.2) !important;
+	background: rgba(0, 188, 212, 0.2) !important;
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled):not(.borderless):not(.borderless-colored):not(.primary):not(.border):not(.friendly):not(.danger):not(.custom):not(.floating-action-upload):not(.danger):hover {
@@ -2598,7 +2598,7 @@ body:not(.v-touch) .friendly.v-upload:not(.v-disabled):not(.borderless):not(.bor
 }
 
 body:not(.v-touch) .custom.v-upload:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #318ae3;
+	background: #06d2ec;
 }
 
 body:not(.v-touch) .danger.v-upload:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
@@ -2606,7 +2606,7 @@ body:not(.v-touch) .danger.v-upload:not(.v-disabled):not(.borderless):not(.borde
 }
 
 body:not(.v-touch) .primary.v-upload:not(.v-disabled):not(.borderless):not(.borderless-colored):hover {
-	background: #318ae3;
+	background: #06d2ec;
 }
 
 body:not(.v-touch) .v-upload.borderless:not(.v-disabled):not(.borderless-colored):not(.primary):not(.friendly):not(.danger):not(.custom):hover {
@@ -2614,7 +2614,7 @@ body:not(.v-touch) .v-upload.borderless:not(.v-disabled):not(.borderless-colored
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled).floating-action-upload:hover {
-	background: #318ae3;
+	background: #06d2ec;
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled).floating-action-upload:not(.flat):hover, body.v-touch .v-upload.floating-action-upload:not(.flat):active {
@@ -2636,12 +2636,12 @@ body:not(.v-touch) .v-upload:not(.v-disabled).border:hover {
 
 body:not(.v-touch) .v-upload:not(.v-disabled).border.custom:hover {
 	color: white;
-	background: #197de1 !important;
+	background: #00BCD4 !important;
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled).border.primary:hover {
 	color: white;
-	background: #197de1 !important;
+	background: #00BCD4 !important;
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled).border.friendly:hover {
@@ -2655,7 +2655,7 @@ body:not(.v-touch) .v-upload:not(.v-disabled).border.danger:hover {
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled).borderless.primary:hover, body:not(.v-touch) .v-upload:not(.v-disabled).borderless-colored:hover {
-	background: rgba(25, 125, 225, 0.2) !important;
+	background: rgba(0, 188, 212, 0.2) !important;
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled).borderless.friendly:hover {
@@ -2667,7 +2667,7 @@ body:not(.v-touch) .v-upload:not(.v-disabled).borderless.danger:hover {
 }
 
 body:not(.v-touch) .v-upload:not(.v-disabled).borderless.custom:hover {
-	background: rgba(25, 125, 225, 0.2) !important;
+	background: rgba(0, 188, 212, 0.2) !important;
 }
 
 .v-colorpicker-popup .v-horizontallayout .v-button:hover {
@@ -2876,7 +2876,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	width: 50%;
 	opacity: 1;
 	height: 4px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	pointer-events: none;
 	-webkit-transition: none;
 	-moz-transition: none;
@@ -3104,7 +3104,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #0957a6;
+	background: #008494;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -3118,8 +3118,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-contextmenu .gwt-MenuItem-selected {
-	background: #197de1;
-	color: #ecf2f8;
+	background: #00BCD4;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -3348,7 +3348,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-checkbox > .v-icon, .invoice .v-checkbox > label .v-icon {
@@ -3469,7 +3469,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-small > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-checkbox-small > .v-icon, .invoice .v-checkbox-small > label .v-icon {
@@ -3590,7 +3590,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-large > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-checkbox-large > .v-icon, .invoice .v-checkbox-large > label .v-icon {
@@ -3865,7 +3865,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #0957a6;
+	background: #008494;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -3879,8 +3879,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-filterselect-suggestpopup .gwt-MenuItem-selected {
-	background: #197de1;
-	color: #ecf2f8;
+	background: #00BCD4;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -5041,7 +5041,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid .header-drag-table .v-grid-header  > .v-grid-drop-marker {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	width: 3px;
 }
@@ -5168,7 +5168,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-row-selected > td {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-grid-row-focused > td {
@@ -5291,7 +5291,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -5467,7 +5467,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	top: 0;
 	left: 0;
 	width: 2px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
@@ -5521,14 +5521,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-row-selected  > .v-grid-cell {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
-	border-color: #1d69b4;
+	border-color: #0793a4;
 }
 
 .invoice .v-grid-row-selected  > .v-grid-cell-focused:before {
-	border-color: #71b0ef;
+	border-color: #3be9ff;
 }
 
 .invoice .v-grid-editor {
@@ -5618,7 +5618,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-grid-editor-save, .invoice .v-grid-editor-cancel {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -5634,7 +5634,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-editor-save:hover, .invoice .v-grid-editor-cancel:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-grid-editor-save.v-disabled, .invoice .v-grid-editor-cancel.v-disabled {
@@ -5699,7 +5699,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	pointer-events: none;
 	border: none;
 }
@@ -5723,16 +5723,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 	bottom: 0;
 	right: 2px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	pointer-events: none;
 }
 
 .invoice .v-grid-row-selected.v-grid-row-drag-center:after {
-	border-color: #1463b3;
+	border-color: #008fa1;
 }
 
 .invoice .v-grid-row-selected.v-grid-row-drag-top:before, .invoice .v-grid-row-selected.v-grid-row-drag-bottom:after {
-	background: #1463b3;
+	background: #008fa1;
 }
 
 .invoice .v-grid-body-drag-top:after {
@@ -5743,7 +5743,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	bottom: 0;
 	left: 0;
 	pointer-events: none;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	z-index: 100;
 }
 
@@ -6639,7 +6639,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-day:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-day-offmonth {
@@ -6654,8 +6654,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected, .invoice .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected:hover {
-	color: #c8dbed;
-	background: #197de1;
+	color: #bbeaf0;
+	background: #00BCD4;
 	border: none;
 	font-weight: 600;
 }
@@ -6748,7 +6748,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-datefield-popup td.v-datefield-calendarpanel-month {
 	width: 148px;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -6820,7 +6820,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-calendarpanel-day:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-calendarpanel-day-offmonth {
@@ -6835,8 +6835,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected, .invoice .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected:hover {
-	color: #c8dbed;
-	background: #197de1;
+	color: #bbeaf0;
+	background: #00BCD4;
 	border: none;
 	font-weight: 600;
 }
@@ -6929,7 +6929,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice td.v-datefield-calendarpanel-month {
 	width: 148px;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -7471,7 +7471,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-inline-datefield-calendarpanel-day:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-inline-datefield-calendarpanel-day-offmonth {
@@ -7486,8 +7486,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-selected, .invoice .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-selected:hover {
-	color: #c8dbed;
-	background: #197de1;
+	color: #bbeaf0;
+	background: #00BCD4;
 	border: none;
 	font-weight: 600;
 }
@@ -7580,7 +7580,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice td.v-inline-datefield-calendarpanel-month {
 	width: 148px;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-inline-datefield-calendarpanel-year td.v-inline-datefield-calendarpanel-month {
@@ -7829,13 +7829,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar > .v-menubar-menuitem-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	
 	
 	
 	border-radius: 0;
-	border: 0 solid #11579d;
-	background: #197de1;
+	border: 0 solid #008394;
+	background: #00BCD4;
 	
 	
 	border-top-width: 0;
@@ -7916,7 +7916,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #0957a6;
+	background: #008494;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -7942,8 +7942,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-popup .v-menubar-menuitem-selected {
-	background: #197de1;
-	color: #ecf2f8;
+	background: #00BCD4;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -8022,7 +8022,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	margin-right: 1px;
 	border-radius: 2px;
-	color: #197de1;
+	color: #00BCD4;
 	padding: 0 12px;
 	-webkit-transition: color 140ms;
 	-moz-transition: color 140ms;
@@ -8038,7 +8038,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem:active {
@@ -8047,7 +8047,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-checked, .invoice .v-menubar-borderless .v-menubar-menuitem-checked:first-child {
 	border: 0 solid #afafaf;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-checked .v-menubar-menuitem-caption, .invoice .v-menubar-borderless .v-menubar-menuitem-checked:first-child .v-menubar-menuitem-caption {
@@ -8056,12 +8056,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-selected:hover {
-	color: #ecf2f8;
+	color: #e8f6f8;
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-disabled, .invoice .v-menubar-borderless .v-menubar-menuitem-disabled:hover {
@@ -8148,7 +8148,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-radiobutton > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-radiobutton > .v-icon, .invoice .v-radiobutton > label .v-icon {
@@ -8193,7 +8193,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 7px;
 	top: 6px;
 	left: 6px;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 :root .invoice .v-radiobutton > input ~ label:before, :root .invoice .v-radiobutton > input ~ label:after {
@@ -8302,7 +8302,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-checkbox > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-small .v-checkbox > .v-icon, .invoice .v-select-optiongroup-small .v-checkbox > label .v-icon {
@@ -8422,7 +8422,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-radiobutton > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-small .v-radiobutton > .v-icon, .invoice .v-select-optiongroup-small .v-radiobutton > label .v-icon {
@@ -8467,7 +8467,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 6px;
 	top: 5px;
 	left: 5px;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 :root .invoice .v-select-optiongroup-small .v-radiobutton > input ~ label:before, :root .invoice .v-select-optiongroup-small .v-radiobutton > input ~ label:after {
@@ -8576,7 +8576,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-checkbox > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-large .v-checkbox > .v-icon, .invoice .v-select-optiongroup-large .v-checkbox > label .v-icon {
@@ -8696,7 +8696,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-radiobutton > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-large .v-radiobutton > .v-icon, .invoice .v-select-optiongroup-large .v-radiobutton > label .v-icon {
@@ -8741,7 +8741,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 8px;
 	top: 7px;
 	left: 7px;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 :root .invoice .v-select-optiongroup-large .v-radiobutton > input ~ label:before, :root .invoice .v-select-optiongroup-large .v-radiobutton > input ~ label:after {
@@ -8784,7 +8784,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-link {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -8793,7 +8793,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-link:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-link.v-disabled {
@@ -8803,7 +8803,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-link a {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -8818,7 +8818,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-link a:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-link a.v-disabled {
@@ -8981,7 +8981,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-window-closebox:hover, .invoice .v-window-maximizebox:hover, .invoice .v-window-restorebox:hover {
 	opacity: 1;
 	filter: none ;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-window-closebox:active, .invoice .v-window-maximizebox:active, .invoice .v-window-restorebox:active {
@@ -9283,13 +9283,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree-node-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-tree-node-selected:after {
 	opacity: 1;
-	background: #197de1;
+	background: #00BCD4;
 	border: none;
 }
 
@@ -9489,7 +9489,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8 .header-drag-table .v-tree8-header  > .v-tree8-drop-marker {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	width: 3px;
 }
@@ -9616,7 +9616,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-row-selected > td {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-tree8-row-focused > td {
@@ -9739,7 +9739,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -9915,7 +9915,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	top: 0;
 	left: 0;
 	width: 2px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
@@ -9969,14 +9969,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-row-selected  > .v-tree8-cell {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
-	border-color: #1d69b4;
+	border-color: #0793a4;
 }
 
 .invoice .v-tree8-row-selected  > .v-tree8-cell-focused:before {
-	border-color: #71b0ef;
+	border-color: #3be9ff;
 }
 
 .invoice .v-tree8-editor {
@@ -10066,7 +10066,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tree8-editor-save, .invoice .v-tree8-editor-cancel {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -10082,7 +10082,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-editor-save:hover, .invoice .v-tree8-editor-cancel:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-tree8-editor-save.v-disabled, .invoice .v-tree8-editor-cancel.v-disabled {
@@ -10147,7 +10147,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	pointer-events: none;
 	border: none;
 }
@@ -10171,16 +10171,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 	bottom: 0;
 	right: 2px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	pointer-events: none;
 }
 
 .invoice .v-tree8-row-selected.v-tree8-row-drag-center:after {
-	border-color: #1463b3;
+	border-color: #008fa1;
 }
 
 .invoice .v-tree8-row-selected.v-tree8-row-drag-top:before, .invoice .v-tree8-row-selected.v-tree8-row-drag-bottom:after {
-	background: #1463b3;
+	background: #008fa1;
 }
 
 .invoice .v-tree8-body-drag-top:after {
@@ -10191,7 +10191,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	bottom: 0;
 	left: 0;
 	pointer-events: none;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	z-index: 100;
 }
 
@@ -10299,7 +10299,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -10367,12 +10367,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tree8-row-selected::before {
 	display: block;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-tree8:focus .v-tree8-row-selected.v-tree8-row-focused::before {
 	border-color: transparent;
-	box-shadow: inset 0 0 0 1px #c8dbed;
+	box-shadow: inset 0 0 0 1px #bbeaf0;
 }
 
 .invoice .v-treegrid {
@@ -10536,7 +10536,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid .header-drag-table .v-treegrid-header  > .v-treegrid-drop-marker {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	width: 3px;
 }
@@ -10663,7 +10663,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-row-selected > td {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-treegrid-row-focused > td {
@@ -10786,7 +10786,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -10962,7 +10962,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	top: 0;
 	left: 0;
 	width: 2px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
@@ -11016,14 +11016,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-row-selected  > .v-treegrid-cell {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
-	border-color: #1d69b4;
+	border-color: #0793a4;
 }
 
 .invoice .v-treegrid-row-selected  > .v-treegrid-cell-focused:before {
-	border-color: #71b0ef;
+	border-color: #3be9ff;
 }
 
 .invoice .v-treegrid-editor {
@@ -11113,7 +11113,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-treegrid-editor-save, .invoice .v-treegrid-editor-cancel {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -11129,7 +11129,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-editor-save:hover, .invoice .v-treegrid-editor-cancel:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-treegrid-editor-save.v-disabled, .invoice .v-treegrid-editor-cancel.v-disabled {
@@ -11194,7 +11194,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	pointer-events: none;
 	border: none;
 }
@@ -11218,16 +11218,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 	bottom: 0;
 	right: 2px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	pointer-events: none;
 }
 
 .invoice .v-treegrid-row-selected.v-treegrid-row-drag-center:after {
-	border-color: #1463b3;
+	border-color: #008fa1;
 }
 
 .invoice .v-treegrid-row-selected.v-treegrid-row-drag-top:before, .invoice .v-treegrid-row-selected.v-treegrid-row-drag-bottom:after {
-	background: #1463b3;
+	background: #008fa1;
 }
 
 .invoice .v-treegrid-body-drag-top:after {
@@ -11238,7 +11238,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	bottom: 0;
 	left: 0;
 	pointer-events: none;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	z-index: 100;
 }
 
@@ -11346,7 +11346,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -11512,23 +11512,23 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table [class*="-row"].v-selected {
-	background: #197de1;
+	background: #00BCD4;
 	background-origin: border-box;
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-table [class*="-row"].v-selected  + .v-selected {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-table [class*="-row"].v-selected  + .v-selected td {
-	border-top-color: #197de1;
+	border-top-color: #00BCD4;
 }
 
 .invoice .v-table [class*="-row"].v-selected .v-table-cell-content {
 	border-color: transparent;
-	border-left-color: #1d69b4;
+	border-left-color: #0793a4;
 }
 
 .invoice .v-table [class*="-row"].v-selected .v-table-cell-content:first-child {
@@ -12181,10 +12181,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-progressbar-indicator {
 	border-radius: 4px;
 	height: inherit;
-	background: #197de1;
+	background: #00BCD4;
 	
 	
-	border: 0 solid #11579d;
+	border: 0 solid #008394;
 	box-sizing: border-box;
 	max-width: 100%;
 	min-width: 4px;
@@ -12207,10 +12207,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	display: inline-block;
 	border-radius: 4px;
 	height: inherit;
-	background: #197de1;
+	background: #00BCD4;
 	
 	
-	border: 0 solid #11579d;
+	border: 0 solid #008394;
 	box-sizing: border-box;
 	max-width: 100%;
 	width: 9px;
@@ -12273,16 +12273,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 11px;
 	width: 4px;
 	border-radius: 2px;
-	border-left: 0 solid #11579d;
+	border-left: 0 solid #008394;
 }
 
 .invoice .v-slider-base:after {
 	border-radius: 4px;
 	height: inherit;
-	background: #197de1;
+	background: #00BCD4;
 	
 	
-	border: 0 solid #11579d;
+	border: 0 solid #008394;
 	box-sizing: border-box;
 	max-width: 100%;
 	content: "";
@@ -12392,13 +12392,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	width: auto;
 	height: 4px;
 	border-left: none;
-	border-bottom: 0 solid #11579d;
+	border-bottom: 0 solid #008394;
 }
 
 .invoice .v-slider-vertical .v-slider-base:after {
 	height: 101%;
 	margin-left: 0;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-slider-vertical .v-slider-handle {
@@ -12484,7 +12484,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tabsheet-tabitemcell .v-caption:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-caption.v-disabled {
@@ -12503,12 +12503,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tabsheet-tabitemcell:focus .v-caption {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected .v-caption.v-caption {
-	border-bottom-color: #197de1;
-	color: #197de1;
+	border-bottom-color: #00BCD4;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-caption-closable {
@@ -12534,12 +12534,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tabsheet-tabitemcell .v-tabsheet-caption-close:hover {
 	background: rgba(0, 0, 0, 0.03);
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-tabsheet-caption-close:active {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 }
 
 .invoice .v-tabsheet-scroller {
@@ -12590,13 +12590,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-tabsheet-scroller button:hover {
 	opacity: 1;
 	filter: none ;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-scroller button:active {
 	opacity: 0.7;
 	filter: alpha(opacity=70) ;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-scroller button::-moz-focus-inner {
@@ -13399,7 +13399,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-month-day-selected {
-	background-color: #e3edf7;
+	background-color: #e1f3f6;
 }
 
 .invoice .v-calendar-month-day-dragemphasis {
@@ -13494,7 +13494,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: -1px;
 	left: 0;
-	background: #197de1;
+	background: #00BCD4;
 	opacity: 0.5;
 	filter: alpha(opacity=50) ;
 	border-radius: 2px 2px 0 0;
@@ -13781,7 +13781,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-label-colored {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-label-large {
@@ -13997,7 +13997,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-popupview {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -14006,7 +14006,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-popupview:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-popupview.v-disabled {
@@ -14320,7 +14320,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-Notification .v-Notification-caption {
-	color: #197de1;
+	color: #00BCD4;
 	font-size: 19px;
 	line-height: 1;
 }
@@ -14694,13 +14694,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu {
 	height: 100%;
-	background-color: #197de1;
-	background-image: -webkit-linear-gradient(right, #197de1 0%, #197de1 9px);
-	background-image: linear-gradient(to left,#197de1 0%, #197de1 9px);
-	color: #97bee5;
+	background-color: #00BCD4;
+	background-image: -webkit-linear-gradient(right, #00bcd4 0%, #00BCD4 9px);
+	background-image: linear-gradient(to left,#00bcd4 0%, #00BCD4 9px);
+	color: #7de0ec;
 	font-size: 14px;
 	line-height: 30px;
-	border-right: 0 solid #11579d;
+	border-right: 0 solid #008394;
 	white-space: nowrap;
 }
 
@@ -14714,7 +14714,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part {
-	border-left: 0 solid #1466b8;
+	border-left: 0 solid #009aad;
 	height: 100%;
 	padding-bottom: 37px;
 	overflow: auto;
@@ -14738,12 +14738,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu-title {
 	line-height: 1.2;
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 	padding: 12px 19px;
 	font-size: 14px;
-	border-bottom: 0 solid #11579d;
+	border-bottom: 0 solid #008394;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-align: center;
@@ -14751,7 +14751,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu-title .v-menubar.v-menubar {
 	background: transparent;
-	border-color: #11579d;
+	border-color: #008394;
 	color: inherit;
 	-webkit-box-shadow: none;
 	box-shadow: none;
@@ -14800,7 +14800,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	margin-right: 1px;
 	border-radius: 2px;
-	color: #197de1;
+	color: #00BCD4;
 	padding: 0 12px;
 	-webkit-transition: color 140ms;
 	-moz-transition: color 140ms;
@@ -14816,7 +14816,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem:active {
@@ -14825,7 +14825,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-checked, .invoice .v-menubar-user-menu .v-menubar-menuitem-checked:first-child {
 	border: 0 solid #afafaf;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-checked .v-menubar-menuitem-caption, .invoice .v-menubar-user-menu .v-menubar-menuitem-checked:first-child .v-menubar-menuitem-caption {
@@ -14834,12 +14834,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-selected:hover {
-	color: #ecf2f8;
+	color: #e8f6f8;
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-disabled, .invoice .v-menubar-user-menu .v-menubar-menuitem-disabled:hover {
@@ -14875,13 +14875,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-subtitle {
-	color: #6ea8e2;
+	color: #48dcef;
 	margin: 7px 0 7px 19px;
-	border-bottom: 0 solid #3b90e5;
+	border-bottom: 0 solid #26c6da;
 }
 
 .invoice .valo-menu-subtitle [class*="badge"] {
-	color: #70ace7;
+	color: #5dd3e2;
 }
 
 .invoice .valo-menuitems {
@@ -14912,20 +14912,20 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-item [class*="badge"] {
-	color: #70ace7;
+	color: #5dd3e2;
 }
 
 .invoice .valo-menu-item.selected {
-	background: #1775d3;
+	background: #00aec5;
 }
 
 .invoice .valo-menu-item.selected .v-icon {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .valo-menu-item.selected [class*="badge"] {
-	background: #4396ea;
-	color: #d3e2f1;
+	background: #08e3ff;
+	color: #0d373c;
 }
 
 .invoice .valo-menu-item:focus, .invoice .valo-menu-item:hover, .invoice .valo-menu-item.selected {
@@ -14944,7 +14944,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-item [class*="badge"] {
-	background-color: #2c8ae8;
+	background-color: #00d3ee;
 	-webkit-transition: background-color 300ms;
 	-moz-transition: background-color 300ms;
 	transition: background-color 300ms;
@@ -14957,7 +14957,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part.large-icons {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	min-width: 74px;
 	max-width: 111px;
 }
@@ -14988,7 +14988,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	background: #166ec5;
+	background: #00a1b5;
 	font-size: 13px;
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -15007,7 +15007,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	line-height: 1;
 	padding: 12px;
 	text-align: center;
-	border-top: 0 solid #2684e2;
+	border-top: 0 solid #0fc0d6;
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item:first-child {
@@ -15032,7 +15032,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item.selected {
-	background: #1775d3;
+	background: #00aec5;
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item.selected .v-icon {
@@ -15040,7 +15040,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item.selected [class*="badge"] {
-	border-color: #1775d3;
+	border-color: #00aec5;
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item [class*="badge"] {
@@ -15048,7 +15048,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	padding-right: 4px;
 	top: 7px;
 	right: 7px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 }
 
 .invoice .valo-menu-logo {
@@ -15058,7 +15058,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 44px;
 	border-radius: 2px;
 	text-align: center;
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 	font-size: 25px;
 	line-height: 44px;
@@ -15072,7 +15072,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	min-width: 74px;
 	max-width: 111px;
 }
@@ -15103,7 +15103,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	background: #166ec5;
+	background: #00a1b5;
 	font-size: 13px;
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -15122,7 +15122,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	line-height: 1;
 	padding: 12px;
 	text-align: center;
-	border-top: 0 solid #2684e2;
+	border-top: 0 solid #0fc0d6;
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item:first-child {
@@ -15147,7 +15147,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected {
-	background: #1775d3;
+	background: #00aec5;
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected .v-icon {
@@ -15155,7 +15155,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected [class*="badge"] {
-	border-color: #1775d3;
+	border-color: #00aec5;
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item [class*="badge"] {
@@ -15163,7 +15163,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	padding-right: 4px;
 	top: 7px;
 	right: 7px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 }
 
 .invoice .valo-menu-responsive[width-range~="0-800px"] {
@@ -15212,7 +15212,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	margin: 0;
 	padding: 0;
 	height: 37px;
-	color: #97bee5;
+	color: #7de0ec;
 	max-width: 30%;
 	-webkit-backface-visibility: hidden;
 }
@@ -15233,13 +15233,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu-responsive[width-range~="0-800px"] .valo-menuitems {
 	height: 100%;
-	background-color: #197de1;
-	background-image: -webkit-linear-gradient(right, #197de1 0%, #197de1 9px);
-	background-image: linear-gradient(to left,#197de1 0%, #197de1 9px);
-	color: #97bee5;
+	background-color: #00BCD4;
+	background-image: -webkit-linear-gradient(right, #00bcd4 0%, #00BCD4 9px);
+	background-image: linear-gradient(to left,#00bcd4 0%, #00BCD4 9px);
+	color: #7de0ec;
 	font-size: 14px;
 	line-height: 30px;
-	border-right: 0 solid #11579d;
+	border-right: 0 solid #008394;
 	white-space: nowrap;
 	position: fixed;
 	z-index: 9000;
@@ -18684,13 +18684,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary {
 	height: 37px;
 	padding: 0 16px;
-	color: #ecf2f8;
+	color: #e8f6f8;
 	font-weight: 400;
 	
 	
 	border-radius: 2px;
-	border: 0 solid #11579d;
-	background: #197de1;
+	border: 0 solid #008394;
+	background: #00BCD4;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	font-weight: bold;
@@ -18705,7 +18705,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary:hover:after {
-	background-color: rgba(90, 163, 237, 0.1);
+	background-color: rgba(34, 230, 255, 0.1);
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary:focus:after {
@@ -18713,7 +18713,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.primary:active:after {
-	background-color: rgba(2, 62, 122, 0.2);
+	background-color: rgba(0, 94, 106, 0.2);
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.friendly {
@@ -18810,11 +18810,11 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	background: transparent;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless-colored:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.borderless-colored:hover:after {
@@ -18853,7 +18853,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	background: transparent;
 	color: inherit;
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -18875,7 +18875,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .shepherd-element.shepherd-theme-valo .shepherd-content footer .shepherd-buttons li .shepherd-button.link.v-disabled {
@@ -19020,7 +19020,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	width: 50%;
 	opacity: 1;
 	height: 4px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	pointer-events: none;
 	-webkit-transition: none;
 	-moz-transition: none;
@@ -19248,7 +19248,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #0957a6;
+	background: #008494;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -19262,8 +19262,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-contextmenu .gwt-MenuItem-selected {
-	background: #197de1;
-	color: #ecf2f8;
+	background: #00BCD4;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -19492,7 +19492,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-checkbox > .v-icon, .invoice .v-checkbox > label .v-icon {
@@ -19613,7 +19613,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-small > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-checkbox-small > .v-icon, .invoice .v-checkbox-small > label .v-icon {
@@ -19734,7 +19734,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-checkbox-large > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-checkbox-large > .v-icon, .invoice .v-checkbox-large > label .v-icon {
@@ -20009,7 +20009,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #0957a6;
+	background: #008494;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -20023,8 +20023,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-filterselect-suggestpopup .gwt-MenuItem-selected {
-	background: #197de1;
-	color: #ecf2f8;
+	background: #00BCD4;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -21185,7 +21185,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid .header-drag-table .v-grid-header  > .v-grid-drop-marker {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	width: 3px;
 }
@@ -21312,7 +21312,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-row-selected > td {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-grid-row-focused > td {
@@ -21435,7 +21435,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -21611,7 +21611,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	top: 0;
 	left: 0;
 	width: 2px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
@@ -21665,14 +21665,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-row-selected  > .v-grid-cell {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
-	border-color: #1d69b4;
+	border-color: #0793a4;
 }
 
 .invoice .v-grid-row-selected  > .v-grid-cell-focused:before {
-	border-color: #71b0ef;
+	border-color: #3be9ff;
 }
 
 .invoice .v-grid-editor {
@@ -21762,7 +21762,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-grid-editor-save, .invoice .v-grid-editor-cancel {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -21778,7 +21778,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-editor-save:hover, .invoice .v-grid-editor-cancel:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-grid-editor-save.v-disabled, .invoice .v-grid-editor-cancel.v-disabled {
@@ -21843,7 +21843,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	pointer-events: none;
 	border: none;
 }
@@ -21867,16 +21867,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 	bottom: 0;
 	right: 2px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	pointer-events: none;
 }
 
 .invoice .v-grid-row-selected.v-grid-row-drag-center:after {
-	border-color: #1463b3;
+	border-color: #008fa1;
 }
 
 .invoice .v-grid-row-selected.v-grid-row-drag-top:before, .invoice .v-grid-row-selected.v-grid-row-drag-bottom:after {
-	background: #1463b3;
+	background: #008fa1;
 }
 
 .invoice .v-grid-body-drag-top:after {
@@ -21887,7 +21887,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	bottom: 0;
 	left: 0;
 	pointer-events: none;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	z-index: 100;
 }
 
@@ -22783,7 +22783,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-day:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-day-offmonth {
@@ -22798,8 +22798,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected, .invoice .v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected:hover {
-	color: #c8dbed;
-	background: #197de1;
+	color: #bbeaf0;
+	background: #00BCD4;
 	border: none;
 	font-weight: 600;
 }
@@ -22892,7 +22892,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-datefield-popup td.v-datefield-calendarpanel-month {
 	width: 148px;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -22964,7 +22964,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-calendarpanel-day:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-calendarpanel-day-offmonth {
@@ -22979,8 +22979,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected, .invoice .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-selected:hover {
-	color: #c8dbed;
-	background: #197de1;
+	color: #bbeaf0;
+	background: #00BCD4;
 	border: none;
 	font-weight: 600;
 }
@@ -23073,7 +23073,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice td.v-datefield-calendarpanel-month {
 	width: 148px;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -23615,7 +23615,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-inline-datefield-calendarpanel-day:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-inline-datefield-calendarpanel-day-offmonth {
@@ -23630,8 +23630,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-selected, .invoice .v-inline-datefield-calendarpanel-day.v-inline-datefield-calendarpanel-day-selected:hover {
-	color: #c8dbed;
-	background: #197de1;
+	color: #bbeaf0;
+	background: #00BCD4;
 	border: none;
 	font-weight: 600;
 }
@@ -23724,7 +23724,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice td.v-inline-datefield-calendarpanel-month {
 	width: 148px;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-inline-datefield-calendarpanel-year td.v-inline-datefield-calendarpanel-month {
@@ -23973,13 +23973,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar > .v-menubar-menuitem-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	
 	
 	
 	border-radius: 0;
-	border: 0 solid #11579d;
-	background: #197de1;
+	border: 0 solid #008394;
+	background: #00BCD4;
 	
 	
 	border-top-width: 0;
@@ -24060,7 +24060,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background: #0957a6;
+	background: #008494;
 	opacity: 0.15;
 	filter: alpha(opacity=15.0) ;
 	pointer-events: none;
@@ -24086,8 +24086,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-popup .v-menubar-menuitem-selected {
-	background: #197de1;
-	color: #ecf2f8;
+	background: #00BCD4;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -24166,7 +24166,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	margin-right: 1px;
 	border-radius: 2px;
-	color: #197de1;
+	color: #00BCD4;
 	padding: 0 12px;
 	-webkit-transition: color 140ms;
 	-moz-transition: color 140ms;
@@ -24182,7 +24182,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem:active {
@@ -24191,7 +24191,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-checked, .invoice .v-menubar-borderless .v-menubar-menuitem-checked:first-child {
 	border: 0 solid #afafaf;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-checked .v-menubar-menuitem-caption, .invoice .v-menubar-borderless .v-menubar-menuitem-checked:first-child .v-menubar-menuitem-caption {
@@ -24200,12 +24200,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-selected:hover {
-	color: #ecf2f8;
+	color: #e8f6f8;
 }
 
 .invoice .v-menubar-borderless .v-menubar-menuitem-disabled, .invoice .v-menubar-borderless .v-menubar-menuitem-disabled:hover {
@@ -24292,7 +24292,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-radiobutton > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-radiobutton > .v-icon, .invoice .v-radiobutton > label .v-icon {
@@ -24337,7 +24337,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 7px;
 	top: 6px;
 	left: 6px;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 :root .invoice .v-radiobutton > input ~ label:before, :root .invoice .v-radiobutton > input ~ label:after {
@@ -24446,7 +24446,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-checkbox > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-small .v-checkbox > .v-icon, .invoice .v-select-optiongroup-small .v-checkbox > label .v-icon {
@@ -24566,7 +24566,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-small .v-radiobutton > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-small .v-radiobutton > .v-icon, .invoice .v-select-optiongroup-small .v-radiobutton > label .v-icon {
@@ -24611,7 +24611,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 6px;
 	top: 5px;
 	left: 5px;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 :root .invoice .v-select-optiongroup-small .v-radiobutton > input ~ label:before, :root .invoice .v-select-optiongroup-small .v-radiobutton > input ~ label:after {
@@ -24720,7 +24720,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-checkbox > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-large .v-checkbox > .v-icon, .invoice .v-select-optiongroup-large .v-checkbox > label .v-icon {
@@ -24840,7 +24840,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 :root .invoice .v-select-optiongroup-large .v-radiobutton > input:checked ~ label:after {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-select-optiongroup-large .v-radiobutton > .v-icon, .invoice .v-select-optiongroup-large .v-radiobutton > label .v-icon {
@@ -24885,7 +24885,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 8px;
 	top: 7px;
 	left: 7px;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 :root .invoice .v-select-optiongroup-large .v-radiobutton > input ~ label:before, :root .invoice .v-select-optiongroup-large .v-radiobutton > input ~ label:after {
@@ -24928,7 +24928,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-link {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -24937,7 +24937,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-link:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-link.v-disabled {
@@ -24947,7 +24947,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-link a {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -24962,7 +24962,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-link a:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-link a.v-disabled {
@@ -25125,7 +25125,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-window-closebox:hover, .invoice .v-window-maximizebox:hover, .invoice .v-window-restorebox:hover {
 	opacity: 1;
 	filter: none ;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-window-closebox:active, .invoice .v-window-maximizebox:active, .invoice .v-window-restorebox:active {
@@ -25427,13 +25427,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree-node-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-tree-node-selected:after {
 	opacity: 1;
-	background: #197de1;
+	background: #00BCD4;
 	border: none;
 }
 
@@ -25633,7 +25633,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8 .header-drag-table .v-tree8-header  > .v-tree8-drop-marker {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	width: 3px;
 }
@@ -25760,7 +25760,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-row-selected > td {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-tree8-row-focused > td {
@@ -25883,7 +25883,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -26059,7 +26059,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	top: 0;
 	left: 0;
 	width: 2px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
@@ -26113,14 +26113,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-row-selected  > .v-tree8-cell {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
-	border-color: #1d69b4;
+	border-color: #0793a4;
 }
 
 .invoice .v-tree8-row-selected  > .v-tree8-cell-focused:before {
-	border-color: #71b0ef;
+	border-color: #3be9ff;
 }
 
 .invoice .v-tree8-editor {
@@ -26210,7 +26210,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tree8-editor-save, .invoice .v-tree8-editor-cancel {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -26226,7 +26226,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tree8-editor-save:hover, .invoice .v-tree8-editor-cancel:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-tree8-editor-save.v-disabled, .invoice .v-tree8-editor-cancel.v-disabled {
@@ -26291,7 +26291,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	pointer-events: none;
 	border: none;
 }
@@ -26315,16 +26315,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 	bottom: 0;
 	right: 2px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	pointer-events: none;
 }
 
 .invoice .v-tree8-row-selected.v-tree8-row-drag-center:after {
-	border-color: #1463b3;
+	border-color: #008fa1;
 }
 
 .invoice .v-tree8-row-selected.v-tree8-row-drag-top:before, .invoice .v-tree8-row-selected.v-tree8-row-drag-bottom:after {
-	background: #1463b3;
+	background: #008fa1;
 }
 
 .invoice .v-tree8-body-drag-top:after {
@@ -26335,7 +26335,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	bottom: 0;
 	left: 0;
 	pointer-events: none;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	z-index: 100;
 }
 
@@ -26443,7 +26443,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -26511,12 +26511,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tree8-row-selected::before {
 	display: block;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-tree8:focus .v-tree8-row-selected.v-tree8-row-focused::before {
 	border-color: transparent;
-	box-shadow: inset 0 0 0 1px #c8dbed;
+	box-shadow: inset 0 0 0 1px #bbeaf0;
 }
 
 .invoice .v-treegrid {
@@ -26680,7 +26680,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid .header-drag-table .v-treegrid-header  > .v-treegrid-drop-marker {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	width: 3px;
 }
@@ -26807,7 +26807,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-row-selected > td {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-treegrid-row-focused > td {
@@ -26930,7 +26930,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -27106,7 +27106,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	top: 0;
 	left: 0;
 	width: 2px;
-	background-color: #197de1;
+	background-color: #00BCD4;
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
@@ -27160,14 +27160,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-row-selected  > .v-treegrid-cell {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
-	border-color: #1d69b4;
+	border-color: #0793a4;
 }
 
 .invoice .v-treegrid-row-selected  > .v-treegrid-cell-focused:before {
-	border-color: #71b0ef;
+	border-color: #3be9ff;
 }
 
 .invoice .v-treegrid-editor {
@@ -27257,7 +27257,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-treegrid-editor-save, .invoice .v-treegrid-editor-cancel {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -27273,7 +27273,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-treegrid-editor-save:hover, .invoice .v-treegrid-editor-cancel:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-treegrid-editor-save.v-disabled, .invoice .v-treegrid-editor-cancel.v-disabled {
@@ -27338,7 +27338,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	position: absolute;
 	height: 2px;
 	width: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	pointer-events: none;
 	border: none;
 }
@@ -27362,16 +27362,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 	bottom: 0;
 	right: 2px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	pointer-events: none;
 }
 
 .invoice .v-treegrid-row-selected.v-treegrid-row-drag-center:after {
-	border-color: #1463b3;
+	border-color: #008fa1;
 }
 
 .invoice .v-treegrid-row-selected.v-treegrid-row-drag-top:before, .invoice .v-treegrid-row-selected.v-treegrid-row-drag-bottom:after {
-	background: #1463b3;
+	background: #008fa1;
 }
 
 .invoice .v-treegrid-body-drag-top:after {
@@ -27382,7 +27382,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	bottom: 0;
 	left: 0;
 	pointer-events: none;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	z-index: 100;
 }
 
@@ -27490,7 +27490,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 	display: none;
 	pointer-events: none;
 }
@@ -27656,23 +27656,23 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-table [class*="-row"].v-selected {
-	background: #197de1;
+	background: #00BCD4;
 	background-origin: border-box;
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-table [class*="-row"].v-selected  + .v-selected {
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-table [class*="-row"].v-selected  + .v-selected td {
-	border-top-color: #197de1;
+	border-top-color: #00BCD4;
 }
 
 .invoice .v-table [class*="-row"].v-selected .v-table-cell-content {
 	border-color: transparent;
-	border-left-color: #1d69b4;
+	border-left-color: #0793a4;
 }
 
 .invoice .v-table [class*="-row"].v-selected .v-table-cell-content:first-child {
@@ -28325,10 +28325,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-progressbar-indicator {
 	border-radius: 4px;
 	height: inherit;
-	background: #197de1;
+	background: #00BCD4;
 	
 	
-	border: 0 solid #11579d;
+	border: 0 solid #008394;
 	box-sizing: border-box;
 	max-width: 100%;
 	min-width: 4px;
@@ -28351,10 +28351,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	display: inline-block;
 	border-radius: 4px;
 	height: inherit;
-	background: #197de1;
+	background: #00BCD4;
 	
 	
-	border: 0 solid #11579d;
+	border: 0 solid #008394;
 	box-sizing: border-box;
 	max-width: 100%;
 	width: 9px;
@@ -28417,16 +28417,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 11px;
 	width: 4px;
 	border-radius: 2px;
-	border-left: 0 solid #11579d;
+	border-left: 0 solid #008394;
 }
 
 .invoice .v-slider-base:after {
 	border-radius: 4px;
 	height: inherit;
-	background: #197de1;
+	background: #00BCD4;
 	
 	
-	border: 0 solid #11579d;
+	border: 0 solid #008394;
 	box-sizing: border-box;
 	max-width: 100%;
 	content: "";
@@ -28536,13 +28536,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	width: auto;
 	height: 4px;
 	border-left: none;
-	border-bottom: 0 solid #11579d;
+	border-bottom: 0 solid #008394;
 }
 
 .invoice .v-slider-vertical .v-slider-base:after {
 	height: 101%;
 	margin-left: 0;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-slider-vertical .v-slider-handle {
@@ -28628,7 +28628,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tabsheet-tabitemcell .v-caption:hover {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-caption.v-disabled {
@@ -28647,12 +28647,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-tabsheet-tabitemcell:focus .v-caption {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected .v-caption.v-caption {
-	border-bottom-color: #197de1;
-	color: #197de1;
+	border-bottom-color: #00BCD4;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-caption-closable {
@@ -28678,12 +28678,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-tabsheet-tabitemcell .v-tabsheet-caption-close:hover {
 	background: rgba(0, 0, 0, 0.03);
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-tabitemcell .v-tabsheet-caption-close:active {
-	background: #197de1;
-	color: #c8dbed;
+	background: #00BCD4;
+	color: #bbeaf0;
 }
 
 .invoice .v-tabsheet-scroller {
@@ -28734,13 +28734,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 .invoice .v-tabsheet-scroller button:hover {
 	opacity: 1;
 	filter: none ;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-scroller button:active {
 	opacity: 0.7;
 	filter: alpha(opacity=70) ;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-tabsheet-scroller button::-moz-focus-inner {
@@ -29543,7 +29543,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-calendar-month-day-selected {
-	background-color: #e3edf7;
+	background-color: #e1f3f6;
 }
 
 .invoice .v-calendar-month-day-dragemphasis {
@@ -29638,7 +29638,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	right: 0;
 	bottom: -1px;
 	left: 0;
-	background: #197de1;
+	background: #00BCD4;
 	opacity: 0.5;
 	filter: alpha(opacity=50) ;
 	border-radius: 2px 2px 0 0;
@@ -29925,7 +29925,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-label-colored {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-label-large {
@@ -30141,7 +30141,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-popupview {
 	cursor: pointer;
-	color: #197de1;
+	color: #00BCD4;
 	text-decoration: none;
 	font-weight: inherit;
 	-webkit-transition: color 140ms;
@@ -30150,7 +30150,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-popupview:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-popupview.v-disabled {
@@ -30464,7 +30464,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-Notification .v-Notification-caption {
-	color: #197de1;
+	color: #00BCD4;
 	font-size: 19px;
 	line-height: 1;
 }
@@ -30838,13 +30838,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu {
 	height: 100%;
-	background-color: #197de1;
-	background-image: -webkit-linear-gradient(right, #197de1 0%, #197de1 9px);
-	background-image: linear-gradient(to left,#197de1 0%, #197de1 9px);
-	color: #97bee5;
+	background-color: #00BCD4;
+	background-image: -webkit-linear-gradient(right, #00bcd4 0%, #00BCD4 9px);
+	background-image: linear-gradient(to left,#00bcd4 0%, #00BCD4 9px);
+	color: #7de0ec;
 	font-size: 14px;
 	line-height: 30px;
-	border-right: 0 solid #11579d;
+	border-right: 0 solid #008394;
 	white-space: nowrap;
 }
 
@@ -30858,7 +30858,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part {
-	border-left: 0 solid #1466b8;
+	border-left: 0 solid #009aad;
 	height: 100%;
 	padding-bottom: 37px;
 	overflow: auto;
@@ -30882,12 +30882,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu-title {
 	line-height: 1.2;
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 	padding: 12px 19px;
 	font-size: 14px;
-	border-bottom: 0 solid #11579d;
+	border-bottom: 0 solid #008394;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	text-align: center;
@@ -30895,7 +30895,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu-title .v-menubar.v-menubar {
 	background: transparent;
-	border-color: #11579d;
+	border-color: #008394;
 	color: inherit;
 	-webkit-box-shadow: none;
 	box-shadow: none;
@@ -30944,7 +30944,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	margin-right: 1px;
 	border-radius: 2px;
-	color: #197de1;
+	color: #00BCD4;
 	padding: 0 12px;
 	-webkit-transition: color 140ms;
 	-moz-transition: color 140ms;
@@ -30960,7 +30960,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem:hover {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem:active {
@@ -30969,7 +30969,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-checked, .invoice .v-menubar-user-menu .v-menubar-menuitem-checked:first-child {
 	border: 0 solid #afafaf;
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-checked .v-menubar-menuitem-caption, .invoice .v-menubar-user-menu .v-menubar-menuitem-checked:first-child .v-menubar-menuitem-caption {
@@ -30978,12 +30978,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-selected {
-	color: #ecf2f8;
+	color: #e8f6f8;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-selected:hover {
-	color: #ecf2f8;
+	color: #e8f6f8;
 }
 
 .invoice .v-menubar-user-menu .v-menubar-menuitem-disabled, .invoice .v-menubar-user-menu .v-menubar-menuitem-disabled:hover {
@@ -31019,13 +31019,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-subtitle {
-	color: #6ea8e2;
+	color: #48dcef;
 	margin: 7px 0 7px 19px;
-	border-bottom: 0 solid #3b90e5;
+	border-bottom: 0 solid #26c6da;
 }
 
 .invoice .valo-menu-subtitle [class*="badge"] {
-	color: #70ace7;
+	color: #5dd3e2;
 }
 
 .invoice .valo-menuitems {
@@ -31056,20 +31056,20 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-item [class*="badge"] {
-	color: #70ace7;
+	color: #5dd3e2;
 }
 
 .invoice .valo-menu-item.selected {
-	background: #1775d3;
+	background: #00aec5;
 }
 
 .invoice .valo-menu-item.selected .v-icon {
-	color: #4396ea;
+	color: #08e3ff;
 }
 
 .invoice .valo-menu-item.selected [class*="badge"] {
-	background: #4396ea;
-	color: #d3e2f1;
+	background: #08e3ff;
+	color: #0d373c;
 }
 
 .invoice .valo-menu-item:focus, .invoice .valo-menu-item:hover, .invoice .valo-menu-item.selected {
@@ -31088,7 +31088,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-item [class*="badge"] {
-	background-color: #2c8ae8;
+	background-color: #00d3ee;
 	-webkit-transition: background-color 300ms;
 	-moz-transition: background-color 300ms;
 	transition: background-color 300ms;
@@ -31101,7 +31101,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part.large-icons {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	min-width: 74px;
 	max-width: 111px;
 }
@@ -31132,7 +31132,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	background: #166ec5;
+	background: #00a1b5;
 	font-size: 13px;
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -31151,7 +31151,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	line-height: 1;
 	padding: 12px;
 	text-align: center;
-	border-top: 0 solid #2684e2;
+	border-top: 0 solid #0fc0d6;
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item:first-child {
@@ -31176,7 +31176,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item.selected {
-	background: #1775d3;
+	background: #00aec5;
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item.selected .v-icon {
@@ -31184,7 +31184,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item.selected [class*="badge"] {
-	border-color: #1775d3;
+	border-color: #00aec5;
 }
 
 .invoice .valo-menu-part.large-icons .valo-menu-item [class*="badge"] {
@@ -31192,7 +31192,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	padding-right: 4px;
 	top: 7px;
 	right: 7px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 }
 
 .invoice .valo-menu-logo {
@@ -31202,7 +31202,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 44px;
 	border-radius: 2px;
 	text-align: center;
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 	font-size: 25px;
 	line-height: 44px;
@@ -31216,7 +31216,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part {
-	background-color: #197de1;
+	background-color: #00BCD4;
 	min-width: 74px;
 	max-width: 111px;
 }
@@ -31247,7 +31247,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	border: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	background: #166ec5;
+	background: #00a1b5;
 	font-size: 13px;
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 }
@@ -31266,7 +31266,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	line-height: 1;
 	padding: 12px;
 	text-align: center;
-	border-top: 0 solid #2684e2;
+	border-top: 0 solid #0fc0d6;
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item:first-child {
@@ -31291,7 +31291,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected {
-	background: #1775d3;
+	background: #00aec5;
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected .v-icon {
@@ -31299,7 +31299,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected [class*="badge"] {
-	border-color: #1775d3;
+	border-color: #00aec5;
 }
 
 .invoice .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item [class*="badge"] {
@@ -31307,7 +31307,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	padding-right: 4px;
 	top: 7px;
 	right: 7px;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 }
 
 .invoice .valo-menu-responsive[width-range~="0-800px"] {
@@ -31356,7 +31356,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	margin: 0;
 	padding: 0;
 	height: 37px;
-	color: #97bee5;
+	color: #7de0ec;
 	max-width: 30%;
 	-webkit-backface-visibility: hidden;
 }
@@ -31377,13 +31377,13 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .valo-menu-responsive[width-range~="0-800px"] .valo-menuitems {
 	height: 100%;
-	background-color: #197de1;
-	background-image: -webkit-linear-gradient(right, #197de1 0%, #197de1 9px);
-	background-image: linear-gradient(to left,#197de1 0%, #197de1 9px);
-	color: #97bee5;
+	background-color: #00BCD4;
+	background-image: -webkit-linear-gradient(right, #00bcd4 0%, #00BCD4 9px);
+	background-image: linear-gradient(to left,#00bcd4 0%, #00BCD4 9px);
+	color: #7de0ec;
 	font-size: 14px;
 	line-height: 30px;
-	border-right: 0 solid #11579d;
+	border-right: 0 solid #008394;
 	white-space: nowrap;
 	position: fixed;
 	z-index: 9000;
@@ -31649,8 +31649,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-button.custom:after, .invoice .v-upload.custom:after {
 	
-	background-image: -webkit-radial-gradient(circle, #cadef2 20%, transparent 10%);
-	background-image: radial-gradient( circle, #cadef2 20%, transparent 10%);
+	background-image: -webkit-radial-gradient(circle, #0c3338 20%, transparent 10%);
+	background-image: radial-gradient( circle, #0c3338 20%, transparent 10%);
 }
 
 .invoice .v-button.round:after, .invoice .v-upload.round:after {
@@ -31719,7 +31719,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice :not(.v-upload) > * > .v-button:not(.borderless):not(.border).custom {
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 }
 
@@ -31766,8 +31766,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-button.border.custom {
-	border: 1px solid #197de1;
-	color: #197de1;
+	border: 1px solid #00BCD4;
+	color: #00BCD4;
 }
 
 .invoice .v-button.borderless {
@@ -31791,7 +31791,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-button.borderless.custom {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-button.floating-action {
@@ -31799,7 +31799,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 56px;
 	padding: 0px;
 	border-radius: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 }
 
@@ -31829,7 +31829,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-button.floating-action.custom {
 	color: white;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-button.v-disabled {
@@ -31873,8 +31873,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice :not(.v-component-group) > .v-textfield:not(.v-datefield-textfield):not(.v-textfield-readonly):not(.v-textfield-error):not(.v-colorpicker-preview-textfield):not(.borderless):not(.floating):not(.custom):focus {
-	border-bottom: 1px solid #197de1;
-	box-shadow: 0 1px 0 0 #197de1;
+	border-bottom: 1px solid #00BCD4;
+	box-shadow: 0 1px 0 0 #00BCD4;
 }
 
 .invoice :not(.v-component-group) > .v-textfield-error:not(.borderless):not(.floating):not(.custom):focus {
@@ -31883,20 +31883,20 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice :not(.v-component-group) > .v-textfield.custom {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-textfield.custom::-webkit-input-placeholder {
-	color: rgba(25, 125, 225, 0.4);
+	color: rgba(0, 188, 212, 0.4);
 }
 
 .invoice .v-caption-custom.v-caption-inline-icon {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice :not(.v-component-group) > .v-textfield.custom:focus {
-	border-bottom: 1px solid #197de1;
-	box-shadow: 0 1px 0 0 #197de1;
+	border-bottom: 1px solid #00BCD4;
+	box-shadow: 0 1px 0 0 #00BCD4;
 }
 
 .invoice .v-component-group > .v-textfield {
@@ -31918,17 +31918,17 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-filterselect-focus:not(.borderless):not(.floating):not(.custom):not(.v-readonly) [class*="input"] {
-	border-bottom: 1px solid #197de1;
-	box-shadow: 0 1px 0 0 #197de1;
+	border-bottom: 1px solid #00BCD4;
+	box-shadow: 0 1px 0 0 #00BCD4;
 }
 
 .invoice .v-filterselect.custom [class*="input"] {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-filterselect-focus.custom [class*="input"] {
-	border-bottom: 1px solid #197de1;
-	box-shadow: 0 1px 0 0 #197de1;
+	border-bottom: 1px solid #00BCD4;
+	box-shadow: 0 1px 0 0 #00BCD4;
 }
 
 .invoice .v-filterselect-error.v-filterselect-focus:not(.borderless):not(.floating) [class*="input"] {
@@ -32064,7 +32064,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-slider-handle:before {
-	background: #197de1;
+	background: #00BCD4;
 	box-shadow: none;
 }
 
@@ -32139,7 +32139,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar.primary:not(.borderless) {
-	background: #197de1;
+	background: #00BCD4;
 	color: white !important;
 }
 
@@ -32153,16 +32153,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar.primary.borderless > .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):hover, .invoice .v-menubar.primary.borderless > .v-menubar-menuitem-selected, .invoice .v-menubar.primary.borderless > .v-menubar-menuitem-checked {
-	background: rgba(25, 125, 225, 0.2);
+	background: rgba(0, 188, 212, 0.2);
 }
 
 .invoice .v-menubar.custom:not(.borderless) {
-	background: #197de1;
+	background: #00BCD4;
 	color: white !important;
 }
 
 .invoice .v-menubar-borderless.custom .v-menubar-menuitem {
-	color: #197de1 !important;
+	color: #00BCD4 !important;
 }
 
 .invoice .v-menubar.custom > .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):hover, .invoice .v-menubar.custom > .v-menubar-menuitem-selected, .invoice .v-menubar.custom > .v-menubar-menuitem-checked {
@@ -32171,7 +32171,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-menubar.custom.borderless > .v-menubar-menuitem:not(.v-menubar-menuitem-disabled):hover, .invoice .v-menubar.custom.borderless > .v-menubar-menuitem-selected, .invoice .v-menubar.custom.borderless > .v-menubar-menuitem-checked {
-	background: rgba(25, 125, 225, 0.2);
+	background: rgba(0, 188, 212, 0.2);
 }
 
 .invoice .v-menubar > .v-menubar-menuitem {
@@ -32245,25 +32245,25 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice :not(.v-component-group) > .v-datefield:not(.borderless):not(.floating):not(.custom) [class*="textfield"]:not(.v-textfield-readonly):focus {
-	border-bottom: 1px solid #197de1;
-	box-shadow: 0 1px 0 0 #197de1;
+	border-bottom: 1px solid #00BCD4;
+	box-shadow: 0 1px 0 0 #00BCD4;
 }
 
 .invoice :not(.v-component-group) > .v-datefield.custom [class*="textfield"] {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice :not(.v-component-group) > .v-datefield.custom [class*="textfield"]:focus {
-	border-bottom: 1px solid #197de1 !important;
-	box-shadow: 0 1px 0 0 #197de1 !important;
+	border-bottom: 1px solid #00BCD4 !important;
+	box-shadow: 0 1px 0 0 #00BCD4 !important;
 }
 
 .invoice .v-datefield.custom .v-datefield-button {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-datefield.custom .v-datefield-button:hover {
-	color: #318ae3;
+	color: #06d2ec;
 }
 
 .invoice .v-datefield-error:not(.borderless):not(.floating) [class*="textfield"]:focus {
@@ -32562,8 +32562,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-grid-select-all-checkbox input[type=checkbox]:checked + label, .invoice .v-grid-selection-checkbox input[type=checkbox]:checked + label {
-	background: #197de1;
-	border-color: #197de1;
+	background: #00BCD4;
+	border-color: #00BCD4;
 }
 
 .invoice .v-select .v-select-select, .invoice .v-select-twincol .v-select-twincol-options, .invoice .v-select-twincol .v-select-twincol-selections {
@@ -32591,9 +32591,9 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-checkbox > input:checked ~ label:after {
-	background: #197de1;
+	background: #00BCD4;
 	color: white !important;
-	border: 2px solid #197de1;
+	border: 2px solid #00BCD4;
 }
 
 .invoice .v-select-optiongroup:not(.large):not(.small) .v-checkbox > input:checked ~ label:after, .invoice .v-checkbox:not(.large):not(.small) > input:checked ~ label:after {
@@ -32654,7 +32654,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-radiobutton > input ~ label:after {
-	background: #197de1 !important;
+	background: #00BCD4 !important;
 	transform: scale(0);
 	transition: transform 0.2s ease-out !important;
 }
@@ -32664,7 +32664,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-radiobutton > input:checked ~ label:before {
-	border: 2px solid #197de1 !important;
+	border: 2px solid #00BCD4 !important;
 }
 
 .invoice .v-radiobutton > input ~ label:before {
@@ -32996,7 +32996,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-upload:not(.borderless):not(.border).custom {
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 }
 
@@ -33043,8 +33043,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-upload.border.custom {
-	border: 1px solid #197de1;
-	color: #197de1;
+	border: 1px solid #00BCD4;
+	color: #00BCD4;
 }
 
 .invoice .v-upload.borderless {
@@ -33064,7 +33064,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .v-upload.borderless.custom {
-	color: #197de1;
+	color: #00BCD4;
 }
 
 .invoice .v-upload.floating-action-upload {
@@ -33072,7 +33072,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	height: 56px;
 	padding: 0px;
 	border-radius: 100%;
-	background: #197de1;
+	background: #00BCD4;
 	color: white;
 }
 
@@ -33094,7 +33094,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-upload.floating-action-upload.custom {
 	color: white;
-	background: #197de1;
+	background: #00BCD4;
 }
 
 .invoice .v-upload.v-disabled {
@@ -33231,6 +33231,22 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .loginBox {
 	max-width: 300px;
+}
+
+.invoice .v-grid-cell {
+	font-size: small;
+}
+
+.invoice .v-grid-cell.centeralign {
+	text-align: center;
+}
+
+.invoice .blue-bg {
+	background-color: #8dacbf;
+}
+
+.invoice .white-bg {
+	background-color: #ffffff;
 }
 
 .invoice .holder {

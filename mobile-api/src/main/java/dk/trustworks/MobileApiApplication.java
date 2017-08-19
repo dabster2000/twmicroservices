@@ -43,7 +43,7 @@ public class MobileApiApplication {
 */
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        builder.additionalMessageConverters(getHalMessageConverter());
+        //builder.additionalMessageConverters(getHalMessageConverter());
         return builder.build();
     }
 

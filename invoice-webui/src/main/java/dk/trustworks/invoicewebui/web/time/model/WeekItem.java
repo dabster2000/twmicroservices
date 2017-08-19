@@ -5,29 +5,40 @@ package dk.trustworks.invoicewebui.web.time.model;
  */
 public class WeekItem {
 
+    private String taskuuid;
+    private String useruuid;
     private String taskname;
-    private double mon;
-    private double tue;
-    private double wed;
-    private double thu;
-    private double fri;
-    private double sat;
-    private double sun;
+    private String mon;
+    private String tue;
+    private String wed;
+    private String thu;
+    private String fri;
+    private String sat;
+    private String sun;
     private double budgetleft;
 
     public WeekItem() {
     }
 
-    public WeekItem(String taskname, double mon, double tue, double wed, double thu, double fri, double sat, double sun, double budgetleft) {
-        this.taskname = taskname;
-        this.mon = mon;
-        this.tue = tue;
-        this.wed = wed;
-        this.thu = thu;
-        this.fri = fri;
-        this.sat = sat;
-        this.sun = sun;
-        this.budgetleft = budgetleft;
+    public WeekItem(String taskuuid, String useruuid) {
+        this.taskuuid = taskuuid;
+        this.useruuid = useruuid;
+    }
+
+    public String getTaskuuid() {
+        return taskuuid;
+    }
+
+    public void setTaskuuid(String taskuuid) {
+        this.taskuuid = taskuuid;
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 
     public String getTaskname() {
@@ -38,59 +49,59 @@ public class WeekItem {
         this.taskname = taskname;
     }
 
-    public double getMon() {
+    public String getMon() {
         return mon;
     }
 
-    public void setMon(double mon) {
+    public void setMon(String mon) {
         this.mon = mon;
     }
 
-    public double getTue() {
+    public String getTue() {
         return tue;
     }
 
-    public void setTue(double tue) {
+    public void setTue(String tue) {
         this.tue = tue;
     }
 
-    public double getWed() {
+    public String getWed() {
         return wed;
     }
 
-    public void setWed(double wed) {
+    public void setWed(String wed) {
         this.wed = wed;
     }
 
-    public double getThu() {
+    public String getThu() {
         return thu;
     }
 
-    public void setThu(double thu) {
+    public void setThu(String thu) {
         this.thu = thu;
     }
 
-    public double getFri() {
+    public String getFri() {
         return fri;
     }
 
-    public void setFri(double fri) {
+    public void setFri(String fri) {
         this.fri = fri;
     }
 
-    public double getSat() {
+    public String getSat() {
         return sat;
     }
 
-    public void setSat(double sat) {
+    public void setSat(String sat) {
         this.sat = sat;
     }
 
-    public double getSun() {
+    public String getSun() {
         return sun;
     }
 
-    public void setSun(double sun) {
+    public void setSun(String sun) {
         this.sun = sun;
     }
 
@@ -105,14 +116,16 @@ public class WeekItem {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WeekItem{");
-        sb.append("taskname='").append(taskname).append('\'');
-        sb.append(", mon=").append(mon);
-        sb.append(", tue=").append(tue);
-        sb.append(", wed=").append(wed);
-        sb.append(", thu=").append(thu);
-        sb.append(", fri=").append(fri);
-        sb.append(", sat=").append(sat);
-        sb.append(", sun=").append(sun);
+        sb.append("taskuuid='").append(taskuuid).append('\'');
+        sb.append(", useruuid='").append(useruuid).append('\'');
+        sb.append(", taskname='").append(taskname).append('\'');
+        sb.append(", mon='").append(mon).append('\'');
+        sb.append(", tue='").append(tue).append('\'');
+        sb.append(", wed='").append(wed).append('\'');
+        sb.append(", thu='").append(thu).append('\'');
+        sb.append(", fri='").append(fri).append('\'');
+        sb.append(", sat='").append(sat).append('\'');
+        sb.append(", sun='").append(sun).append('\'');
         sb.append(", budgetleft=").append(budgetleft);
         sb.append('}');
         return sb.toString();

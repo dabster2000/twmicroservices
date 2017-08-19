@@ -246,9 +246,20 @@
         </dependency>
 
         <dependency>
+            <groupId>tm.kod</groupId>
+            <artifactId>numberfield7</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.appreciated</groupId>
             <artifactId>material</artifactId>
             <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ilay</groupId>
+            <artifactId>ilay</artifactId>
+            <version>1.0.2</version>
         </dependency>
 
         <dependency>

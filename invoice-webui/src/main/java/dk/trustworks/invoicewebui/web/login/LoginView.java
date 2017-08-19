@@ -9,7 +9,9 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.network.clients.LoginClient;
 import dk.trustworks.invoicewebui.web.login.components.LoginImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
@@ -18,6 +20,9 @@ import javax.annotation.PostConstruct;
  */
 @SpringView(name = LoginView.VIEW_NAME)
 public class LoginView extends VerticalLayout implements View {
+
+    @Autowired
+    private LoginClient loginClient;
 
     public static final String VIEW_NAME = "login";
 
@@ -30,7 +35,7 @@ public class LoginView extends VerticalLayout implements View {
         responsiveLayout.setSizeFull();
         //board.setSizeFull();
         //board.addRow(new Label(), new LoginImpl(), new Label());
-        LoginImpl login = new LoginImpl();
+        LoginImpl login = new LoginImpl(loginClient);
         ResponsiveRow row = responsiveLayout.addRow();
         row//.withAlignment(Alignment.MIDDLE_CENTER)
                 .addColumn()
