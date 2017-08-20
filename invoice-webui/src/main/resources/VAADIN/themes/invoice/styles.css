@@ -33237,6 +33237,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	font-size: small;
 }
 
+.invoice .dark-blue {
+	background-color: #042e4d;
+}
+
+.invoice .light-blue {
+	background-color: #8dacbf;
+}
+
 .invoice .v-grid-cell.centeralign {
 	text-align: center;
 }
@@ -33245,8 +33253,16 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	background-color: #8dacbf;
 }
 
+.invoice .white-font .v-icon {
+	color: #ffffff;
+}
+
 .invoice .white-bg {
 	background-color: #ffffff;
+}
+
+.invoice .white-font {
+	color: #ffffff;
 }
 
 .invoice .holder {

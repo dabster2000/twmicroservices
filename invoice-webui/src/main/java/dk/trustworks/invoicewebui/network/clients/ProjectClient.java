@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.network.clients;
 
-import dk.trustworks.invoicewebui.network.dto.Client;
 import dk.trustworks.invoicewebui.network.dto.Project;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.hateoas.Resource;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
@@ -17,7 +18,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public interface ProjectClient {
 
     @RequestMapping(method = GET, value = "/projects")
-    Resources<Resource<Client>> findAllClients();
+    Resources<Resource<Project>> findAllProjects();
+
+    @RequestMapping(method = GET, value = "/projects/search/findByClientuuidAndActiveTrue")
+    Resources<Resource<Project>> findByClientuuidAndActiveTrue(@RequestParam("clientuuid") String clientuuid);
 
     @RequestMapping(method = GET, value = "/projects/search/findByClientdatauuid")
     Resources<Resource<Project>> findByClientdatauuid(@RequestParam("clientdatauuid") String clientdatauuid);

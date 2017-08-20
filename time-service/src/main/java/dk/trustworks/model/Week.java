@@ -1,7 +1,5 @@
 package dk.trustworks.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -13,8 +11,8 @@ import javax.persistence.Id;
 public class Week {
 
     @Id private String uuid;
-    @JsonIgnore private String taskuuid;
-    @JsonIgnore private String useruuid;
+    private String taskuuid;
+    private String useruuid;
     private int weeknumber;
     private int year;
     private int sorting;

@@ -11,7 +11,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @FeignClient("user-service")
 public interface UserClient {
 
-    @RequestMapping(method = GET, value = "/users?active=true")
+    @RequestMapping(method = GET, value = "/users/search/findByActiveTrue")
     Resources<Resource<User>> findAllActiveUsers();
 
 }

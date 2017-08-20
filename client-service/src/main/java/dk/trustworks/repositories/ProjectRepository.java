@@ -15,6 +15,10 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "projects",path="projects")
 public interface ProjectRepository extends CrudRepository<Project, String> {
 
+    List<Project> findByActiveTrue();
+
+    List<Project> findByClientuuidAndActiveTrue(@Param("clientuuid") String clientuuid);
+
     List<Project> findProjectsByUuidIn(@Param("uuid") String[] uuids);
 
     List<Project> findByClientdatauuid(@Param("clientdatauuid") String clientdatauuid);

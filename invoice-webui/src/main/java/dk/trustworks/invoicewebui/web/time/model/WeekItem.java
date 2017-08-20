@@ -8,13 +8,13 @@ public class WeekItem {
     private String taskuuid;
     private String useruuid;
     private String taskname;
-    private String mon;
-    private String tue;
-    private String wed;
-    private String thu;
-    private String fri;
-    private String sat;
-    private String sun;
+    private String mon = "0,0";
+    private String tue = "0,0";
+    private String wed = "0,0";
+    private String thu = "0,0";
+    private String fri = "0,0";
+    private String sat = "0,0";
+    private String sun = "0,0";
     private double budgetleft;
 
     public WeekItem() {

@@ -18,6 +18,9 @@ public interface ClientClient {
     @RequestMapping(method = GET, value = "/clients")
     Resources<Resource<Client>> findAllClients();
 
+    @RequestMapping(method = GET, value = "/clients/search/findByActiveTrue")
+    Resources<Resource<Client>> findAllActiveClients();
+
     @RequestMapping(method = PATCH, value = "/clients/{uuid}")
     void save(@PathVariable("uuid") String uuid, @RequestBody Client client);
 

@@ -64,7 +64,6 @@ public class WeekController {
 
     }
 
-    @Cacheable
     @RequestMapping(method = RequestMethod.GET)
     public Resources<Resource<Week>> findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(@RequestParam("weeknumber") int weeknumber, @RequestParam("year") int year, @RequestParam("useruuid") String useruuid) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();

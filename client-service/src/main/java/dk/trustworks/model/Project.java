@@ -9,7 +9,7 @@ import java.util.List;
 public class Project {
     @Id
     private String uuid;
-    private String active;
+    private boolean active;
     private Double budget;
     private Timestamp created;
     private String customerreference;
@@ -41,11 +41,11 @@ public class Project {
         this.uuid = uuid;
     }
 
-    public String getActive() {
+    public boolean getActive() {
         return active;
     }
 
-    public void setActive(String active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 

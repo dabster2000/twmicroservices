@@ -34,6 +34,7 @@ public class TimeManagerViewDesign extends VerticalLayout {
     private ComboBox<dk.trustworks.invoicewebui.network.dto.User> selActiveUser;
     private Button btnAddTask;
     private Grid<dk.trustworks.invoicewebui.web.time.model.WeekItem> gridTimeTable;
+    private TextField lblTotalHours;
 
     public TimeManagerViewDesign() {
         Design.read(this);
@@ -77,6 +78,10 @@ public class TimeManagerViewDesign extends VerticalLayout {
 
     public Grid<dk.trustworks.invoicewebui.web.time.model.WeekItem> getGridTimeTable() {
         return gridTimeTable;
+    }
+
+    public TextField getLblTotalHours() {
+        return lblTotalHours;
     }
 
 }
