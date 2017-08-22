@@ -15,10 +15,7 @@ import dk.trustworks.invoicewebui.network.clients.ClientdataClient;
 import dk.trustworks.invoicewebui.network.clients.ProjectClient;
 import dk.trustworks.invoicewebui.network.dto.Client;
 import dk.trustworks.invoicewebui.network.dto.Clientdata;
-import dk.trustworks.invoicewebui.web.client.components.AddClientCardDesign;
-import dk.trustworks.invoicewebui.web.client.components.ClientCardImpl;
-import dk.trustworks.invoicewebui.web.client.components.ClientDataImpl;
-import dk.trustworks.invoicewebui.web.client.components.ClientImpl;
+import dk.trustworks.invoicewebui.web.client.components.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Link;
@@ -73,6 +70,7 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
     private void createClientListViev() {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
+
         Image image = createTopBarImage();
         responsiveLayout.addRow()
                 .withAlignment(Alignment.TOP_CENTER)
@@ -151,15 +149,15 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
         window.setHeight(100.0f, Unit.PERCENTAGE);
         window.setModal(true);
 
-        Board clientDetailBoard = new Board();
-        VerticalLayout verticalLayout = new VerticalLayout(clientDetailBoard);
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout();
+        VerticalLayout verticalLayout = new VerticalLayout(responsiveLayout);
 
         final Window window2 = new Window("Window");
         window2.setWidth(400.0f, Unit.PIXELS);
         window2.setHeight("600px");
         window2.setModal(true);
         window2.addCloseListener(e -> {
-            Board newBoard = new Board();
+            ResponsiveLayout newBoard = new ResponsiveLayout();
             ResponseEntity<Resources<Resource<Clientdata>>> responseEntity2 = restTemplate.exchange(clientDataResourceLink.getHref(), HttpMethod.GET, null, new ParameterizedTypeReference<Resources<Resource<Clientdata>>>() {});
             fillBoard(clientResource, responseEntity2, newBoard, window2);
             verticalLayout.removeAllComponents();
@@ -167,77 +165,96 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
             window.setContent(new VerticalLayout(newBoard));
         });
 
-        fillBoard(clientResource, responseEntity, clientDetailBoard, window2);
+        fillBoard(clientResource, responseEntity, responsiveLayout, window2);
 
         this.getUI().addWindow(window);
         window.setContent(verticalLayout);
     }
 
-    private void fillBoard(Resource<Client> clientResource, ResponseEntity<Resources<Resource<Clientdata>>> responseEntity, Board clientDetailBoard, Window window2) {
+    private void fillBoard(Resource<Client> clientResource, ResponseEntity<Resources<Resource<Clientdata>>> responseEntity, ResponsiveLayout clientDetailBoard, Window window2) {
+        /*
         Image image = createTopBarImage();
-        clientDetailBoard.addRow(image);
-
+        clientDetailBoard.addRow()
+                .withAlignment(Alignment.TOP_CENTER)
+                .addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(image);
+*/
         Image logo = createCompanyLogo(clientResource);
+        logo.setWidth("100%");
+        Card cardLogo = new Card();
+        cardLogo.getCardHolder().addComponent(logo);
         ClientImpl clientComponent = createClientBlock(clientResource.getContent());
 
-        Row row = new Row(clientComponent, logo);
-        row.setComponentSpan(clientComponent, 2);
-        row.setComponentSpan(logo, 2);
-        clientDetailBoard.addRow(row);
+        ResponsiveRow row = clientDetailBoard.addRow();
+        row.addStyleName("dark-blue");
+        //HorizontalLayout horizontalLayout = new HorizontalLayout(clientComponent, cardLogo);
+        //horizontalLayout.setWidth("100%");
 
-        Row rowContactInformation = createContactInformationHeading();
-        clientDetailBoard.addRow(rowContactInformation);
+        row.addColumn().withDisplayRules(12, 0, 0, 0).withVisibilityRules(true, false, false, false).withComponent(cardLogo);
+        row.addColumn().withDisplayRules(12, 8, 6, 6).withComponent(clientComponent);
+        row.addColumn().withDisplayRules(0, 4, 6, 6).withVisibilityRules(false, true, true, true).withComponent(cardLogo);
 
-        Row clientDataRow = createClientDataBlock(clientResource.getContent(), responseEntity, clientDetailBoard, window2);
+        createContactInformationHeading(clientDetailBoard);
 
-
+        createClientDataBlock(clientResource.getContent(), responseEntity, clientDetailBoard, window2);
     }
 
-    private Row createClientDataBlock(Client client, ResponseEntity<Resources<Resource<Clientdata>>> responseEntity, Board clientDetailBoard, Window window2) {
+    private void createClientDataBlock(Client client, ResponseEntity<Resources<Resource<Clientdata>>> responseEntity, ResponsiveLayout clientDetailBoard, Window window2) {
         int rowItemCount = 1;
-        Row clientDataRow = new Row();
+        ResponsiveRow clientDataRow = clientDetailBoard.addRow();
+        int columns = 3;
         for (Resource<Clientdata> clientdataResource : responseEntity.getBody().getContent()) {
-            System.out.println("clientdataResource.getContent() = " + clientdataResource.getContent());
-            clientDataRow.addComponent(new ClientDataImpl(clientdataClient, projectClient, client, clientdataResource.getContent()));
+            clientDataRow
+                    .addColumn()
+                    .withDisplayRules(0, 2, 3, 0)
+                    .withVisibilityRules(false, true, true, false)
+                    .withComponent(new Label());
+            clientDataRow
+                    .addColumn()
+                    .withDisplayRules(12, 8, 6, 4)
+                    .withComponent(new ClientDataImpl(clientdataClient, projectClient, client, clientdataResource.getContent()));
+            clientDataRow
+                    .addColumn()
+                    .withDisplayRules(0, 2, 3, 0)
+                    .withVisibilityRules(false, true, true, false)
+                    .withComponent(new Label());
             rowItemCount++;
-            if(rowItemCount > 4) {
+            if(rowItemCount > columns) {
                 rowItemCount = 1;
-                clientDataRow = new Row();
-                clientDetailBoard.addRow(clientDataRow);
+                clientDataRow = clientDetailBoard.addRow();
+                //clientDetailBoard.addRow(clientDataRow);
             }
-            System.out.println("rowItemCount = " + rowItemCount);
         }
-        if(rowItemCount > 4) {
+        if(rowItemCount > columns) {
             System.out.println("new row");
             System.out.println("rowItemCount = " + rowItemCount);
-            clientDataRow = new Row();
+            clientDataRow = clientDetailBoard.addRow();
             rowItemCount = 1;
         }
 
         createAddClientDataButton(clientDataRow, window2, client);
         rowItemCount++;
 
-        while (rowItemCount <= 4) {
+        while (rowItemCount <= columns) {
             System.out.println("add label");
             System.out.println("rowItemCount = " + rowItemCount);
-            clientDataRow.addComponent(new Label());
+            clientDataRow.addColumn().withDisplayRules(12, 8, 8, 4).withComponent(new Label());
             rowItemCount++;
         }
-        clientDetailBoard.addRow(clientDataRow);
-        return clientDataRow;
     }
 
-    private Row createContactInformationHeading() {
+    private void createContactInformationHeading(ResponsiveLayout clientDetailBoard) {
+        ResponsiveRow row = clientDetailBoard.addRow().withAlignment(Alignment.MIDDLE_CENTER);
         Label lblClientContactInformation = new Label("Client Contact Information");
         lblClientContactInformation.addStyleName("h3");
-        lblClientContactInformation.setSizeFull();
-        Row rowContactInformation = new Row(lblClientContactInformation);
-        rowContactInformation.setComponentSpan(lblClientContactInformation, 4);
-        return rowContactInformation;
+        //lblClientContactInformation.setSizeFull();
+        row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(lblClientContactInformation);
     }
 
     private ClientImpl createClientBlock(Client client) {
         ClientImpl clientComponent = new ClientImpl(clientClient, client);
+        clientComponent.setHeight("100%");
         clientComponent.getTxtName().setValue(client.getName());
         clientComponent.getTxtName().addValueChangeListener(event -> {
             client.setName(event.getValue());
@@ -275,14 +292,14 @@ public class ClientManagerViewImpl extends ClientManagerViewDesign implements Vi
         return image;
     }
 
-    private void createAddClientDataButton(Row clientDataRow, Window window2, Client client) {
+    private void createAddClientDataButton(ResponsiveRow clientDataRow, Window window2, Client client) {
         Button btnAddContactInformation = new Button("Add Client ContactInformation");
         btnAddContactInformation.addStyleName("primary");
         btnAddContactInformation.addStyleName("huge");
         VerticalLayout verticalLayout = new VerticalLayout(btnAddContactInformation);
         verticalLayout.setSizeFull();
         verticalLayout.setComponentAlignment(btnAddContactInformation, Alignment.MIDDLE_CENTER);
-        clientDataRow.addComponent(verticalLayout);
+        clientDataRow.addColumn().withDisplayRules(12, 8, 8, 4).withComponent(verticalLayout);
 
         btnAddContactInformation.addClickListener(event -> {
             ClientDataImpl clientData = new ClientDataImpl(clientdataClient, projectClient, client, new Clientdata());

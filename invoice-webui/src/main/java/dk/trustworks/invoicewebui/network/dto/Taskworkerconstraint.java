@@ -50,4 +50,16 @@ public class Taskworkerconstraint {
     public void setTaskuuid(String taskuuid) {
         this.taskuuid = taskuuid;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Taskworkerconstraint{");
+        sb.append("uuid='").append(uuid).append('\'');
+        sb.append(", price=").append(price);
+        sb.append(", task=").append(task);
+        sb.append(", useruuid='").append(useruuid).append('\'');
+        sb.append(", taskuuid='").append(taskuuid).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -15,6 +15,8 @@ public class Budget {
     private Timestamp created;
     private Double budget;
     private String useruuid;
+    @Column(insertable = false, updatable = false)
+    private String taskuuid;
 
     @ManyToOne()
     @JoinColumn(name = "taskuuid")
@@ -77,5 +79,13 @@ public class Budget {
 
     public void setTask(Task task) {
         this.task = task;
+    }
+
+    public String getTaskuuid() {
+        return taskuuid;
+    }
+
+    public void setTaskuuid(String taskuuid) {
+        this.taskuuid = taskuuid;
     }
 }

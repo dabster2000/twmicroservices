@@ -26,8 +26,8 @@ public class ClientImpl extends ClientDesign {
         uploadComponent.setStartedCallback(this::uploadStarted);
         uploadComponent.setProgressCallback(this::uploadProgress);
         uploadComponent.setFailedCallback(this::uploadFailed);
-        uploadComponent.setWidth(500, Unit.PIXELS);
-        uploadComponent.setHeight(300, Unit.PIXELS);
+        uploadComponent.setWidth(100, Unit.PERCENTAGE);
+        uploadComponent.setHeight(200, Unit.PIXELS);
         uploadComponent.setCaption("File upload");
 
         getFormLayout().addComponent(uploadComponent);
