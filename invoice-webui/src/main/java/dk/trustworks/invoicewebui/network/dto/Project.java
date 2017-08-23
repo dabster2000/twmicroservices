@@ -1,8 +1,12 @@
 package dk.trustworks.invoicewebui.network.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -10,13 +14,19 @@ import java.util.List;
 public class Project {
 
     private String uuid;
-    private String active;
+    private Boolean active;
     private Double budget;
     private Timestamp created;
     private String customerreference;
     private String name;
-    private Date startdate;
-    private Date enddate;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate startdate;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate enddate;
     private List<Task> tasks;
 
 
@@ -28,11 +38,11 @@ public class Project {
         this.uuid = uuid;
     }
 
-    public String getActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(String active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 
@@ -68,19 +78,19 @@ public class Project {
         this.name = name;
     }
 
-    public Date getStartdate() {
+    public LocalDate getStartdate() {
         return startdate;
     }
 
-    public void setStartdate(Date startdate) {
+    public void setStartdate(LocalDate startdate) {
         this.startdate = startdate;
     }
 
-    public Date getEnddate() {
+    public LocalDate getEnddate() {
         return enddate;
     }
 
-    public void setEnddate(Date enddate) {
+    public void setEnddate(LocalDate enddate) {
         this.enddate = enddate;
     }
 

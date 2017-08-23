@@ -2,13 +2,18 @@ package dk.trustworks.invoicewebui.web.project.views;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.contextmenu.GridContextMenu;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TreeGrid;
+import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.network.clients.*;
 import dk.trustworks.invoicewebui.network.dto.*;
 import dk.trustworks.invoicewebui.web.project.components.ProjectDetailCardDesign;
+import dk.trustworks.invoicewebui.web.project.components.ProjectDetailCardImpl;
 import dk.trustworks.invoicewebui.web.project.components.ProjectMapLocationImpl;
 import dk.trustworks.invoicewebui.web.project.model.TaskRow;
 import dk.trustworks.invoicewebui.web.project.model.UserRow;
@@ -22,7 +27,9 @@ import org.springframework.hateoas.Resources;
 import javax.annotation.PostConstruct;
 import java.sql.Date;
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -79,7 +86,7 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
         ResponsiveRow clientDetailsRow = responsiveLayout.addRow().withStyleName("dark-blue");
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
-                .withComponent(new ProjectDetailCardDesign());
+                .withComponent(new ProjectDetailCardImpl(currentProject, userClient.findAllUsers().getContent().stream().map(u -> u.getContent()).collect(Collectors.toList()), null));
 
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -92,8 +99,12 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
     }
 
     private TreeGrid createTreeGrid() {
-        LocalDate actualDate = new LocalDate(currentProject.getStartdate());
-        LocalDate endDate = new LocalDate(currentProject.getEnddate());
+        LocalDate actualDate = new LocalDate(currentProject.getStartdate().getYear(),
+                currentProject.getStartdate().getMonthValue(),
+                currentProject.getStartdate().getDayOfMonth());
+        LocalDate endDate = new LocalDate(currentProject.getEnddate().getYear(),
+                currentProject.getEnddate().getMonthValue(),
+                currentProject.getEnddate().getDayOfMonth());
         Months monthsBetween = Months.monthsBetween(actualDate, endDate);
         System.out.println("period.getMonths() = " + monthsBetween.getMonths());
 
@@ -103,40 +114,21 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
             tasks.add(taskResource.getContent());
         }
 
-        Map<String, User> usersMap = new HashMap<>();
+        Map<String, User> usersMap = userClient.findAllUsers().getContent().stream().map(u -> u.getContent()).collect(Collectors.toMap(User::getUuid, user -> user));
+        /*
         for (Resource<User> userResource : userClient.findAllUsers().getContent()) {
             usersMap.put(userResource.getContent().getUuid(), userResource.getContent());
-        }
+            System.out.println("userResource.getContent() = " + userResource.getContent());
+        }*/
 
-        Map<String, List<Budget>> budgetMap = new HashMap<>();
         List<Budget> budgets = new ArrayList<>();
-        //System.out.println("XXXXXXXXX BUDGET XXXXXXXXX");
         for (Resource<Budget> budgetResource : budgetClient.findAllBudgets().getContent()) {
-            //System.out.println("budgetResource.getContent() = " + budgetResource.getContent());
             budgets.add(budgetResource.getContent());
-            if(!budgetMap.containsKey(budgetResource.getContent().getUseruuid()+budgetResource.getContent().getTaskuuid())) {
-                ArrayList<Budget> budgetsValue = new ArrayList<>();
-                budgetsValue.add(budgetResource.getContent());
-                budgetMap.put(
-                        budgetResource.getContent().getUseruuid() + budgetResource.getContent().getTaskuuid(),
-                        budgetsValue
-                );
-            } else {
-                budgetMap.get(budgetResource.getContent().getUseruuid()+budgetResource.getContent().getTaskuuid())
-                        .add(budgetResource.getContent());
-            }
         }
-        //System.out.println("XXXXXXXXX BUDGET XXXXXXXXX");
-        //System.out.println("budgetMap = " + budgetMap.values().size());
 
         List<Taskworkerconstraint> taskworkerconstraints = new ArrayList<>();
-        Map<String, Taskworkerconstraint> taskworkerconstraintMap = new HashMap<>();
         for (Resource<Taskworkerconstraint> taskResource : taskworkerconstraintClient.findAllTaskworkerconstraints().getContent()) {
             taskworkerconstraints.add(taskResource.getContent());
-            taskworkerconstraintMap.put(
-                    taskResource.getContent().getUseruuid()+taskResource.getContent().getTaskuuid(),
-                    taskResource.getContent()
-            );
         }
         for (Task task : tasks) {
             TaskRow taskRow = new TaskRow(task.getUuid(), task.getName(), monthsBetween.getMonths());
@@ -145,7 +137,6 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
             for (User user : usersMap.values()) {
                 if(user.getUsername().equals("hans.lassen")) System.out.println("user = " + user);
                 LocalDate budgetDate = actualDate;
-                //Taskworkerconstraint taskworkerconstraint = taskworkerconstraintMap.get(user.getUuid() + task.getUuid());
                 Optional<Taskworkerconstraint> taskworkerconstraint = taskworkerconstraints.stream()
                         .filter(p ->
                                 p.getTaskuuid()!=null &&
@@ -153,14 +144,13 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
                                 p.getTaskuuid().equals(task.getUuid()) &&
                                 p.getUseruuid().equals(user.getUuid()))
                         .findFirst();
+                if(user.getUsername().equals("hans.lassen")) System.out.println("taskworkerconstraint = " + taskworkerconstraint);
 
                 if(!taskworkerconstraint.isPresent()) continue;
-                if(user.getUsername().equals("hans.lassen")) System.out.println("task = " + task);
 
                 UserRow userRow = new UserRow(task.getUuid(), task.getName(), monthsBetween.getMonths(),
                         user.getUuid(), user.getUsername(), taskworkerconstraint.get().getPrice());
 
-                //List<Budget> budgets = budgetMap.get(user.getUuid() + task.getUuid());
                 if(user.getUsername().equals("hans.lassen")) System.out.println("budgets = " + budgets.size());
 
                 int month = 0;
@@ -178,7 +168,7 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
 
                     if(budget.isPresent()) {
                         if(user.getUsername().equals("hans.lassen")) System.out.println("budget.get() = " + budget.get());
-                        userRow.setMonth(month, budget.get().getBudget());
+                        userRow.setMonth(month, budget.get().getBudget() / taskworkerconstraint.get().getPrice());
                     } else {
                         userRow.setMonth(month, 0.0);
                     }
@@ -188,27 +178,64 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
                 taskRow.addUserRow(userRow);
                 System.out.println("userRow = " + userRow);
             }
+            System.out.println("taskRow = " + taskRow);
         }
 
 
         TreeGrid<TaskRow> treeGrid = new TreeGrid<>();
-        treeGrid.setWidth("100%");
-        treeGrid.getEditor().setEnabled(true);
-        treeGrid.setItems(taskRows, TaskRow::getUserRows);
+        treeGrid.addColumn(TaskRow::getTaskName).setWidth(200).setCaption("Task Name").setId("name-column");
+        treeGrid.addColumn(TaskRow::getUsername).setWidth(200).setCaption("Consultant");
+        treeGrid.addColumn(TaskRow::getRate).setWidth(100).setCaption("Rate");
+        treeGrid.setFrozenColumnCount(3);
 
-        treeGrid.addColumn(TaskRow::getTaskName).setCaption("Task Name").setId("name-column");
-        treeGrid.addColumn(TaskRow::getUsername).setCaption("Consultant");
-        treeGrid.addColumn(TaskRow::getRate).setCaption("Rate");
+        GridContextMenu<TaskRow> gridMenu = new GridContextMenu<>(treeGrid);
+        gridMenu.addGridBodyContextMenuListener(this::updateGridBodyMenu);
 
+        int month = 0;
+        int year = actualDate.getYear();
+        List<String> yearColumns = new ArrayList<>();
         LocalDate budgetDate = actualDate;
         while(budgetDate.isBefore(endDate)) {
             final LocalDate filterDate = budgetDate;
-            Grid.Column<?, ?> firstHalfColumn = treeGrid.addColumn(
-                    taskRow -> taskRow.getMonth(filterDate.getMonthOfYear()))
+            final int actualMonth = month;
+            Grid.Column<?, ?> budgetColumn = treeGrid.addColumn(
+                    taskRow -> taskRow.getMonth(actualMonth))
                     .setStyleGenerator(budgetHistory -> "align-right")
-                    .setId(Month.of(filterDate.getMonthOfYear()).name()+filterDate.getYear()).setCaption(Month.of(filterDate.getMonthOfYear()).name()+" "+filterDate.getYear());
+                    .setWidth(100)
+                    .setId(Month.of(filterDate.getMonthOfYear()).name()+filterDate.getYear())
+                    .setCaption(Month.of(filterDate.getMonthOfYear()).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)+" "+filterDate.year().getAsShortText());
+            yearColumns.add(budgetColumn.getId());
             budgetDate = budgetDate.plusMonths(1);
+            month++;
+            if(year < budgetDate.getYear()) {
+                //topHeader.join(yearColumns.toArray(new String[0])).setText(year + "");
+                yearColumns = new ArrayList<>();
+                year++;
+            }
         }
+
+        treeGrid.setWidth("100%");
+        treeGrid.getEditor().setEnabled(true);
+        treeGrid.setItems(taskRows, TaskRow::getUserRows);
         return treeGrid;
+    }
+
+    private void updateGridBodyMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<TaskRow> event) {
+        event.getContextMenu().removeItems();
+        if (event.getItem() != null) {
+            if(event.getItem().getClass().equals(TaskRow.class)) {
+                event.getContextMenu().addItem("Add Consultant to "+((TaskRow)event.getItem()).getTaskName(), VaadinIcons.PLUS, selectedItem -> {
+                    Notification.show("Add Consultant selected");
+                });
+            } else {
+                event.getContextMenu().addItem("Remove "+((UserRow)event.getItem()).getUsername(), VaadinIcons.CLOSE, selectedItem -> {
+                    Notification.show("Remove Consultant selected");
+                });
+            }
+        } else {
+            event.getContextMenu().addItem("Add Task", VaadinIcons.PLUS, selectedItem -> {
+                Notification.show("Add Task selected");
+            });
+        }
     }
 }

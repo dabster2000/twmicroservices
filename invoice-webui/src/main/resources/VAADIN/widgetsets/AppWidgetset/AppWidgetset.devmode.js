@@ -168,11 +168,11 @@ function __gwt_displayGlassMessage(summary, details) {
   glass.focus();
 
   if ((navigator.userAgent.indexOf("MSIE") >= 0) && (topDoc.compatMode == "BackCompat")) {
-    // IE quirks model doesn't support right/bottom, but does support this.
+    // IE quirks mode doesn't support right/bottom, but does support this.
     glassStyle.width = "125%";
     glassStyle.height = "100%";
   } else if (navigator.userAgent.indexOf("MSIE 6") >= 0) {
-    // IE6 doesn't have a real standards model, so we have to use hacks.
+    // IE6 doesn't have a real standards mode, so we have to use hacks.
     glassStyle.width = "125%"; // Get past scroll bar area.
     // Nasty CSS; onresize would be better but the outer window won't let us add a listener IE.
     glassStyle.setExpression("height", "document.documentElement.clientHeight");
@@ -234,7 +234,7 @@ function doBrowserSpecificFixes() {
 function embedPlugin() {
   var embed = document.createElement('embed');
   embed.id = 'pluginEmbed';
-  embed.type = 'application/x-gwt-hosted-model';
+  embed.type = 'application/x-gwt-hosted-mode';
   embed.width = '10';
   embed.height = '20';
 

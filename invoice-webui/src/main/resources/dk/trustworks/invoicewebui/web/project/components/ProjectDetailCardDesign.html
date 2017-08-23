@@ -10,11 +10,11 @@
    <vaadin-css-layout style-name="card-2 card-no-padding" size-full _id="cardHolder" :middle :center>
     <vaadin-vertical-layout spacing="false" margin="false">
      <vaadin-image width-full _id="logo"></vaadin-image>
-     <vaadin-form-layout margin>
+     <vaadin-form-layout margin _id="formProjectDetail">
       <vaadin-text-field caption="Name" width-full _id="txtName"></vaadin-text-field>
       <vaadin-combo-box caption="RM" width-full data-item-type="dk.trustworks.invoicewebui.network.dto.User" data-property-id="username" _id="selRelationManager"></vaadin-combo-box>
-      <vaadin-date-field caption="Start" _id="selStartDate"></vaadin-date-field>
-      <vaadin-date-field caption="End" _id="selEndDate"></vaadin-date-field>
+      <vaadin-date-field caption="Start" date-format="dd MMM yyyy" _id="selStartDate"></vaadin-date-field>
+      <vaadin-date-field caption="End" date-format="dd MMM yyyy" _id="selEndDate"></vaadin-date-field>
       <vaadin-text-field caption="Budget" _id="txtBudget"></vaadin-text-field>
       <vaadin-check-box caption="Active" _id="chkActive"></vaadin-check-box>
      </vaadin-form-layout>

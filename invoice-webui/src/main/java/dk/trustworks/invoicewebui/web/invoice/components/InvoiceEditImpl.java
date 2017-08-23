@@ -160,7 +160,7 @@ public class InvoiceEditImpl extends InvoiceEditDesign {
         });
     }
 
-    class MyConverter implements Converter<String, Double> {
+    public class MyConverter implements Converter<String, Double> {
         @Override
         public Result<Double> convertToModel(String fieldValue, ValueContext context) {
             System.out.println("MyConverter.convertToModel");
