@@ -18,6 +18,7 @@ public interface TaskRepository extends CrudRepository<Task, String> {
     Task findByUuid(@Param("uuid") String uuid);
     List<Task> findByProjectuuid(@Param("projectuuid") String projectuuid);
 
+
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Task entity);
 }

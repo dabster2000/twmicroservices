@@ -1,8 +1,13 @@
 package dk.trustworks.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import javax.persistence.*;
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -14,8 +19,14 @@ public class Project {
     private Timestamp created;
     private String customerreference;
     private String name;
-    private Date startdate;
-    private Date enddate;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate startdate;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate enddate;
     @Column(insertable=false, updatable=false)
     private String clientuuid;
 
@@ -81,19 +92,19 @@ public class Project {
         this.name = name;
     }
 
-    public Date getStartdate() {
+    public LocalDate getStartdate() {
         return startdate;
     }
 
-    public void setStartdate(Date startdate) {
+    public void setStartdate(LocalDate startdate) {
         this.startdate = startdate;
     }
 
-    public Date getEnddate() {
+    public LocalDate getEnddate() {
         return enddate;
     }
 
-    public void setEnddate(Date enddate) {
+    public void setEnddate(LocalDate enddate) {
         this.enddate = enddate;
     }
 

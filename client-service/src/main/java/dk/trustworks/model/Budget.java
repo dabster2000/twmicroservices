@@ -88,4 +88,19 @@ public class Budget {
     public void setTaskuuid(String taskuuid) {
         this.taskuuid = taskuuid;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Budget{");
+        sb.append("uuid='").append(uuid).append('\'');
+        sb.append(", month=").append(month);
+        sb.append(", year=").append(year);
+        sb.append(", created=").append(created);
+        sb.append(", budget=").append(budget);
+        sb.append(", useruuid='").append(useruuid).append('\'');
+        sb.append(", taskuuid='").append(taskuuid).append('\'');
+        sb.append(", task=").append(task);
+        sb.append('}');
+        return sb.toString();
+    }
 }

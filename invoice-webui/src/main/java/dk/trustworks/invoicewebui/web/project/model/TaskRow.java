@@ -1,5 +1,8 @@
 package dk.trustworks.invoicewebui.web.project.model;
 
+import dk.trustworks.invoicewebui.network.dto.Task;
+import dk.trustworks.invoicewebui.network.dto.Taskworkerconstraint;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,28 +12,28 @@ import java.util.List;
  */
 public class TaskRow {
 
-    private String taskUUID;
+    private Task task;
     private String taskName;
     private List<TaskRow> userRows = new ArrayList<>();
 
-    private Double[] budget;
+    private String[] budget;
 
     public TaskRow(int months) {
-        budget = new Double[months];
+        budget = new String[months];
     }
 
-    public TaskRow(String taskUUID, String taskName, int months) {
+    public TaskRow(Task task, int months) {
         this(months);
-        this.taskUUID = taskUUID;
-        this.taskName = taskName;
+        this.task = task;
+        this.taskName = task.getName();
     }
 
-    public String getTaskUUID() {
-        return taskUUID;
+    public Task getTask() {
+        return task;
     }
 
-    public void setTaskUUID(String taskUUID) {
-        this.taskUUID = taskUUID;
+    public void setTask(Task task) {
+        this.task = task;
     }
 
     public String getTaskName() {
@@ -53,44 +56,41 @@ public class TaskRow {
         userRows.add(userRow);
     }
 
-    public String getUsername() {
-        return "";
-    }
-
-    public void setUsername(String username) {
-    }
-
-    public double getRate() {
-        return 0.0;
-    }
-
-    public void setRate(double rate) {
-    }
-
-    public Double[] getBudget() {
+    public String[] getBudget() {
         return budget;
     }
 
-    public void setBudget(Double[] budget) {
+    public void setBudget(String[] budget) {
         this.budget = budget;
     }
 
-    public Double getMonth(int month) {
-        return budget[month];
-    }
-
-    public void setMonth(int month, Double value) {
+    public void setMonth(int month, String value) {
         budget[month] = value;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("TaskRow{");
-        sb.append("taskUUID='").append(taskUUID).append('\'');
+        sb.append("task=").append(task);
         sb.append(", taskName='").append(taskName).append('\'');
         sb.append(", userRows=").append(userRows);
         sb.append(", budget=").append(Arrays.toString(budget));
         sb.append('}');
         return sb.toString();
+    }
+
+    public String getUsername() {
+        return "";
+    }
+
+    public String getRate() {
+        return "";
+    }
+
+    public void setRate(String rate) {
+    }
+
+    public String getMonth(int actualMonth) {
+        return budget[actualMonth];
     }
 }

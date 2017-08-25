@@ -4,14 +4,22 @@ import java.sql.Timestamp;
 
 public class Budget {
     private String uuid;
-    private Long month;
-    private Long year;
+    private int month;
+    private int year;
     private Timestamp created;
     private Double budget;
     private String useruuid;
     private String taskuuid;
 
     public Budget() {
+    }
+
+    public Budget(int month, int year, Double budget, String useruuid, String taskuuid) {
+        this.month = month;
+        this.year = year;
+        this.budget = budget;
+        this.useruuid = useruuid;
+        this.taskuuid = taskuuid;
     }
 
     public String getUuid() {
@@ -22,19 +30,19 @@ public class Budget {
         this.uuid = uuid;
     }
 
-    public Long getMonth() {
+    public int getMonth() {
         return month;
     }
 
-    public void setMonth(Long month) {
+    public void setMonth(int month) {
         this.month = month;
     }
 
-    public Long getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(Long year) {
+    public void setYear(int year) {
         this.year = year;
     }
 

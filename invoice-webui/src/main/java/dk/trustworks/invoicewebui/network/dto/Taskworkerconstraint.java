@@ -1,11 +1,19 @@
 package dk.trustworks.invoicewebui.network.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Taskworkerconstraint {
     private String uuid;
     private Double price;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Task task;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String useruuid;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String taskuuid;
 
     public Taskworkerconstraint() {

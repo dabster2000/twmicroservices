@@ -55,7 +55,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
 
     public static final String VIEW_NAME = "time";
 
-    private LocalDate currentDate = LocalDate.now();//new LocalDate(2017, 02, 015);//LocalDate.now();
+    private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
 
     @PostConstruct
     void init() {

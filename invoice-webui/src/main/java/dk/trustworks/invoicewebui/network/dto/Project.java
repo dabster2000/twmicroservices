@@ -28,6 +28,7 @@ public class Project {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate enddate;
     private List<Task> tasks;
+    private String clientuuid;
 
 
     public String getUuid() {
@@ -102,11 +103,19 @@ public class Project {
         this.tasks = tasks;
     }
 
+    public String getClientuuid() {
+        return clientuuid;
+    }
+
+    public void setClientuuid(String clientuuid) {
+        this.clientuuid = clientuuid;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Project{");
         sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", active='").append(active).append('\'');
+        sb.append(", active=").append(active);
         sb.append(", budget=").append(budget);
         sb.append(", created=").append(created);
         sb.append(", customerreference='").append(customerreference).append('\'');
@@ -114,6 +123,7 @@ public class Project {
         sb.append(", startdate=").append(startdate);
         sb.append(", enddate=").append(enddate);
         sb.append(", tasks=").append(tasks);
+        sb.append(", clientuuid='").append(clientuuid).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -9,6 +9,13 @@ public class Task {
     private String type;
     private Project project;
 
+    public Task() {
+    }
+
+    public Task(String name) {
+        this.name = name;
+    }
+
     public String getUuid() {
         return uuid;
     }
