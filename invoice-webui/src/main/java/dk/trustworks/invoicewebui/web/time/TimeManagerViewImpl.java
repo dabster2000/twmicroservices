@@ -196,7 +196,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             LocalDate saveDate = this.currentDate;
             workClient.save(new Work(
                     saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear(),
+                    saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getMon()),
                     event.getBean().getTaskuuid(),
@@ -204,7 +204,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             saveDate = saveDate.plusDays(1);
             workClient.save(new Work(
                     saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear(),
+                    saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getTue()),
                     event.getBean().getTaskuuid(),
@@ -212,7 +212,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             saveDate = saveDate.plusDays(1);
             workClient.save(new Work(
                     saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear(),
+                    saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getWed()),
                     event.getBean().getTaskuuid(),
@@ -220,7 +220,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             saveDate = saveDate.plusDays(1);
             workClient.save(new Work(
                     saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear(),
+                    saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getThu()),
                     event.getBean().getTaskuuid(),
@@ -228,7 +228,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             saveDate = saveDate.plusDays(1);
             workClient.save(new Work(
                     saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear(),
+                    saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getFri()),
                     event.getBean().getTaskuuid(),
@@ -236,7 +236,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             saveDate = saveDate.plusDays(1);
             workClient.save(new Work(
                     saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear(),
+                    saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getSat()),
                     event.getBean().getTaskuuid(),
@@ -244,7 +244,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             saveDate = saveDate.plusDays(1);
             workClient.save(new Work(
                     saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear(),
+                    saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getSun()),
                     event.getBean().getTaskuuid(),
@@ -346,7 +346,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
                 if(!workResource.getContent().getTaskuuid().equals(taskUUID)) continue;
                 sumHours += workResource.getContent().getWorkduration();
                 Work work = workResource.getContent();
-                LocalDate workDate = new LocalDate(work.getYear(), work.getMonth(), work.getDay());
+                LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
                 switch (workDate.getDayOfWeek()) {
                     case 1:
                         weekItem.setMon(NumberConverter.formatDouble(work.getWorkduration()+0));

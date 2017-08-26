@@ -5,20 +5,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.UUID;
 
-public class Taskworkerconstraint {
+public class TaskworkerconstraintCreate {
     private String uuid;
     private Double price;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Task task;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String useruuid;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String taskuuid;
 
-    public Taskworkerconstraint() {
+    public TaskworkerconstraintCreate() {
+    }
+
+    public TaskworkerconstraintCreate(Double price, String taskuuid, String useruuid) {
+        uuid = UUID.randomUUID().toString();
+        this.taskuuid = taskuuid;
+        this.price = price;
+        this.useruuid = useruuid;
     }
 
     public String getUuid() {

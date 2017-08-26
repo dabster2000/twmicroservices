@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.network.clients;
 
 import dk.trustworks.invoicewebui.network.dto.Week;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
@@ -12,6 +13,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @FeignClient("mobile-api")
 public interface MobileApiClient {
 
+    @Cacheable("weeks")
     @RequestMapping(method = GET, value = "/weeks")
     Resources<Resource<Week>> findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(@RequestParam("weeknumber") int weeknumber, @RequestParam("year") int year, @RequestParam("useruuid") String useruuid);
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @FeignClient("client-service")
 public interface TaskClient {
@@ -23,4 +24,7 @@ public interface TaskClient {
 
     @RequestMapping(method = PATCH, value = "/tasks/{uuid}")
     void save(@PathVariable("uuid") String taskuuid, @RequestBody Task task);
+
+    @RequestMapping(method = POST, value = "/tasks")
+    void create(@RequestBody Task task);
 }

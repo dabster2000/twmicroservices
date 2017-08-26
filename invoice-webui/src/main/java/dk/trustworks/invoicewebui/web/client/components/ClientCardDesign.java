@@ -23,6 +23,7 @@ import com.vaadin.ui.Button;
 public class ClientCardDesign extends VerticalLayout {
     private VerticalLayout cardHolder;
     private Image imgTop;
+    private Image imgBlackStripe;
     private CssLayout cssMapHolder;
     private Label lblHeading;
     private Button btnEdit;
@@ -38,6 +39,10 @@ public class ClientCardDesign extends VerticalLayout {
 
     public Image getImgTop() {
         return imgTop;
+    }
+
+    public Image getImgBlackStripe() {
+        return imgBlackStripe;
     }
 
     public CssLayout getCssMapHolder() {

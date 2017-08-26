@@ -8,10 +8,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.Setter;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.TreeGrid;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.network.clients.*;
 import dk.trustworks.invoicewebui.network.dto.*;
 import dk.trustworks.invoicewebui.web.project.components.ProjectDetailCardImpl;
@@ -76,9 +73,7 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
         }
         getSelProject().setItems(projects);
         getSelProject().addValueChangeListener(event -> {
-            currentProject = event.getValue();
-            if(responsiveLayout!=null) removeComponent(responsiveLayout);
-            createDetailLayout();
+            reloadGrid();
         });
     }
 
@@ -97,10 +92,12 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(projectMapLocation);
 
+        treeGrid = createTreeGrid();
+
         ResponsiveRow budgetRow = responsiveLayout.addRow();
         budgetRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
-                .withComponent(createTreeGrid());
+                .withComponent(treeGrid);
     }
 
     private TreeGrid createTreeGrid() {
@@ -253,21 +250,52 @@ public class ProjectManagerViewImpl extends ProjectManagerViewDesign implements 
         return treeGrid;
     }
 
+    private void reloadGrid() {
+        currentProject = getSelProject().getValue();
+        if(responsiveLayout!=null) removeComponent(responsiveLayout);
+        createDetailLayout();
+    }
+
     private void updateGridBodyMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<TaskRow> event) {
         event.getContextMenu().removeItems();
         if (event.getItem() != null) {
             if(event.getItem().getClass().equals(TaskRow.class)) {
                 event.getContextMenu().addItem("Add Consultant to "+((TaskRow)event.getItem()).getTaskName(), VaadinIcons.PLUS, selectedItem -> {
-                    Notification.show("Add Consultant selected");
+                    Window subWindow = new Window("Sub-window");
+                    VerticalLayout subContent = new VerticalLayout();
+                    subWindow.setContent(subContent);
+
+                    // Put some components in it
+                    subContent.addComponent(new Label("Add consultant"));
+                    ComboBox<User> userComboBox = new ComboBox<>();
+                    userComboBox.setItems(userClient.findAllActiveUsers().getContent()
+                            .stream().map(userResource -> userResource.getContent()));
+                    userComboBox.setItemCaptionGenerator(User::getUsername);
+                    subContent.addComponent(userComboBox);
+                    Button addButton = new Button("Add");
+                    addButton.addClickListener(event1 -> {
+                        TaskworkerconstraintCreate taskworkerconstraint = new TaskworkerconstraintCreate(0.0, ((TaskRow) event.getItem()).getTask().getUuid(), userComboBox.getSelectedItem().get().getUuid());
+                        taskworkerconstraintClient.create(taskworkerconstraint);
+                        reloadGrid();
+                    });
+                    subContent.addComponent(addButton);
+
+                    // Center it in the browser window
+                    subWindow.center();
+
+                    // Open it in the UI
+                    UI.getCurrent().addWindow(subWindow);
                 });
             } else {
                 event.getContextMenu().addItem("Remove "+((UserRow)event.getItem()).getUsername(), VaadinIcons.CLOSE, selectedItem -> {
-                    Notification.show("Remove Consultant selected");
+                    Notification.show("Not possible at this time!");
                 });
             }
         } else {
             event.getContextMenu().addItem("Add Task", VaadinIcons.PLUS, selectedItem -> {
-                Notification.show("Add Task selected");
+                Task task = new Task("new task", currentProject.getUuid());
+                taskClient.create(task);
+                reloadGrid();
             });
         }
     }

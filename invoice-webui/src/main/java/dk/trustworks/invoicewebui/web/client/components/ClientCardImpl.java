@@ -46,6 +46,7 @@ public class ClientCardImpl extends ClientCardDesign {
         } else {
             getImgTop().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
+        getImgBlackStripe().setSource(new ThemeResource("images/black-stripe.png"));
 
         //getImgTop().setSource(new ThemeResource("images/clients/appension.jpg"));
         getImgTop().setSizeFull();
