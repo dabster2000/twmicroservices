@@ -147,4 +147,22 @@ public class Project {
     public void setClientdatauuid(String clientdatauuid) {
         this.clientdatauuid = clientdatauuid;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Project{");
+        sb.append("uuid='").append(uuid).append('\'');
+        sb.append(", active=").append(active);
+        sb.append(", budget=").append(budget);
+        sb.append(", created=").append(created);
+        sb.append(", customerreference='").append(customerreference).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", startdate=").append(startdate);
+        sb.append(", enddate=").append(enddate);
+        sb.append(", clientuuid='").append(clientuuid).append('\'');
+        sb.append(", clientdatauuid='").append(clientdatauuid).append('\'');
+        sb.append(", client=").append(client);
+        sb.append('}');
+        return sb.toString();
+    }
 }

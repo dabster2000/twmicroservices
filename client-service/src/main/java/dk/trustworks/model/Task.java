@@ -1,6 +1,7 @@
 package dk.trustworks.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 import java.util.List;
@@ -78,5 +79,19 @@ public class Task {
 
     public void setProjectuuid(String projectuuid) {
         this.projectuuid = projectuuid;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Task{");
+        sb.append("uuid='").append(uuid).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", type='").append(type).append('\'');
+        sb.append(", projectuuid='").append(projectuuid).append('\'');
+        //sb.append(", taskworkerconstraint=").append(taskworkerconstraint);
+        sb.append(", project=").append(project);
+        //sb.append(", budget=").append(budget);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -52,8 +52,8 @@ public class ClientCardImpl extends ClientCardDesign {
         getImgTop().setSizeFull();
         getLblHeading().setValue(client.getName());
         //getLblContact().setValue(contactName);
-        map=createMap(client.getLongitude(), client.getLatitude());
-        getCssMapHolder().addComponent(map);
+        //map=createMap(client.getLongitude(), client.getLatitude());
+        //getCssMapHolder().addComponent(map);
     }
 
     protected OLMap createMap(double longitude, double latitude){

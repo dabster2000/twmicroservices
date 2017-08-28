@@ -99,7 +99,7 @@ public class Budget {
         sb.append(", budget=").append(budget);
         sb.append(", useruuid='").append(useruuid).append('\'');
         sb.append(", taskuuid='").append(taskuuid).append('\'');
-        sb.append(", task=").append(task);
+        //sb.append(", task=").append(task);
         sb.append('}');
         return sb.toString();
     }

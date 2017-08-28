@@ -1,5 +1,6 @@
 package dk.trustworks.processors;
 
+import dk.trustworks.model.Client;
 import dk.trustworks.model.Project;
 import dk.trustworks.model.Task;
 import dk.trustworks.model.Taskworkerconstraint;
@@ -21,28 +22,24 @@ import java.util.Optional;
  * Created by hans on 28/06/2017.
  */
 @Component
-public class TaskWorkerConstraintResourceProcessor implements ResourceProcessor<Resource<Taskworkerconstraint>> {
+public class TaskResourceProcessor implements ResourceProcessor<Resource<Task>> {
 
     @Autowired
-    @Qualifier("userResource")
-    private DiscoveredResource userByUUIDResource;
+    ProjectRepository projectRepository;
+
+    @Autowired
+    ClientRepository clientRepository;
 
     @Override
-    public Resource<Taskworkerconstraint> process(Resource<Taskworkerconstraint> resource) {
-        Taskworkerconstraint taskworkerconstraint = resource.getContent();
-        String useruuid = taskworkerconstraint.getUseruuid();
-
-        Optional<Link> userlink = Optional.ofNullable(userByUUIDResource.getLink());
-
-        userlink.ifPresent(it -> {
-            if (useruuid == null) {
-                return;
-            }
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("uuid", useruuid);
-            resource.add(it.expand(parameters).withRel("user"));
-        });
-
+    public Resource<Task> process(Resource<Task> resource) {
+        System.out.println("TaskWorkerConstraintResourceProcessor.process");
+        System.out.println("resource = [" + resource.getContent() + "]");
+        Task task = resource.getContent();
+        Project project = projectRepository.findOne(task.getProjectuuid());
+        task.setProject(project);
+        Client client = clientRepository.findOne(project.getClientuuid());
+        project.setClient(client);
+        System.out.println("resource = " + resource.getContent());
         return resource;
     }
 }

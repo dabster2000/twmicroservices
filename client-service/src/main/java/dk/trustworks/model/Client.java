@@ -84,4 +84,20 @@ public class Client {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Client{");
+        sb.append("uuid='").append(uuid).append('\'');
+        sb.append(", active=").append(active);
+        sb.append(", contactname='").append(contactname).append('\'');
+        sb.append(", created=").append(created);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", latitude=").append(latitude);
+        sb.append(", longitude=").append(longitude);
+        //sb.append(", clientdata=").append(clientdata);
+        //sb.append(", projects=").append(projects);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -54,6 +54,11 @@ public class WeekResourceProcessor implements ResourceProcessor<Resource<Week>> 
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("uuid", taskuuid);
             resource.add(it.expand(parameters).withRel("task"));
+
+            Map<String, Object> parameters2 = new HashMap<>();
+            parameters2.put("uuid", taskuuid);
+            parameters2.put("parents", "true");
+            resource.add(it.expand(parameters2).withRel("task-parents"));
         });
 
         return resource;
