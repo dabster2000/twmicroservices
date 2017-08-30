@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.mainmenu.cards;
+package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.ThemeResource;
 

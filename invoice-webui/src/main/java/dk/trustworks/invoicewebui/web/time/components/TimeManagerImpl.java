@@ -1,18 +1,16 @@
-package dk.trustworks.invoicewebui.web.time;
+package dk.trustworks.invoicewebui.web.time.components;
 
 import com.vaadin.data.Binder;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.network.clients.*;
 import dk.trustworks.invoicewebui.network.dto.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import dk.trustworks.invoicewebui.web.security.Authorizer;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.hateoas.Resources;
 import org.vaadin.patrik.FastNavigation;
 import tm.kod.widgets.numberfield.NumberField;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,39 +26,40 @@ import java.util.UUID;
 /**
  * Created by hans on 16/08/2017.
  */
-@SpringView(name = TimeManagerViewImpl.VIEW_NAME)
-public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
+@SpringComponent
+@SpringUI
+public class TimeManagerImpl extends TimeManagerDesign {
 
     @Autowired
-    ClientClient clientClient;
+    private ClientClient clientClient;
 
     @Autowired
-    ProjectClient projectClient;
+    private ProjectClient projectClient;
 
     @Autowired
-    TaskClient taskClient;
+    private TaskClient taskClient;
 
     @Autowired
-    UserClient userClient;
+    private UserClient userClient;
 
     @Autowired
-    WeekClient weekClient;
+    private WeekClient weekClient;
 
     @Autowired
-    MobileApiClient mobileApiClient;
+    private MobileApiClient mobileApiClient;
 
     @Autowired
-    WorkClient workClient;
-
-    public static final String VIEW_NAME = "time";
+    private WorkClient workClient;
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
 
-    @PostConstruct
-    void init() {
+    public TimeManagerImpl() {
+    }
+
+    public TimeManagerImpl init() {
         setDateFields();
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
-        if(userSession == null) return;
+        if(userSession == null) return null;
 
         getBtnWeekNumberDecr().addClickListener(event -> {
             currentDate = currentDate.minusWeeks(1);
@@ -179,6 +177,7 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
             window.setContent(new VerticalLayout(clientComboBox, projectComboBox, taskComboBox, addTaskButton));
             this.getUI().addWindow(window);
         });
+        return this;
     }
 
     private void updateGrid(UserSession userSession) {
@@ -442,11 +441,5 @@ public class TimeManagerViewImpl extends TimeManagerViewDesign implements View {
         getTxtWeekNumber().setValue(currentDate.getWeekOfWeekyear()+"");
         getTxtYear().setValue(currentDate.getYear()+"");
         getLblCurrentDate().setValue(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.plusDays(7).toString("dd. MMM yyyy"));
-    }
-
-
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-        Authorizer.authorize(this);
     }
 }

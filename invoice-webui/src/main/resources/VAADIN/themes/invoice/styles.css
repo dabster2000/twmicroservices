@@ -33241,8 +33241,36 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	background-color: #042e4d;
 }
 
+.invoice .medium-blue {
+	background-color: #054f8a;
+}
+
+.invoice .medium-light-blue {
+	background-color: #2c586d;
+}
+
 .invoice .light-blue {
 	background-color: #8dacbf;
+}
+
+.invoice .orange {
+	background-color: #fbb14d;
+}
+
+.invoice .yellow {
+	background-color: #fcf585;
+}
+
+.invoice .dark-green {
+	background-color: #007163;
+}
+
+.invoice .dark-grey {
+	background-color: #3c454d;
+}
+
+.invoice .bg-grey {
+	background-color: #d5d8da;
 }
 
 .invoice .v-grid-cell.centeralign {
@@ -33255,6 +33283,26 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .white-font .v-icon {
 	color: #ffffff;
+}
+
+.invoice .v-margin-left {
+	padding-left: 10px;
+}
+
+.invoice .v-margin-right {
+	padding-right: 10px;
+}
+
+.invoice .v-margin-top {
+	padding-top: 10px;
+}
+
+.invoice .v-margin-bottom {
+	padding-bottom: 10px;
+}
+
+.invoice .top-bar-grey1 {
+	background-color: #f1f1f2;
 }
 
 .invoice .white-bg {
