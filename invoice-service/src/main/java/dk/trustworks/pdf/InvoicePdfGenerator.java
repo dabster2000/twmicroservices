@@ -110,7 +110,7 @@ public class InvoicePdfGenerator {
         text.add(invoice.otheraddressinfo);
         text.add(invoice.zipcity);
         if(invoice.cvr!=null && invoice.cvr.trim().length() > 0) text.add("CVR: " + invoice.cvr);
-        else text.add("EAN: " + invoice.ean);
+        if(invoice.ean!=null && invoice.ean.trim().length() > 0)  text.add("EAN: " + invoice.ean);
         text.add("");
         text.add("ATT: " + invoice.attention);
 
