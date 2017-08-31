@@ -15,8 +15,8 @@ public class Week extends ResourceSupport {
     private int weeknumber;
     private int year;
     private int sorting;
-    private Resource<User> user;
-    private Resource<Task> task;
+    private User user;
+    private Task task;
 
     public Week() {
     }
@@ -53,12 +53,20 @@ public class Week extends ResourceSupport {
         this.sorting = sorting;
     }
 
-    public Resource<User> getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(Resource<User> user) {
+    public void setUser(User user) {
         this.user = user;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
     }
 
     @Override
@@ -71,13 +79,5 @@ public class Week extends ResourceSupport {
         sb.append(", user=").append(user);
         sb.append('}');
         return sb.toString();
-    }
-
-    public Resource<Task> getTask() {
-        return task;
-    }
-
-    public void setTask(Resource<Task> task) {
-        this.task = task;
     }
 }

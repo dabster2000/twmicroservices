@@ -15,14 +15,15 @@ public class Task {
     @Column(insertable=false, updatable=false)
     private String projectuuid;
 
-    @OneToMany(mappedBy = "task")
-    @JsonIgnore private List<Taskworkerconstraint> taskworkerconstraint;
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Taskworkerconstraint> taskworkerconstraint;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectuuid")
     private Project project;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private List<Budget> budget;
 
     public String getUuid() {

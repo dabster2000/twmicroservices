@@ -14,7 +14,7 @@ public class Clientdata {
     private String otheraddressinfo;
     private Long postalcode;
     private String streetnamenumber;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="clientuuid")
     private Client client;
 

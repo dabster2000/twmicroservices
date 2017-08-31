@@ -1,13 +1,17 @@
 package dk.trustworks.invoicewebui.web.mainmenu.components;
 
-import com.jarektoro.responsivelayout.ResponsiveColumn;
-import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
+import dk.trustworks.invoicewebui.web.dashboard.DashboardView;
+import dk.trustworks.invoicewebui.web.invoice.views.MainWindowImpl;
+import dk.trustworks.invoicewebui.web.project.components.ProjectManagerImpl;
+import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
+import dk.trustworks.invoicewebui.web.time.TimeManagerView;
+import org.vaadin.alump.materialicons.MaterialIcons;
 
 /**
  * Created by hans on 28/08/2017.
@@ -18,52 +22,29 @@ import com.vaadin.ui.VerticalLayout;
 public class LeftMenu extends ResponsiveRow {
 
     public LeftMenu() {
+        this.setSizeFull();
         this.setMargin(false);
         this.setVerticalSpacing(false);
         this.setHorizontalSpacing(false);
         this.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
-        MenuItem menuItem1 = new MenuItem();
-        menuItem1.getLblMenuitem().setValue("Dashboard");
+        createItem("Dashboard", "", MaterialIcons.HOME, DashboardView.VIEW_NAME, false);
+        createItem("Time", "", MaterialIcons.TIMER, TimeManagerView.VIEW_NAME, false);
+        createItem("Clients", "", MaterialIcons.VERIFIED_USER, ClientManagerView.VIEW_NAME, false);
+        createItem("Projects", "", MaterialIcons.REPORT, ProjectManagerView.VIEW_NAME, false);
+        createItem("Invoice", "+", MaterialIcons.RECEIPT, MainWindowImpl.VIEW_NAME, false);
+        createItem("New", "", null, MainWindowImpl.VIEW_NAME, true);
+    }
 
-        MenuItem menuItem2 = new MenuItem();
-        menuItem2.getLblMenuitem().setValue("Time Manager");
-        menuItem2.addLayoutClickListener(event -> {
-            getUI().getNavigator().navigateTo("time");
-        });
-
-        MenuItem menuItem3 = new MenuItem();
-        menuItem3.getLblMenuitem().setValue("Clients");
-
-        MenuItem menuItem4 = new MenuItem();
-        menuItem4.getLblMenuitem().setValue("Projects");
-
-        MenuItem menuItem5 = new MenuItem();
-        menuItem5.getLblMenuitem().setValue("Invoice Manager");
-
+    private void createItem(String caption, String parentIndicator, FontIcon icon, String nagivateTo, boolean isChild) {
         this.addColumn()
                 .withDisplayRules(12,3,12,12)
                 .withVisibilityRules(false, false, true, true)
-                .withComponent(menuItem1);
-
-        this.addColumn()
-                .withDisplayRules(12,3,12,12)
-                .withVisibilityRules(false, false, true, true)
-                .withComponent(menuItem2);
-
-        this.addColumn()
-                .withDisplayRules(12,3,12,12)
-                .withVisibilityRules(false, false, true, true)
-                .withComponent(menuItem3);
-
-        this.addColumn()
-                .withDisplayRules(12,3,12,12)
-                .withVisibilityRules(false, false, true, true)
-                .withComponent(menuItem4);
-
-        this.addColumn()
-                .withDisplayRules(12,3,12,12)
-                .withVisibilityRules(false, false, true, true)
-                .withComponent(menuItem5);
+                .withComponent(new MenuItemImpl()
+                        .withCaption(caption)
+                        .withParentIndicator(parentIndicator)
+                        .withIcon(icon)
+                        .isChild(isChild)
+                        .addClickListener(event -> getUI().getNavigator().navigateTo(nagivateTo)));
     }
 }

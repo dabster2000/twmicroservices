@@ -43,11 +43,15 @@ public class MainTemplate extends VerticalLayout {
         // Fluent API
 
         mainSectionCol = rootRow.addColumn().withDisplayRules(12,12,10,10);
+        mainSectionCol.addStyleName("bg-grey");
 
         sideMenuCol.setComponent(leftMenu);
     }
 
     public void setMainContent(Component component) {
+        System.out.println("MainTemplate.setMainContent");
+        System.out.println("component = [" + component + "]");
+        System.out.println("mainSectionCol = " + mainSectionCol);
         mainSectionCol.setComponent(component);
     }
 }

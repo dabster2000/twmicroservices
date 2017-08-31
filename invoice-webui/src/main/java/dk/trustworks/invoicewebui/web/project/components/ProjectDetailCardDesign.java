@@ -5,13 +5,14 @@ import com.vaadin.annotations.DesignRoot;
 import com.vaadin.ui.declarative.Design;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.annotations.PropertyId;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Button;
 
 /**
@@ -27,6 +28,8 @@ import com.vaadin.ui.Button;
 @SuppressWarnings("serial")
 public class ProjectDetailCardDesign extends VerticalLayout {
     private CssLayout cardHolder;
+    private Label lblTitle;
+    private VerticalLayout container;
     private Image logo;
     private FormLayout formProjectDetail;
     private TextField txtName;
@@ -44,6 +47,14 @@ public class ProjectDetailCardDesign extends VerticalLayout {
 
     public CssLayout getCardHolder() {
         return cardHolder;
+    }
+
+    public Label getLblTitle() {
+        return lblTitle;
+    }
+
+    public VerticalLayout getContainer() {
+        return container;
     }
 
     public Image getLogo() {

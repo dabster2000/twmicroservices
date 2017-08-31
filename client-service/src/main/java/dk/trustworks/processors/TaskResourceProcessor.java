@@ -32,6 +32,7 @@ public class TaskResourceProcessor implements ResourceProcessor<Resource<Task>> 
 
     @Override
     public Resource<Task> process(Resource<Task> resource) {
+        /*
         System.out.println("TaskWorkerConstraintResourceProcessor.process");
         System.out.println("resource = [" + resource.getContent() + "]");
         Task task = resource.getContent();
@@ -40,6 +41,7 @@ public class TaskResourceProcessor implements ResourceProcessor<Resource<Task>> 
         Client client = clientRepository.findOne(project.getClientuuid());
         project.setClient(client);
         System.out.println("resource = " + resource.getContent());
+        */
         return resource;
     }
 }

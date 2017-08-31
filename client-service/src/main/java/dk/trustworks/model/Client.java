@@ -2,6 +2,7 @@ package dk.trustworks.model;
 
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
@@ -16,9 +17,9 @@ public class Client {
     private String name;
     private Double latitude;
     private Double longitude;
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Clientdata> clientdata;
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Project> projects;
 
     public String getUuid() {

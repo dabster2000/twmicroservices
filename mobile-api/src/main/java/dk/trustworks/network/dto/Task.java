@@ -8,7 +8,7 @@ public class Task {
     private String uuid;
     private String name;
     private String type;
-    private Resource<Project> project;
+    private Project project;
 
     public String getUuid() {
         return uuid;
@@ -34,11 +34,11 @@ public class Task {
         this.type = type;
     }
 
-    public Resource<Project> getProject() {
+    public Project getProject() {
         return project;
     }
 
-    public void setProject(Resource<Project> project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 

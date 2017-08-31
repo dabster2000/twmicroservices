@@ -17,7 +17,7 @@ public class Project {
     private String name;
     private Date startdate;
     private Date enddate;
-    private Resource<Client> client;
+    private Client client;
 
 
     public String getUuid() {
@@ -84,11 +84,11 @@ public class Project {
         this.enddate = enddate;
     }
 
-    public Resource<Client> getClient() {
+    public Client getClient() {
         return client;
     }
 
-    public void setClient(Resource<Client> client) {
+    public void setClient(Client client) {
         this.client = client;
     }
 

@@ -53,13 +53,10 @@ public class TimeManagerImpl extends TimeManagerDesign {
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
 
-    public TimeManagerImpl() {
-    }
-
     public TimeManagerImpl init() {
         setDateFields();
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
-        if(userSession == null) return null;
+        if(userSession == null) return this;
 
         getBtnWeekNumberDecr().addClickListener(event -> {
             currentDate = currentDate.minusWeeks(1);
@@ -324,23 +321,26 @@ public class TimeManagerImpl extends TimeManagerDesign {
     }
 
     private void loadData(UserSession userSession) {
+        long start = System.currentTimeMillis();
         Resources<Resource<Week>> weeks = mobileApiClient.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), userSession.getUuid());
+        System.out.println("Load weeks = " + (System.currentTimeMillis() - start));
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
         Resources<Resource<Work>> workResources = workClient.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), userSession.getUuid());
+        System.out.println("Load work = " + (System.currentTimeMillis() - start));
 
         List<WeekItem> weekItems = new ArrayList<>();
         double sumHours = 0.0;
         for (Resource<Week> weekResource : weeks.getContent()) {
             System.out.println("weekResource.getContent() = " + weekResource.getContent());
-            WeekItem weekItem = new WeekItem(weekResource.getContent().getTask().getContent().getUuid(), userSession.getUuid());
+            WeekItem weekItem = new WeekItem(weekResource.getContent().getTask().getUuid(), userSession.getUuid());
             weekItems.add(weekItem);
             weekItem.setTaskname(
-                    weekResource.getContent().getTask().getContent().getProject().getName() + " / " +
-                    weekResource.getContent().getTask().getContent().getName()
+                    weekResource.getContent().getTask().getName()
             );
-            String taskUUID = weekResource.getContent().getTask().getContent().getUuid();
+            String taskUUID = weekResource.getContent().getTask().getUuid();
             System.out.println("taskUUID = " + taskUUID);
+            long innerStart = System.currentTimeMillis();
             for (Resource<Work> workResource : workResources.getContent()) {
                 if(!workResource.getContent().getTaskuuid().equals(taskUUID)) continue;
                 sumHours += workResource.getContent().getWorkduration();
@@ -370,9 +370,11 @@ public class TimeManagerImpl extends TimeManagerDesign {
                         break;
                 }
             }
+            System.out.println("Inner Duration = " + (System.currentTimeMillis() - innerStart));
         }
         getLblTotalHours().setValue(NumberConverter.formatDouble(sumHours));
         getGridTimeTable().setItems(weekItems);
+        System.out.println("Duration = " + (System.currentTimeMillis() - start));
     }
 
     public NumberField createInstance() {

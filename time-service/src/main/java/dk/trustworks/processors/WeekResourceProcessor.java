@@ -31,6 +31,7 @@ public class WeekResourceProcessor implements ResourceProcessor<Resource<Week>> 
 
     @Override
     public Resource<Week> process(Resource<Week> resource) {
+        long start = System.currentTimeMillis();
         Week week = resource.getContent();
         String useruuid = week.getUseruuid();
         String taskuuid = week.getTaskuuid();
@@ -60,6 +61,7 @@ public class WeekResourceProcessor implements ResourceProcessor<Resource<Week>> 
             parameters2.put("parents", "true");
             resource.add(it.expand(parameters2).withRel("task-parents"));
         });
+        System.out.println("process week: "+(System.currentTimeMillis()-start));
 
         return resource;
     }

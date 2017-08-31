@@ -27,4 +27,5 @@ public class AddClientCardDesign extends CssLayout {
     public Button getBtnAddClient() {
         return btnAddClient;
     }
+
 }

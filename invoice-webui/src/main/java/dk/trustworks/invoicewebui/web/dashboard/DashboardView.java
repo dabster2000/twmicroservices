@@ -23,6 +23,12 @@ import javax.annotation.PostConstruct;
 @SpringView(name = DashboardView.VIEW_NAME)
 public class DashboardView extends VerticalLayout implements View {
 
+    /**
+     * Fødselsdage
+     * Templates
+     * Apps i Trustworks
+     */
+
     public static final String VIEW_NAME = "mainmenu";
 
     @Autowired
@@ -38,7 +44,7 @@ public class DashboardView extends VerticalLayout implements View {
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
         ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        board.addStyleName("bg-grey");
+
         board.setSizeFull();
 
         MenuItemCardImpl timeCard = new MenuItemCardImpl(
@@ -107,10 +113,11 @@ public class DashboardView extends VerticalLayout implements View {
         ConsultantLocationCardDesign monthNewsCardDesign = new ConsultantLocationCardDesign();
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null,
-                new ExternalResource("https://player.vimeo.com/video/180634606?title=0&byline=0&portrait=0"));
+                new ExternalResource("https://www.youtube-nocookie.com/embed/PWoyyHDRd7U?rel=0&amp;controls=0&amp;showinfo=0"));
         browser2.setHeight("400px");
         browser2.setWidth("100%");
         monthNewsCardDesign.getIframeHolder().addComponent(browser2);
+        monthNewsCardDesign.getLblTitle().setValue("State of Trustworks");
         /*
         <iframe src="https://player.vimeo.com/video/180634606?title=0&byline=0&portrait=0" width="640" height="479" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
          */

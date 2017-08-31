@@ -8,7 +8,17 @@
  </head>
  <body>
   <vaadin-vertical-layout height="450px">
-   <vaadin-vertical-layout style-name="card-2 card-no-padding" spacing="false" size-full margin="false" _id="cardHolder"></vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" size-full margin="false">
+    <vaadin-vertical-layout spacing="false" size-full margin="false" :expand>
+     <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px">
+      <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e788" style-name="borderless icon-only" plain-text :middle></vaadin-button>
+      <vaadin-label plain-text _id="lblTitle" :middle :expand>
+        Project Location 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-vertical-layout spacing="false" size-full _id="cardHolder" :expand></vaadin-vertical-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
   </vaadin-vertical-layout>
  </body>
 </html>

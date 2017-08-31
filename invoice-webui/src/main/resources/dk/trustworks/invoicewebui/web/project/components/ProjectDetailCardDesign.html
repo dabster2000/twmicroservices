@@ -6,21 +6,31 @@
   <meta name="vaadin-version" content="8.0.5">
  </head>
  <body>
-  <vaadin-vertical-layout size-full>
-   <vaadin-css-layout style-name="card-2 card-no-padding" size-full _id="cardHolder" :middle :center>
+  <vaadin-vertical-layout>
+   <vaadin-css-layout style-name="card-3 card-no-padding" width-full _id="cardHolder" :middle :center>
     <vaadin-vertical-layout spacing="false" margin="false">
-     <vaadin-image width-full _id="logo"></vaadin-image>
-     <vaadin-form-layout margin _id="formProjectDetail">
-      <vaadin-text-field caption="Name" width-full _id="txtName"></vaadin-text-field>
-      <vaadin-combo-box caption="RM" width-full data-item-type="dk.trustworks.invoicewebui.network.dto.User" data-property-id="username" _id="selRelationManager"></vaadin-combo-box>
-      <vaadin-date-field caption="Start" date-format="dd MMM yyyy" _id="selStartDate"></vaadin-date-field>
-      <vaadin-date-field caption="End" date-format="dd MMM yyyy" _id="selEndDate"></vaadin-date-field>
-      <vaadin-text-field caption="Budget" _id="txtBudget"></vaadin-text-field>
-      <vaadin-check-box caption="Active" _id="chkActive"></vaadin-check-box>
-      <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
-        Update 
-      </vaadin-button>
-     </vaadin-form-layout>
+     <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px">
+      <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e67b" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
+      <vaadin-label plain-text _id="lblTitle" :middle :expand>
+        Project Details 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-vertical-layout spacing="false" size-full _id="container">
+      <vaadin-vertical-layout spacing="false" margin="false">
+       <vaadin-image width-full _id="logo"></vaadin-image>
+       <vaadin-form-layout margin _id="formProjectDetail">
+        <vaadin-text-field caption="Name" width-full _id="txtName"></vaadin-text-field>
+        <vaadin-combo-box caption="RM" width-full data-item-type="dk.trustworks.invoicewebui.network.dto.User" data-property-id="username" _id="selRelationManager"></vaadin-combo-box>
+        <vaadin-date-field caption="Start" date-format="dd MMM yyyy" _id="selStartDate"></vaadin-date-field>
+        <vaadin-date-field caption="End" date-format="dd MMM yyyy" _id="selEndDate"></vaadin-date-field>
+        <vaadin-text-field caption="Budget" _id="txtBudget"></vaadin-text-field>
+        <vaadin-check-box caption="Active" _id="chkActive"></vaadin-check-box>
+        <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
+          Update 
+        </vaadin-button>
+       </vaadin-form-layout>
+      </vaadin-vertical-layout>
+     </vaadin-vertical-layout>
     </vaadin-vertical-layout>
    </vaadin-css-layout>
   </vaadin-vertical-layout>
