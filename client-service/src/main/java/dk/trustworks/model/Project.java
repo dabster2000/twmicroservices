@@ -33,14 +33,14 @@ public class Project {
     @Column(insertable=false, updatable=false)
     private String clientdatauuid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "clientuuid")
     private Client client;
 
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "project")
     private List<Task> tasks;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "clientdatauuid")
     private Clientdata clientData;
 

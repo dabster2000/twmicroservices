@@ -17,9 +17,9 @@ public class Client {
     private String name;
     private Double latitude;
     private Double longitude;
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "client")
     private List<Clientdata> clientdata;
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "client")
     private List<Project> projects;
 
     public String getUuid() {

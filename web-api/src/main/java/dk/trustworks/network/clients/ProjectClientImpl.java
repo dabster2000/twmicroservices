@@ -22,6 +22,8 @@ public class ProjectClientImpl {
 
     @Cacheable("project")
     public Resource<Project> findProjectByRestLink(String link) {
+        System.out.println("ProjectClientImpl.findProjectByRestLink");
+        System.out.println("link = [" + link + "]");
         return restTemplate.exchange(link, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Project>>() {}).getBody();
     }
 
