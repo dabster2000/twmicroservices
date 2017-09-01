@@ -100,6 +100,5 @@ public class MainWindowImpl extends MainWindowDesign implements View, Broadcaste
             if(numberOfDrafts>0) getMenuButton4().setCaption("DRAFTS ("+numberOfDrafts+")");
             else getMenuButton4().setCaption("DRAFTS");
         });
-
     }
 }

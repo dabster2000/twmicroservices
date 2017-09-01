@@ -25,22 +25,13 @@
     <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
     <vaadin-horizontal-layout width-full>
      <vaadin-vertical-layout spacing="false" margin="false" :middle :expand="0.6">
-      <vaadin-label style-name="large bold" width-full plain-text _id="lblClientname">
-        AP Pension 
-      </vaadin-label>
-      <vaadin-label width-full plain-text _id="lblStreetname">
-        Østbanegade 135 
-      </vaadin-label>
-      <vaadin-label width-full plain-text _id="lblZipCity">
-        2100 København Ø 
-      </vaadin-label>
-      <vaadin-label width-full plain-text _id="lblCvrEan">
-        CVR 18237385 
-      </vaadin-label>
+      <vaadin-text-field style-name="bold" placeholder="Client name" width="270px" _id="txtClientname"></vaadin-text-field>
+      <vaadin-text-field placeholder="Street name" width="270px" _id="txtStreetname"></vaadin-text-field>
+      <vaadin-text-field placeholder="Zipcode and city" width="270px" _id="txtZipCity"></vaadin-text-field>
+      <vaadin-text-field placeholder="CVR" width="270px" _id="txtCvr"></vaadin-text-field>
+      <vaadin-text-field placeholder="EAN" width="270px" _id="txtEan"></vaadin-text-field>
       <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
-      <vaadin-label style-name="bold" width-full plain-text _id="lblAttention">
-        Att: Nicklas Grundager 
-      </vaadin-label>
+      <vaadin-text-field placeholder="Attention" width="270px" _id="txtAttention"></vaadin-text-field>
      </vaadin-vertical-layout>
      <vaadin-vertical-layout spacing="false" margin="false" :expand="0.4">
       <vaadin-label caption-as-html width-full>

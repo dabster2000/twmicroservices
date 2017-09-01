@@ -6,17 +6,19 @@ import com.vaadin.ui.Component;
 /**
  * Created by hans on 11/08/2017.
  */
-public class MenuItemCardImpl extends MenuItemCardDesign implements Box {
+public class DnaCardImpl extends DnaCardDesign implements Box {
 
     private int priority;
     private int boxWidth;
     private String name;
 
-    public MenuItemCardImpl(String image, String headline, String body, int priority, int boxWidth, String name) {
-        getImgTop().setSource(new ThemeResource("images/"+image));
+    public DnaCardImpl(int priority, int boxWidth, String name) {
+        this.priority = priority;
+        this.boxWidth = boxWidth;
+        this.name = name;
+
+        getImgTop().setSource(new ThemeResource("images/cards/dna.jpg"));
         getImgTop().setSizeFull();
-        getLblHeading().setValue(headline);
-        getLblBody().setValue(body);
     }
 
     public int getPriority() {
@@ -47,4 +49,5 @@ public class MenuItemCardImpl extends MenuItemCardDesign implements Box {
     public Component getBoxComponent() {
         return this;
     }
+
 }

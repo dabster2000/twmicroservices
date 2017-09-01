@@ -93,7 +93,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         ResponseEntity<Resources<Resource<Clientdata>>> responseEntity = restTemplate.exchange(clientDataResourceLink.getHref(), HttpMethod.GET, null, new ParameterizedTypeReference<Resources<Resource<Clientdata>>>() {});
 /*
         final Window window = new Window("Client Contact Information");
-        window.setWidth(100.0f, Unit.PERCENTAGE);
+        window.setBoxWidth(100.0f, Unit.PERCENTAGE);
         window.setHeight(100.0f, Unit.PERCENTAGE);
         window.setModal(true);
 */

@@ -22,15 +22,15 @@ public class InvoiceEditImpl extends InvoiceEditDesign {
 
     public InvoiceEditImpl(Invoice invoice) {
         this.invoice = invoice;
-        this.lblAttention.setValue("ATT: "+invoice.attention);
-        this.lblClientname.setValue(invoice.clientname);
-        if(invoice.cvr != null && invoice.cvr.trim().length() > 0) this.lblCvrEan.setValue("CVR: "+invoice.cvr);
-        if(invoice.ean != null && invoice.ean.trim().length() > 0) this.lblCvrEan.setValue("EAN: "+invoice.ean);
-        this.lblStreetname.setValue(invoice.clientaddresse);
-        this.lblZipCity.setValue(invoice.zipcity);
         this.lblDescription.setValue(invoice.description);
 
         invoiceBinder = new Binder<>();
+        invoiceBinder.forField(txtAttention).bind(Invoice::getAttention, Invoice::setAttention);
+        invoiceBinder.forField(txtClientname).bind(Invoice::getClientname, Invoice::setClientname);
+        invoiceBinder.forField(txtCvr).bind(Invoice::getCvr, Invoice::setCvr);
+        invoiceBinder.forField(txtEan).bind(Invoice::getEan, Invoice::setEan);
+        invoiceBinder.forField(txtStreetname).bind(Invoice::getClientaddresse, Invoice::setClientaddresse);
+        invoiceBinder.forField(txtZipCity).bind(Invoice::getZipcity, Invoice::setZipcity);
         invoiceBinder.forField(dfInvoiceDate).bind(Invoice::getInvoicedate, Invoice::setInvoicedate);
         invoiceBinder.forField(txtSpecificDescription).bind(Invoice::getSpecificdescription, Invoice::setSpecificdescription);
         invoiceBinder.readBean(invoice);
@@ -102,7 +102,7 @@ public class InvoiceEditImpl extends InvoiceEditDesign {
         binder.forField(lblDescription).bind(InvoiceItem::getDescription, InvoiceItem::setDescription);
 
         Label lblAmount = new Label();
-        //lblAmount.setWidth(100.0f, Unit.PERCENTAGE);
+        //lblAmount.setBoxWidth(100.0f, Unit.PERCENTAGE);
         NumberFormat danishNumberFormatter = NumberFormat.getInstance(Locale.getDefault());
         danishNumberFormatter.setMaximumFractionDigits(2);
         danishNumberFormatter.setMinimumFractionDigits(2);

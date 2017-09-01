@@ -24,11 +24,12 @@ import com.vaadin.ui.TextField;
 public class InvoiceEditDesign extends VerticalLayout {
     protected Button btnCreateInvoice;
     protected Button btnSave;
-    protected Label lblClientname;
-    protected Label lblStreetname;
-    protected Label lblZipCity;
-    protected Label lblCvrEan;
-    protected Label lblAttention;
+    protected TextField txtClientname;
+    protected TextField txtStreetname;
+    protected TextField txtZipCity;
+    protected TextField txtCvr;
+    protected TextField txtEan;
+    protected TextField txtAttention;
     protected DateField dfInvoiceDate;
     protected Label lblDescription;
     protected TextField txtSpecificDescription;

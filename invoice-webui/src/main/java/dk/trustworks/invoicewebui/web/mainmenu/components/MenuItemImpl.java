@@ -31,7 +31,7 @@ public class MenuItemImpl extends MenuItemDesign {
 
     public MenuItemImpl isChild(boolean isChild) {
         if(isChild) {
-            this.setVisible(true);
+            this.setVisible(false);
             getLblChildSpace().setVisible(true);
         }
         return this;
