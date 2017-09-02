@@ -9,9 +9,11 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.network.clients.UserStatusClient;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +38,9 @@ public class DashboardView extends VerticalLayout implements View {
 
     @Autowired
     private MainTemplate mainTemplate;
+
+    @Autowired
+    private UserStatusClient userStatusClient;
 
     @PostConstruct
     void init() {
@@ -92,10 +97,18 @@ public class DashboardView extends VerticalLayout implements View {
 
     private void createTopBoxes(ResponsiveLayout board) {
         TopCardDesign consultantsCard = new TopCardDesign();
+        float goodPeopleNow = userStatusClient.findAllActive().getContent().size();
+        System.out.println("goodPeopleNow = " + goodPeopleNow);
+        String date = LocalDate.now().minusYears(1).toString("yyyy-MM-dd");
+        System.out.println("date = " + date);
+        float goodPeopleLastYear = userStatusClient.findAllActiveByDate(date).getContent().size();
+        System.out.println("goodPeopleLastYear = " + goodPeopleLastYear);
+        int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
+        System.out.println("percent = " + percent);
         consultantsCard.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
-        consultantsCard.getLblNumber().setValue("18");
-        consultantsCard.getLblTitle().setValue("Trustworks Consultants");
-        consultantsCard.getLblSubtitle().setValue("10% more than last year");
+        consultantsCard.getLblNumber().setValue(Math.round(goodPeopleNow)+"");
+        consultantsCard.getLblTitle().setValue("Good People");
+        consultantsCard.getLblSubtitle().setValue(percent + "% more than last year");
         consultantsCard.getCardHolder().addStyleName("medium-blue");
         ResponsiveRow row0 = board.addRow();
         row0.addColumn()

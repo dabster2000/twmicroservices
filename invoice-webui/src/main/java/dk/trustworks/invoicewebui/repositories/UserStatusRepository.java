@@ -1,6 +1,6 @@
-package dk.trustworks.repositories;
+package dk.trustworks.invoicewebui.repositories;
 
-import dk.trustworks.model.UserStatus;
+import dk.trustworks.invoicewebui.model.UserStatus;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

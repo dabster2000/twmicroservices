@@ -84,4 +84,5 @@ public class InvoiceWebUIApplication {
         return new MessageListenerAdapter(receiver, "receiveMessage");
     }
 
+
 }

@@ -8,7 +8,6 @@ import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import dk.trustworks.invoicewebui.web.project.components.ProjectManagerImpl;
-import dk.trustworks.invoicewebui.web.security.Authorizer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;

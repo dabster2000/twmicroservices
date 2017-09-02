@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.web.contexts;
 
-import dk.trustworks.invoicewebui.web.security.CurrentUserRole;
+
+import dk.trustworks.invoicewebui.security.CurrentUserRole;
 
 /**
  * Created by hans on 17/08/2017.

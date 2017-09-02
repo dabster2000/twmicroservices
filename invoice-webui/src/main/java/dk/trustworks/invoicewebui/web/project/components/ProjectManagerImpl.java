@@ -13,6 +13,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.network.clients.*;
 import dk.trustworks.invoicewebui.network.dto.*;
+import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.web.project.model.TaskRow;
 import dk.trustworks.invoicewebui.web.project.model.UserRow;
 import org.joda.time.LocalDate;
@@ -34,6 +35,9 @@ import java.util.stream.Collectors;
 @SpringComponent
 @SpringUI
 public class ProjectManagerImpl extends ProjectManagerDesign {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private UserClient userClient;

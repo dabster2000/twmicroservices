@@ -1,10 +1,8 @@
-package dk.trustworks.invoicewebui.web.security;
+package dk.trustworks.invoicewebui.security;
 
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.ilay.api.Authorizer;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by hans on 17/08/2017.
