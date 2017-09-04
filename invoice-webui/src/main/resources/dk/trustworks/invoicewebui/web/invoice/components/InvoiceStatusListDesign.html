@@ -15,7 +15,7 @@
       Tour 
     </vaadin-button>
    </vaadin-horizontal-layout>
-   <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.network.dto.Invoice" _id="gridInvoiceList">
+   <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.model.Invoice" _id="gridInvoiceList">
     <table>
      <colgroup>
       <col column-id="clientname" sortable>
@@ -28,16 +28,16 @@
       <col column-id="sumWithTax" sortable>
      </colgroup>
      <thead>
-      <tr default>
-       <th plain-text column-ids="clientname">Client Name</th>
-       <th plain-text column-ids="projectname">Project Name</th>
-       <th plain-text column-ids="invoicenumber">Invoice Number</th>
-       <th plain-text column-ids="invoicedate">Invoice Date</th>
-       <th plain-text column-ids="type">Invoice Type</th>
-       <th plain-text column-ids="status">Status</th>
-       <th plain-text column-ids="sumNoTax">Amount</th>
-       <th plain-text column-ids="sumWithTax">Amount w. Tax</th>
-      </tr>
+     <tr default>
+      <th plain-text column-ids="clientname">Client Name</th>
+      <th plain-text column-ids="projectname">Project Name</th>
+      <th plain-text column-ids="invoicenumber">Invoice Number</th>
+      <th plain-text column-ids="invoicedate">Invoice Date</th>
+      <th plain-text column-ids="type">Invoice Type</th>
+      <th plain-text column-ids="status">Status</th>
+      <th plain-text column-ids="sumNoTax">Amount</th>
+      <th plain-text column-ids="sumWithTax">Amount w. Tax</th>
+     </tr>
      </thead>
      <tbody></tbody>
     </table>

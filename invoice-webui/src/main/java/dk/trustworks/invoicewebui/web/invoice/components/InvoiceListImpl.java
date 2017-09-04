@@ -11,10 +11,11 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.LocalDateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.network.clients.InvoiceClient;
-import dk.trustworks.invoicewebui.network.dto.Invoice;
-import dk.trustworks.invoicewebui.network.dto.InvoiceItem;
-import dk.trustworks.invoicewebui.network.dto.InvoiceStatus;
+import dk.trustworks.invoicewebui.generators.InvoicePdfGenerator;
+import dk.trustworks.invoicewebui.model.InvoiceItem;
+import dk.trustworks.invoicewebui.model.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.web.Broadcaster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
@@ -26,10 +27,12 @@ import org.vaadin.addons.producttour.step.Step;
 import org.vaadin.addons.producttour.step.StepBuilder;
 import org.vaadin.addons.producttour.tour.Tour;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
 
-import static dk.trustworks.invoicewebui.network.dto.InvoiceStatus.DRAFT;
+import static dk.trustworks.invoicewebui.model.InvoiceStatus.DRAFT;
 
 /**
  * Created by hans on 13/07/2017.
@@ -41,16 +44,19 @@ import static dk.trustworks.invoicewebui.network.dto.InvoiceStatus.DRAFT;
 public class InvoiceListImpl extends InvoiceListDesign
         implements Broadcaster.BroadcastListener {
 
-    private final InvoiceClient invoiceClient;
+    private final InvoiceRepository invoiceRepository;
 
     private final RestTemplate restTemplate;
 
     @Autowired
-    public InvoiceListImpl(InvoiceClient invoiceClient, RestTemplate restTemplate) {
+    InvoicePdfGenerator invoicePdfGenerator;
+
+    @Autowired
+    public InvoiceListImpl(InvoiceRepository invoiceRepository, RestTemplate restTemplate) {
         Broadcaster.register(this);
         this.restTemplate = restTemplate;
         System.out.println("InvoiceListImpl.InvoiceListImpl");
-        this.invoiceClient = invoiceClient;
+        this.invoiceRepository = invoiceRepository;
 
         loadInvoicesToGrid();
 
@@ -73,7 +79,7 @@ public class InvoiceListImpl extends InvoiceListDesign
 
                 invoiceEdit.btnCopyDescription.addClickListener(clickEvent -> {
                     System.out.println("invoice.projectuuid = " + invoice.projectuuid);
-                    Invoice latestInvoiceByProjectuuid = invoiceClient.findByLatestInvoiceByProjectuuid(invoice.projectuuid);
+                    Invoice latestInvoiceByProjectuuid = invoiceRepository.findByLatestInvoiceByProjectuuid(invoice.projectuuid);
                     invoiceEdit.setSpecificDescription(latestInvoiceByProjectuuid.specificdescription);
                 });
 
@@ -81,7 +87,13 @@ public class InvoiceListImpl extends InvoiceListDesign
                     try {
                         saveFormToInvoiceBean(invoice, invoiceEdit);
                         invoice.setStatus(InvoiceStatus.CREATED);
-                        restTemplate.put(invoice.getLink("self").getHref(), invoice, String.class);
+                        invoice.invoicenumber = invoiceRepository.getMaxInvoiceNumber() + 1;
+                        try {
+                            invoice.pdf = invoicePdfGenerator.createInvoice(invoice);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        invoiceRepository.save(invoice);
                         window.close();
                     } catch (ValidationException e) {
                         e.printStackTrace();
@@ -91,7 +103,7 @@ public class InvoiceListImpl extends InvoiceListDesign
                 invoiceEdit.btnSave.addClickListener(clickEvent -> {
                     try {
                         saveFormToInvoiceBean(invoice, invoiceEdit);
-                        restTemplate.put(invoice.getLink("self").getHref(), invoice, String.class);
+                        invoiceRepository.save(invoice);
                     } catch (ValidationException e) {
                         Notification.show("Invoice could not be saved, " +
                                 "please check error messages for each field.");
@@ -106,7 +118,7 @@ public class InvoiceListImpl extends InvoiceListDesign
 
         btnDelete.addClickListener(event -> {
             for (Invoice selectedInvoice : gridInvoiceList.getSelectedItems()) {
-                invoiceClient.deleteInvoice(selectedInvoice.getUuid());
+                invoiceRepository.delete(selectedInvoice.getUuid());
             }
         });
 
@@ -133,8 +145,8 @@ public class InvoiceListImpl extends InvoiceListDesign
     public void loadInvoicesToGrid() {
         System.out.println("InvoiceListImpl.loadInvoicesToGrid");
         System.out.println("");
-        Resources<Invoice> invoices = invoiceClient.findByStatus(DRAFT);
-        gridInvoiceList.setItems(invoices.getContent());
+        List<Invoice> invoices = invoiceRepository.findByStatus(DRAFT);
+        gridInvoiceList.setItems(invoices);
         gridInvoiceList.getDataProvider().refreshAll();
     }
 

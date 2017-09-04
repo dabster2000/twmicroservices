@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.web.project.model;
 
-import dk.trustworks.invoicewebui.network.dto.Task;
-import dk.trustworks.invoicewebui.network.dto.Taskworkerconstraint;
+import dk.trustworks.invoicewebui.model.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;

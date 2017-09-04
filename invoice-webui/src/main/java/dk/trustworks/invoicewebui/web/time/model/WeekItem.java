@@ -1,12 +1,15 @@
 package dk.trustworks.invoicewebui.web.time.model;
 
+import dk.trustworks.invoicewebui.model.Task;
+import dk.trustworks.invoicewebui.model.User;
+
 /**
  * Created by hans on 16/08/2017.
  */
 public class WeekItem {
 
-    private String taskuuid;
-    private String useruuid;
+    private Task task;
+    private User user;
     private String taskname;
     private String mon = "0,0";
     private String tue = "0,0";
@@ -20,25 +23,25 @@ public class WeekItem {
     public WeekItem() {
     }
 
-    public WeekItem(String taskuuid, String useruuid) {
-        this.taskuuid = taskuuid;
-        this.useruuid = useruuid;
+    public WeekItem(Task task, User user) {
+        this.task = task;
+        this.user = user;
     }
 
-    public String getTaskuuid() {
-        return taskuuid;
+    public Task getTask() {
+        return task;
     }
 
-    public void setTaskuuid(String taskuuid) {
-        this.taskuuid = taskuuid;
+    public void setTask(Task task) {
+        this.task = task;
     }
 
-    public String getUseruuid() {
-        return useruuid;
+    public User getUser() {
+        return user;
     }
 
-    public void setUseruuid(String useruuid) {
-        this.useruuid = useruuid;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getTaskname() {
@@ -116,8 +119,6 @@ public class WeekItem {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WeekItem{");
-        sb.append("taskuuid='").append(taskuuid).append('\'');
-        sb.append(", useruuid='").append(useruuid).append('\'');
         sb.append(", taskname='").append(taskname).append('\'');
         sb.append(", mon='").append(mon).append('\'');
         sb.append(", tue='").append(tue).append('\'');

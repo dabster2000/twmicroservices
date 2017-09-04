@@ -13,7 +13,7 @@ public class UserStatus {
 
     @Id
     private String uuid;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="useruuid")
     private User user;
     private String status;

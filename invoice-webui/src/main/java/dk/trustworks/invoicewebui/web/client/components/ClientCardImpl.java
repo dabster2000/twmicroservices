@@ -4,8 +4,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Image;
-import dk.trustworks.invoicewebui.network.dto.Client;
+import dk.trustworks.invoicewebui.model.Client;
 import org.vaadin.addon.vol3.OLMap;
 import org.vaadin.addon.vol3.OLMapOptions;
 import org.vaadin.addon.vol3.OLView;
@@ -39,9 +38,9 @@ public class ClientCardImpl extends ClientCardDesign {
 
     public ClientCardImpl(Client client) {
 
-        if(client.getLogo()!=null && client.getLogo().length > 0) {
+        if(client.getLogo()!=null && client.getLogo().getLogo().length > 0) {
             getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(client.getLogo()),
+                            new ByteArrayInputStream(client.getLogo().getLogo()),
                             "logo.jpg"));
         } else {
             getImgTop().setSource(new ThemeResource("images/clients/missing-logo.jpg"));

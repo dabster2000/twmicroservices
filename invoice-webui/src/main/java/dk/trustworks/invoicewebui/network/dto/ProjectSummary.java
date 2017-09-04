@@ -16,6 +16,16 @@ public class ProjectSummary {
     public ProjectSummary() {
     }
 
+    public ProjectSummary(String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices) {
+        this.projectuuid = projectuuid;
+        this.projectname = projectname;
+        this.clientname = clientname;
+        this.description = description;
+        this.registeredamount = registeredamount;
+        this.invoicedamount = invoicedamount;
+        this.invoices = invoices;
+    }
+
     public String getProjectuuid() {
         return projectuuid;
     }

@@ -1,7 +1,8 @@
 package dk.trustworks.invoicewebui.web.project.model;
 
-import dk.trustworks.invoicewebui.network.dto.Task;
-import dk.trustworks.invoicewebui.network.dto.Taskworkerconstraint;
+import dk.trustworks.invoicewebui.model.Task;
+import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
+import dk.trustworks.invoicewebui.model.User;
 
 /**
  * Created by hans on 21/08/2017.
@@ -9,7 +10,7 @@ import dk.trustworks.invoicewebui.network.dto.Taskworkerconstraint;
 public class UserRow extends TaskRow {
 
     private Taskworkerconstraint taskworkerconstraint;
-    private String userUUID;
+    private User user;
     private String username;
     private String rate;
 
@@ -17,28 +18,12 @@ public class UserRow extends TaskRow {
         super(month);
     }
 
-    public UserRow(Task task, Taskworkerconstraint taskworkerconstraint, int months, String userUUID, String username) {
+    public UserRow(Task task, Taskworkerconstraint taskworkerconstraint, int months, User user) {
         super(task, months);
-        this.taskworkerconstraint = taskworkerconstraint;
-        this.userUUID = userUUID;
-        this.username = username;
         this.rate = taskworkerconstraint.getPrice()+"";
-    }
-
-    public String getUserUUID() {
-        return userUUID;
-    }
-
-    public void setUserUUID(String userUUID) {
-        this.userUUID = userUUID;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+        this.taskworkerconstraint = taskworkerconstraint;
+        this.user = user;
+        this.username = user.getUsername();
     }
 
     public String getRate() {
@@ -49,23 +34,38 @@ public class UserRow extends TaskRow {
         this.rate = rate;
     }
 
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("UserRow{");
-        sb.append(super.toString());
-        sb.append("userUUID='").append(userUUID).append('\'');
-        sb.append(", username='").append(username).append('\'');
-        sb.append(", rate=").append(rate);
-        sb.append('}');
-        return sb.toString();
-    }
-
     public Taskworkerconstraint getTaskworkerconstraint() {
         return taskworkerconstraint;
     }
 
     public void setTaskworkerconstraint(Taskworkerconstraint taskworkerconstraint) {
         this.taskworkerconstraint = taskworkerconstraint;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("UserRow{");
+        sb.append(super.toString());
+        sb.append(", username='").append(username).append('\'');
+        sb.append(", rate=").append(rate);
+        sb.append('}');
+        return sb.toString();
     }
 }

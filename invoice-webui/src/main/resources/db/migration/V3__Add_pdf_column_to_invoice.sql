@@ -1,0 +1,1 @@
+ALTER TABLE invoices ADD pdf BLOB NULL;

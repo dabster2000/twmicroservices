@@ -6,7 +6,6 @@ import com.vaadin.ui.declarative.Design;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Button;
-import dk.trustworks.invoicewebui.network.dto.Invoice;
 import dk.trustworks.invoicewebui.web.model.SubTotal;
 
 /**
@@ -22,7 +21,7 @@ import dk.trustworks.invoicewebui.web.model.SubTotal;
 @SuppressWarnings("serial")
 public class InvoiceStatusListDesign extends VerticalLayout {
     protected Button btnTour;
-    protected Grid<Invoice> gridInvoiceList;
+    protected Grid<dk.trustworks.invoicewebui.model.Invoice> gridInvoiceList;
     protected Button btnDownloadPdf;
     protected Button btnCreateCreditNota;
     protected Grid<SubTotal> gridSubTotals;

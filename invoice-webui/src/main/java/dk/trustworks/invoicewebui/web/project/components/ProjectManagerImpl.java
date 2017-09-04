@@ -1,28 +1,24 @@
 package dk.trustworks.invoicewebui.web.project.components;
 
+import com.google.common.collect.Lists;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.contextmenu.GridContextMenu;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.View;
 import com.vaadin.server.Setter;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.network.clients.*;
-import dk.trustworks.invoicewebui.network.dto.*;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.web.project.model.TaskRow;
 import dk.trustworks.invoicewebui.web.project.model.UserRow;
 import org.joda.time.LocalDate;
 import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -40,25 +36,19 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     private UserRepository userRepository;
 
     @Autowired
-    private UserClient userClient;
+    private ProjectRepository projectRepository;
 
     @Autowired
-    private ProjectClient projectClient;
+    private TaskworkerconstraintRepository taskworkerconstraintRepository;
 
     @Autowired
     private ProjectMapLocationImpl projectMapLocation;
 
     @Autowired
-    private TaskClient taskClient;
+    private TaskRepository taskRepository;
 
     @Autowired
-    private TaskworkerconstraintClient taskworkerconstraintClient;
-
-    @Autowired
-    private BudgetClient budgetClient;
-
-    @Autowired
-    private LogoClient logoClient;
+    private BudgetRepository budgetRepository;
 
     private ResponsiveLayout responsiveLayout;
 
@@ -66,13 +56,11 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private TreeGrid<TaskRow> treeGrid;
 
+    @Transactional
     public ProjectManagerImpl init() {
         getSelProject().setItemCaptionGenerator(Project::getName);
-        Resources<Resource<Project>> projectResources = projectClient.findAllProjects();
-        List<Project> projects = new ArrayList<>();
-        for (Resource<Project> projectResource : projectResources.getContent()) {
-            projects.add(projectResource.getContent());
-        }
+        List<Project> projects = Lists.newArrayList(projectRepository.findAll());
+
         getSelProject().setItems(projects);
         getSelProject().addValueChangeListener(event -> {
             reloadGrid();
@@ -80,16 +68,17 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         return this;
     }
 
+    @Transactional
     private void createDetailLayout() {
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
-        Resource<Logo> logoResource = logoClient.findByClientuuid(currentProject.getClientuuid());
+        Logo logoResource = currentProject.getClient().getLogo();
 
         ResponsiveRow clientDetailsRow = responsiveLayout.addRow();
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
-                .withComponent(new ProjectDetailCardImpl(currentProject, userClient.findAllUsers().getContent().stream().map(u -> u.getContent()).collect(Collectors.toList()), logoResource, projectClient));
+                .withComponent(new ProjectDetailCardImpl(currentProject, userRepository.findAll(), logoResource, projectRepository));
 
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -105,6 +94,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 .withComponent(budgetCard);
     }
 
+    @Transactional
     private TreeGrid createTreeGrid() {
         LocalDate startDate = new LocalDate(currentProject.getStartdate().getYear(),
                 currentProject.getStartdate().getMonthValue(),
@@ -115,50 +105,36 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         Months monthsBetween = Months.monthsBetween(startDate, endDate);
         System.out.println("period.getMonths() = " + monthsBetween.getMonths());
 
-        List<Task> tasks = new ArrayList<>();
         List<TaskRow> taskRows = new ArrayList<>();
-        for (Resource<Task> taskResource : taskClient.findByProjectuuid(currentProject.getUuid()).getContent()) {
-            tasks.add(taskResource.getContent());
-        }
 
-        Map<String, User> usersMap = userClient.findAllUsers().getContent().stream().map(u -> u.getContent()).collect(Collectors.toMap(User::getUuid, user -> user));
-        /*
-        for (Resource<User> userResource : userClient.findAllUsers().getContent()) {
-            usersMap.put(userResource.getContent().getUuid(), userResource.getContent());
-            System.out.println("userResource.getContent() = " + userResource.getContent());
-        }*/
+        Map<String, User> usersMap = userRepository.findAll().stream().collect(Collectors.toMap(User::getUuid, user -> user));
 
-        List<Budget> budgets = new ArrayList<>();
-        for (Resource<Budget> budgetResource : budgetClient.findAllBudgets().getContent()) {
-            budgets.add(budgetResource.getContent());
-        }
+        //ArrayList<Taskworkerconstraint> taskworkerconstraints = Lists.newArrayList(taskworkerconstraintRepository.findAll());
 
-        List<Taskworkerconstraint> taskworkerconstraints = new ArrayList<>();
-        for (Resource<Taskworkerconstraint> taskResource : taskworkerconstraintClient.findAllTaskworkerconstraints().getContent()) {
-            taskworkerconstraints.add(taskResource.getContent());
-        }
-        for (Task task : tasks) {
+        //List<Budget> budgets = Lists.newArrayList(budgetRepository.findAll());
+
+        for (Task task : currentProject.getTasks()) {
+            List<Budget> budgets = budgetRepository.findByTaskuuid(task.getUuid());
             TaskRow taskRow = new TaskRow(task, monthsBetween.getMonths());
             taskRows.add(taskRow);
             System.out.println("task = " + task);
             for (User user : usersMap.values()) {
-                if(user.getUsername().equals("hans.lassen")) System.out.println("user = " + user);
                 LocalDate budgetDate = startDate;
+                List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTask(task);
                 Optional<Taskworkerconstraint> taskworkerconstraint = taskworkerconstraints.stream()
                         .filter(p ->
-                                p.getTaskuuid()!=null &&
-                                p.getUseruuid()!=null &&
-                                p.getTaskuuid().equals(task.getUuid()) &&
-                                p.getUseruuid().equals(user.getUuid()))
+                                p.getTask()!=null &&
+                                p.getUser()!=null &&
+                                p.getTask().getUuid().equals(task.getUuid()) &&
+                                p.getUser().getUuid().equals(user.getUuid()))
                         .findFirst();
                 if(user.getUsername().equals("hans.lassen")) System.out.println("taskworkerconstraint = " + taskworkerconstraint);
 
                 if(!taskworkerconstraint.isPresent()) continue;
 
-                UserRow userRow = new UserRow(task, taskworkerconstraint.get(), monthsBetween.getMonths(),
-                        user.getUuid(), user.getUsername());
+                UserRow userRow = new UserRow(task, taskworkerconstraint.get(), monthsBetween.getMonths(), user);
 
-                if(user.getUsername().equals("hans.lassen")) System.out.println("budgets = " + budgets.size());
+                //if(user.getUsername().equals("hans.lassen")) System.out.println("budgets = " + budgets.size());
 
                 int month = 0;
                 while(budgetDate.isBefore(endDate)) {
@@ -167,14 +143,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     Optional<Budget> budget = budgets.stream()
                             .filter(p -> p.getYear()==filterDate.getYear() &&
                                     p.getMonth()==filterDate.getMonthOfYear()-1 &&
-                                    p.getTaskuuid()!=null &&
-                                    p.getUseruuid()!=null &&
-                                    p.getTaskuuid().equals(task.getUuid()) &&
-                                    p.getUseruuid().equals(user.getUuid()))
+                                    p.getTask()!=null &&
+                                    p.getUser()!=null &&
+                                    p.getTask().getUuid().equals(task.getUuid()) &&
+                                    p.getUser().getUuid().equals(user.getUuid()))
                             .findFirst();
 
                     if(budget.isPresent()) {
-                        if(user.getUsername().equals("hans.lassen")) System.out.println("budget.get() = " + budget.get());
+                        if(user.getUsername().equals("hans.lassen")) System.out.println("budget.get() = " + budget);
                         userRow.setMonth(month, (budget.get().getBudget() / taskworkerconstraint.get().getPrice())+"");
                     } else {
                         userRow.setMonth(month, "0.0");
@@ -232,7 +208,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 Taskworkerconstraint taskworkerconstraint = userRow.getTaskworkerconstraint();
                 System.out.println("taskworkerconstraint = " + taskworkerconstraint);
                 taskworkerconstraint.setPrice(Double.parseDouble(userRow.getRate()));
-                taskworkerconstraintClient.save(taskworkerconstraint.getUuid(), taskworkerconstraint);
+                taskworkerconstraintRepository.save(taskworkerconstraint);
                 LocalDate budgetCountDate = startDate;
                 List<Budget> budgetList = new ArrayList<>();
                 for (String budgetString : userRow.getBudget()) {
@@ -240,27 +216,31 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                             budgetCountDate.getMonthOfYear()-1,
                             budgetCountDate.getYear(),
                             Double.parseDouble(budgetString) * taskworkerconstraint.getPrice(),
-                            userRow.getUserUUID(),
-                            userRow.getTask().getUuid()
+                            userRow.getUser(),
+                            userRow.getTask()
                     );
                     budgetList.add(budget);
                     budgetCountDate = budgetCountDate.plusMonths(1);
                 }
-                budgetClient.save(budgetList);
+
+                budgetRepository.save(budgetList);
             } else {
-                taskClient.save(taskRow.getTask().getUuid(), new Task(taskRow.getTaskName()));
+                taskRow.getTask().setName(taskRow.getTaskName());
+                taskRepository.save(taskRow.getTask());
             }
         });
         treeGrid.setItems(taskRows, TaskRow::getUserRows);
         return treeGrid;
     }
 
+    @Transactional
     private void reloadGrid() {
         currentProject = getSelProject().getValue();
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
         createDetailLayout();
     }
 
+    @Transactional
     private void updateGridBodyMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<TaskRow> event) {
         event.getContextMenu().removeItems();
         if (event.getItem() != null) {
@@ -273,14 +253,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     // Put some components in it
                     subContent.addComponent(new Label("Add consultant"));
                     ComboBox<User> userComboBox = new ComboBox<>();
-                    userComboBox.setItems(userClient.findAllActiveUsers().getContent()
-                            .stream().map(userResource -> userResource.getContent()));
+                    userComboBox.setItems(userRepository.findAll());
                     userComboBox.setItemCaptionGenerator(User::getUsername);
                     subContent.addComponent(userComboBox);
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> {
-                        TaskworkerconstraintCreate taskworkerconstraint = new TaskworkerconstraintCreate(0.0, ((TaskRow) event.getItem()).getTask().getUuid(), userComboBox.getSelectedItem().get().getUuid());
-                        taskworkerconstraintClient.create(taskworkerconstraint);
+                        Taskworkerconstraint taskworkerconstraint = new Taskworkerconstraint(0.0, userComboBox.getSelectedItem().get(), ((TaskRow) event.getItem()).getTask());
+                        taskworkerconstraintRepository.save(taskworkerconstraint);
                         reloadGrid();
                     });
                     subContent.addComponent(addButton);
@@ -292,14 +271,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     UI.getCurrent().addWindow(subWindow);
                 });
             } else {
-                event.getContextMenu().addItem("Remove "+((UserRow)event.getItem()).getUsername(), VaadinIcons.CLOSE, selectedItem -> {
-                    Notification.show("Not possible at this time!");
-                });
+                event.getContextMenu().addItem("Remove "+((UserRow)event.getItem()).getUsername(), VaadinIcons.CLOSE,
+                        selectedItem -> Notification.show("Not possible at this time!"));
             }
         } else {
             event.getContextMenu().addItem("Add Task", VaadinIcons.PLUS, selectedItem -> {
-                Task task = new Task("new task", currentProject.getUuid());
-                taskClient.create(task);
+                Task task = new Task("new task", currentProject.getUuid(), currentProject);
+                taskRepository.save(task);
                 reloadGrid();
             });
         }

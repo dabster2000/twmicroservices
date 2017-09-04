@@ -1,13 +1,16 @@
 package dk.trustworks.invoicewebui.web.client.components;
 
 import com.vaadin.ui.Notification;
-import dk.trustworks.invoicewebui.network.clients.ClientClientImpl;
-import dk.trustworks.invoicewebui.network.dto.Client;
+import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.Logo;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.repositories.LogoRepository;
 import server.droporchoose.UploadComponent;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 import static com.vaadin.ui.Notification.Type.*;
 
@@ -16,11 +19,11 @@ import static com.vaadin.ui.Notification.Type.*;
  */
 public class ClientImpl extends ClientDesign {
 
-    private ClientClientImpl clientClient;
+    private LogoRepository logoRepository;
     private Client client;
 
-    public ClientImpl(ClientClientImpl clientClient, Client client) {
-        this.clientClient = clientClient;
+    public ClientImpl(LogoRepository logoRepository, Client client) {
+        this.logoRepository = logoRepository;
         this.client = client;
         UploadComponent uploadComponent = new UploadComponent(this::uploadReceived);
         uploadComponent.setStartedCallback(this::uploadStarted);
@@ -37,10 +40,12 @@ public class ClientImpl extends ClientDesign {
         Notification.show("Upload finished: " + fileName, HUMANIZED_MESSAGE);
         try {
             byte[] bytes = Files.readAllBytes(file);
-            System.out.println("bytes.length = " + bytes.length);
-            client.setLogo(bytes);
-            System.out.println("clientResource = " + client);
-            clientClient.save(client.getUuid(), client);
+            if(client.getLogo()==null) {
+                client.setLogo(new Logo(UUID.randomUUID().toString(), client, bytes));
+            } else {
+                client.getLogo().setLogo(bytes);
+            }
+            logoRepository.save(client.getLogo());
         } catch (IOException e) {
             uploadFailed(fileName, file);
         }

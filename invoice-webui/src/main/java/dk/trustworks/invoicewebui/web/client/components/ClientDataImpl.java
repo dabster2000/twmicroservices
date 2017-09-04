@@ -4,10 +4,8 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToLongConverter;
 import com.vaadin.ui.Window;
-import dk.trustworks.invoicewebui.network.clients.ClientdataClient;
-import dk.trustworks.invoicewebui.network.clients.ProjectClient;
-import dk.trustworks.invoicewebui.network.dto.Client;
-import dk.trustworks.invoicewebui.network.dto.Clientdata;
+import dk.trustworks.invoicewebui.model.Clientdata;
+import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import org.vaadin.addon.vol3.OLMap;
 import org.vaadin.addon.vol3.OLMapOptions;
 import org.vaadin.addon.vol3.OLView;
@@ -26,16 +24,10 @@ import org.vaadin.addon.vol3.source.OLVectorSourceOptions;
 
 public class ClientDataImpl extends ClientDataDesign {
 
-    private final ClientdataClient clientdataClient;
-    private final ProjectClient projectClient;
-    private final Clientdata clientdata;
     private OLMap map;
     private Binder<Clientdata> clientDataBinder;
 
-    public ClientDataImpl(ClientdataClient clientdataClient, ProjectClient projectClient, Client client, Clientdata clientdata) {
-        this.clientdataClient = clientdataClient;
-        this.projectClient = projectClient;
-        this.clientdata = clientdata;
+    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata) {
         clientDataBinder = new Binder<>();
         clientDataBinder.forField(getTxtCity()).bind(Clientdata::getCity, Clientdata::setCity);
         clientDataBinder.forField(getTxtContactName()).bind(Clientdata::getContactperson, Clientdata::setContactperson);
@@ -49,35 +41,7 @@ public class ClientDataImpl extends ClientDataDesign {
                 .bind(Clientdata::getPostalcode, Clientdata::setPostalcode);
         clientDataBinder.forField(getTxtStreetname()).bind(Clientdata::getStreetnamenumber, Clientdata::setStreetnamenumber);
         clientDataBinder.readBean(clientdata);
-/*
-        map = createMap();
 
-        final LocationTextField<GeocodedLocation> ltf = LocationTextField.newBuilder()
-                .withCaption("Helper:")
-                .withDelayMillis(1200)
-                .withLocationProvider(OpenStreetMapGeocoder.getInstance())
-                .withMinimumQueryCharacters(5)
-                .withWidth("100%")
-                .withHeight("40px")
-                .build();
-
-        ltf.addLocationValueChangeListener(event -> {
-            GeocodedLocation location = event.getSource().getValue();
-            map.setView(createView(location.getLon(), location.getLat()));
-            //getTxtCity().setValue(location.getAdministrativeAreaLevel2());
-            //getTxtPostalCode().setValue(location.getPostalCode());
-            //getTxtStreetname().setValue(location.getRoute()+" "+location.getStreetNumber());
-            try {
-                clientDataBinder.writeBean(clientdata);
-            } catch (ValidationException e) {
-                e.printStackTrace();
-            }
-        });
-
-        getMapHolder().addComponent(map);
-
-        getFormLayout().addComponents(ltf);
-*/
         getBtnEdit().addClickListener(event -> {
             getCssHider().setVisible(true);
             getBtnEdit().setVisible(false);
@@ -88,13 +52,13 @@ public class ClientDataImpl extends ClientDataDesign {
                 clientDataBinder.writeBean(clientdata);
                 if(clientdata.getUuid()!=null && !clientdata.getUuid().trim().equals("")) {
                     System.out.println("Update data");
-                    clientdataClient.update(clientdata.getUuid(), clientdata);
+                    clientdataRepository.save(clientdata);
 
                     getCssHider().setVisible(false);
                     getBtnEdit().setVisible(true);
                 } else {
                     System.out.println("Create data");
-                    clientdataClient.create(client.getUuid(), clientdata);
+                    clientdataRepository.save(clientdata);
                     ((Window)this.getParent()).close();
                 }
             } catch (ValidationException e) {
@@ -114,7 +78,7 @@ public class ClientDataImpl extends ClientDataDesign {
                 sample.show(Page.getCurrent());
             } else {
             */
-            clientdataClient.delete(clientdata.getUuid());
+            clientdataRepository.delete(clientdata.getUuid());
             clientdata.setClientname("DELETED");
             clientdata.setContactperson("");
             clientdata.setCity("");

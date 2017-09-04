@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -21,8 +22,7 @@ import java.util.UUID;
  * Created by hans on 06/07/2017.
  */
 
-@RestController
-@RequestMapping("/projectsummaries")
+@Service
 public class ProjectSummaryController {
 
     protected static Logger logger = LoggerFactory.getLogger(ProjectSummaryController.class.getName());

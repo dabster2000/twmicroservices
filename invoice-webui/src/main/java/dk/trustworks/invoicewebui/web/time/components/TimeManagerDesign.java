@@ -31,7 +31,7 @@ public class TimeManagerDesign extends VerticalLayout {
     private TextField txtYear;
     private Button btnYearIncr;
     @PropertyId("username")
-    private ComboBox<dk.trustworks.invoicewebui.network.dto.User> selActiveUser;
+    private ComboBox<dk.trustworks.invoicewebui.model.User> selActiveUser;
     private Button btnAddTask;
     private Grid<dk.trustworks.invoicewebui.web.time.model.WeekItem> gridTimeTable;
     private TextField lblTotalHours;
@@ -68,7 +68,7 @@ public class TimeManagerDesign extends VerticalLayout {
         return btnYearIncr;
     }
 
-    public ComboBox<dk.trustworks.invoicewebui.network.dto.User> getSelActiveUser() {
+    public ComboBox<dk.trustworks.invoicewebui.model.User> getSelActiveUser() {
         return selActiveUser;
     }
 

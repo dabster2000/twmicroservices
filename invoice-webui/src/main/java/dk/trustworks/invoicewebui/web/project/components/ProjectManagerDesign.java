@@ -20,13 +20,13 @@ import com.vaadin.annotations.PropertyId;
 @SuppressWarnings("serial")
 public class ProjectManagerDesign extends VerticalLayout {
     @PropertyId("name")
-    private ComboBox<dk.trustworks.invoicewebui.network.dto.Project> selProject;
+    private ComboBox<dk.trustworks.invoicewebui.model.Project> selProject;
 
     public ProjectManagerDesign() {
         Design.read(this);
     }
 
-    public ComboBox<dk.trustworks.invoicewebui.network.dto.Project> getSelProject() {
+    public ComboBox<dk.trustworks.invoicewebui.model.Project> getSelProject() {
         return selProject;
     }
 

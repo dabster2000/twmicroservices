@@ -34,7 +34,7 @@ public class ProjectDetailCardDesign extends VerticalLayout {
     private FormLayout formProjectDetail;
     private TextField txtName;
     @PropertyId("username")
-    private ComboBox<dk.trustworks.invoicewebui.network.dto.User> selRelationManager;
+    private ComboBox<dk.trustworks.invoicewebui.model.User> selRelationManager;
     private DateField selStartDate;
     private DateField selEndDate;
     private TextField txtBudget;
@@ -69,7 +69,7 @@ public class ProjectDetailCardDesign extends VerticalLayout {
         return txtName;
     }
 
-    public ComboBox<dk.trustworks.invoicewebui.network.dto.User> getSelRelationManager() {
+    public ComboBox<dk.trustworks.invoicewebui.model.User> getSelRelationManager() {
         return selRelationManager;
     }
 

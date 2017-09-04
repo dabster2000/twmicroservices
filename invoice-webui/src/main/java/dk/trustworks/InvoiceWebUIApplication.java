@@ -51,7 +51,7 @@ public class InvoiceWebUIApplication {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
-
+/*
     final static String queueName = "update-queue";
 
     @Bean
@@ -83,6 +83,6 @@ public class InvoiceWebUIApplication {
     MessageListenerAdapter listenerAdapter(TopicReceiver receiver) {
         return new MessageListenerAdapter(receiver, "receiveMessage");
     }
-
+*/
 
 }

@@ -7,15 +7,15 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
-import dk.trustworks.invoicewebui.network.clients.*;
-import dk.trustworks.invoicewebui.network.dto.*;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
+import org.hibernate.Hibernate;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
+import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.patrik.FastNavigation;
 import tm.kod.widgets.numberfield.NumberField;
 
@@ -31,28 +31,26 @@ import java.util.UUID;
 public class TimeManagerImpl extends TimeManagerDesign {
 
     @Autowired
-    private ClientClient clientClient;
+    ClientRepository clientRepository;
 
     @Autowired
-    private ProjectClient projectClient;
+    ProjectRepository projectRepository;
 
     @Autowired
-    private TaskClient taskClient;
+    private TaskRepository taskRepository;
 
     @Autowired
-    private UserClient userClient;
+    private UserRepository userRepository;
 
     @Autowired
-    private WeekClient weekClient;
+    private WeekRepository weekRepository;
 
     @Autowired
-    private MobileApiClient mobileApiClient;
-
-    @Autowired
-    private WorkClient workClient;
+    private WorkRepository workRepository;
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
 
+    @Transactional
     public TimeManagerImpl init() {
         setDateFields();
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
@@ -84,17 +82,14 @@ public class TimeManagerImpl extends TimeManagerDesign {
 
         getSelActiveUser().setItemCaptionGenerator(User::getUsername);
 
-        List<User> users = new ArrayList<>();
-        Resources<Resource<User>> userResources = userClient.findAllActiveUsers();
-        for (Resource<User> userResource : userResources.getContent()) {
-            users.add(userResource.getContent());
-        }
+        List<User> users = userRepository.findByActiveTrue();
+
 
         getSelActiveUser().setItems(users);
 
         // find userSession user
         for (User user : users) {
-            if(user.getUuid().equals(userSession.getUuid())) getSelActiveUser().setSelectedItem(user);
+            if(user.getUuid().equals(userSession.getUser().getUuid())) getSelActiveUser().setSelectedItem(user);
         }
 
         updateGrid(userSession);
@@ -105,15 +100,15 @@ public class TimeManagerImpl extends TimeManagerDesign {
             window.setHeight(500.0f, Unit.PIXELS);
             window.setModal(true);
 
-            Resources<Resource<Client>> clientResources = clientClient.findAllActiveClients();
+            List<Client> clientResources = clientRepository.findByActiveTrue();
             ComboBox<Client> clientComboBox = new ComboBox<>();
             clientComboBox.setItemCaptionGenerator(Client::getName);
             clientComboBox.setWidth("100%");
             clientComboBox.setEmptySelectionAllowed(false);
             clientComboBox.setEmptySelectionCaption("select client");
             List<Client> clients = new ArrayList<>();
-            for (Resource<Client> clientResource : clientResources) {
-                clients.add(clientResource.getContent());
+            for (Client clientResource : clientResources) {
+                clients.add(clientResource);
             }
             clientComboBox.setItems(clients);
 
@@ -137,10 +132,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 taskComboBox.setVisible(false);
                 addTaskButton.setEnabled(false);
 
-                List<Project> projects = new ArrayList<>();
-                for (Resource<Project> projectResource : projectClient.findByClientuuidAndActiveTrue(event1.getValue().getUuid())) {
-                    projects.add(projectResource.getContent());
-                }
+                List<Project> projects = clientRepository.findOne(event1.getValue().getUuid()).getProjects();
+
                 projectComboBox.setSelectedItem(projects.get(0));
                 projectComboBox.setItems(projects);
                 projectComboBox.setVisible(true);
@@ -149,8 +142,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
             projectComboBox.addValueChangeListener(event1 -> {
                 addTaskButton.setEnabled(false);
                 List<Task> tasks = new ArrayList<>();
-                for (Resource<Task> taskResource : taskClient.findByProjectuuid(event1.getValue().getUuid())) {
-                    tasks.add(taskResource.getContent());
+                for (Task task : projectRepository.findOne(event1.getValue().getUuid()).getTasks()) {
+                    tasks.add(task);
                 }
                 taskComboBox.setSelectedItem(tasks.get(0));
                 taskComboBox.setItems(tasks);
@@ -162,11 +155,11 @@ public class TimeManagerImpl extends TimeManagerDesign {
             });
 
             addTaskButton.addClickListener(event1 -> {
-                weekClient.save(new CreatedWeek(UUID.randomUUID().toString(),
+                weekRepository.save(new Week(UUID.randomUUID().toString(),
                         currentDate.getWeekOfWeekyear(),
                         currentDate.getYear(),
-                        getSelActiveUser().getValue().getUuid(),
-                        taskComboBox.getSelectedItem().get().getUuid()));
+                        getSelActiveUser().getValue(),
+                        taskComboBox.getSelectedItem().get()));
                 window.close();
                 loadData(userSession);
             });
@@ -177,6 +170,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
         return this;
     }
 
+    @Transactional
     private void updateGrid(UserSession userSession) {
         loadData(userSession);
 
@@ -190,61 +184,61 @@ public class TimeManagerImpl extends TimeManagerDesign {
             System.out.println("event.getBean() = " + event.getBean());
             System.out.println("event.getBean() = " + event.getSource());
             LocalDate saveDate = this.currentDate;
-            workClient.save(new Work(
+            workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getMon()),
-                    event.getBean().getTaskuuid(),
-                    event.getBean().getUseruuid()));
+                    event.getBean().getUser(),
+                    event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workClient.save(new Work(
+            workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getTue()),
-                    event.getBean().getTaskuuid(),
-                    event.getBean().getUseruuid()));
+                    event.getBean().getUser(),
+                    event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workClient.save(new Work(
+            workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getWed()),
-                    event.getBean().getTaskuuid(),
-                    event.getBean().getUseruuid()));
+                    event.getBean().getUser(),
+                    event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workClient.save(new Work(
+            workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getThu()),
-                    event.getBean().getTaskuuid(),
-                    event.getBean().getUseruuid()));
+                    event.getBean().getUser(),
+                    event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workClient.save(new Work(
+            workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getFri()),
-                    event.getBean().getTaskuuid(),
-                    event.getBean().getUseruuid()));
+                    event.getBean().getUser(),
+                    event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workClient.save(new Work(
+            workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getSat()),
-                    event.getBean().getTaskuuid(),
-                    event.getBean().getUseruuid()));
+                    event.getBean().getUser(),
+                    event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workClient.save(new Work(
+            workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
                     NumberConverter.parseDouble(event.getBean().getSun()),
-                    event.getBean().getTaskuuid(),
-                    event.getBean().getUseruuid()));
+                    event.getBean().getUser(),
+                    event.getBean().getTask()));
 
             loadData(userSession);
         });
@@ -320,31 +314,39 @@ public class TimeManagerImpl extends TimeManagerDesign {
         mainHeader.getCell("sun").setHtml("<center>Sun</center>");
     }
 
+    @Transactional
     private void loadData(UserSession userSession) {
         long start = System.currentTimeMillis();
-        Resources<Resource<Week>> weeks = mobileApiClient.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), userSession.getUuid());
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), userSession.getUser());
         System.out.println("Load weeks = " + (System.currentTimeMillis() - start));
+        System.out.println("weeks.size() = " + weeks.size());
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
-        Resources<Resource<Work>> workResources = workClient.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), userSession.getUuid());
+        List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), userSession.getUser().getUuid());
         System.out.println("Load work = " + (System.currentTimeMillis() - start));
+        System.out.println("workResources.size() = " + workResources.size());
 
         List<WeekItem> weekItems = new ArrayList<>();
         double sumHours = 0.0;
-        for (Resource<Week> weekResource : weeks.getContent()) {
-            System.out.println("weekResource.getContent() = " + weekResource.getContent());
-            WeekItem weekItem = new WeekItem(weekResource.getContent().getTask().getUuid(), userSession.getUuid());
+        for (Week week : weeks) {
+            System.out.println("weekResource.getContent() = " + week);
+            Task task = week.getTask();
+            Hibernate.initialize(task);
+            //System.out.println("task = " + task);
+            WeekItem weekItem = new WeekItem(task, userSession.getUser());
             weekItems.add(weekItem);
             weekItem.setTaskname(
-                    weekResource.getContent().getTask().getName()
+                    task.getName()
             );
-            String taskUUID = weekResource.getContent().getTask().getUuid();
-            System.out.println("taskUUID = " + taskUUID);
             long innerStart = System.currentTimeMillis();
-            for (Resource<Work> workResource : workResources.getContent()) {
-                if(!workResource.getContent().getTaskuuid().equals(taskUUID)) continue;
-                sumHours += workResource.getContent().getWorkduration();
-                Work work = workResource.getContent();
+            for (Work work : workResources) {
+                if(work.getWorkduration() == 3000) {
+                    System.out.println("3000 ----");
+                    System.out.println("work = " + work);
+                    System.out.println("task = " + task);
+                }
+                if(!work.getTask().getUuid().equals(task.getUuid())) continue;
+                sumHours += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
                 switch (workDate.getDayOfWeek()) {
                     case 1:

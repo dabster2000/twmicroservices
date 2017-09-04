@@ -3,11 +3,10 @@ package dk.trustworks.invoicewebui.web.project.components;
 import com.vaadin.data.*;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
-import dk.trustworks.invoicewebui.network.clients.ProjectClient;
-import dk.trustworks.invoicewebui.network.dto.Logo;
-import dk.trustworks.invoicewebui.network.dto.Project;
-import dk.trustworks.invoicewebui.network.dto.User;
-import org.springframework.hateoas.Resource;
+import dk.trustworks.invoicewebui.model.Logo;
+import dk.trustworks.invoicewebui.model.Project;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
@@ -21,11 +20,11 @@ import java.util.Locale;
 
 public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
 
-    public ProjectDetailCardImpl(Project project, List<User> users, Resource<Logo> logoResource, ProjectClient projectClient) {
+    public ProjectDetailCardImpl(Project project, List<User> users, Logo logo, ProjectRepository projectRepository) {
 
-        if(logoResource!=null && logoResource.getContent().getLogo()!=null && logoResource.getContent().getLogo().length > 0) {
+        if(logo!=null && logo.getLogo()!=null && logo.getLogo().length > 0) {
             getLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
-                    new ByteArrayInputStream(logoResource.getContent().getLogo()),
+                    new ByteArrayInputStream(logo.getLogo()),
                     "logo.jpg"));
         } else {
             getLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
@@ -49,8 +48,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
         getBtnUpdate().addClickListener(event -> {
             try {
                 projectBinder.writeBean(project);
-                projectClient.save(project.getUuid(), project);
-
+                projectRepository.save(project);
             } catch (ValidationException e) {
                 e.printStackTrace();
             }

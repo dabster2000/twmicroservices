@@ -3,9 +3,10 @@ package dk.trustworks.invoicewebui.web.time;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
+import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.web.time.components.TimeManagerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +40,6 @@ public class TimeManagerView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-
+        Authorizer.authorize(this);
     }
 }

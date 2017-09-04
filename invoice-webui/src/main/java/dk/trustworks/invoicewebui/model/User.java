@@ -2,9 +2,7 @@ package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -25,8 +23,18 @@ public class User {
     @JsonIgnore private String password;
     private String username;
     private String slackusername;
-    @OneToMany(mappedBy="user") private List<Salary> salaries;
-    @OneToMany(mappedBy="user") private List<UserStatus> statuses;
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
+    private List<Salary> salaries;
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
+    private List<UserStatus> statuses;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Taskworkerconstraint> taskworkerconstraint;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Budget> budget;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Week> weeks;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Work> workList;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -121,6 +129,38 @@ public class User {
         this.statuses = statuses;
     }
 
+    public List<Taskworkerconstraint> getTaskworkerconstraint() {
+        return taskworkerconstraint;
+    }
+
+    public void setTaskworkerconstraint(List<Taskworkerconstraint> taskworkerconstraint) {
+        this.taskworkerconstraint = taskworkerconstraint;
+    }
+
+    public List<Budget> getBudget() {
+        return budget;
+    }
+
+    public void setBudget(List<Budget> budget) {
+        this.budget = budget;
+    }
+
+    public List<Week> getWeeks() {
+        return weeks;
+    }
+
+    public void setWeeks(List<Week> weeks) {
+        this.weeks = weeks;
+    }
+
+    public List<Work> getWorkList() {
+        return workList;
+    }
+
+    public void setWorkList(List<Work> workList) {
+        this.workList = workList;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");
@@ -133,7 +173,6 @@ public class User {
         sb.append(", password='").append(password).append('\'');
         sb.append(", username='").append(username).append('\'');
         sb.append(", slackusername='").append(slackusername).append('\'');
-        sb.append(", salaries=").append(salaries);
         sb.append('}');
         return sb.toString();
     }

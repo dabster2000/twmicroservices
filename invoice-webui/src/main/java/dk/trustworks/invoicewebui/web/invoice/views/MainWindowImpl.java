@@ -4,16 +4,16 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.NativeButton;
-import dk.trustworks.invoicewebui.web.invoice.components.InvoiceListImpl;
-import dk.trustworks.invoicewebui.network.clients.InvoiceClient;
+import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.web.Broadcaster;
+import dk.trustworks.invoicewebui.web.invoice.components.InvoiceListImpl;
 import dk.trustworks.invoicewebui.web.invoice.components.InvoiceStatusListImpl;
 import dk.trustworks.invoicewebui.web.invoice.components.ProjectListImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
-import static dk.trustworks.invoicewebui.network.dto.InvoiceStatus.DRAFT;
+import static dk.trustworks.invoicewebui.model.InvoiceStatus.DRAFT;
 
 /**
  * Created by hans on 11/07/2017.
@@ -23,7 +23,7 @@ public class MainWindowImpl extends MainWindowDesign implements View, Broadcaste
 
     public static final String VIEW_NAME = "invoice";
 
-    public final InvoiceClient invoiceClient;
+    public final InvoiceRepository invoiceClient;
     private final ProjectListImpl projectList;
     private final InvoiceListImpl invoiceList;
     private final InvoiceStatusListImpl invoiceStatusList;
@@ -35,7 +35,7 @@ public class MainWindowImpl extends MainWindowDesign implements View, Broadcaste
     }
 
     @Autowired
-    public MainWindowImpl(InvoiceClient invoiceClient, ProjectListImpl projectList, InvoiceListImpl invoiceList, InvoiceStatusListImpl invoiceStatusList) {
+    public MainWindowImpl(InvoiceRepository invoiceClient, ProjectListImpl projectList, InvoiceListImpl invoiceList, InvoiceStatusListImpl invoiceStatusList) {
         System.out.println("MainWindowImpl.MainWindowImpl");
         System.out.println("invoiceClient = [" + invoiceClient + "], projectList = [" + projectList + "], invoiceList = [" + invoiceList + "], invoiceStatusList = [" + invoiceStatusList + "]");
         this.invoiceClient = invoiceClient;
@@ -93,7 +93,7 @@ public class MainWindowImpl extends MainWindowDesign implements View, Broadcaste
     public void receiveBroadcast(String message) {
         System.out.println("MainWindowImpl.receiveBroadcast");
         System.out.println("message = " + message);
-        int numberOfDrafts = invoiceClient.findByStatus(DRAFT).getContent().size();
+        int numberOfDrafts = invoiceClient.findByStatus(DRAFT).size();
         System.out.println("numberOfDrafts = " + numberOfDrafts);
         getUI().access(() -> {
             projectList.reloadData();

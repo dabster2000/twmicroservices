@@ -8,10 +8,10 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
-import dk.trustworks.invoicewebui.network.clients.ProjectSummaryClient;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
+import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addons.producttour.actions.TourActions;
 import org.vaadin.addons.producttour.button.StepButton;
@@ -34,10 +34,10 @@ import java.util.Set;
 @UIScope
 public class ProjectListImpl extends ProjectListDesign {
 
-    private final ProjectSummaryClient projectSummaryClient;
+    private final ProjectSummaryService projectSummaryClient;
 
     @Autowired
-    public ProjectListImpl(ProjectSummaryClient projectSummaryClient) {
+    public ProjectListImpl(ProjectSummaryService projectSummaryClient) {
         super();
         this.projectSummaryClient = projectSummaryClient;
         List<YearMonthSelect> yearMonthList = createYearMonthSelector();

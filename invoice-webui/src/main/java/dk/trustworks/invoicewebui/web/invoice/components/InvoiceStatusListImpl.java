@@ -18,14 +18,16 @@ import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.network.clients.InvoiceClient;
-import dk.trustworks.invoicewebui.network.clients.ProjectSummaryClient;
-import dk.trustworks.invoicewebui.network.dto.*;
+import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.InvoiceItem;
+import dk.trustworks.invoicewebui.model.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.InvoiceType;
+import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
+import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.model.SubTotal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resources;
 import org.vaadin.addons.producttour.actions.TourActions;
 import org.vaadin.addons.producttour.button.StepButton;
 import org.vaadin.addons.producttour.shared.step.StepAnchor;
@@ -40,7 +42,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static dk.trustworks.invoicewebui.network.dto.InvoiceStatus.*;
+import static dk.trustworks.invoicewebui.model.InvoiceStatus.*;
 
 /**
  * Created by hans on 13/07/2017.
@@ -52,18 +54,18 @@ import static dk.trustworks.invoicewebui.network.dto.InvoiceStatus.*;
 public class InvoiceStatusListImpl extends InvoiceStatusListDesign
         implements Broadcaster.BroadcastListener {
 
-    private final InvoiceClient invoiceClient;
+    private final InvoiceRepository invoiceRepository;
 
-    private final ProjectSummaryClient projectSummaryClient;
+    private final InvoiceService invoiceService;
 
     private ListDataProvider<Invoice> dataProvider;
 
-    private Resources<Invoice> invoices;
+    private List<Invoice> invoices;
 
     @Autowired
-    public InvoiceStatusListImpl(InvoiceClient invoiceClient, ProjectSummaryClient projectSummaryClient) {
-        this.projectSummaryClient = projectSummaryClient;
-        this.invoiceClient = invoiceClient;
+    public InvoiceStatusListImpl(InvoiceRepository invoiceRepository, InvoiceService invoiceService) {
+        this.invoiceRepository = invoiceRepository;
+        this.invoiceService = invoiceService;
 
         Broadcaster.register(this);
 
@@ -223,17 +225,17 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
 
         btnDownloadPdf.addClickListener(clickEvent -> {
             if(!gridInvoiceList.getSelectionModel().getFirstSelectedItem().isPresent()) return;
-            PdfContainer invoicePdf = invoiceClient.getInvoicePdf(gridInvoiceList.getSelectionModel().getFirstSelectedItem().get().getUuid());
+            Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
 
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
             final StreamResource resource = new StreamResource(() ->
-                    new ByteArrayInputStream(invoicePdf.pdf),
-                    invoicePdf.invoicenumber +
-                            " " + invoicePdf.type +
-                            " - " + invoicePdf.clientname +
-                            " - " + invoicePdf.projectname +
-                            " - " + dateTimeFormatter.format(invoicePdf.invoicedate) +
+                    new ByteArrayInputStream(invoice.getPdf()),
+                    invoice.invoicenumber +
+                            " " + invoice.type +
+                            " - " + invoice.clientname +
+                            " - " + invoice.projectname +
+                            " - " + dateTimeFormatter.format(invoice.invoicedate) +
                             ".pdf"
             );
 
@@ -248,7 +250,7 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
             Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
             System.out.println("invoice = " + invoice);
             if(invoice.uuid == null && invoice.uuid.trim().length() == 0) return;
-            projectSummaryClient.createCreditNote(invoice);
+            invoiceService.createCreditNota(invoice);
         });
 
         gridInvoiceList.getDataProvider().refreshAll();
@@ -275,13 +277,13 @@ public class InvoiceStatusListImpl extends InvoiceStatusListDesign
     }
 
     public void loadInvoicesToGrid() {
-        invoices = invoiceClient.findByStatusIn(CREATED, SUBMITTED, PAID, CREDIT_NOTE);
-        dataProvider = DataProvider.ofCollection(calcTotal(invoices).getContent());
+        invoices = invoiceRepository.findByStatusIn(CREATED, SUBMITTED, PAID, CREDIT_NOTE);
+        dataProvider = DataProvider.ofCollection(calcTotal(invoices));
         gridInvoiceList.setDataProvider(dataProvider);
         gridInvoiceList.getDataProvider().refreshAll();
     }
 
-    private Resources<Invoice> calcTotal(Resources<Invoice> invoices) {
+    private List<Invoice> calcTotal(List<Invoice> invoices) {
         for (Invoice invoice : invoices) {
             invoice.setSumNoTax(0.0);
             for (InvoiceItem invoiceitem : invoice.invoiceitems) {

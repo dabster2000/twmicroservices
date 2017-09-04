@@ -4,8 +4,8 @@ import com.kbdunn.vaadin.addons.fontawesome.FontAwesome;
 import com.vaadin.data.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.network.dto.Invoice;
-import dk.trustworks.invoicewebui.network.dto.InvoiceItem;
+import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.InvoiceItem;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -50,13 +50,7 @@ public class InvoiceEditImpl extends InvoiceEditDesign {
         for (InvoiceItem invoiceItem : invoiceItems) {
             createInvoiceLine(invoiceItem, atRow++);
         }
-/*
-        gridInvoiceItems.setColumnExpandRatio(0, 0.2f);
-        gridInvoiceItems.setColumnExpandRatio(1, 0.35f);
-        gridInvoiceItems.setColumnExpandRatio(2, 0.15f);
-        gridInvoiceItems.setColumnExpandRatio(3, 0.15f);
-        gridInvoiceItems.setColumnExpandRatio(4, 0.10f);
-*/
+
         Button btnAddInvoiceItem = new Button("add row");
         btnAddInvoiceItem.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
         btnAddInvoiceItem.setIcon(FontAwesome.PLUS_SQUARE);
