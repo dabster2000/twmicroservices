@@ -58,12 +58,10 @@ public class ClientManagerImpl extends ClientManagerDesign {
                 createClientDetailsView(client);
             });
             row.addColumn().withDisplayRules(12, 6, 3, 3).withComponent(clientCard);
-            //row.addComponent(clientCard);
             rowItemCount++;
             if(rowItemCount > 4) {
                 rowItemCount = 1;
                 row = responsiveLayout.addRow();
-                //clientListBoard.addRow(row);
             }
         }
 
@@ -91,13 +89,10 @@ public class ClientManagerImpl extends ClientManagerDesign {
             fillBoard(client, newBoard, window2);
             verticalLayout.removeAllComponents();
             verticalLayout.addComponent(newBoard);
-            //window.setContent(new VerticalLayout(newBoard));
         });
 
         fillBoard(client, responsiveLayout, window2);
 
-        //this.getUI().addWindow(window);
-        //window.setContent(verticalLayout);
         mainTemplate.setMainContent(verticalLayout);
     }
 
