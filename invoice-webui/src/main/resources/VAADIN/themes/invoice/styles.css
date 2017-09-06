@@ -33285,6 +33285,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	color: #ffffff;
 }
 
+.invoice .dark-green-font .v-icon {
+	color: #007163;
+}
+
+.invoice .dark-green-font {
+	color: #007163;
+}
+
 .invoice .v-margin-left {
 	padding-left: 10px;
 }

@@ -27,7 +27,7 @@ public class TopMenu extends CssLayout {
 
     @PostConstruct
     void init() {
-        setStyleName("v-component-group material");
+        setStyleName("v-component-group material card-5");
         setWidth("100%");
         setHeight("75px");
 

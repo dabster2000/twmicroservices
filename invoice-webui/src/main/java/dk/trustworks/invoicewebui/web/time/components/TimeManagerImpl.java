@@ -131,7 +131,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
 
                 List<Project> projects = clientRepository.findOne(event1.getValue().getUuid()).getProjects();
 
-                projectComboBox.setSelectedItem(projects.get(0));
+                projectComboBox.clear();
                 projectComboBox.setItems(projects);
                 projectComboBox.setVisible(true);
             });
@@ -139,15 +139,18 @@ public class TimeManagerImpl extends TimeManagerDesign {
             projectComboBox.addValueChangeListener(event1 -> {
                 addTaskButton.setEnabled(false);
                 List<Task> tasks = new ArrayList<>();
+                taskComboBox.clear();
+                if(event1.getValue()==null) return;
                 for (Task task : projectRepository.findOne(event1.getValue().getUuid()).getTasks()) {
                     tasks.add(task);
                 }
-                taskComboBox.setSelectedItem(tasks.get(0));
                 taskComboBox.setItems(tasks);
                 taskComboBox.setVisible(true);
             });
 
             taskComboBox.addValueChangeListener(event1 -> {
+                addTaskButton.setEnabled(false);
+                if(event1.getValue()==null) return;
                 addTaskButton.setEnabled(true);
             });
 

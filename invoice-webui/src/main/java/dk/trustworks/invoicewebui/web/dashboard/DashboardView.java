@@ -115,7 +115,7 @@ public class DashboardView extends VerticalLayout implements View {
 
         TopCardDesign consultantsCard2 = new TopCardDesign();
         consultantsCard2.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
-        consultantsCard2.getLblNumber().setValue("9");
+        consultantsCard2.getLblNumber().setValue("0");
         consultantsCard2.getLblTitle().setValue("Active Projects");
         consultantsCard2.getLblSubtitle().setValue("15% more than last year");
         consultantsCard2.getCardHolder().addStyleName("dark-green");
@@ -125,7 +125,7 @@ public class DashboardView extends VerticalLayout implements View {
 
         TopCardDesign consultantsCard3 = new TopCardDesign();
         consultantsCard3.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
-        consultantsCard3.getLblNumber().setValue("1565");
+        consultantsCard3.getLblNumber().setValue("0");
         consultantsCard3.getLblTitle().setValue("Billable Hours");
         consultantsCard3.getLblSubtitle().setValue("5% more than last year");
         consultantsCard3.getCardHolder().addStyleName("orange");
@@ -135,7 +135,7 @@ public class DashboardView extends VerticalLayout implements View {
 
         TopCardDesign consultantsCard4 = new TopCardDesign();
         consultantsCard4.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
-        consultantsCard4.getLblNumber().setValue("18");
+        consultantsCard4.getLblNumber().setValue("0");
         consultantsCard4.getLblTitle().setValue("Trustworks Consultants");
         consultantsCard4.getLblSubtitle().setValue("10% more than last year");
         consultantsCard4.getCardHolder().addStyleName("dark-grey");
