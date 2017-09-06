@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * Created by hans on 20/07/2017.

@@ -7,6 +7,9 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.services.InvoiceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -16,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SpringComponent
 @SpringUI
 public class MainTemplate extends VerticalLayout {
+
+    protected static Logger logger = LoggerFactory.getLogger(MainTemplate.class.getName());
 
     private final ResponsiveColumn mainSectionCol;
 
@@ -28,7 +33,6 @@ public class MainTemplate extends VerticalLayout {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         responsiveLayout.setSizeFull();
         addComponent(responsiveLayout);
-
 
         // ResponsiveLayouts have rows
         // Our first row will contain our 2 Columns
@@ -49,9 +53,9 @@ public class MainTemplate extends VerticalLayout {
     }
 
     public void setMainContent(Component component) {
-        System.out.println("MainTemplate.setMainContent");
-        System.out.println("component = [" + component + "]");
-        System.out.println("mainSectionCol = " + mainSectionCol);
+        logger.debug("MainTemplate.setMainContent");
+        logger.debug("component = [" + component + "]");
+        logger.debug("mainSectionCol = " + mainSectionCol);
         mainSectionCol.setComponent(component);
     }
 }

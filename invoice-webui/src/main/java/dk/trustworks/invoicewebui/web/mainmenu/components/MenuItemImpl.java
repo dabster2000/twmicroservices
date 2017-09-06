@@ -9,13 +9,16 @@ import org.vaadin.alump.materialicons.MaterialIcons;
  */
 public class MenuItemImpl extends MenuItemDesign {
 
+    public static FontIcon PLUS_INDICATOR = MaterialIcons.ADD;
+    public static FontIcon MINUS_INDICATOR = MaterialIcons.REMOVE;
+
     public MenuItemImpl withCaption(String caption) {
         getBtnMenuitemText().setCaption(caption);
         return this;
     }
 
-    public MenuItemImpl withParentIndicator(String indicator) {
-        getLblParent().setValue(indicator);
+    public MenuItemImpl withParentIndicator(FontIcon indicator) {
+        getBtnParentIndicator().setIcon(indicator);
         return this;
     }
 
@@ -29,9 +32,10 @@ public class MenuItemImpl extends MenuItemDesign {
         return this;
     }
 
-    public MenuItemImpl isChild(boolean isChild) {
+    public MenuItemImpl setChild(boolean isChild) {
         if(isChild) {
             this.setVisible(false);
+            getBtnMenuitemText().addStyleName("tiny");
             getLblChildSpace().setVisible(true);
         }
         return this;

@@ -11,7 +11,10 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addons.producttour.actions.TourActions;
 import org.vaadin.addons.producttour.button.StepButton;
@@ -32,14 +35,18 @@ import java.util.Set;
 @Push
 @SpringComponent
 @UIScope
-public class ProjectListImpl extends ProjectListDesign {
+public class NewInvoiceImpl extends NewInvoiceDesign {
 
-    private final ProjectSummaryService projectSummaryClient;
+    protected static Logger logger = LoggerFactory.getLogger(NewInvoiceImpl.class.getName());
 
     @Autowired
-    public ProjectListImpl(ProjectSummaryService projectSummaryClient) {
-        super();
-        this.projectSummaryClient = projectSummaryClient;
+    private ProjectSummaryService projectSummaryClient;
+
+    public NewInvoiceImpl init() {
+        logger.info("NewInvoiceImpl.init");
+        //ResponsiveColumn invoiceMenuItem = leftMenu.getMenuItems().get(MainWindowImpl.VIEW_NAME);
+        //invoiceMenuItem.
+
         List<YearMonthSelect> yearMonthList = createYearMonthSelector();
         cbSelectYearMonth.setItems(yearMonthList);
         cbSelectYearMonth.setItemCaptionGenerator(c -> c.getDate().format(DateTimeFormatter.ofPattern("MMMM yyyy")));
@@ -57,7 +64,7 @@ public class ProjectListImpl extends ProjectListDesign {
 
         gridProjectSummaryList.setSelectionMode(Grid.SelectionMode.MULTI);
         gridProjectSummaryList.addSelectionListener(event -> {
-            System.out.println("event = " + event);
+            logger.debug("event = " + event);
             Set<ProjectSummary> selectedItems = event.getAllSelectedItems();
             switch (selectedItems.size()) {
                 case 0:
@@ -77,6 +84,7 @@ public class ProjectListImpl extends ProjectListDesign {
         btnCreateInvoice.addClickListener(event -> {
             for (ProjectSummary projectSummary : gridProjectSummaryList.getSelectedItems()) {
                 projectSummaryClient.createInvoiceFromProject(projectSummary.getProjectuuid(), cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
+                Broadcaster.broadcast("NEW_DRAFT");
                 reloadData();
             }
         });
@@ -84,23 +92,20 @@ public class ProjectListImpl extends ProjectListDesign {
         gridProjectSummaryList.setSizeFull();
 
         addTour();
-    }
 
-    public void init() {
         reloadData();
+        return this;
     }
 
     public void reloadData() {
-        System.out.println("ProjectListImpl.reloadData");
+        logger.info("NewInvoiceImpl.reloadData");
         long start = System.currentTimeMillis();
-        System.out.println("start = " + start);
-        //getUI().getCurrent().access(() -> {
-            List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
-            gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
-            gridProjectSummaryList.getDataProvider().refreshAll();
-        //});
+        logger.debug("start = " + start);
+        List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
+        gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
+        gridProjectSummaryList.getDataProvider().refreshAll();
         double end = System.currentTimeMillis() - start;
-        System.out.println("end = " + end);
+        logger.debug("end = " + end);
     }
 
     private List<YearMonthSelect> createYearMonthSelector() {

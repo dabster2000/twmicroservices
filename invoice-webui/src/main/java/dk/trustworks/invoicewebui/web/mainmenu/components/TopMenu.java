@@ -7,7 +7,13 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
+
+import javax.annotation.PostConstruct;
+
+import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.SM;
+import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.XS;
 
 /**
  * Created by hans on 28/08/2017.
@@ -16,7 +22,11 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 @SpringUI
 public class TopMenu extends CssLayout {
 
-    public TopMenu() {
+    @Autowired
+    private LeftMenu leftMenu;
+
+    @PostConstruct
+    void init() {
         setStyleName("v-component-group material");
         setWidth("100%");
         setHeight("75px");
@@ -37,6 +47,12 @@ public class TopMenu extends CssLayout {
 
         Button appsButton = new Button(MaterialIcons.APPS);
         appsButton.setStyleName("borderless icon-only h4");
+        appsButton.addClickListener(event -> {
+            for (MenuItemContainer menuItem : leftMenu.getMenuItems().values()) {
+                menuItem.getMenuItem().setVisibility(XS, !menuItem.getMenuItem().isVisibleForDisplaySize(XS));
+                menuItem.getMenuItem().setVisibility(SM, !menuItem.getMenuItem().isVisibleForDisplaySize(SM));
+            }
+        });
 
         Button searchButton = new Button(MaterialIcons.SEARCH);
         searchButton.setStyleName("borderless icon-only h4");

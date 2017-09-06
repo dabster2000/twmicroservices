@@ -17,7 +17,7 @@ public class Broadcaster implements Serializable {
     }
 
     private static LinkedList<BroadcastListener> listeners =
-            new LinkedList<BroadcastListener>();
+            new LinkedList<>();
 
     public static synchronized void register(
             BroadcastListener listener) {

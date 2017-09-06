@@ -37,9 +37,6 @@ public class TimeManagerImpl extends TimeManagerDesign {
     ProjectRepository projectRepository;
 
     @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired

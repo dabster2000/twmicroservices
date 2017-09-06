@@ -21,7 +21,7 @@ import com.vaadin.ui.Label;
 public class MenuItemDesign extends HorizontalLayout {
     private Label lblChildSpace;
     private Button btnMenuitemText;
-    private Label lblParent;
+    private Button btnParentIndicator;
 
     public MenuItemDesign() {
         Design.read(this);
@@ -35,8 +35,8 @@ public class MenuItemDesign extends HorizontalLayout {
         return btnMenuitemText;
     }
 
-    public Label getLblParent() {
-        return lblParent;
+    public Button getBtnParentIndicator() {
+        return btnParentIndicator;
     }
 
 }

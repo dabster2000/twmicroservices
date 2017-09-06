@@ -11,6 +11,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.web.invoice.components.DraftListImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by hans on 02/07/2017.
@@ -22,6 +24,9 @@ import com.vaadin.ui.VerticalLayout;
 public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewDisplay {
 
     private Panel springViewDisplay;
+
+    @Autowired
+    private DraftListImpl draftList;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -35,6 +40,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         springViewDisplay.setSizeFull();
         root.addComponent(springViewDisplay);
         root.setExpandRatio(springViewDisplay, 1.0f);
+        Broadcaster.register(this);
     }
 
     @Override
@@ -45,8 +51,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         //int numberOfDrafts = mainWindow.invoiceClient.findByStatus(DRAFT).getContent().size();
         //System.out.println("numberOfDrafts = " + numberOfDrafts);
         getUI().access(() -> {
-            //if(numberOfDrafts>0) mainWindow.getMenuButton4().setCaption("DRAFTS ("+numberOfDrafts+")");
-            //else mainWindow.getMenuButton4().setCaption("DRAFTS");
+            draftList.receiveBroadcast(message);
         });
 
     }

@@ -14,13 +14,13 @@ import java.util.*;
 /**
  * Created by hans on 10/07/2017.
  */
-public class InvoiceEditImpl extends InvoiceEditDesign {
+public class DraftEditImpl extends DraftEditDesign {
 
     Map<Binder<InvoiceItem>, InvoiceItem> binders = new HashMap<>();
     Binder<Invoice> invoiceBinder;
     private Invoice invoice;
 
-    public InvoiceEditImpl(Invoice invoice) {
+    public DraftEditImpl(Invoice invoice) {
         this.invoice = invoice;
         this.lblDescription.setValue(invoice.description);
 

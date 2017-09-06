@@ -6,7 +6,7 @@
   <meta name="vaadin-version" content="8.0.5">
  </head>
  <body>
-  <vaadin-vertical-layout size-full margin="false">
+  <vaadin-vertical-layout height="600px">
    <vaadin-horizontal-layout width-full>
     <vaadin-label style-name="h2" plain-text>
       Projects 
@@ -18,7 +18,7 @@
    <vaadin-horizontal-layout description="Select period" width-full>
     <vaadin-combo-box data-item-type="dk.trustworks.invoicewebui.web.model.YearMonthSelect" _id="cbSelectYearMonth" :middle :right></vaadin-combo-box>
    </vaadin-horizontal-layout>
-   <vaadin-grid size-full data-item-type="dk.trustworks.invoicewebui.network.dto.ProjectSummary" _id="gridProjectSummaryList" :expand>
+   <vaadin-grid size-full data-item-type="dk.trustworks.invoicewebui.network.dto.ProjectSummary" frozen-columns="2" _id="gridProjectSummaryList" :expand>
     <table>
      <colgroup>
       <col column-id="clientname" sortable>
@@ -29,14 +29,14 @@
       <col column-id="invoices" sortable width="100">
      </colgroup>
      <thead>
-     <tr default>
-      <th plain-text column-ids="clientname">Client Name</th>
-      <th plain-text column-ids="projectname">Project Name</th>
-      <th plain-text column-ids="description">Description</th>
-      <th plain-text column-ids="registeredamount">Registered (kr)</th>
-      <th plain-text column-ids="invoicedamount">Invoiced (kr)</th>
-      <th plain-text column-ids="invoices">Invoices</th>
-     </tr>
+      <tr default>
+       <th plain-text column-ids="clientname">Client Name</th>
+       <th plain-text column-ids="projectname">Project Name</th>
+       <th plain-text column-ids="description">Description</th>
+       <th plain-text column-ids="registeredamount">Registered (kr)</th>
+       <th plain-text column-ids="invoicedamount">Invoiced (kr)</th>
+       <th plain-text column-ids="invoices">Invoices</th>
+      </tr>
      </thead>
      <tbody></tbody>
     </table>
