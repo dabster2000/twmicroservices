@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.project.components;
 
-import com.google.common.collect.Lists;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.contextmenu.GridContextMenu;
@@ -23,6 +22,8 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
 
 /**
  * Created by hans on 21/08/2017.
@@ -59,7 +60,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     @Transactional
     public ProjectManagerImpl init() {
         getSelProject().setItemCaptionGenerator(Project::getName);
-        List<Project> projects = Lists.newArrayList(projectRepository.findAll());
+        List<Project> projects = newArrayList(projectRepository.findAll());
 
         getSelProject().setItems(projects);
         getSelProject().addValueChangeListener(event -> {

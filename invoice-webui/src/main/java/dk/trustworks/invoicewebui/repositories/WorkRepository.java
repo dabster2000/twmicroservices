@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Work;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -27,6 +28,11 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     List<Work> findByPeriodAndUserUUID(@Param("fromdate") String fromdate,
                                        @Param("todate") String todate,
                                        @Param("useruuid") String useruuid);
+
+    @Cacheable("work")
+    @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work_latest w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
+    List<Work> findByPeriod(@Param("fromdate") String fromdate,
+                                       @Param("todate") String todate);
 
 
     //@Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM timemanager.work_latest w WHERE w.year = :year AND w.month = :month", nativeQuery = true)

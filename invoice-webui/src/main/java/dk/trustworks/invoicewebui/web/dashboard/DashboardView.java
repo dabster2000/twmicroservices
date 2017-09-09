@@ -5,33 +5,51 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontIcon;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
 import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
+import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by hans on 12/08/2017.
  */
+@AccessRules(roleTypes = {RoleType.USER})
 @SpringView(name = DashboardView.VIEW_NAME)
 public class DashboardView extends VerticalLayout implements View {
 
+    private static final Logger logger = LoggerFactory.getLogger(DashboardView.class);
     /**
      * Fødselsdage
      * Templates
      * Apps i Trustworks
+     * Projects nearly ending
      */
 
     public static final String VIEW_NAME = "mainmenu";
+    public static final String VIEW_BREADCRUMB = "Dashboard";
+    public static final FontIcon VIEW_ICON = MaterialIcons.DASHBOARD;
+    public static final String MENU_NAME = "Dashboard";
 
     @Autowired
     private TopMenu topMenu;
@@ -42,15 +60,23 @@ public class DashboardView extends VerticalLayout implements View {
     @Autowired
     private UserStatusRepository userStatusRepository;
 
+    @Autowired
+    private WorkRepository workRepository;
+
+    @Autowired
+    private TaskworkerconstraintRepository taskworkerconstraintRepository;
+
+    @Transactional
     @PostConstruct
     void init() {
         this.setMargin(false);
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FIXED);
 
         board.setSizeFull();
+        board.setScrollable(true);
 
         BirthdayCardImpl birthdayCard = new BirthdayCardImpl(2, 4, "birthdayCard");
         DnaCardImpl dnaCard = new DnaCardImpl(3, 4, "dnaCard");
@@ -79,20 +105,10 @@ public class DashboardView extends VerticalLayout implements View {
         boxes.add(locationCardDesign);
         boxes.add(monthNewsCardDesign);
         boxes.add(dnaCard);
-        /*
-        boxes.add(new Box(4, 3, clientCard, "clientCard"));
-        boxes.add(new Box(3, 6, locationCardDesign, "locationCardDesign"));
-        boxes.add(new Box(2, 4, birthdayCard, "birthdayCard"));
-        boxes.add(new Box(3, 3, invoiceCard, "invoiceCard"));
-        boxes.add(new Box(1, 4, monthNewsCardDesign, "monthNewsCardDesign"));
-        boxes.add(new Box(4, 3, projectCard, "projectCard"));
-        boxes.add(new Box(3, 3, resourcePlanningCard, "resourcePlanningCard"));
-        boxes.add(new Box(3, 3, timeCard, "timeCard"));
-        */
 
         createRows(board, boxes);
 
-        mainTemplate.setMainContent(board);
+        mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
     }
 
     private void createTopBoxes(ResponsiveLayout board) {
@@ -103,7 +119,7 @@ public class DashboardView extends VerticalLayout implements View {
         // TODO: Count instead of load
         float goodPeopleLastYear = userStatusRepository.findAllActiveByDate(date).size();
         int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
-        consultantsCard.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
+        consultantsCard.getImgIcon().setSource(new ThemeResource("images/icons/ic_people_black_48dp_2x.png"));
         consultantsCard.getLblNumber().setValue(Math.round(goodPeopleNow)+"");
         consultantsCard.getLblTitle().setValue("Good People");
         consultantsCard.getLblSubtitle().setValue(percent + "% more than last year");
@@ -113,28 +129,67 @@ public class DashboardView extends VerticalLayout implements View {
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(consultantsCard);
 
+        LocalDate startDate = LocalDate.now().minusMonths(1);
+        LocalDate endDate = LocalDate.now();
+        Map<String, Project> currentProjectSet = new HashMap<>();
+        Map<String, Project> noProjectSet = new HashMap<>();
+        float billableHoursThisYear = 0f;
+        for (Work work : workRepository.findByPeriod(startDate.toString("yyyy-MM-dd"), endDate.toString("yyyy-MM-dd"))) {
+            Task task = work.getTask();
+            User user = work.getUser();
+            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
+            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
+                billableHoursThisYear += work.getWorkduration();
+                currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
+            } else {
+                noProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
+            }
+        }
+
+        LocalDate lastStartDate = startDate.minusYears(1);
+        LocalDate lastEndDate = endDate.minusYears(1);
+        Map<String, Project> lastProjectSet = new HashMap<>();
+        float billableHoursLastYear = 0f;
+        for (Work work : workRepository.findByPeriod(lastStartDate.toString("yyyy-MM-dd"), lastEndDate.toString("yyyy-MM-dd"))) {
+            Task task = work.getTask();
+            User user = work.getUser();
+            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
+            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
+                billableHoursLastYear += work.getWorkduration();
+                lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
+            }
+        }
+        float projectsThisYear = currentProjectSet.size();
+        int projectsLastYear = lastProjectSet.size();
+        int percentProjects = Math.round((projectsThisYear / projectsLastYear) * 100) - 100;
+        int percentBillableHours = Math.round((billableHoursThisYear / billableHoursLastYear) * 100) - 100;
+        String projectsMoreOrLess = "more";
+        String hoursMoreOrLess = "more";
+        if(percentProjects < 0) projectsMoreOrLess = "less";
+        if(percentBillableHours < 0) hoursMoreOrLess = "less";
+        percentProjects = Math.abs(percentProjects);
         TopCardDesign consultantsCard2 = new TopCardDesign();
-        consultantsCard2.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
-        consultantsCard2.getLblNumber().setValue("0");
+        consultantsCard2.getImgIcon().setSource(new ThemeResource("images/icons/ic_date_range_48pt_2x.png"));
+        consultantsCard2.getLblNumber().setValue(""+currentProjectSet.size());
         consultantsCard2.getLblTitle().setValue("Active Projects");
-        consultantsCard2.getLblSubtitle().setValue("15% more than last year");
+        consultantsCard2.getLblSubtitle().setValue(percentProjects+"% "+projectsMoreOrLess+" than last year");
         consultantsCard2.getCardHolder().addStyleName("dark-green");
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(consultantsCard2);
 
         TopCardDesign consultantsCard3 = new TopCardDesign();
-        consultantsCard3.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
-        consultantsCard3.getLblNumber().setValue("0");
+        consultantsCard3.getImgIcon().setSource(new ThemeResource("images/icons/ic_access_time_48pt_2x.png"));
+        consultantsCard3.getLblNumber().setValue(""+billableHoursThisYear);
         consultantsCard3.getLblTitle().setValue("Billable Hours");
-        consultantsCard3.getLblSubtitle().setValue("5% more than last year");
+        consultantsCard3.getLblSubtitle().setValue(percentBillableHours+"% "+hoursMoreOrLess+" than last year");
         consultantsCard3.getCardHolder().addStyleName("orange");
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(consultantsCard3);
 
         TopCardDesign consultantsCard4 = new TopCardDesign();
-        consultantsCard4.getImgIcon().setSource(new ThemeResource("images/ic_people_black_48dp_2x.png"));
+        consultantsCard4.getImgIcon().setSource(new ThemeResource("images/icons/ic_people_black_48dp_2x.png"));
         consultantsCard4.getLblNumber().setValue("0");
         consultantsCard4.getLblTitle().setValue("Trustworks Consultants");
         consultantsCard4.getLblSubtitle().setValue("10% more than last year");
@@ -152,41 +207,46 @@ public class DashboardView extends VerticalLayout implements View {
         Map<Box, Integer> boxIntegerMap = new HashMap<>();
         for (Box box : boxes) {
             for (int i = 0; i < rowSize.length; i++) {
-                System.out.println("--- --- ---");
-                System.out.println("i = " + i);
-                System.out.println("rowSize = " + rowSize[i]);
-                System.out.println("box = " + box);
+                logger.debug("--- --- ---");
+                logger.debug("i = " + i);
+                logger.debug("rowSize = " + rowSize[i]);
+                logger.debug("box = " + box);
                 if(rowSize[i] + box.getBoxWidth() <= 12) {
                     boxIntegerMap.put(box, i);
                     rowSize[i] += box.getBoxWidth();
                     if(maxRows < i) maxRows = i;
-                    System.out.println("--- put ---");
-                    System.out.println("--- --- ---");
+                    logger.debug("--- put ---");
+                    logger.debug("--- --- ---");
                     break;
                 }
             }
         }
 
-        System.out.println("XXX XXX XXX");
+        logger.debug("XXX XXX XXX");
         ResponsiveRow[] responsiveRows = new ResponsiveRow[maxRows+1];
         for (int i = 0; i < maxRows + 1; i++) {
             responsiveRows[i] = board.addRow();
         }
 
+        Map<Box, Integer> result = boxIntegerMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-        for (Box box : boxIntegerMap.keySet()) {
+
+        for (Box box : result.keySet()) {
             Integer row = boxIntegerMap.get(box);
             int[] widths = new int[4];
             switch (box.getBoxWidth()) {
                 case 3:
                     widths[0] = 3;
-                    widths[1] = 6;
+                    widths[1] = 4;
                     widths[2] = 6;
                     widths[3] = 12;
                     break;
                 case 4:
                     widths[0] = 4;
-                    widths[1] = 4;
+                    widths[1] = 6;
                     widths[2] = 12;
                     widths[3] = 12;
                     break;
@@ -198,7 +258,7 @@ public class DashboardView extends VerticalLayout implements View {
                     break;
                 case 8:
                     widths[0] = 8;
-                    widths[1] = 8;
+                    widths[1] = 12;
                     widths[2] = 12;
                     widths[3] = 12;
                     break;
@@ -216,7 +276,7 @@ public class DashboardView extends VerticalLayout implements View {
                     break;
             }
             System.out.println(row+": "+box.getPriority()+" "+" "+" "+box.getBoxWidth()+" "+" "+" "+box.getName());
-            responsiveRows[row].addColumn()
+            responsiveRows[0].addColumn()
                     .withDisplayRules(widths[3], widths[2], widths[1], widths[0])
                     .withComponent(box.getBoxComponent());
         }

@@ -12,8 +12,10 @@ import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.LogoRepository;
+import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.materialicons.MaterialIcons;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
@@ -93,7 +95,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
         fillBoard(client, responsiveLayout, window2);
 
-        mainTemplate.setMainContent(verticalLayout);
+        mainTemplate.setMainContent(verticalLayout, ClientManagerView.VIEW_ICON, client.getName(), "Our best friends", ClientManagerView.VIEW_BREADCRUMB + " / "+client.getName());
     }
 
     private void fillBoard(Client client, ResponsiveLayout clientDetailBoard, Window window2) {

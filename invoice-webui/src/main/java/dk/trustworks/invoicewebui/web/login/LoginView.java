@@ -15,6 +15,7 @@ import dk.trustworks.invoicewebui.web.login.components.LoginImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -26,37 +27,32 @@ public class LoginView extends VerticalLayout implements View {
 
     protected static Logger logger = LoggerFactory.getLogger(LoginView.class.getName());
 
-    @Autowired
-    private LoginClient loginClient;
-
     public static final String VIEW_NAME = "login";
 
+    @Autowired
+    private LoginImpl login;
+
+    @Transactional
     @PostConstruct
     void init() {
         logger.debug("LoginView.init");
         this.setSizeFull();
-        //Board board = new Board();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout();
         responsiveLayout.setSizeFull();
-        //board.setSizeFull();
-        //board.addRow(new Label(), new LoginImpl(), new Label());
-        LoginImpl login = new LoginImpl(loginClient);
         ResponsiveRow row = responsiveLayout.addRow();
-        row//.withAlignment(Alignment.MIDDLE_CENTER)
+        row
                 .addColumn()
                 .withDisplayRules(12,2, 3, 4)
                 .withComponent(new Label());
-        row//.withAlignment(Alignment.MIDDLE_CENTER)
+        row
                 .addColumn()
                 .withDisplayRules(12, 8, 6, 4)
                 .withComponent(login);
-        row//.withAlignment(Alignment.MIDDLE_CENTER)
+        row
                 .addColumn()
                 .withDisplayRules(12,2, 3, 4)
                 .withComponent(new Label());
         addComponent(responsiveLayout);
-        //addComponent(login);
-        //this.setComponentAlignment(responsiveLayout, Alignment.MIDDLE_CENTER);
     }
 
     @Override

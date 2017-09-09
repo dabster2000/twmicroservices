@@ -142,7 +142,6 @@ public class Project {
         sb.append(", name='").append(name).append('\'');
         sb.append(", startdate=").append(startdate);
         sb.append(", enddate=").append(enddate);
-        sb.append(", client=").append(client);
         sb.append('}');
         return sb.toString();
     }

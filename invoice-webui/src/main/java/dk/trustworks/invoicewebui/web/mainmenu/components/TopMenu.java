@@ -27,7 +27,7 @@ public class TopMenu extends CssLayout {
 
     @PostConstruct
     void init() {
-        setStyleName("v-component-group material card-5");
+        setStyleName("v-component-group material");
         setWidth("100%");
         setHeight("75px");
 
@@ -68,10 +68,13 @@ public class TopMenu extends CssLayout {
                 .withVisibilityRules(false, false, true, true)
                 .withComponent(new Label());
 
+        TopMenuUserDesign topMenuUserDesign = new TopMenuUserDesign();
+        topMenuUserDesign.getBtnUser().setIcon(MaterialIcons.ACCOUNT_CIRCLE);
+
         ResponsiveColumn column = row.addColumn();
         column.setAlignment(ResponsiveColumn.ColumnComponentAlignment.RIGHT);
         column.withDisplayRules(0, 0, 3, 3)
                 .withVisibilityRules(false, false, true, true)
-                .withComponent(new Label("user"));
+                .withComponent(topMenuUserDesign);
     }
 }

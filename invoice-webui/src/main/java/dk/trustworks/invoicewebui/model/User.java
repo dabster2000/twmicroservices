@@ -35,6 +35,8 @@ public class User {
     private List<Week> weeks;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Work> workList;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Role> roleList;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -159,6 +161,14 @@ public class User {
 
     public void setWorkList(List<Work> workList) {
         this.workList = workList;
+    }
+
+    public List<Role> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<Role> roleList) {
+        this.roleList = roleList;
     }
 
     @Override

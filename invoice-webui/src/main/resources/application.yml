@@ -13,76 +13,22 @@ spring:
   cache:
     caffeine:
       spec: maximumSize=1000,expireAfterAccess=10s
-  cloud:
-    zookeeper:
-      connect-string: ${ZOOKEEPER_HOST:localhost}:2181
-  zipkin:
-    base-url: http://${ZIPKIN_HOST:localhost}:9411/
   jpa:
     hibernate.ddl-auto: none
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
   datasource:
-    url: ${URL:jdbc:mysql://localhost:3306/usermanager?noDatetimeStringSync=true&characterEncoding=utf8}
+    url: ${URL:jdbc:mysql://localhost:3306/usermanager?noDatetimeStringSync=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC}
     username: ${USERNAME:root}
     password: ${PASSWORD:}
+    driverClassName: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 2
-eureka:
-  client:
-    enabled: true
-    serviceUrl:
-      defaultZone: ${DISCOVERY_URL:http://localhost:8761}/eureka/
-  instance:
-    leaseRenewalIntervalInSeconds: 1
-    leaseExpirationDurationInSeconds: 2
+  data:
+    rest:
+      basePath: /api
 
-ribbon:
-  eureka:
-    enabled: true
-
-#invoice-service:
-  #ribbon:
-    #listOfServers: localhost:7080
-    #NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
-
-    # the eureka vipAddress of the target service (Disabled)
-    #DeploymentContextBasedVipAddresses: samplebackendservice
-
-    # Max number of retries on the same server (excluding the first try)
-#    MaxAutoRetries: 1
-
-    # Max number of next servers to retry (excluding the first server)
-#    MaxAutoRetriesNextServer: 1
-
-    # Whether all operations can be retried for this client
-#    OkToRetryOnAllOperations: true
-
-    # Interval to refresh the server list from the source
-    #ServerListRefreshInterval: 2000
-
-    # Connect timeout used by Apache HttpClient
-#    ConnectTimeout: 3000
-
-    # Read timeout used by Apache HttpClient
-#    ReadTimeout: 3000
-
-web-api:
-  ribbon:
-    ServerListRefreshInterval: 2000
-    retryableStatusCodes: 404, 500, 502
-    MaxAutoRetries: 5
-    ConnectTimeout: 10000
-    ReadTimeout: 10000
-
-invoice-service:
-  ribbon:
-    ServerListRefreshInterval: 2000
-    retryableStatusCodes: 404, 500, 502
-    MaxAutoRetries: 5
-    ConnectTimeout: 5000
-    ReadTimeout: 5000
 
 flyway:
   baseline-version: 1 # version to start migration
@@ -91,24 +37,5 @@ flyway:
   schemas: usermanager
   baseline-on-migrate: true # schemas to update
 
-# Increase the Hystrix timeout to 60s (globally)
-hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
-
-feign:
-  client:
-    config:
-      time-service:
-        connectTimeout: 20000
-        readTimeout: 20000
-        loggerLevel: full
-  compression:
-    response:
-      enabled: true
-
 management.security.enabled: false
-
-spring.rabbitmq.host: ${RABBITMQ_HOST:127.0.0.1}
-spring.rabbitmq.port: ${RABBITMQ_PORT:5672}
-spring.rabbitmq.username: ${RABBIT_USERNAME:guest}
-spring.rabbitmq.password: ${RABBIT_PASSWORD:guest}
 

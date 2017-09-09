@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.web.mainmenu.components;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.vaadin.server.FontIcon;
 import com.vaadin.ui.UI;
+import dk.trustworks.invoicewebui.model.RoleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ public class MenuItemContainer {
 
     protected static Logger logger = LoggerFactory.getLogger(MenuItemImpl.class.getName());
 
+    private RoleType[] roles;
     private List<MenuItemContainer> childItems;
     private MenuItemContainer parent;
     private ResponsiveColumn menuItem;
@@ -54,7 +56,8 @@ public class MenuItemContainer {
         this.childItems.add(child);
     }
 
-    public MenuItemContainer createItem(String caption, FontIcon parentIndicator, FontIcon icon, String nagivateTo, boolean isChild) {
+    public MenuItemContainer createItem(String caption, FontIcon parentIndicator, FontIcon icon, String nagivateTo, boolean isChild, RoleType... roleTypes) {
+        roles = roleTypes;
         child = isChild;
         ResponsiveColumn menuItemColumn = new ResponsiveColumn();
         MenuItemImpl menuItem = new MenuItemImpl()
@@ -64,21 +67,34 @@ public class MenuItemContainer {
                 .setChild(isChild);
         if(parentIndicator==null) menuItem.addClickListener(event -> UI.getCurrent().getNavigator().navigateTo(nagivateTo));
         menuItemColumn
-                .withDisplayRules(12,3,12,12)
+                .withDisplayRules(12,12,12,12)
                 .withVisibilityRules(false, false, true, true)
                 .withComponent(menuItem);
         this.menuItem = menuItemColumn;
         if(parentIndicator != null) {
-            ((MenuItemImpl) getMenuItem().getComponent()).addClickListener(event -> foldOut());
+            ((MenuItemImpl) getMenuItem().getComponent()).addClickListener(event -> foldInOut());
         }
         return this;
     }
 
-    public void foldOut() {
+    public void foldInOut() {
+        System.out.println("MenuItemContainer.foldInOut");
         ((MenuItemImpl) getMenuItem().getComponent()).withParentIndicator(MenuItemImpl.MINUS_INDICATOR);
         for (MenuItemContainer itemContainer : getChildItems()) {
             itemContainer.getMenuItem().getComponent().setVisible(!itemContainer.getMenuItem().getComponent().isVisible());
         }
+    }
+
+    public void foldOut() {
+        System.out.println("MenuItemContainer.foldOut");
+        ((MenuItemImpl) getMenuItem().getComponent()).withParentIndicator(MenuItemImpl.MINUS_INDICATOR);
+        for (MenuItemContainer itemContainer : getChildItems()) {
+            itemContainer.getMenuItem().getComponent().setVisible(true);
+        }
+    }
+
+    public RoleType[] getRoles() {
+        return roles;
     }
 
     public boolean isChild() {

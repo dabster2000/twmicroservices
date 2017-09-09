@@ -9,6 +9,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.services.TimeService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
@@ -44,6 +45,9 @@ public class TimeManagerImpl extends TimeManagerDesign {
 
     @Autowired
     private WorkRepository workRepository;
+
+    @Autowired
+    private TimeService timeService;
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
 
@@ -91,7 +95,12 @@ public class TimeManagerImpl extends TimeManagerDesign {
 
         updateGrid(userSession);
 
-        getBtnAddTask().addClickListener(event -> {
+        getBtnCopyWeek().addClickListener(event1 -> {
+            timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), userSession.getUser());
+            loadData(userSession);
+        });
+
+        getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Invoice editor");
             window.setWidth(300.0f, Unit.PIXELS);
             window.setHeight(500.0f, Unit.PIXELS);
@@ -318,6 +327,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private void loadData(UserSession userSession) {
         long start = System.currentTimeMillis();
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), userSession.getUser());
+        if(weeks.size()>0) getBtnCopyWeek().setEnabled(false);
+        else getBtnCopyWeek().setEnabled(true);
         System.out.println("Load weeks = " + (System.currentTimeMillis() - start));
         System.out.println("weeks.size() = " + weeks.size());
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);

@@ -7,6 +7,7 @@ package dk.trustworks.invoicewebui.repositories;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
 import dk.trustworks.invoicewebui.model.User;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -17,6 +18,8 @@ import java.util.List;
 public interface TaskworkerconstraintRepository extends CrudRepository<Taskworkerconstraint, String> {
 
     List<Taskworkerconstraint> findByTask(Task task);
+
+    @Cacheable("taskworkerconstraint")
     List<Taskworkerconstraint> findByTaskAndUser(Task task, User user);
 
     @Override @RestResource(exported = false) void delete(String id);

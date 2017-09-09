@@ -1,8 +1,13 @@
 package dk.trustworks.invoicewebui.web.contexts;
 
 
+import dk.trustworks.invoicewebui.model.Role;
+import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.security.CurrentUserRole;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by hans on 17/08/2017.
@@ -11,14 +16,11 @@ import dk.trustworks.invoicewebui.security.CurrentUserRole;
 public class UserSession {
 
     private User user;
-    private CurrentUserRole currentUserRole;
+    private List<Role> roles;
 
-    public UserSession() {
-    }
-
-    public UserSession(User user, CurrentUserRole currentUserRole) {
+    public UserSession(User user, List<Role> roles) {
         this.user = user;
-        this.currentUserRole = currentUserRole;
+        this.roles = roles;
     }
 
     public User getUser() {
@@ -29,11 +31,17 @@ public class UserSession {
         this.user = user;
     }
 
-    public CurrentUserRole getCurrentUserRole() {
-        return currentUserRole;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setCurrentUserRole(CurrentUserRole currentUserRole) {
-        this.currentUserRole = currentUserRole;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public boolean hasRole(RoleType roleType) {
+        boolean present = roles.stream().map(Role::getRole).filter(roleType::equals).findFirst().isPresent();
+        System.out.println("present = " + present);
+        return present;
     }
 }
