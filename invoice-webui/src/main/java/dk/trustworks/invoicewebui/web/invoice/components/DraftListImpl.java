@@ -3,7 +3,6 @@ package dk.trustworks.invoicewebui.web.invoice.components;
 import com.vaadin.annotations.Push;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -15,11 +14,9 @@ import dk.trustworks.invoicewebui.model.InvoiceStatus;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.web.Broadcaster;
-import dk.trustworks.invoicewebui.web.invoice.views.DraftListView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.LeftMenu;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MenuItemImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
 import org.vaadin.addons.producttour.actions.TourActions;
 import org.vaadin.addons.producttour.button.StepButton;
 import org.vaadin.addons.producttour.shared.step.StepAnchor;
@@ -155,8 +152,8 @@ public class DraftListImpl extends DraftListDesign
         List<Invoice> invoices = invoiceRepository.findByStatus(DRAFT);
         gridInvoiceList.setItems(invoices);
         gridInvoiceList.getDataProvider().refreshAll();
-        if(invoices.size()>0) ((MenuItemImpl)leftMenu.getMenuItems().get(VIEW_NAME).getMenuItem().getComponent()).withCaption(MENU_NAME+" ("+invoices.size()+")");
-        else ((MenuItemImpl)leftMenu.getMenuItems().get(VIEW_NAME).getMenuItem().getComponent()).withCaption(MENU_NAME);
+        if(invoices.size()>0) ((MenuItemImpl)leftMenu.getMenuItems().get(VIEW_NAME).getMenuItemColumn().getComponent()).withCaption(MENU_NAME+" ("+invoices.size()+")");
+        else ((MenuItemImpl)leftMenu.getMenuItems().get(VIEW_NAME).getMenuItemColumn().getComponent()).withCaption(MENU_NAME);
     }
 
     private void addTour() {

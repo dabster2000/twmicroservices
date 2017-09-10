@@ -33329,6 +33329,22 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	color: #ffffff;
 }
 
+.invoice .grey-icon .v-icon {
+	color: #a3a4a5;
+}
+
+.invoice .grey-font .v-button-caption {
+	color: #a3a4a5;
+}
+
+.invoice .dark-grey-icon .v-icon {
+	color: #818384;
+}
+
+.invoice .dark-grey-font .v-button-caption {
+	color: #818384;
+}
+
 .invoice .holder {
 	display: inline;
 }

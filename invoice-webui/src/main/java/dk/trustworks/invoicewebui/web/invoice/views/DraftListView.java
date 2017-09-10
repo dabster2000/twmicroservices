@@ -68,8 +68,8 @@ public class DraftListView extends VerticalLayout implements View, Broadcaster.B
         int numberOfDrafts = invoiceRepository.findByStatus(DRAFT).size();
         if(this.getUI() != null) this.getUI().access(() -> {
             draftListComponent.loadInvoicesToGrid();
-            if(numberOfDrafts>0) leftMenu.getMenuItems().get(VIEW_NAME).getMenuItem().getComponent().setCaption(MENU_NAME+" ("+numberOfDrafts+")");
-            else leftMenu.getMenuItems().get(VIEW_NAME).getMenuItem().getComponent().setCaption(MENU_NAME);
+            if(numberOfDrafts>0) leftMenu.getMenuItems().get(VIEW_NAME).getMenuItemColumn().getComponent().setCaption(MENU_NAME+" ("+numberOfDrafts+")");
+            else leftMenu.getMenuItems().get(VIEW_NAME).getMenuItemColumn().getComponent().setCaption(MENU_NAME);
         });
 */
     }

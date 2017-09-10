@@ -20,7 +20,7 @@ public class MenuItemContainer {
     private RoleType[] roles;
     private List<MenuItemContainer> childItems;
     private MenuItemContainer parent;
-    private ResponsiveColumn menuItem;
+    private ResponsiveColumn menuItemColumn;
 
     private int order;
     private boolean child;
@@ -38,8 +38,8 @@ public class MenuItemContainer {
         return childItems;
     }
 
-    public ResponsiveColumn getMenuItem() {
-        return menuItem;
+    public ResponsiveColumn getMenuItemColumn() {
+        return menuItemColumn;
     }
 
     public MenuItemContainer setParentMenuItem(MenuItemContainer parent) {
@@ -56,40 +56,47 @@ public class MenuItemContainer {
         this.childItems.add(child);
     }
 
-    public MenuItemContainer createItem(String caption, FontIcon parentIndicator, FontIcon icon, String nagivateTo, boolean isChild, RoleType... roleTypes) {
+    public MenuItemContainer createItem(String caption, boolean isTitle, FontIcon icon, String nagivateTo, boolean isChild, RoleType... roleTypes) {
+        ResponsiveColumn menuItemColumn = new ResponsiveColumn();
         roles = roleTypes;
         child = isChild;
-        ResponsiveColumn menuItemColumn = new ResponsiveColumn();
-        MenuItemImpl menuItem = new MenuItemImpl()
-                .withCaption(caption)
-                .withParentIndicator(parentIndicator)
-                .withIcon(icon)
-                .setChild(isChild);
-        if(parentIndicator==null) menuItem.addClickListener(event -> UI.getCurrent().getNavigator().navigateTo(nagivateTo));
+        MenuItemImpl menuItem;
+        // If title
+        if(isTitle) {
+            menuItem = new MenuItemImpl()
+                    .withCaption(caption)
+                    .withFontStyle("dark-grey-font dark-grey-icon");
+        } else {
+            menuItem = new MenuItemImpl()
+                    .withCaption(caption)
+                    .withIcon(icon)
+                    .withFontStyle("grey-font grey-icon")
+                    .setChild(isChild);
+            menuItem.addClickListener(event -> UI.getCurrent().getNavigator().navigateTo(nagivateTo));
+        }
+
         menuItemColumn
                 .withDisplayRules(12,12,12,12)
                 .withVisibilityRules(false, false, true, true)
                 .withComponent(menuItem);
-        this.menuItem = menuItemColumn;
-        if(parentIndicator != null) {
-            //((MenuItemImpl) getMenuItem().getComponent()).addClickListener(event -> foldInOut());
-        }
+        this.menuItemColumn = menuItemColumn;
+
         return this;
     }
 
     public void foldInOut() {
         System.out.println("MenuItemContainer.foldInOut");
-        ((MenuItemImpl) getMenuItem().getComponent()).withParentIndicator(MenuItemImpl.MINUS_INDICATOR);
+        ((MenuItemImpl) getMenuItemColumn().getComponent()).withParentIndicator(MenuItemImpl.MINUS_INDICATOR);
         for (MenuItemContainer itemContainer : getChildItems()) {
-            itemContainer.getMenuItem().getComponent().setVisible(!itemContainer.getMenuItem().getComponent().isVisible());
+            itemContainer.getMenuItemColumn().getComponent().setVisible(!itemContainer.getMenuItemColumn().getComponent().isVisible());
         }
     }
 
     public void foldOut() {
         System.out.println("MenuItemContainer.foldOut");
-        ((MenuItemImpl) getMenuItem().getComponent()).withParentIndicator(MenuItemImpl.MINUS_INDICATOR);
+        ((MenuItemImpl) getMenuItemColumn().getComponent()).withParentIndicator(MenuItemImpl.MINUS_INDICATOR);
         for (MenuItemContainer itemContainer : getChildItems()) {
-            itemContainer.getMenuItem().getComponent().setVisible(true);
+            itemContainer.getMenuItemColumn().getComponent().setVisible(true);
         }
     }
 

@@ -49,8 +49,8 @@ public class TopMenu extends CssLayout {
         appsButton.setStyleName("borderless icon-only h4");
         appsButton.addClickListener(event -> {
             for (MenuItemContainer menuItem : leftMenu.getMenuItems().values()) {
-                menuItem.getMenuItem().setVisibility(XS, !menuItem.getMenuItem().isVisibleForDisplaySize(XS));
-                menuItem.getMenuItem().setVisibility(SM, !menuItem.getMenuItem().isVisibleForDisplaySize(SM));
+                menuItem.getMenuItemColumn().setVisibility(XS, !menuItem.getMenuItemColumn().isVisibleForDisplaySize(XS));
+                menuItem.getMenuItemColumn().setVisibility(SM, !menuItem.getMenuItemColumn().isVisibleForDisplaySize(SM));
             }
         });
 

@@ -27,6 +27,11 @@ public class MenuItemImpl extends MenuItemDesign {
         return this;
     }
 
+    public MenuItemImpl withFontStyle(String style) {
+        getBtnMenuitemText().addStyleName(style);
+        return this;
+    }
+
     public MenuItemImpl addClickListener(Button.ClickListener listener) {
         getBtnMenuitemText().addClickListener(listener);
         return this;

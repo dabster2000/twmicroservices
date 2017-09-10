@@ -14,6 +14,7 @@ import dk.trustworks.invoicewebui.web.invoice.views.DraftListView;
 import dk.trustworks.invoicewebui.web.invoice.views.InvoiceListView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
+import dk.trustworks.invoicewebui.web.time.ReportView;
 import dk.trustworks.invoicewebui.web.time.TimeManagerView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -61,35 +62,44 @@ public class LeftMenu extends ResponsiveRow {
         menuItemContainerList.sort(Comparator.comparingInt(MenuItemContainer::getOrder));
         for (MenuItemContainer menuItemContainer : menuItemContainerList) {
             if(menuItemContainer.isChild()) continue;
-            if(authorizer.hasAccess(menuItemContainer.getRoles())) addColumn(menuItemContainer.getMenuItem());
+            if(authorizer.hasAccess(menuItemContainer.getRoles())) addColumn(menuItemContainer.getMenuItemColumn());
             for (MenuItemContainer itemContainer : menuItemContainer.getChildItems()) {
-                if(authorizer.hasAccess(itemContainer.getRoles())) addColumn(itemContainer.getMenuItem());
+                if(authorizer.hasAccess(itemContainer.getRoles())) addColumn(itemContainer.getMenuItemColumn());
             }
         }
     }
 
     private void createMenuItems() {
-        MenuItemContainer dashboard = new MenuItemContainer(1).createItem(DashboardView.MENU_NAME, null, DashboardView.VIEW_ICON, DashboardView.VIEW_NAME, false, RoleType.USER);
+        int order = 1;
+        MenuItemContainer mainNavigation = new MenuItemContainer(order++).createItem("Main Navigation ---", true, null, null, false);
+        menuItems.put("MainNavigation", mainNavigation);
+        MenuItemContainer dashboard = new MenuItemContainer(order++).createItem(DashboardView.MENU_NAME, false, DashboardView.VIEW_ICON, DashboardView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(DashboardView.VIEW_NAME, dashboard);
-        MenuItemContainer time = new MenuItemContainer(2).createItem(TimeManagerView.MENU_NAME, null, TimeManagerView.VIEW_ICON, TimeManagerView.VIEW_NAME, false, RoleType.USER);
-        menuItems.put(TimeManagerView.VIEW_NAME, time);
-        MenuItemContainer clients = new MenuItemContainer(3).createItem(ClientManagerView.MENU_NAME, null, ClientManagerView.VIEW_ICON, ClientManagerView.VIEW_NAME, false, RoleType.SALES);
+        MenuItemContainer clients = new MenuItemContainer(order++).createItem(ClientManagerView.MENU_NAME, false, ClientManagerView.VIEW_ICON, ClientManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ClientManagerView.VIEW_NAME, clients);
-        MenuItemContainer projects = new MenuItemContainer(4).createItem(ProjectManagerView.MENU_NAME, null, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false, RoleType.SALES);
+        MenuItemContainer projects = new MenuItemContainer(order++).createItem(ProjectManagerView.MENU_NAME, false, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ProjectManagerView.VIEW_NAME, projects);
 
-        MenuItemContainer invoice = new MenuItemContainer(5).createItem("Invoice", MenuItemImpl.PLUS_INDICATOR, NewInvoiceView.VIEW_ICON, null, false, RoleType.ACCOUNTING);
+        MenuItemContainer timemanager = new MenuItemContainer(order++).createItem("TimeManager ---", true, null, null, false, RoleType.USER);
+        menuItems.put("timemanager", timemanager);
+        MenuItemContainer time = new MenuItemContainer(order++).createItem(TimeManagerView.MENU_NAME, false, TimeManagerView.VIEW_ICON, TimeManagerView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(TimeManagerView.VIEW_NAME, time);
+        MenuItemContainer reportView = new MenuItemContainer(order++).createItem(ReportView.MENU_NAME, false, ReportView.VIEW_ICON, ReportView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO);
+        menuItems.put(ReportView.VIEW_NAME, reportView);
+
+
+        MenuItemContainer invoice = new MenuItemContainer(order++).createItem("Invoice ---", true, null, null, false, RoleType.ACCOUNTING);
         menuItems.put("Invoice", invoice);
-        MenuItemContainer newInvoice = new MenuItemContainer(6).createItem(NewInvoiceView.MENU_NAME, null, null, NewInvoiceView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
+        MenuItemContainer newInvoice = new MenuItemContainer(order++).createItem(NewInvoiceView.MENU_NAME, false, NewInvoiceView.VIEW_ICON, NewInvoiceView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(NewInvoiceView.VIEW_NAME, newInvoice);
-        MenuItemContainer drafts = new MenuItemContainer(6).createItem(DraftListView.MENU_NAME, null, null, DraftListView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
+        MenuItemContainer drafts = new MenuItemContainer(order++).createItem(DraftListView.MENU_NAME, false, DraftListView.VIEW_ICON, DraftListView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(DraftListView.VIEW_NAME, drafts);
-        MenuItemContainer invoices = new MenuItemContainer(6).createItem(InvoiceListView.MENU_NAME, null, null, InvoiceListView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
+        MenuItemContainer invoices = new MenuItemContainer(order++).createItem(InvoiceListView.MENU_NAME, false, InvoiceListView.VIEW_ICON, DraftListView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(InvoiceListView.VIEW_NAME, invoices);
 
-        MenuItemContainer admin = new MenuItemContainer(7).createItem("Admin", MenuItemImpl.PLUS_INDICATOR, UserManagerView.VIEW_ICON, null, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
+        MenuItemContainer admin = new MenuItemContainer(order++).createItem("Administration ---", true, null, null, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
         menuItems.put("admin", admin);
-        MenuItemContainer employeeManager = new MenuItemContainer(8).createItem(UserManagerView.MENU_NAME, null, null, UserManagerView.VIEW_NAME, true, RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO).setParentMenuItem(admin);
+        MenuItemContainer employeeManager = new MenuItemContainer(order++).createItem(UserManagerView.MENU_NAME, false, UserManagerView.VIEW_ICON, UserManagerView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO);
         menuItems.put(UserManagerView.VIEW_NAME, employeeManager);
     }
 
