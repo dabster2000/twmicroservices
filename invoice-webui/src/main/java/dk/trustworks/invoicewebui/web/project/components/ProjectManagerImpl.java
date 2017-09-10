@@ -43,6 +43,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     private TaskworkerconstraintRepository taskworkerconstraintRepository;
 
     @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
     private ProjectMapLocationImpl projectMapLocation;
 
     @Autowired
@@ -65,6 +68,28 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         getSelProject().setItems(projects);
         getSelProject().addValueChangeListener(event -> {
             reloadGrid();
+        });
+        getBtnAddNewProject().addClickListener(event -> {
+            final Window window = new Window("Create Project");
+            window.setWidth("330px");
+            window.setHeight("220px");
+            window.setModal(true);
+            NewProjectDesign newProject = new NewProjectDesign();
+            window.setContent(newProject);
+            UI.getCurrent().addWindow(window);
+            newProject.getCbClients().setItems(clientRepository.findByActiveTrue());
+            newProject.getCbClients().setItemCaptionGenerator(Client::getName);
+            newProject.getBtnCreate().addClickListener(event1 -> {
+                Project project = projectRepository.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue()));
+                List<Project> reloadedProjects = newArrayList(projectRepository.findAll());
+                getSelProject().setItems(reloadedProjects);
+                getSelProject().setSelectedItem(project);
+                getSelProject().setValue(project);
+                reloadGrid();
+            });
+            newProject.getBtnCancel().addClickListener(event1 -> {
+                window.close();
+            });
         });
         return this;
     }
@@ -236,9 +261,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     @Transactional
     private void reloadGrid() {
-        currentProject = getSelProject().getValue();
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
-        createDetailLayout();
+        currentProject = getSelProject().getValue();
+        if(getSelProject().getSelectedItem().isPresent()) createDetailLayout();
     }
 
     @Transactional

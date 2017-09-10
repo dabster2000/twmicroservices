@@ -11,6 +11,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.security.Authorizer;
+import dk.trustworks.invoicewebui.web.admin.AdminManagerView;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.dashboard.DashboardView;
 import dk.trustworks.invoicewebui.web.invoice.views.DraftListView;
@@ -73,22 +74,25 @@ public class LeftMenu extends ResponsiveRow {
     }
 
     private void createMenuItems() {
-        MenuItemContainer dashboard = new MenuItemContainer(1).createItem(DashboardView.MENU_NAME, null, DashboardView.VIEW_ICON, DashboardView.VIEW_NAME, false, RoleType.ADMIN);
+        MenuItemContainer dashboard = new MenuItemContainer(1).createItem(DashboardView.MENU_NAME, null, DashboardView.VIEW_ICON, DashboardView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(DashboardView.VIEW_NAME, dashboard);
         MenuItemContainer time = new MenuItemContainer(2).createItem(TimeManagerView.MENU_NAME, null, TimeManagerView.VIEW_ICON, TimeManagerView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(TimeManagerView.VIEW_NAME, time);
-        MenuItemContainer clients = new MenuItemContainer(3).createItem(ClientManagerView.MENU_NAME, null, ClientManagerView.VIEW_ICON, ClientManagerView.VIEW_NAME, false, RoleType.EDITOR);
+        MenuItemContainer clients = new MenuItemContainer(3).createItem(ClientManagerView.MENU_NAME, null, ClientManagerView.VIEW_ICON, ClientManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ClientManagerView.VIEW_NAME, clients);
-        MenuItemContainer projects = new MenuItemContainer(4).createItem(ProjectManagerView.MENU_NAME, null, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false);
+        MenuItemContainer projects = new MenuItemContainer(4).createItem(ProjectManagerView.MENU_NAME, null, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ProjectManagerView.VIEW_NAME, projects);
-        MenuItemContainer invoice = new MenuItemContainer(5).createItem("Invoice", MenuItemImpl.PLUS_INDICATOR, NewInvoiceView.VIEW_ICON, null, false);
+        MenuItemContainer invoice = new MenuItemContainer(5).createItem("Invoice", MenuItemImpl.PLUS_INDICATOR, NewInvoiceView.VIEW_ICON, null, false, RoleType.ACCOUNTING);
         menuItems.put("Invoice", invoice);
-        MenuItemContainer newInvoice = new MenuItemContainer(6).createItem(NewInvoiceView.MENU_NAME, null, null, NewInvoiceView.VIEW_NAME, true).setParentMenuItem(invoice);
+        MenuItemContainer newInvoice = new MenuItemContainer(6).createItem(NewInvoiceView.MENU_NAME, null, null, NewInvoiceView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
         menuItems.put(NewInvoiceView.VIEW_NAME, newInvoice);
-        MenuItemContainer drafts = new MenuItemContainer(6).createItem(DraftListView.MENU_NAME, null, null, DraftListView.VIEW_NAME, true).setParentMenuItem(invoice);
+        MenuItemContainer drafts = new MenuItemContainer(6).createItem(DraftListView.MENU_NAME, null, null, DraftListView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
         menuItems.put(DraftListView.VIEW_NAME, drafts);
-        MenuItemContainer invoices = new MenuItemContainer(6).createItem(InvoiceListView.MENU_NAME, null, null, InvoiceListView.VIEW_NAME, true).setParentMenuItem(invoice);
+        MenuItemContainer invoices = new MenuItemContainer(6).createItem(InvoiceListView.MENU_NAME, null, null, InvoiceListView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
         menuItems.put(InvoiceListView.VIEW_NAME, invoices);
+        MenuItemContainer admin = new MenuItemContainer(7).createItem(AdminManagerView.MENU_NAME, null, AdminManagerView.VIEW_ICON, AdminManagerView.VIEW_NAME, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
+        menuItems.put(AdminManagerView.VIEW_NAME, admin);
+
     }
 
     public Map<String, MenuItemContainer> getMenuItems() {

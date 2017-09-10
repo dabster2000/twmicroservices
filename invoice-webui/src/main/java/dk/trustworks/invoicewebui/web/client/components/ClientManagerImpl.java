@@ -41,39 +41,39 @@ public class ClientManagerImpl extends ClientManagerDesign {
     @Autowired
     MainTemplate mainTemplate;
 
+    ResponsiveLayout responsiveLayout;
+
     public ClientManagerImpl init() {
         createClientListViev();
         return this;
     }
 
     private void createClientListViev() {
-        ResponsiveLayout responsiveLayout = new ResponsiveLayout();
+        if(responsiveLayout!=null) removeComponent(responsiveLayout);
+        responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
         int rowItemCount = 1;
         ResponsiveRow row = responsiveLayout.addRow();
 
-        Iterable<Client> clients = clientRepository.findAll();
+        Iterable<Client> clients = clientRepository.findAllOrOrderByName();
         for (Client client : clients) {
             ClientCardImpl clientCard = new ClientCardImpl(client);
             clientCard.getBtnEdit().addClickListener(event -> {
                 createClientDetailsView(client);
             });
-            row.addColumn().withDisplayRules(12, 6, 3, 3).withComponent(clientCard);
+            row.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(clientCard);
             rowItemCount++;
             if(rowItemCount > 4) {
                 rowItemCount = 1;
-                row = responsiveLayout.addRow();
+                //row = responsiveLayout.addRow();
             }
         }
 
         AddClientCardDesign addClientCardDesign = new AddClientCardDesign();
         addClientCardDesign.getBtnAddClient().addClickListener(event -> {
-            final Window window = new Window("Window");
-            window.setWidth(600.0f, Unit.PIXELS);
-            window.setHeight("500px");
-            window.setModal(true);
-            createClientBlock(new Client());
+            Client client = clientRepository.save(new Client("", "New Client"));
+            createClientDetailsView(client);
         });
         responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 12, 12).withComponent(addClientCardDesign);
     }
@@ -206,14 +206,6 @@ public class ClientManagerImpl extends ClientManagerDesign {
         }
         logo.setHeightUndefined();
         return logo;
-    }
-
-    private Image createTopBarImage() {
-        Image image = new Image("", new ThemeResource("images/top-bar.png"));
-        image.setResponsive(true);
-        image.setWidth(100, Unit.PERCENTAGE);
-        image.setHeightUndefined();
-        return image;
     }
 
     private void createAddClientDataButton(ResponsiveRow clientDataRow, Window window2, Client client) {

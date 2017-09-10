@@ -1,13 +1,12 @@
 package dk.trustworks.invoicewebui.security;
 
-import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.RoleType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 
 /**
@@ -15,7 +14,7 @@ import static java.lang.annotation.ElementType.TYPE;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(TYPE)
+@Target({TYPE, METHOD})
 public @interface AccessRules {
-    public RoleType[] roleTypes();
+    RoleType[] roleTypes();
 }

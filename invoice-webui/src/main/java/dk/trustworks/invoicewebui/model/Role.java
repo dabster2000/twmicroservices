@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by hans on 23/06/2017.
@@ -21,6 +22,12 @@ public class Role {
     private RoleType role;
 
     public Role() {
+    }
+
+    public Role(User user, RoleType role) {
+        uuid = UUID.randomUUID().toString();
+        this.user = user;
+        this.role = role;
     }
 
     public String getUuid() {

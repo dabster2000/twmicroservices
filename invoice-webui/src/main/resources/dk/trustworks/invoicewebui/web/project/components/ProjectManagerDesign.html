@@ -7,7 +7,12 @@
  </head>
  <body>
   <vaadin-vertical-layout>
-   <vaadin-combo-box empty-selection-allowed="false" placeholder="select project" width="300px" data-item-type="dk.trustworks.invoicewebui.model.Project" data-property-id="name" _id="selProject" :center></vaadin-combo-box>
+   <vaadin-horizontal-layout :center>
+    <vaadin-combo-box empty-selection-allowed="false" placeholder="select project" width="300px" data-item-type="dk.trustworks.invoicewebui.model.Project" data-property-id="name" _id="selProject"></vaadin-combo-box>
+    <vaadin-button style-name="flat friendly" plain-text _id="btnAddNewProject">
+      New Project 
+    </vaadin-button>
+   </vaadin-horizontal-layout>
   </vaadin-vertical-layout>
  </body>
 </html>

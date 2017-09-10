@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout spacing="false" size-full margin="false" :expand>
+     <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px">
+      <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e71e" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
+      <vaadin-label plain-text _id="lblTitle" :middle :expand>
+        User Information 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-vertical-layout spacing="false" size-full _id="container">
+      <vaadin-form-layout>
+       <vaadin-text-field caption="Firstname" width-full _id="txtFirstname"></vaadin-text-field>
+       <vaadin-text-field caption="Lastname" width-full _id="txtLastname"></vaadin-text-field>
+       <vaadin-text-field caption="Email" width-full _id="txtEmail"></vaadin-text-field>
+       <vaadin-text-field caption="Username" width-full _id="txtUsername"></vaadin-text-field>
+       <vaadin-text-field caption="SlackID" width-full _id="txtSlackID"></vaadin-text-field>
+       <vaadin-date-field caption="Birthday" _id="dfBirthday"></vaadin-date-field>
+       <vaadin-check-box caption="Active" _id="cbActive"></vaadin-check-box>
+      </vaadin-form-layout>
+      <vaadin-button style-name="flat friendly" width-full plain-text _id="btnUpdate">
+        Update 
+      </vaadin-button>
+     </vaadin-vertical-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

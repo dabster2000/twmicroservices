@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-text-field placeholder="project name" width-full _id="txtProjectName"></vaadin-text-field>
+   <vaadin-combo-box empty-selection-allowed="false" placeholder="select client" empty-selection-caption="select client" width-full data-item-type="dk.trustworks.invoicewebui.model.Client" data-property-id="name" _id="cbClients"></vaadin-combo-box>
+   <vaadin-horizontal-layout spacing="false" width-full>
+    <vaadin-button style-name="flat friendly" width-full plain-text _id="btnCreate">
+      CREATE 
+    </vaadin-button>
+    <vaadin-button style-name="flat" width-full plain-text _id="btnCancel">
+      cancel 
+    </vaadin-button>
+   </vaadin-horizontal-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

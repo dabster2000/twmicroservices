@@ -4,7 +4,11 @@ package dk.trustworks.invoicewebui.model;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class Client {
@@ -12,7 +16,8 @@ public class Client {
     private String uuid;
     private boolean active;
     private String contactname;
-    private java.sql.Timestamp created;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
     private String name;
     private Double latitude;
     private Double longitude;
@@ -22,6 +27,22 @@ public class Client {
     private List<Project> projects;
     @OneToOne(mappedBy = "client", fetch = FetchType.LAZY)
     private Logo logo;
+
+    public Client() {
+    }
+
+    public Client(String contactname, String name) {
+        uuid = UUID.randomUUID().toString();
+        this.active = true;
+        this.contactname = contactname;
+        this.created = new Date();
+        this.name = name;
+        this.latitude = 0.0;
+        this.longitude = 0.0;
+        this.clientdata = null;
+        this.projects = new ArrayList<>();
+        this.clientdata = new ArrayList<>();
+    }
 
     public String getUuid() {
         return uuid;
@@ -39,11 +60,11 @@ public class Client {
         this.contactname = contactname;
     }
 
-    public java.sql.Timestamp getCreated() {
+    public Date getCreated() {
         return created;
     }
 
-    public void setCreated(java.sql.Timestamp created) {
+    public void setCreated(Date created) {
         this.created = created;
     }
 

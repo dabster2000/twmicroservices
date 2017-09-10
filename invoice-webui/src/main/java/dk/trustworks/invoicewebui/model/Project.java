@@ -6,9 +6,14 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class Project {
@@ -16,7 +21,9 @@ public class Project {
     private String uuid;
     private boolean active;
     private Double budget;
-    private Timestamp created;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
     private String customerreference;
     private String name;
 
@@ -38,6 +45,22 @@ public class Project {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="clientdatauuid")
     private Clientdata clientdata;
+
+    public Project() {
+    }
+
+    public Project(String name, Client client) {
+        uuid = UUID.randomUUID().toString();
+        active = true;
+        budget = 0.0;
+        created = new Date();
+        startdate = LocalDate.now();
+        enddate = startdate.plusMonths(3);
+        tasks = new ArrayList<>();
+        customerreference = "";
+        this.name = name;
+        this.client = client;
+    }
 
     public String getUuid() {
         return uuid;
@@ -63,11 +86,11 @@ public class Project {
         this.budget = budget;
     }
 
-    public Timestamp getCreated() {
+    public Date getCreated() {
         return created;
     }
 
-    public void setCreated(Timestamp created) {
+    public void setCreated(Date created) {
         this.created = created;
     }
 
