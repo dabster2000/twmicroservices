@@ -5,6 +5,8 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.admin.components.AdminManagerImpl;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
@@ -18,7 +20,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-//@AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
+@AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
 @SpringView(name = UserManagerView.VIEW_NAME)
 public class UserManagerView extends VerticalLayout implements View {
 
