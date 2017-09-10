@@ -15,7 +15,6 @@ import dk.trustworks.invoicewebui.repositories.LogoRepository;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.alump.materialicons.MaterialIcons;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
@@ -56,7 +55,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         int rowItemCount = 1;
         ResponsiveRow row = responsiveLayout.addRow();
 
-        Iterable<Client> clients = clientRepository.findAllOrOrderByName();
+        Iterable<Client> clients = clientRepository.findAllByOrderByNameAsc();
         for (Client client : clients) {
             ClientCardImpl clientCard = new ClientCardImpl(client);
             clientCard.getBtnEdit().addClickListener(event -> {

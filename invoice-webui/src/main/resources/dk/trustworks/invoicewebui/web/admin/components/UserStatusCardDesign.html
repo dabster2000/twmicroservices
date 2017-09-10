@@ -12,20 +12,22 @@
      <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px">
       <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e913" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
       <vaadin-label plain-text _id="lblTitle" :middle :expand>
-        Employee Salary 
+        Employee Status 
       </vaadin-label>
      </vaadin-horizontal-layout>
      <vaadin-vertical-layout spacing="false" size-full _id="container">
-      <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.model.Salary" selection-mode="multi" _id="gridSalaries">
+      <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.model.UserStatus" selection-mode="multi" _id="gridSalaries">
        <table>
         <colgroup>
-         <col column-id="activefrom" sortable>
-         <col column-id="salary" sortable>
+         <col column-id="statusdate" sortable>
+         <col column-id="status" sortable>
+         <col column-id="allocation" sortable>
         </colgroup>
         <thead>
          <tr default>
-          <th plain-text column-ids="activefrom">Date</th>
-          <th plain-text column-ids="salary">Salary</th>
+          <th plain-text column-ids="statusdate">Date</th>
+          <th plain-text column-ids="status">Status</th>
+          <th plain-text column-ids="allocation">Allocation</th>
          </tr>
         </thead>
         <tbody></tbody>
@@ -33,8 +35,9 @@
       </vaadin-grid>
       <vaadin-horizontal-layout width-full _id="hlAddBar">
        <vaadin-date-field placeholder="date" width="125px" _id="dfDate"></vaadin-date-field>
-       <vaadin-text-field description="salary" placeholder="salary" width-full _id="txtSalary" :expand></vaadin-text-field>
-       <vaadin-button style-name="flat friendly" plain-text _id="btnAddSalary">
+       <vaadin-combo-box empty-selection-caption="select status" width-full data-item-type="dk.trustworks.invoicewebui.model.StatusType" _id="cbStatus" :expand="0.4"></vaadin-combo-box>
+       <vaadin-text-field description="Allocation" placeholder="allocation" width-full _id="txtAllocation" :expand="0.6"></vaadin-text-field>
+       <vaadin-button style-name="flat friendly" plain-text _id="btnCreate">
          CREATE 
        </vaadin-button>
       </vaadin-horizontal-layout>

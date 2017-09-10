@@ -34,7 +34,7 @@ public class MenuItemImpl extends MenuItemDesign {
 
     public MenuItemImpl setChild(boolean isChild) {
         if(isChild) {
-            this.setVisible(false);
+            //this.setVisible(false);
             getBtnMenuitemText().addStyleName("tiny");
             getLblChildSpace().setVisible(true);
         }

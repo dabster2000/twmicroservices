@@ -2,11 +2,10 @@ package dk.trustworks.invoicewebui.web.admin.components;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.RoleType;
-import dk.trustworks.invoicewebui.model.Salary;
-import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.SalaryRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +18,18 @@ import java.util.List;
 
 @SpringUI
 @SpringComponent
-public class UserSalaryCardImpl extends UserSalaryCardDesign {
+public class UserStatusCardImpl extends UserStatusCardDesign {
 
     @Autowired
-    private SalaryRepository salaryRepository;
+    private UserStatusRepository userStatusRepository;
 
     @Autowired
     private UserRepository userRepository;
 
     private User user;
-    private List<Salary> salaries;
+    private List<UserStatus> userStatusList;
 
-    public UserSalaryCardImpl() {
+    public UserStatusCardImpl() {
         this.setVisible(false);
 
         getGridSalaries().addSelectionListener(event -> {
@@ -44,30 +43,30 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            for (Salary salary : getGridSalaries().getSelectedItems()) {
-                salaryRepository.delete(salary);
+            for (UserStatus userStatus : getGridSalaries().getSelectedItems()) {
+                userStatusRepository.delete(userStatus);
             }
-            getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getSalaries());
+            getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getStatuses());
         });
-        getBtnAddSalary().addClickListener(event -> {
-            salaryRepository.save(new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue()), user));
+        getBtnCreate().addClickListener(event -> {
+            userStatusRepository.save(new UserStatus(user, getCbStatus().getValue(), getDfDate().getValue(), Integer.parseInt(getTxtAllocation().getValue())));
             user = userRepository.findOne(user.getUuid());
-            salaries = user.getSalaries();
-            getGridSalaries().setItems(salaries);
+            userStatusList = user.getStatuses();
+            getGridSalaries().setItems(userStatusList);
         });
+        getCbStatus().setItems(StatusType.values());
+        getCbStatus().setItemCaptionGenerator(StatusType::name);
     }
 
     @Transactional
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.CXO})
     public void init(String userUUID) {
+        System.out.println("UserStatusCardImpl.init");
         this.setVisible(true);
-        System.out.println("UserSalaryCardImpl.init");
-        System.out.println("uuid = [" + userUUID + "]");
-
 
         user = userRepository.findOne(userUUID);
-        salaries = user.getSalaries();
+        userStatusList = user.getStatuses();
 
-        getGridSalaries().setItems(salaries);
+        getGridSalaries().setItems(userStatusList);
     }
 }

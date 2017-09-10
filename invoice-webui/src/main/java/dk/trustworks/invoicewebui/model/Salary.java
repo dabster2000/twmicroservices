@@ -1,10 +1,10 @@
 package dk.trustworks.invoicewebui.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by hans on 23/06/2017.
@@ -19,9 +19,21 @@ public class Salary {
     @JoinColumn(name="useruuid")
     private User user;
     private int salary;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date activefrom;
 
     public Salary() {
+    }
+
+    public Salary(LocalDate activeFrom, int salary, User user) {
+        uuid = UUID.randomUUID().toString();
+        this.user = user;
+        this.activefrom = java.util.Date.from(
+                activeFrom.atStartOfDay(
+                        ZoneId.of( "Europe/Paris" )
+                ).toInstant()
+        );
+        this.salary = salary;
     }
 
     public String getUuid() {

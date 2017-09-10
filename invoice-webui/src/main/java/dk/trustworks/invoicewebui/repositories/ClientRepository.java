@@ -14,7 +14,7 @@ import java.util.List;
 public interface ClientRepository extends CrudRepository<Client, String> {
 
     List<Client> findByActiveTrue();
-    List<Client> findAllOrOrderByName();
+    List<Client> findAllByOrderByNameAsc();
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Client entity);

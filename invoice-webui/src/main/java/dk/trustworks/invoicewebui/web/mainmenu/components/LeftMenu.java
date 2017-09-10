@@ -1,17 +1,13 @@
 package dk.trustworks.invoicewebui.web.mainmenu.components;
 
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.annotation.ViewScope;
-import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.security.Authorizer;
-import dk.trustworks.invoicewebui.web.admin.AdminManagerView;
+import dk.trustworks.invoicewebui.web.admin.UserManagerView;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.dashboard.DashboardView;
 import dk.trustworks.invoicewebui.web.invoice.views.DraftListView;
@@ -19,7 +15,6 @@ import dk.trustworks.invoicewebui.web.invoice.views.InvoiceListView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 import dk.trustworks.invoicewebui.web.time.TimeManagerView;
-import org.atmosphere.config.service.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -82,6 +77,7 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(ClientManagerView.VIEW_NAME, clients);
         MenuItemContainer projects = new MenuItemContainer(4).createItem(ProjectManagerView.MENU_NAME, null, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ProjectManagerView.VIEW_NAME, projects);
+
         MenuItemContainer invoice = new MenuItemContainer(5).createItem("Invoice", MenuItemImpl.PLUS_INDICATOR, NewInvoiceView.VIEW_ICON, null, false, RoleType.ACCOUNTING);
         menuItems.put("Invoice", invoice);
         MenuItemContainer newInvoice = new MenuItemContainer(6).createItem(NewInvoiceView.MENU_NAME, null, null, NewInvoiceView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
@@ -90,9 +86,11 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(DraftListView.VIEW_NAME, drafts);
         MenuItemContainer invoices = new MenuItemContainer(6).createItem(InvoiceListView.MENU_NAME, null, null, InvoiceListView.VIEW_NAME, true, RoleType.ACCOUNTING).setParentMenuItem(invoice);
         menuItems.put(InvoiceListView.VIEW_NAME, invoices);
-        MenuItemContainer admin = new MenuItemContainer(7).createItem(AdminManagerView.MENU_NAME, null, AdminManagerView.VIEW_ICON, AdminManagerView.VIEW_NAME, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
-        menuItems.put(AdminManagerView.VIEW_NAME, admin);
 
+        MenuItemContainer admin = new MenuItemContainer(7).createItem("Admin", MenuItemImpl.PLUS_INDICATOR, UserManagerView.VIEW_ICON, null, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
+        menuItems.put("admin", admin);
+        MenuItemContainer employeeManager = new MenuItemContainer(8).createItem(UserManagerView.MENU_NAME, null, null, UserManagerView.VIEW_NAME, true, RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO).setParentMenuItem(admin);
+        menuItems.put(UserManagerView.VIEW_NAME, employeeManager);
     }
 
     public Map<String, MenuItemContainer> getMenuItems() {

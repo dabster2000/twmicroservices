@@ -21,7 +21,6 @@ import java.util.Set;
  */
 @SpringUI
 @SpringComponent
-@AccessRules(roleTypes = {RoleType.ADMIN})
 public class RoleCardImpl extends RoleCardDesign {
 
     @Autowired
@@ -35,6 +34,7 @@ public class RoleCardImpl extends RoleCardDesign {
     }
 
     @Transactional
+    @AccessRules(roleTypes = {RoleType.ADMIN})
     public void init(String userUUID) {
         getContainer().removeAllComponents();
         User user = userRepository.findOne(userUUID);

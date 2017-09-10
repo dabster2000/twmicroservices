@@ -72,7 +72,7 @@ public class MenuItemContainer {
                 .withComponent(menuItem);
         this.menuItem = menuItemColumn;
         if(parentIndicator != null) {
-            ((MenuItemImpl) getMenuItem().getComponent()).addClickListener(event -> foldInOut());
+            //((MenuItemImpl) getMenuItem().getComponent()).addClickListener(event -> foldInOut());
         }
         return this;
     }

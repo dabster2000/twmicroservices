@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @SpringUI
 @SpringComponent
-@AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
 public class UserInfoCardImpl extends UserInfoCardDesign {
 
     @Autowired
@@ -39,6 +38,7 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
     }
 
     @Transactional
+    @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
     public void init(String userUUID) {
         user = userRepository.findOne(userUUID);
         binder = new Binder<>();
