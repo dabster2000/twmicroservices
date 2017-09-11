@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.repositories;
 
+import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.Work;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
@@ -34,11 +35,13 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     List<Work> findByPeriod(@Param("fromdate") String fromdate,
                                        @Param("todate") String todate);
 
-
     //@Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM timemanager.work_latest w WHERE w.year = :year AND w.month = :month", nativeQuery = true)
     @Query(value = "SELECT uuid, day, month, year, taskuuid, useruuid, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM work_latest w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
     List<Work> findByYearAndMonth(@Param("year") int year,
                                   @Param("month") int month);
+
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work_latest w WHERE w.taskuuid LIKE :taskuuid", nativeQuery = true)
+    List<Work> findByTask(@Param("taskuuid") String taskuuid);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Work entity);

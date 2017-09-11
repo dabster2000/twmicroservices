@@ -19,6 +19,9 @@ public class Task {
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private List<Budget> budget;
 
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    private List<Work> workList;
+
     public Task() {
     }
 
@@ -75,6 +78,14 @@ public class Task {
 
     public void setBudget(List<Budget> budget) {
         this.budget = budget;
+    }
+
+    public List<Work> getWorkList() {
+        return workList;
+    }
+
+    public void setWorkList(List<Work> workList) {
+        this.workList = workList;
     }
 
     @Override

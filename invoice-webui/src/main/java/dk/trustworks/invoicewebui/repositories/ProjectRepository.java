@@ -15,6 +15,7 @@ import java.util.List;
 public interface ProjectRepository extends CrudRepository<Project, String> {
 
     List<Project> findAllByOrderByNameAsc();
+    List<Project> findAllByActiveTrueOrderByNameAsc();
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Project entity);

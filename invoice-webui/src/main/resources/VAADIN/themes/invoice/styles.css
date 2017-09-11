@@ -33335,6 +33335,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .grey-font .v-button-caption {
 	color: #a3a4a5;
+	font-weight: bold;
 }
 
 .invoice .dark-grey-icon .v-icon {
@@ -33343,6 +33344,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .dark-grey-font .v-button-caption {
 	color: #818384;
+	font-weight: bold;
 }
 
 .invoice .holder {

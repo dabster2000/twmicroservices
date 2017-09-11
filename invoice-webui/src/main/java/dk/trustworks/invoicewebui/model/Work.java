@@ -19,6 +19,7 @@ public class Work {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taskuuid")
     private Task task;
