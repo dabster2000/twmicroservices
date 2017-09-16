@@ -23,8 +23,7 @@ public class UserStatus {
 
     @Enumerated(EnumType.STRING)
     private StatusType status;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date statusdate;
+    private LocalDate statusdate;
     private int allocation;
 
     public UserStatus() {
@@ -34,11 +33,7 @@ public class UserStatus {
         uuid = UUID.randomUUID().toString();
         this.user = user;
         this.status = status;
-        this.statusdate = java.util.Date.from(
-                statusdate.atStartOfDay(
-                        ZoneId.of( "Europe/Paris" )
-                ).toInstant()
-        );;
+        this.statusdate = statusdate;
         this.allocation = allocation;
     }
 
@@ -66,11 +61,11 @@ public class UserStatus {
         this.status = status;
     }
 
-    public Date getStatusdate() {
+    public LocalDate getStatusdate() {
         return statusdate;
     }
 
-    public void setStatusdate(Date statusdate) {
+    public void setStatusdate(LocalDate statusdate) {
         this.statusdate = statusdate;
     }
 

@@ -37,6 +37,10 @@ public class User {
     private List<Work> workList;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Role> roleList;
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
+    private List<Notification> notifications;
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    private List<Project> projects;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -169,6 +173,22 @@ public class User {
 
     public void setRoleList(List<Role> roleList) {
         this.roleList = roleList;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 
     @Override

@@ -106,6 +106,15 @@ $v-focus-color: #00BCD4;
     background-color: #f1f1f2;
   }
 
+  .v-button.multi-line {
+    height: auto;
+    white-space: normal;
+  }
+
+  .v-verticallayout.transparent {
+    background: transparent;
+  }
+
   .white-bg {
     background-color: #ffffff;
   }

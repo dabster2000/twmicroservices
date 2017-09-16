@@ -18969,6 +18969,188 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	margin-left: 0;
 }
 
+.invoice .fancy-image {
+	border-width: 0px;
+}
+
+.invoice .fancy-image  > IMG {
+	-moz-transition: opacity 0.5s ease-in-out;
+	-webkit-transition: opacity 0.5s ease-in-out;
+	-o-transition: opacity 0.5s ease-in-out;
+	transition: opacity 0.5s ease-in-out;
+}
+
+.invoice .fancy-image  > IMG.fancy--on, .invoice .fancy-image  > IMG.fancy--out {
+	-moz-transition: opacity 0.5s ease-in-out, -moz-transform 0.5s linear;
+	-webkit-transition: opacity 0.5s ease-in-out, -webkit-transform 0.5s linear;
+	-o-transition: opacity 0.5s ease-in-out, -o-transform 0.5s linear;
+	transition: opacity 0.5s ease-in-out, transform 0.5s linear;
+}
+
+.invoice .fancy-image.fancy-image-rotate {
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-o-transform-style: preserve-3d;
+	-ms-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	-webkit-perspective: 700px;
+	-ie-perspective: 700px;
+	perspective: 700px;
+}
+
+.invoice .fancy-image.fancy-image-rotate  > IMG {
+	-moz-backface-visibility: hidden;
+	-o-backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+
+.invoice .fancy-panel {
+	-webkit-perspective: 700px;
+	-ie-perspective: 700px;
+	perspective: 700px;
+}
+
+.invoice .fancy-panel-container.fancy-fade  > .fancy-panel-cwrapper {
+	-moz-transition: opacity 0.25s ease-in-out;
+	-webkit-transition: opacity 0.25s ease-in-out;
+	-o-transition: opacity 0.25s ease-in-out;
+	transition: opacity 0.25s ease-in-out;
+}
+
+.invoice .fancy-panel-container.fancy-zoom  > .fancy-panel-cwrapper, .invoice .fancy-panel-container.fancy-rotate  > .fancy-panel-cwrapper {
+	-moz-transition: transform 0.25s ease-in-out;
+	-webkit-transition: -webkit-transform 0.25s ease-in-out;
+	-o-transition: transform 0.25s ease-in-out;
+	transition: transform 0.25s ease-in-out;
+}
+
+.invoice .fancy-panel-container.fancy-rotate  > .fancy-panel-cwrapper {
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-o-transform-style: preserve-3d;
+	-ms-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	-moz-backface-visibility: hidden;
+	-o-backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+
+.invoice .fancy-panel-container.fancy-fade.fancy-zoom  > .fancy-panel-cwrapper, .invoice .fancy-panel-container.fancy-fade.fancy-rotate  > .fancy-panel-cwrapper {
+	-moz-transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+	-webkit-transition: opacity 0.25s ease-in-out, -webkit-transform 0.25s ease-in-out;
+	-o-transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+	transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+}
+
+.invoice .fancy-csslayout-item {
+	-moz-transition: opacity 0.34s ease-in, margin 0.34s ease-in;
+	-webkit-transition: opacity 0.34s ease-in, margin 0.34s ease-in;
+	-o-transition: opacity 0.34s ease-in, margin 0.34s ease-in;
+	transition: opacity 0.34s ease-in, margin 0.34s ease-in;
+	margin: 0px;
+}
+
+.invoice .fancy-notifs {
+	position: absolute;
+	max-height: 100%;
+	overflow: hidden;
+	z-index: 1000;
+}
+
+.invoice .fancy-notifs .fancy-csslayout-item {
+	display: block;
+}
+
+.invoice .fancy-notifs .fancy-notif {
+	position: relative;
+	margin: 3px 12px 3px 3px;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+	border-radius: 10px;
+	min-height: 56px;
+	width: 300px;
+	box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
+	cursor: pointer;
+}
+
+.invoice .fancy-notifs .fancy-notif:hover {
+	background-color: rgba(0, 0, 0, 0.75);
+}
+
+.invoice .fancy-notifs .fancy-notif .fancy-notif-icon {
+	position: absolute;
+	left: 8px;
+	top: 50%;
+	margin-top: -24px;
+	max-width: 48px;
+	max-height: 48px;
+}
+
+.invoice .fancy-notifs .fancy-notif .fancy-notif-title {
+	position: absolute;
+	left: 64px;
+	top: 8px;
+	color: white;
+	text-shadow: rgba(0, 0, 0, 0.5) 1px 1px 2px;
+	font-weight: bold;
+	font-size: 12px;
+	max-width: 226px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.invoice .fancy-notifs .fancy-notif .fancy-notif-desc {
+	position: relative;
+	color: white;
+	text-shadow: rgba(0, 0, 0, 0.5) 1px 1px 2px;
+	margin-left: 64px;
+	margin-top: 28px;
+	margin-bottom: 8px;
+	font-size: 12px;
+	max-width: 226px;
+	overflow: hidden;
+	white-space: normal;
+	max-height: 55px;
+}
+
+.invoice .fancy-notifs .fancy-notif.fancy-notif-noicon .fancy-notif-title, .invoice .fancy-notifs .fancy-notif.fancy-notif-noicon .fancy-notif-desc {
+	left: 12px;
+	max-width: 278px;
+}
+
+.invoice .fancy-notifs .fancy-notif.fancy-notif-noicon .fancy-notif-desc {
+	margin-left: 12px;
+	max-width: 278px;
+}
+
+.invoice .fancy-notifs .fancy-notif.fancy-notif-noicon .fancy-notif-title {
+	margin-top: 8px;
+	max-height: 75px;
+}
+
+.invoice .fancy-notifs-topleft {
+	left: 0px;
+	top: 0px;
+}
+
+.invoice .fancy-notifs-topright {
+	right: 0px;
+	top: 0px;
+}
+
+.invoice .fancy-notifs-bottomleft {
+	left: 0px;
+	bottom: 0px;
+}
+
+.invoice .fancy-notifs-bottomright {
+	right: 0px;
+	bottom: 0px;
+}
+
 .invoice .MaterialIcons {
 	font-family: "MaterialIcons";
 	font-weight: normal;
@@ -33319,6 +33501,15 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .top-bar-grey1 {
 	background-color: #f1f1f2;
+}
+
+.invoice .v-button.multi-line {
+	height: auto;
+	white-space: normal;
+}
+
+.invoice .v-verticallayout.transparent {
+	background: transparent;
 }
 
 .invoice .white-bg {

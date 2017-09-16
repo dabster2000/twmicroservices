@@ -13,12 +13,17 @@
      <vaadin-label style-name="h5 bold" plain-text _id="lblHeading">
        Upcomming Events 
      </vaadin-label>
-     <vaadin-grid-layout spacing width-full _id="eventGrid" :expand>
-      <row>
-       <column></column>
-       <column></column>
-      </row>
-     </vaadin-grid-layout>
+     <vaadin-panel style-name="v-scrollable" size-full :expand>
+      <vaadin-grid-layout spacing width-full height="200px" _id="eventGrid">
+       <row>
+        <column></column>
+        <column></column>
+       </row>
+      </vaadin-grid-layout>
+     </vaadin-panel>
+     <vaadin-label visible="false" style-name="huge bold colored" plain-text _id="lblBirthdayGreeting" :center>
+       Label 
+     </vaadin-label>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>
   </vaadin-vertical-layout>

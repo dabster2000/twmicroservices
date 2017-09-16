@@ -46,6 +46,10 @@ public class Project {
     @JoinColumn(name="clientdatauuid")
     private Clientdata clientdata;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userowneruuid")
+    private User owner;
+
     public Project() {
     }
 
@@ -152,6 +156,14 @@ public class Project {
 
     public void setClientdata(Clientdata clientdata) {
         this.clientdata = clientdata;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     @Override

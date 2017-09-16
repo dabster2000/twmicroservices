@@ -41,8 +41,8 @@ public class TimeManagerView extends VerticalLayout implements View {
     private TimeManagerImpl timeManager;
 
     public static final String VIEW_NAME = "timeregistration";
-    public static final String MENU_NAME = "Time Registration";
-    public static final String VIEW_BREADCRUMB = "Time Registration";
+    public static final String MENU_NAME = "Time Sheet";
+    public static final String VIEW_BREADCRUMB = "TimeManager / Time Sheet";
     public static final FontIcon VIEW_ICON = MaterialIcons.ACCESS_TIME;
 
     @PostConstruct

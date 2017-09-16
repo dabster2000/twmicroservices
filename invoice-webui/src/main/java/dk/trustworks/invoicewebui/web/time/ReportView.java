@@ -38,8 +38,8 @@ public class ReportView extends VerticalLayout implements View {
     private TimeReportImpl timeReport;
 
     public static final String VIEW_NAME = "timereport";
-    public static final String MENU_NAME = "Time Report";
-    public static final String VIEW_BREADCRUMB = "Time Report";
+    public static final String MENU_NAME = "Report";
+    public static final String VIEW_BREADCRUMB = "TimeManager / Report";
     public static final FontIcon VIEW_ICON = MaterialIcons.ACCESS_TIME;
 
     @PostConstruct

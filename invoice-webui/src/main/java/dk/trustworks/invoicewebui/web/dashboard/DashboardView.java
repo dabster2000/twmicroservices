@@ -11,9 +11,8 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
-import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
+import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
@@ -40,10 +39,14 @@ public class DashboardView extends VerticalLayout implements View {
 
     private static final Logger logger = LoggerFactory.getLogger(DashboardView.class);
     /**
-     * Fødselsdage
      * Templates
      * Apps i Trustworks
      * Projects nearly ending
+     * Reminder til projektowners at en client ikke har et logo
+     * Reminder til projektejer at projekt ikke bør være aktivt mere (3måneder uden arbeje)
+     * Reminder om at der ikke er en projektejer til sales team
+     * Reminder til projektejer at budgettet er ved at løbe ud på projekt/konsulent
+     * Photos
      */
 
     public static final String VIEW_NAME = "mainmenu";
@@ -58,6 +61,9 @@ public class DashboardView extends VerticalLayout implements View {
     private MainTemplate mainTemplate;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private UserStatusRepository userStatusRepository;
 
     @Autowired
@@ -66,6 +72,15 @@ public class DashboardView extends VerticalLayout implements View {
     @Autowired
     private TaskworkerconstraintRepository taskworkerconstraintRepository;
 
+    @Autowired
+    private TrustworksEventRepository trustworksEventRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private DropboxAPI dropboxAPI;
+
     @Transactional
     @PostConstruct
     void init() {
@@ -73,13 +88,18 @@ public class DashboardView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FIXED);
-
+        ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         board.setSizeFull();
         board.setScrollable(true);
 
-        BirthdayCardImpl birthdayCard = new BirthdayCardImpl(2, 4, "birthdayCard");
+        BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
+        //irthdayCard.setHeight("600px");
+        PhotosCardImpl photoCard = new PhotosCardImpl(dropboxAPI, 4, 6, "photoCard");
+        photoCard.setHeight("400px");
+        NewsImpl newsCard = new NewsImpl(userRepository, projectRepository, 1, 6, "newsCard");
+        //newsCard.setHeight("600px");
         DnaCardImpl dnaCard = new DnaCardImpl(3, 4, "dnaCard");
+        dnaCard.setHeight("400px");
 
         ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(2, 8, "locationCardDesign");
         locationCardDesign.setWidth("100%");
@@ -102,10 +122,28 @@ public class DashboardView extends VerticalLayout implements View {
 
         List<Box> boxes = new ArrayList<>();
         boxes.add(birthdayCard);
+        boxes.add(newsCard);
+        boxes.add(photoCard);
         boxes.add(locationCardDesign);
         boxes.add(monthNewsCardDesign);
         boxes.add(dnaCard);
+/*
+        ResponsiveLayout newsLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveRow row = newsLayout.addRow();
+        row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(birthdayCard);
+        row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(newsCard);
 
+        ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveRow row2 = mainLayout.addRow();
+        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthNewsCardDesign);
+        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(photoCard);
+        row2.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(locationCardDesign);
+        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
+
+        ResponsiveRow row3 = board.addRow();
+        row3.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(mainLayout);
+        row3.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(newsLayout);
+*/
         createRows(board, boxes);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
@@ -207,22 +245,15 @@ public class DashboardView extends VerticalLayout implements View {
         Map<Box, Integer> boxIntegerMap = new HashMap<>();
         for (Box box : boxes) {
             for (int i = 0; i < rowSize.length; i++) {
-                logger.debug("--- --- ---");
-                logger.debug("i = " + i);
-                logger.debug("rowSize = " + rowSize[i]);
-                logger.debug("box = " + box);
                 if(rowSize[i] + box.getBoxWidth() <= 12) {
                     boxIntegerMap.put(box, i);
                     rowSize[i] += box.getBoxWidth();
                     if(maxRows < i) maxRows = i;
-                    logger.debug("--- put ---");
-                    logger.debug("--- --- ---");
                     break;
                 }
             }
         }
 
-        logger.debug("XXX XXX XXX");
         ResponsiveRow[] responsiveRows = new ResponsiveRow[maxRows+1];
         for (int i = 0; i < maxRows + 1; i++) {
             responsiveRows[i] = board.addRow();
@@ -275,7 +306,6 @@ public class DashboardView extends VerticalLayout implements View {
                     widths[3] = 12;
                     break;
             }
-            System.out.println(row+": "+box.getPriority()+" "+" "+" "+box.getBoxWidth()+" "+" "+" "+box.getName());
             responsiveRows[0].addColumn()
                     .withDisplayRules(widths[3], widths[2], widths[1], widths[0])
                     .withComponent(box.getBoxComponent());

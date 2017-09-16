@@ -9,6 +9,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.web.project.model.TaskRow;
@@ -92,6 +93,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             });
         });
         return this;
+    }
+
+    public void setCurrentProject(String projectUUID) {
+        currentProject = projectRepository.findOne(projectUUID);
+        getSelProject().setSelectedItem(currentProject);
+        getSelProject().setValue(currentProject);
+        reloadGrid();
     }
 
     @Transactional

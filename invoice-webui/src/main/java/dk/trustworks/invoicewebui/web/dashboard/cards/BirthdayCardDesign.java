@@ -25,6 +25,7 @@ public class BirthdayCardDesign extends VerticalLayout {
     private VerticalLayout container;
     private Label lblHeading;
     private GridLayout eventGrid;
+    private Label lblBirthdayGreeting;
 
     public BirthdayCardDesign() {
         Design.read(this);
@@ -48,6 +49,10 @@ public class BirthdayCardDesign extends VerticalLayout {
 
     public GridLayout getEventGrid() {
         return eventGrid;
+    }
+
+    public Label getLblBirthdayGreeting() {
+        return lblBirthdayGreeting;
     }
 
 }

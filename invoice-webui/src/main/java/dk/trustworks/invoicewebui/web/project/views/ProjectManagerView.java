@@ -53,5 +53,9 @@ public class ProjectManagerView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        if (event.getParameters() != null
+                && !event.getParameters().isEmpty()) {
+            projectManager.setCurrentProject(event.getParameters());
+        }
     }
 }

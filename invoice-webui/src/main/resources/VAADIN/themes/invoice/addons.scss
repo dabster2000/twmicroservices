@@ -9,6 +9,10 @@
 @import "../../../VAADIN/addons/producttour/scss/product-tour.scss";
 
 
+/* Provided by fancylayouts-addon-2.0.0.jar */
+@import "../../../VAADIN/addons/fancylayouts/fancylayouts.scss";
+
+
 /* Provided by materialicons-3.0.1.jar */
 @import "../../../VAADIN/addons/materialicons/materialicons.scss";
 
@@ -17,6 +21,7 @@
 @mixin addons {
 	@include font-awesome;
 	@include product-tour;
+	@include fancylayouts;
 	@include materialicons;
 }
 

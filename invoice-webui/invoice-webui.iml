@@ -134,6 +134,7 @@
     <orderEntry type="library" name="Maven: org.vaadin.addons:drop-or-choose-upload:2.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:simplefiledownloader:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.alump:materialicons:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.vaadin.alump.fancylayouts:fancylayouts-addon:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: tm.kod:numberfield7:0.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.github.appreciated:material:1.0.9" level="project" />
     <orderEntry type="library" name="Maven: org.ilay:ilay:1.0.2" level="project" />
@@ -145,13 +146,14 @@
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-hateoas:1.5.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.plugin:spring-plugin-core:1.2.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-rest:1.5.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.hibernate:hibernate-java8:5.2.10.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.hibernate:hibernate-java8:5.2.11.Final" level="project" />
     <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:2.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.dropbox.core:dropbox-core-sdk:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-cache:1.5.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:4.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.3.5" level="project" />
-    <orderEntry type="library" name="Maven: io.dropwizard.metrics:metrics-core:4.0.0-alpha2" level="project" />
+    <orderEntry type="library" name="Maven: io.dropwizard.metrics:metrics-core:4.0.0-alpha3" level="project" />
     <orderEntry type="library" name="Maven: de.codecentric:spring-boot-admin-starter-client:1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.jolokia:jolokia-core:1.3.6" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />

@@ -8,13 +8,23 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
-import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.security.AccessRules;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.Notification;
+import dk.trustworks.invoicewebui.repositories.NotificationRepository;
 import dk.trustworks.invoicewebui.security.Authorizer;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.invoice.components.DraftListImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.fancylayouts.FancyNotifications;
+import org.vaadin.alump.materialicons.MaterialIcons;
+
+import java.util.Date;
 
 /**
  * Created by hans on 02/07/2017.
@@ -36,13 +46,24 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
     @Autowired
     private Authorizer authorizer;
 
+    private boolean clickNotifications = false;
+
+    private FancyNotifications fancyNotifications;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     @Override
     protected void init(VaadinRequest request) {
-        final VerticalLayout root = new VerticalLayout();
+        final VerticalLayout root;
+        root = new VerticalLayout();
         root.setSpacing(false);
         root.setMargin(false);
         root.setSizeFull();
         setContent(root);
+
+        fancyNotifications = new FancyNotifications();
+        root.addComponent(fancyNotifications);
 
         springViewDisplay = new Panel();
         springViewDisplay.setSizeFull();
@@ -51,9 +72,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         Broadcaster.register(this);
 
         navigator.addViewChangeListener((ViewChangeListener) event -> {
-            System.out.println("authorizer.hasAccess(event.getNewView()) = " + authorizer.hasAccess(event.getNewView()));
             if(!authorizer.hasAccess(event.getNewView())) event.getNavigator().navigateTo("login");
-            System.out.println("never");
             return authorizer.hasAccess(event.getNewView());
         });
 
@@ -77,12 +96,27 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
     public void receiveBroadcast(String message) {
         System.out.println("MainWindowImpl.receiveBroadcast");
         System.out.println("message = " + message);
+
+        if(message.equals("notification")) {
+            UserSession userSession = this.getSession().getAttribute(UserSession.class);
+            if(userSession!=null) {
+                for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
+                    System.out.println("notification = " + notification);
+
+                    getCurrent().access(() ->fancyNotifications.showNotification(null, notification.getTitel(), notification.getContent(), MaterialIcons.DATE_RANGE));
+                }
+            }
+            //topMenu.reload();
+        }
+
         //projectList.reloadData();
         //int numberOfDrafts = mainWindow.invoiceClient.findByStatus(DRAFT).getContent().size();
         //System.out.println("numberOfDrafts = " + numberOfDrafts);
-        getUI().access(() -> {
-            draftList.receiveBroadcast(message);
-        });
+        if(message.equals("invoice")) {
+            getUI().access(() -> {
+                draftList.receiveBroadcast(message);
+            });
+        }
 
     }
 
@@ -90,4 +124,6 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
     public void showView(View view) {
         springViewDisplay.setContent((Component) view);
     }
+
+
 }

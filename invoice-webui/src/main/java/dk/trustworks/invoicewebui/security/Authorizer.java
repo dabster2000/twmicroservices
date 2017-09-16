@@ -57,18 +57,12 @@ public class Authorizer {
 
     @Around("execution(@dk.trustworks.invoicewebui.security.AccessRules * *(..)) && @annotation(accessRules)")
     public Object hasAccess(ProceedingJoinPoint joinPoint, AccessRules accessRules) throws Throwable {
-        System.out.println("Authorizer.hasAccess");
-        System.out.println("joinPoint = [" + joinPoint + "], accessRules = [" + accessRules + "]");
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         RoleType[] roleTypes = accessRules.roleTypes();
-        System.out.println("roleTypes = " + roleTypes);
         if(roleTypes == null) return joinPoint.proceed();
-        System.out.println("roleTypes.length = " + roleTypes.length);
         if(roleTypes.length == 0) return joinPoint.proceed();
         if(userSession != null) {
-            System.out.println("userSession = " + userSession);
             for (RoleType roleType : roleTypes) {
-                System.out.println("roleType = " + roleType);
                 if (userSession.hasRole(roleType)) return joinPoint.proceed();
             }
         }

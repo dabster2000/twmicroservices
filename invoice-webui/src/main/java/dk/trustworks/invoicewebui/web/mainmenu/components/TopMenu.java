@@ -4,13 +4,23 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.model.Notification;
+import dk.trustworks.invoicewebui.repositories.NotificationRepository;
+import dk.trustworks.invoicewebui.web.Broadcaster;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.fancylayouts.FancyNotifications;
+import org.vaadin.alump.fancylayouts.FancyNotifications.NotificationsListener;
+import org.vaadin.alump.fancylayouts.FancyTransition;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
+
+import java.util.Date;
 
 import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.SM;
 import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.XS;
@@ -20,13 +30,26 @@ import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.XS;
  */
 @SpringComponent
 @SpringUI
-public class TopMenu extends CssLayout {
+public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener {
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    private FancyNotifications notifications;
+
+    private UserSession userSession;
 
     @Autowired
     private LeftMenu leftMenu;
 
+    @Autowired
+    private NotificationContainerImpl notificationContainer;
+
+    private TopMenuUserDesign topMenuUserDesign;
+
     @PostConstruct
     void init() {
+        Broadcaster.register(this);
         setStyleName("v-component-group material");
         setWidth("100%");
         setHeight("75px");
@@ -68,13 +91,61 @@ public class TopMenu extends CssLayout {
                 .withVisibilityRules(false, false, true, true)
                 .withComponent(new Label());
 
-        TopMenuUserDesign topMenuUserDesign = new TopMenuUserDesign();
+        topMenuUserDesign = new TopMenuUserDesign();
         topMenuUserDesign.getBtnUser().setIcon(MaterialIcons.ACCOUNT_CIRCLE);
+        topMenuUserDesign.getBtnNotification().setIcon(MaterialIcons.SMS_FAILED);
+
+        createNotifications();
+
+        userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+        topMenuUserDesign.getBtnNotification().addClickListener(event -> {
+            if(!notifications.isAttached()) {
+                ((ComponentContainer)this.getParent()).removeComponent(notifications);
+                createNotifications();
+                ((ComponentContainer)this.getParent()).addComponent(notifications);
+            }
+
+            userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+            for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
+                System.out.println("notification = " + notification);
+
+                notifications.showNotification(notification, notification.getTitel(), notification.getContent());
+            }
+        });
 
         ResponsiveColumn column = row.addColumn();
         column.setAlignment(ResponsiveColumn.ColumnComponentAlignment.RIGHT);
         column.withDisplayRules(0, 0, 3, 3)
                 .withVisibilityRules(false, false, true, true)
                 .withComponent(topMenuUserDesign);
+    }
+
+    private void createNotifications() {
+        notifications = new FancyNotifications();
+        notifications.setCloseTimeout(10000);
+        notifications.setClickClose(true);
+        notifications.setTransitionEnabled(FancyTransition.SLIDE, true);
+        notifications.addListener((NotificationsListener) id -> {
+            UI.getCurrent().getNavigator().navigateTo(((Notification)id).getLink());
+        });
+    }
+
+    @Override
+    public void receiveBroadcast(String message) {
+        /*
+        System.out.println("TopMenu.receiveBroadcast");
+        System.out.println("message = " + message);
+
+        if(message.equals("notification")) {
+            //UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+            if(userSession!=null) {
+                if(!notifications.isAttached()) ((ComponentContainer)this.getParent()).addComponent(notifications);
+                for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
+                    System.out.println("GET THEM notification = " + notification);
+                    UI.getCurrent().access(() -> notifications.showNotification(null, notification.getTitel(), notification.getContent(), MaterialIcons.DATE_RANGE));
+                }
+            }
+        }
+*/
     }
 }

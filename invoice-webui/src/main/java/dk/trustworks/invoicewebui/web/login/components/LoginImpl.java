@@ -8,6 +8,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.network.clients.LoginClient;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class LoginImpl extends LoginDesign {
             }
             UserSession userSession = new UserSession(user, user.getRoleList());
             VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
+            Broadcaster.broadcast("login");
             getUI().getNavigator().navigateTo("mainmenu");
         });
         getBtnLogin().setClickShortcut(ShortcutAction.KeyCode.ENTER);
