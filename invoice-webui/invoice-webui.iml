@@ -105,6 +105,14 @@
     <orderEntry type="library" name="Maven: net.minidev:json-smart:2.3" level="project" />
     <orderEntry type="library" name="Maven: net.minidev:accessors-smart:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:5.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.vaadin:viritin:2.0.beta2" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-compatibility-server:8.1.3" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-compatibility-shared:8.1.3" level="project" />
+    <orderEntry type="library" name="Maven: org.vaadin.addon:confirmdialog:3.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.9.3" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
+    <orderEntry type="library" name="Maven: javax.el:javax.el-api:2.2.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.8" level="project" />
@@ -125,10 +133,14 @@
     <orderEntry type="library" name="Maven: org.vaadin:gwt-ol3:2.0" level="project" />
     <orderEntry type="library" name="Maven: de.grundid.opendatalab:geojson-jackson:1.2" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-context-menu:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.vaadin.addon:v-leaflet:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.peimari:g-leaflet:1.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.vividsolutions:jts:1.13" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:locationtextfield:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20140107" level="project" />
     <orderEntry type="library" name="Maven: com.jarektoro:responsive-layout:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:product-tour:0.5" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin.addon:vaadin-onoffswitch:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.patrik:GridFastNavigation:2.1.3" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:fontawesomelabel:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.vaadin.addons:drop-or-choose-upload:2.0" level="project" />

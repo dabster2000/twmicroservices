@@ -50,6 +50,10 @@ public class Project {
     @JoinColumn(name = "userowneruuid")
     private User owner;
 
+    private double longitude;
+    private double latitude;
+    private String address;
+
     public Project() {
     }
 
@@ -166,17 +170,42 @@ public class Project {
         this.owner = owner;
     }
 
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Project{");
         sb.append("uuid='").append(uuid).append('\'');
         sb.append(", active=").append(active);
-        sb.append(", budget=").append(budget);
         sb.append(", created=").append(created);
         sb.append(", customerreference='").append(customerreference).append('\'');
         sb.append(", name='").append(name).append('\'');
         sb.append(", startdate=").append(startdate);
         sb.append(", enddate=").append(enddate);
+        sb.append(", longitude=").append(longitude);
+        sb.append(", latitude=").append(latitude);
         sb.append('}');
         return sb.toString();
     }

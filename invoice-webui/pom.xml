@@ -99,6 +99,11 @@
             <version>LATEST</version>
         </dependency>
         <dependency>
+            <groupId>org.vaadin</groupId>
+            <artifactId>viritin</artifactId>
+            <version>2.0.beta2</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>LATEST</version>
@@ -156,6 +161,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.vaadin.addon</groupId>
+            <artifactId>v-leaflet</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>locationtextfield</artifactId>
             <version>3.0.0</version>
@@ -169,6 +180,11 @@
             <groupId>org.vaadin.addons</groupId>
             <artifactId>product-tour</artifactId>
             <version>0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin.addon</groupId>
+            <artifactId>vaadin-onoffswitch</artifactId>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.vaadin.patrik</groupId>

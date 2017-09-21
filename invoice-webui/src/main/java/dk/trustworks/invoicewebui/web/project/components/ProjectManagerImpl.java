@@ -46,7 +46,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     @Autowired
     private ClientRepository clientRepository;
 
-    @Autowired
     private ProjectMapLocationImpl projectMapLocation;
 
     @Autowired
@@ -63,8 +62,15 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     @Transactional
     public ProjectManagerImpl init() {
+        getOnOffSwitch().setValue(false);
+        getOnOffSwitch().addValueChangeListener(event -> {
+            boolean checked = event.getValue();
+            List<Project> projects = newArrayList(((checked)?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
+            getSelProject().setItems(projects);
+            reloadGrid();
+        });
         getSelProject().setItemCaptionGenerator(Project::getName);
-        List<Project> projects = newArrayList(projectRepository.findAll());
+        List<Project> projects = newArrayList(((getOnOffSwitch().getValue())?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
 
         getSelProject().setItems(projects);
         getSelProject().addValueChangeListener(event -> {
@@ -104,6 +110,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     @Transactional
     private void createDetailLayout() {
+        projectMapLocation = new ProjectMapLocationImpl(projectRepository);
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
@@ -116,7 +123,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
-                .withComponent(projectMapLocation);
+                .withComponent(projectMapLocation.init(currentProject));
 
         BudgetCardDesign budgetCard = new BudgetCardDesign();
         treeGrid = createTreeGrid();
@@ -149,7 +156,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         for (Task task : currentProject.getTasks()) {
             List<Budget> budgets = budgetRepository.findByTaskuuid(task.getUuid());
-            TaskRow taskRow = new TaskRow(task, monthsBetween.getMonths());
+            TaskRow taskRow = new TaskRow(task, monthsBetween.getMonths()+1);
             taskRows.add(taskRow);
             System.out.println("task = " + task);
             for (User user : usersMap.values()) {
@@ -166,7 +173,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
                 if(!taskworkerconstraint.isPresent()) continue;
 
-                UserRow userRow = new UserRow(task, taskworkerconstraint.get(), monthsBetween.getMonths(), user);
+                UserRow userRow = new UserRow(task, taskworkerconstraint.get(), monthsBetween.getMonths()+1, user);
 
                 //if(user.getUsername().equals("hans.lassen")) System.out.println("budgets = " + budgets.size());
 

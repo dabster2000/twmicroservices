@@ -1,19 +1,19 @@
 package dk.trustworks.invoicewebui.web.resourceplanning;
 
-import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.View;
-import com.vaadin.server.SessionInitListener;
-import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
+import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
+import dk.trustworks.invoicewebui.web.resourceplanning.components.Card;
 import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
 import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesView;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 
 /**
  * Created by hans on 19/12/2016.
@@ -22,19 +22,35 @@ import javax.servlet.annotation.WebServlet;
 @SpringView(name = ResourcePlanningView.VIEW_NAME)
 public class ResourcePlanningView extends VerticalLayout implements View {
 
-    public static final String VIEW_NAME = "resourceplanning";
+    @Autowired
+    private TopMenu topMenu;
+
+    @Autowired
+    private MainTemplate mainTemplate;
+
+    @Autowired
+    private SalesView salesView;
+
+    public static final String VIEW_NAME = "availabilityplanning";
+    public static final String MENU_NAME = "Availability";
+    public static final String VIEW_BREADCRUMB = "Availability Planning";
+    public static final FontIcon VIEW_ICON = MaterialIcons.TIMELINE;
+
 
     @PostConstruct
     void init() {
-        LocalDate localDateStart = LocalDate.now().plusMonths(0).withDayOfMonth(1);
-        LocalDate localDateEnd = localDateStart.plusYears(1);
+        this.setMargin(false);
+        this.setSpacing(false);
+        this.addComponent(topMenu);
+        this.addComponent(mainTemplate);
 
-        SalesView salesView = new SalesView();
-        SalesHeatMap salesHeatMap = new SalesHeatMap(localDateStart, localDateEnd);
-        salesView.addComponent(salesHeatMap.getChart());
-        salesView.addComponent(salesHeatMap.getAvailabilityChart());
-        salesView.addComponent(salesHeatMap.getBudgetGrid());
-        addComponent(salesView);
+        mainTemplate.setMainContent(salesView.init(), VIEW_ICON, MENU_NAME, "Availability Planning", VIEW_BREADCRUMB);
+
+        //SalesHeatMap salesHeatMap = new SalesHeatMap(localDateStart, localDateEnd);
+
+        //salesView.addComponent(salesHeatMap.getAvailabilityChart());
+        //salesView.addComponent(salesHeatMap.getBudgetGrid());
+        //addComponent(salesView);
     }
 /*
     @WebServlet(urlPatterns = "/*", name = "SalesPortalServlet", asyncSupported = true)

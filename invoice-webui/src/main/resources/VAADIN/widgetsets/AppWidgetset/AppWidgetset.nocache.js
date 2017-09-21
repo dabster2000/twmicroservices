@@ -1,5 +1,5 @@
 function AppWidgetset(){
-  var $intern_0 = 'bootstrap', $intern_1 = 'begin', $intern_2 = 'gwt.codesvr.AppWidgetset=', $intern_3 = 'gwt.codesvr=', $intern_4 = 'AppWidgetset', $intern_5 = 'startup', $intern_6 = 'DUMMY', $intern_7 = 0, $intern_8 = 1, $intern_9 = 'iframe', $intern_10 = 'javascript:""', $intern_11 = 'position:absolute; width:0; height:0; border:none; left: -1000px;', $intern_12 = ' top: -1000px;', $intern_13 = 'CSS1Compat', $intern_14 = '<!doctype html>', $intern_15 = '', $intern_16 = '<html><head><\/head><body><\/body><\/html>', $intern_17 = 'undefined', $intern_18 = 'readystatechange', $intern_19 = 10, $intern_20 = 'script', $intern_21 = 'javascript', $intern_22 = 'Failed to load ', $intern_23 = 'moduleStartup', $intern_24 = 'scriptTagAdded', $intern_25 = 'moduleRequested', $intern_26 = 'meta', $intern_27 = 'name', $intern_28 = 'AppWidgetset::', $intern_29 = '::', $intern_30 = 'gwt:property', $intern_31 = 'content', $intern_32 = '=', $intern_33 = 'gwt:onPropertyErrorFn', $intern_34 = 'Bad handler "', $intern_35 = '" for "gwt:onPropertyErrorFn"', $intern_36 = 'gwt:onLoadErrorFn', $intern_37 = '" for "gwt:onLoadErrorFn"', $intern_38 = '#', $intern_39 = '?', $intern_40 = '/', $intern_41 = 'img', $intern_42 = 'clear.cache.gif', $intern_43 = 'baseUrl', $intern_44 = 'AppWidgetset.nocache.js', $intern_45 = 'base', $intern_46 = '//', $intern_47 = 'modernie', $intern_48 = 'MSIE', $intern_49 = 'Trident', $intern_50 = 'yes', $intern_51 = 'none', $intern_52 = 'selectingPermutation', $intern_53 = 'AppWidgetset.devmode.js', $intern_54 = '0BFF3622D70F7166FDD7EBCF6F07DC7B', $intern_55 = ':', $intern_56 = '.cache.js', $intern_57 = 'link', $intern_58 = 'rel', $intern_59 = 'stylesheet', $intern_60 = 'href', $intern_61 = 'head', $intern_62 = 'loadExternalRefs', $intern_63 = 'locationtextfield/styles.css', $intern_64 = 'gwtol3/gwt-ol3.css', $intern_65 = 'vol3/styles.css', $intern_66 = 'GridFastNavigation/styles.css', $intern_67 = 'end', $intern_68 = 'http:', $intern_69 = 'file:', $intern_70 = '_gwt_dummy_', $intern_71 = '__gwtDevModeHook:AppWidgetset', $intern_72 = 'Ignoring non-whitelisted Dev Mode URL: ', $intern_73 = ':moduleBase';
+  var $intern_0 = 'bootstrap', $intern_1 = 'begin', $intern_2 = 'gwt.codesvr.AppWidgetset=', $intern_3 = 'gwt.codesvr=', $intern_4 = 'AppWidgetset', $intern_5 = 'startup', $intern_6 = 'DUMMY', $intern_7 = 0, $intern_8 = 1, $intern_9 = 'iframe', $intern_10 = 'javascript:""', $intern_11 = 'position:absolute; width:0; height:0; border:none; left: -1000px;', $intern_12 = ' top: -1000px;', $intern_13 = 'CSS1Compat', $intern_14 = '<!doctype html>', $intern_15 = '', $intern_16 = '<html><head><\/head><body><\/body><\/html>', $intern_17 = 'undefined', $intern_18 = 'readystatechange', $intern_19 = 10, $intern_20 = 'script', $intern_21 = 'javascript', $intern_22 = 'Failed to load ', $intern_23 = 'moduleStartup', $intern_24 = 'scriptTagAdded', $intern_25 = 'moduleRequested', $intern_26 = 'meta', $intern_27 = 'name', $intern_28 = 'AppWidgetset::', $intern_29 = '::', $intern_30 = 'gwt:property', $intern_31 = 'content', $intern_32 = '=', $intern_33 = 'gwt:onPropertyErrorFn', $intern_34 = 'Bad handler "', $intern_35 = '" for "gwt:onPropertyErrorFn"', $intern_36 = 'gwt:onLoadErrorFn', $intern_37 = '" for "gwt:onLoadErrorFn"', $intern_38 = '#', $intern_39 = '?', $intern_40 = '/', $intern_41 = 'img', $intern_42 = 'clear.cache.gif', $intern_43 = 'baseUrl', $intern_44 = 'AppWidgetset.nocache.js', $intern_45 = 'base', $intern_46 = '//', $intern_47 = 'modernie', $intern_48 = 'MSIE', $intern_49 = 'Trident', $intern_50 = 'yes', $intern_51 = 'none', $intern_52 = 'selectingPermutation', $intern_53 = 'AppWidgetset.devmode.js', $intern_54 = '484C22F9D903C6DA6AAEBFE472DB7A41', $intern_55 = ':', $intern_56 = '.cache.js', $intern_57 = 'link', $intern_58 = 'rel', $intern_59 = 'stylesheet', $intern_60 = 'href', $intern_61 = 'head', $intern_62 = 'loadExternalRefs', $intern_63 = 'locationtextfield/styles.css', $intern_64 = 'gwtol3/gwt-ol3.css', $intern_65 = 'vol3/styles.css', $intern_66 = 'GridFastNavigation/styles.css', $intern_67 = 'onoffswitch/styles.css', $intern_68 = 'end', $intern_69 = 'http:', $intern_70 = 'file:', $intern_71 = '_gwt_dummy_', $intern_72 = '__gwtDevModeHook:AppWidgetset', $intern_73 = 'Ignoring non-whitelisted Dev Mode URL: ', $intern_74 = ':moduleBase';
   var $wnd = window;
   var $doc = document;
   sendStats($intern_0, $intern_1);
@@ -379,7 +379,8 @@ function AppWidgetset(){
     installOneStylesheet($intern_64);
     installOneStylesheet($intern_65);
     installOneStylesheet($intern_66);
-    sendStats($intern_62, $intern_67);
+    installOneStylesheet($intern_67);
+    sendStats($intern_62, $intern_68);
   }
 
   processMetas();
@@ -387,10 +388,10 @@ function AppWidgetset(){
   activeModules[$intern_4].moduleBase = AppWidgetset.__moduleBase;
   var filename = getCompiledCodeFilename();
   if ($wnd) {
-    var devModePermitted = !!($wnd.location.protocol == $intern_68 || $wnd.location.protocol == $intern_69);
+    var devModePermitted = !!($wnd.location.protocol == $intern_69 || $wnd.location.protocol == $intern_70);
     $wnd.__gwt_activeModules[$intern_4].canRedirect = devModePermitted;
     function supportsSessionStorage(){
-      var key = $intern_70;
+      var key = $intern_71;
       try {
         $wnd.sessionStorage.setItem(key, key);
         $wnd.sessionStorage.removeItem(key);
@@ -402,17 +403,17 @@ function AppWidgetset(){
     }
 
     if (devModePermitted && supportsSessionStorage()) {
-      var devModeKey = $intern_71;
+      var devModeKey = $intern_72;
       var devModeUrl = $wnd.sessionStorage[devModeKey];
       if (!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/.*$/.test(devModeUrl)) {
         if (devModeUrl && (window.console && console.log)) {
-          console.log($intern_72 + devModeUrl);
+          console.log($intern_73 + devModeUrl);
         }
         devModeUrl = $intern_15;
       }
       if (devModeUrl && !$wnd[devModeKey]) {
         $wnd[devModeKey] = true;
-        $wnd[devModeKey + $intern_73] = computeScriptBase();
+        $wnd[devModeKey + $intern_74] = computeScriptBase();
         var devModeScript = $doc.createElement($intern_20);
         devModeScript.src = devModeUrl;
         var head = $doc.getElementsByTagName($intern_61)[$intern_7];
@@ -422,7 +423,7 @@ function AppWidgetset(){
     }
   }
   loadExternalStylesheets();
-  sendStats($intern_0, $intern_67);
+  sendStats($intern_0, $intern_68);
   installScript(filename);
   return true;
 }

@@ -9,6 +9,7 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
@@ -101,15 +102,18 @@ public class DashboardView extends VerticalLayout implements View {
         DnaCardImpl dnaCard = new DnaCardImpl(3, 4, "dnaCard");
         dnaCard.setHeight("400px");
 
-        ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(2, 8, "locationCardDesign");
+        ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, 2, 8, "locationCardDesign");
+        locationCardDesign.init();
         locationCardDesign.setWidth("100%");
+        /*
         BrowserFrame browser = new BrowserFrame(null,
                 new ExternalResource("http://map.trustworks.dk:9096/map"));
         browser.setHeight("400px");
         browser.setWidth("100%");
         locationCardDesign.getIframeHolder().addComponent(browser);
+        */
 
-        ConsultantLocationCardImpl monthNewsCardDesign = new ConsultantLocationCardImpl(1, 4 , "monthNewsCardDesign");
+        VideoCardImpl monthNewsCardDesign = new VideoCardImpl(1, 4 , "monthNewsCardDesign");
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null,
                 new ExternalResource("https://www.youtube-nocookie.com/embed/PWoyyHDRd7U?rel=0&amp;controls=0&amp;showinfo=0"));

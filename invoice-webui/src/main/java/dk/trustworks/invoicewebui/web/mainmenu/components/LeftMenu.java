@@ -14,6 +14,8 @@ import dk.trustworks.invoicewebui.web.invoice.views.DraftListView;
 import dk.trustworks.invoicewebui.web.invoice.views.InvoiceListView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
+import dk.trustworks.invoicewebui.web.resourceplanning.ResourcePlanningView;
+import dk.trustworks.invoicewebui.web.stats.StatsManagerView;
 import dk.trustworks.invoicewebui.web.time.ReportView;
 import dk.trustworks.invoicewebui.web.time.TimeManagerView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +98,16 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(DraftListView.VIEW_NAME, drafts);
         MenuItemContainer invoices = new MenuItemContainer(order++).createItem(InvoiceListView.MENU_NAME, false, InvoiceListView.VIEW_ICON, DraftListView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(InvoiceListView.VIEW_NAME, invoices);
+
+        MenuItemContainer sales = new MenuItemContainer(order++).createItem("Sales ---", true, null, null, false, RoleType.SALES);
+        menuItems.put("Sales", sales);
+        MenuItemContainer availabilityplanning = new MenuItemContainer(order++).createItem(ResourcePlanningView.MENU_NAME, false, ResourcePlanningView.VIEW_ICON, ResourcePlanningView.VIEW_NAME, false, RoleType.SALES);
+        menuItems.put(ResourcePlanningView.VIEW_NAME, availabilityplanning);
+
+        MenuItemContainer stats = new MenuItemContainer(order++).createItem("Statistics ---", true, null, null, false, RoleType.ADMIN);
+        menuItems.put("Stats", stats);
+        MenuItemContainer projectStatistics = new MenuItemContainer(order++).createItem(StatsManagerView.MENU_NAME, false, StatsManagerView.VIEW_ICON, StatsManagerView.VIEW_NAME, false, RoleType.ADMIN);
+        menuItems.put(StatsManagerView.VIEW_NAME, projectStatistics);
 
         MenuItemContainer admin = new MenuItemContainer(order++).createItem("Administration ---", true, null, null, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
         menuItems.put("admin", admin);

@@ -3,19 +3,24 @@ package dk.trustworks.invoicewebui.web.resourceplanning.components;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
-import com.vaadin.annotations.DesignRoot;
-import com.vaadin.annotations.Theme;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import dk.trustworks.invoicewebui.db.ConnectionHelper;
+import dk.trustworks.invoicewebui.model.Budget;
+import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.repositories.BudgetRepository;
+import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
+import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.web.model.AmountPerItem;
 import dk.trustworks.invoicewebui.web.model.RawBudgetDataRow;
 import dk.trustworks.invoicewebui.web.model.UserBudget;
 import org.apache.commons.lang3.ArrayUtils;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
+import org.joda.time.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
@@ -23,147 +28,41 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 19/12/2016.
  */
 
-@DesignRoot
-@Theme("valo")
+@SpringComponent
+@SpringUI
 public class SalesHeatMap {
 
-    private LocalDate localDateStart;
-    private LocalDate localDateEnd;
+    @Autowired
+    private BudgetRepository budgetRepository;
 
-    private List<UserBudget> userBudgets;
-    private Map<String, Double> userAvailabilityMap;
+    @Autowired
+    private UserRepository userRepository;
 
-    private Sql2o sql2o;
+    @Autowired
+    private TaskworkerconstraintRepository taskworkerconstraintRepository;
 
-    private int monthPeriod;
+    double[] monthTotalAvailabilites;
+    double[] monthAvailabilites;
 
-    private String[] monthNames;
-    private double[] monthAvailabilites = new double[12];
-    private double[] monthTotalAvailabilites = new double[12];
+    public SalesHeatMap() {
 
-    public SalesHeatMap(LocalDate localDateStart, LocalDate localDateEnd) {
-        System.out.println("SalesHeatMap.SalesHeatMap");
-        System.out.println("localDateStart = [" + localDateStart + "], localDateEnd = [" + localDateEnd + "]");
-        this.localDateStart = localDateStart;
-        this.localDateEnd = localDateEnd;
-        monthPeriod = new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths();
-        sql2o = new Sql2o(ConnectionHelper.getInstance().dataSource);
-        getUserBudgets();
-        getAmountPerItem();
-        getMonthNames();
     }
 
-    private void getMonthNames() {
-        monthNames = new String[new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths()];
-        for (int i = 0; i < monthNames.length; i++) {
-            monthNames[i] = localDateStart.plusMonths(i).monthOfYear().getAsShortText();
-        }
-    }
-
-    private void getUserBudgets() {
-        System.out.println("SalesHeatMap.getUserBudgets");
-        System.out.println("localDateStart = " + localDateStart.minusMonths(1).toString("yyyyMMdd"));
-        System.out.println("localDateEnd = " + localDateEnd.minusMonths(1).toString("yyyyMMdd"));
-        String sql = "SELECT u.uuid uuid, CONCAT(u.firstname, ' ', u.lastname) name, (((b.year*10000)+((b.month+1)*100))+1) date, SUM(b.budget / twc.price) budget " +
-                "FROM clientmanager.taskworkerconstraint_latest b " +
-                "INNER JOIN clientmanager.taskworkerconstraint twc ON twc.taskuuid = b.taskuuid and twc.useruuid = b.useruuid " +
-                "INNER JOIN usermanager.user u ON u.uuid = twc.useruuid " +
-                "WHERE ((b.year*10000)+((b.month+1)*100)) between :periodStart and :periodEnd " +
-                "GROUP BY u.uuid, b.year, b.month " +
-                "ORDER BY u.lastname DESC, uuid, date;";
-        try(Connection con = sql2o.open()) {
-            userBudgets = con.createQuery(sql)
-                    .addParameter("periodStart", localDateStart.minusMonths(1).toString("yyyyMMdd"))
-                    .addParameter("periodEnd", localDateEnd.minusMonths(1).toString("yyyyMMdd"))
-                    .executeAndFetch(UserBudget.class);
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private int getCapacityByMonth(LocalDate localDate) {
-        String sql = "SELECT sum(allocation) allocation FROM usermanager.user u RIGHT JOIN ( " +
-                "select t.useruuid, t.status, t.statusdate, t.allocation " +
-                "from usermanager.userstatus t " +
-                "inner join ( " +
-                "select useruuid, status, max(statusdate) as MaxDate " +
-                "from usermanager.userstatus  WHERE statusdate < :monthdate " +
-                "group by useruuid \n" +
-                ") \n" +
-                "tm on t.useruuid = tm.useruuid and t.statusdate = tm.MaxDate " +
-                ") usi ON u.uuid = usi.useruuid;";
-        try(Connection con = sql2o.open()) {
-            Integer capacity = con.createQuery(sql)
-                    .addParameter("monthdate", localDate.toString("yyyy-MM-dd"))
-                    .executeScalar(Integer.class);
-            con.close();
-            return capacity;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    private void getAmountPerItem() {
-        List<List<AmountPerItem>> amountPerItemListList = new ArrayList<>();
-
-        try(Connection con = sql2o.open()) {
-            LocalDate localDate = localDateStart;
-            do {
-                List<AmountPerItem> amountPerItemList = new ArrayList<>();
-                String sql = "SELECT u.uuid uuid, CONCAT(u.firstname, ' ', u.lastname) description, SUM(allocation) amount, usi.status status FROM usermanager.user u LEFT JOIN ( " +
-                        "SELECT t.useruuid, t.status, t.statusdate, t.allocation from usermanager.userstatus t inner join ( " +
-                        "SELECT useruuid, status, max(statusdate) as MaxDate from usermanager.userstatus WHERE statusdate <= :date group by useruuid ) tm " +
-                        "ON t.useruuid = tm.useruuid AND t.statusdate = tm.MaxDate ) usi " +
-                        "ON u.uuid = usi.useruuid WHERE status NOT LIKE 'TERMINATED' GROUP BY uuid";
-                amountPerItemList = con.createQuery(sql)
-                        .addParameter("date", localDate.toString("yyyy-MM-dd"))
-                        .executeAndFetch(AmountPerItem.class);
-                amountPerItemListList.add(amountPerItemList);
-                localDate = localDate.plusMonths(1);
-            } while (!localDate.isAfter(localDateEnd));
-
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        userAvailabilityMap = new HashMap<>();
-        int month = 0;
-        for (List<AmountPerItem> amountPerItemList : amountPerItemListList) {
-            for (AmountPerItem amountPerItem : amountPerItemList) {
-                userAvailabilityMap.put(amountPerItem.uuid+month, (amountPerItem.amount / 5.0));
-            }
-            month++;
-        }
-    }
-
-    public static void main(String[] args) {
-        outerloop:
-        for (int i=0; i < 5; i++) {
-            for (int j=0; j < 5; j++) {
-                if (i * j > 6) {
-                    System.out.println("Breaking");
-                    System.out.println(i + " " + j);
-                    break;
-                }
-                System.out.println("is breaking");
-                System.out.println(i + " " + j);
-            }
-        }
-        System.out.println("Done");
-    }
-
-    public Component getChart() {
-        System.out.println("userBudgets = " + userBudgets.size());
-        System.out.println("userAvailabilityMap = " + userAvailabilityMap.size());
+    public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
+        int monthPeriod = new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths()+1;
+        monthTotalAvailabilites = new double[monthPeriod];
+        monthAvailabilites = new double[monthPeriod];
+        List<User> users = userRepository.findByActiveTrue();
+        String[] monthNames = getMonthNames(localDateStart, localDateEnd);
 
         Chart chart = new Chart();
+        chart.setWidth("100%");
 
         Configuration config = chart.getConfiguration();
         config.getChart().setType(ChartType.HEATMAP);
@@ -185,65 +84,61 @@ public class SalesHeatMap {
         config.getLegend().setSymbolHeight(320);
 
         HeatSeries rs = new HeatSeries("% availability");
-        List<String> usersList = new ArrayList<>();
-        //int month = 0;
         int userNumber = 0;
-        //String useruuid = "";
 
-        Map<String, List<UserBudget>> userMap = new HashMap<>();
-        Map<String, Integer> userNumberMap = new HashMap<>();
-        //List<String> userNameMap = new ArrayList<>();
-        for (UserBudget userBudget : userBudgets) {
-            userMap.putIfAbsent(userBudget.uuid, new ArrayList<>());
-            if(!userNumberMap.containsKey(userBudget.uuid)) {
-                userNumberMap.put(userBudget.uuid, userNumber++);
-                usersList.add(userBudget.name);
-            }
-            //System.out.println("userNumber = " + userNumber);
-
-        }
-
-
-
-        for (String userUUID : userMap.keySet()) {
-            for (int month = 0; month < 12; month++) {
-                String currentDate = localDateStart.plusMonths(month).toString("yyyyMMdd");
-                boolean foundBudget = false;
-                for (UserBudget userBudget : userBudgets) {
-                    if(userBudget.uuid.equals(userUUID)) {
-                        //if(userBudget.uuid.equals("ade4859d-9c2f-4071-a492-d6fb8bf421ad")) System.out.println("userBudget = " + userBudget);
-                        if(userBudget.date.equals(currentDate)) {
-                            if(userBudget.uuid.equals("ade4859d-9c2f-4071-a492-d6fb8bf421ad")) System.out.println("userBudget = " + userBudget);
-                            //if(userBudget.uuid.equals("ade4859d-9c2f-4071-a492-d6fb8bf421ad")) System.out.println("found date = " + currentDate);
-                            int weekDays = countWeekDays(localDateStart.plusMonths(month), localDateStart.plusMonths(month + 1));
-                            Double userAvailability = userAvailabilityMap.get(userUUID + month);
-                            if(userAvailability == null) userAvailability = 0.0;
-                            double budget = Math.round((weekDays * userAvailability) - userBudget.budget);
-                            if(budget<0) budget = 0;
-                            budget = Math.round(budget / Math.round(weekDays * userAvailability) * 100.0);
-                            if(userBudget.uuid.equals("ade4859d-9c2f-4071-a492-d6fb8bf421ad")) System.out.println(month + ", " + userNumberMap.get(userUUID) + ", " + Math.round(budget));
-                            rs.addHeatPoint(month, userNumberMap.get(userUUID), Math.round(budget));
-                            monthAvailabilites[month] += Math.round(budget);
-                            monthTotalAvailabilites[month] += 100;
-                            foundBudget = true;
-                            break;
-                        }
-                    }
+        for (User user : users) {
+            List<Budget> userBudgets = budgetRepository.findByPeriodAndUseruuid(
+                    Integer.parseInt(localDateStart.toString("yyyyMMdd")),
+                    Integer.parseInt(localDateEnd.toString("yyyyMMdd")),
+                    user.getUuid());
+            LocalDate localDate = localDateStart;
+            double[] budgetsPerUser = new double[monthPeriod];
+            int m = 0;
+            while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
+                final LocalDate tempDate = localDate;
+                double budgetSum = userBudgets.stream()
+                        .filter(budget -> budget.getYear() == tempDate.getYear() && budget.getMonth() + 1 == tempDate.getMonthOfYear())
+                        .mapToDouble(value -> value.getBudget() / taskworkerconstraintRepository.findByTaskAndUser(value.getTask(), value.getUser()).get(0).getPrice())
+                        .sum();
+                budgetsPerUser[m] = budgetSum;
+                List<UserStatus> userStatuses = user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
+                UserStatus userStatus = userStatuses.get(0);
+                for (UserStatus userStatusIteration : userStatuses) {
+                    if(userStatusIteration.getStatusdate().isAfter(userStatus.getStatusdate())) continue;
+                    userStatus = userStatusIteration;
                 }
-                if (!foundBudget) {
-                    // Didn't find budget for user and month
-                    if (userUUID.equals("ade4859d-9c2f-4071-a492-d6fb8bf421ad"))
-                        System.out.println("Didn't find date: " + month);
-                    if(userUUID.equals("ade4859d-9c2f-4071-a492-d6fb8bf421ad")) System.out.println(month + ", " + userNumberMap.get(userUUID) + ", " + 100);
-                    rs.addHeatPoint(month, userNumberMap.get(userUUID), 100);
-                    monthAvailabilites[month] += Math.round(100);
-                    monthTotalAvailabilites[month] += 100;
+
+                int weekDays = countWeekDays(localDate, localDate.plusMonths(1));
+
+                double budget = Math.round((weekDays * (userStatus.getAllocation()/5.0)) - budgetSum);
+
+                if(budget < 0.0) budget = 0.0;
+
+                budget = Math.round(budget / Math.round(weekDays * (userStatus.getAllocation()/5.0)) * 100.0);
+
+                if(user.getUuid().equals("7948c5e8-162c-4053-b905-0f59a21d7746")) {
+                    System.out.println("userNumber = " + userNumber);
+                    System.out.println("localDate = " + localDate);
+                    System.out.println("weekDays = " + weekDays);
+                    System.out.println("userStatus = " + (userStatus.getAllocation()/5.0));
+                    System.out.println("budgetSum = " + budgetSum);
+                    System.out.println("budget = " + budget);
+                    System.out.println("--- --- --- --- --- ---");
                 }
+
+                monthAvailabilites[m] += Math.round(budget);
+                monthTotalAvailabilites[m] += 100;
+
+                rs.addHeatPoint(m, userNumber, Math.round(budget));
+
+                localDate = localDate.plusMonths(1);
+                m++;
             }
+            userNumber++;
         }
 
         config.getxAxis().setCategories(monthNames);
-        config.getyAxis().setCategories(usersList.stream().toArray(size -> new String[size]));
+        config.getyAxis().setCategories(users.stream().map(user -> user.getUsername()).toArray(size -> new String[size]));
 
         PlotOptionsHeatmap plotOptionsHeatmap = new PlotOptionsHeatmap();
         plotOptionsHeatmap.setDataLabels(new DataLabels());
@@ -259,11 +154,14 @@ public class SalesHeatMap {
         config.setSeries(rs);
 
         chart.drawChart(config);
+        chart.setHeight("700px");
 
         return chart;
     }
 
-    public Component getAvailabilityChart() {
+    public Component getAvailabilityChart(LocalDate localDateStart, LocalDate localDateEnd) {
+        int monthPeriod = new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths()+1;
+        String[] monthNames = getMonthNames(localDateStart, localDateEnd);
         Chart chart = new Chart(ChartType.AREASPLINE);
         chart.setHeight("450px");
 
@@ -308,83 +206,18 @@ public class SalesHeatMap {
         conf.addSeries(listSeries);
 
         chart.drawChart(conf);
+        chart.setHeight("700px");
 
         return chart;
     }
 
-    public Component getBudgetGrid() {
-        List<RawBudgetDataRow> budgetDataRows = new ArrayList<>();
-        try(Connection con = sql2o.open()) {
-            String sql = "SELECT " +
-                    "i.username username, i.clientname clientname, i.projectname projectname, i.taskname, taskname, " +
-                    "sum(case when i.month = 0 then i.budget end) m1, " +
-                    "sum(case when i.month = 1 then i.budget end) m2, " +
-                    "sum(case when i.month = 2 then i.budget end) m3, " +
-                    "sum(case when i.month = 3 then i.budget end) m4, " +
-                    "sum(case when i.month = 4 then i.budget end) m5, " +
-                    "sum(case when i.month = 5 then i.budget end) m6, " +
-                    "sum(case when i.month = 6 then i.budget end) m7, " +
-                    "sum(case when i.month = 7 then i.budget end) m8, " +
-                    "sum(case when i.month = 8 then i.budget end) m9, " +
-                    "sum(case when i.month = 9 then i.budget end) m10, " +
-                    "sum(case when i.month = 10 then i.budget end) m11, " +
-                    "sum(case when i.month = 11 then i.budget end) m12 " +
-                    "FROM ( " +
-                    "SELECT b.year, b.month, u.username username, c.name clientname, p.name projectname, t.name taskname, c.latitude latitude, c.longitude longitude, (b.budget / twc.price) budget " +
-                    "                    FROM clientmanager.taskworkerconstraint_latest b  " +
-                    "                    INNER JOIN clientmanager.taskworkerconstraint twc ON twc.taskuuid = b.taskuuid and twc.useruuid = b.useruuid  " +
-                    "                    INNER JOIN clientmanager.task t ON twc.taskuuid = t.uuid  " +
-                    "                    INNER JOIN clientmanager.project p ON t.projectuuid = p.uuid  " +
-                    "                    INNER JOIN clientmanager.client c ON p.clientuuid = c.uuid  " +
-                    "                    INNER JOIN usermanager.user u ON u.uuid = twc.useruuid  " +
-                    "                    WHERE ((b.year*10000)+((b.month+1)*100)) between :periodStart and :periodEnd and b.budget > 0 " +
-                    "                    GROUP BY u.uuid, t.uuid, b.year, b.month " +
-                    "                    ORDER BY u.lastname DESC, u.uuid) i GROUP BY username, clientname, projectname, taskname;";
 
-            budgetDataRows = con.createQuery(sql)
-                    .addParameter("periodStart", localDateStart.minusMonths(1).toString("yyyyMMdd"))
-                    .addParameter("periodEnd", localDateEnd.minusMonths(1).toString("yyyyMMdd"))
-                    .executeAndFetch(RawBudgetDataRow.class);
-            con.close();
+    private String[] getMonthNames(LocalDate localDateStart, LocalDate localDateEnd) {
+        String[] monthNames = new String[new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths()+1];
+        for (int i = 0; i < monthNames.length; i++) {
+            monthNames[i] = localDateStart.plusMonths(i).monthOfYear().getAsShortText();
         }
-
-
-        //final BeanItemContainer<RawBudgetDataRow> ds = new BeanItemContainer<>(RawBudgetDataRow.class, budgetDataRows);
-
-        Grid<RawBudgetDataRow> grid = new Grid(RawBudgetDataRow.class);
-       // PropertySet<RawBudgetDataRow> ps = BeanPropertySet.get(b);
-        grid.getDataProvider().refreshAll();
-
-        //grid.removeColumn("uuid");
-        String[] columnNames = {"username", "clientname", "projectname", "taskname", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10", "m11", "m12"};
-        columnNames = (String[]) ArrayUtils.addAll(
-            Arrays.copyOfRange(columnNames, 0, 4),
-                ArrayUtils.addAll(
-                        Arrays.copyOfRange(columnNames, 4 + localDateStart.minusMonths(1).getMonthOfYear(), columnNames.length),
-                        Arrays.copyOfRange(columnNames, 4, 4 + localDateStart.minusMonths(1).getMonthOfYear())
-                )
-        );
-
-        grid.setColumns(columnNames);
-        grid.setFrozenColumnCount(4);
-
-        grid.getHeaderRow(0).getCell("m1").setText("Jan");
-        grid.getHeaderRow(0).getCell("m2").setText("Feb");
-        grid.getHeaderRow(0).getCell("m3").setText("Mar");
-        grid.getHeaderRow(0).getCell("m4").setText("Apr");
-        grid.getHeaderRow(0).getCell("m5").setText("Maj");
-        grid.getHeaderRow(0).getCell("m6").setText("Jun");
-        grid.getHeaderRow(0).getCell("m7").setText("Jul");
-        grid.getHeaderRow(0).getCell("m8").setText("Aug");
-        grid.getHeaderRow(0).getCell("m9").setText("Sep");
-        grid.getHeaderRow(0).getCell("m10").setText("Okt");
-        grid.getHeaderRow(0).getCell("m11").setText("Nov");
-        grid.getHeaderRow(0).getCell("m12").setText("Dec");
-
-        grid.setItems(budgetDataRows);
-
-        grid.setSizeFull();
-        return grid;
+        return monthNames;
     }
 
     public int countWeekDays(LocalDate periodStart, LocalDate periodEnd) {
@@ -405,10 +238,4 @@ public class SalesHeatMap {
         }
         return count;
     }
-
-    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
-        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-    }
-
 }

@@ -4,6 +4,9 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.Project;
+import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addon.vol3.OLMap;
 import org.vaadin.addon.vol3.OLMapOptions;
 import org.vaadin.addon.vol3.OLView;
@@ -22,21 +25,26 @@ import org.vaadin.addons.locationtextfield.OpenStreetMapGeocoder;
 /**
  * Created by hans on 13/08/2017.
  */
-@SpringComponent
-@SpringUI
 public class ProjectMapLocationImpl extends ProjectMapLocationDesign {
 
     protected OLMap map;
 
-    public ProjectMapLocationImpl() {
+    private ProjectRepository projectRepository;
 
-        map=createMap();
-        //GeocodedLocation geocodedLocation = GeocodedLocation.newBuilder().withGeocodedAddress("Ålegårdsvænget 14, 2791 Dragør").build();
+    public ProjectMapLocationImpl(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
+
+    public ProjectMapLocationImpl init(Project project) {
+
+        map=createMap(project.getLongitude(), project.getLatitude());
+
 
         final LocationTextField<GeocodedLocation> ltf = LocationTextField.newBuilder()
                 .withCaption("Main project location:")
                 .withDelayMillis(1200)
                 .withLocationProvider(OpenStreetMapGeocoder.getInstance())
+                .withText(project.getAddress())
                 .withMinimumQueryCharacters(5)
                 .withWidth("100%")
                 .withHeight("40px")
@@ -45,13 +53,17 @@ public class ProjectMapLocationImpl extends ProjectMapLocationDesign {
 
         ltf.addLocationValueChangeListener(event -> {
             map.setView(createView(event.getSource().getValue().getLon(), event.getSource().getValue().getLat()));
+            project.setLongitude(event.getSource().getValue().getLon());
+            project.setLatitude(event.getSource().getValue().getLat());
+            projectRepository.save(project);
         });
 
         getCardHolder().addComponents(map, new VerticalLayout(ltf));
         getCardHolder().setExpandRatio(map, 1.0f);
+        return this;
     }
 
-    protected OLMap createMap(){
+    protected OLMap createMap(double longitude, double latitude){
         OLMap map=new OLMap(new OLMapOptions().setShowOl3Logo(true).setInputProjection(Projections.EPSG4326));
 
         OLVectorSourceOptions vectorOptions=new OLVectorSourceOptions();
@@ -59,7 +71,7 @@ public class ProjectMapLocationImpl extends ProjectMapLocationDesign {
         OLLayer layer=createLayer(createSource());
         layer.setTitle("MapQuest OSM");
         map.addLayer(layer);
-        map.setView(createView(12.589604000000008,55.707043));
+        map.setView(createView(longitude,latitude));
         map.setSizeFull();
         return map;
     }
