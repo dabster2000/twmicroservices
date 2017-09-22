@@ -21,6 +21,7 @@ public class ConsultantLocationCardDesign extends VerticalLayout {
     private VerticalLayout cardHolder;
     private Label lblTitle;
     private VerticalLayout iframeHolder;
+    private VerticalLayout projectList;
 
     public ConsultantLocationCardDesign() {
         Design.read(this);
@@ -36,6 +37,10 @@ public class ConsultantLocationCardDesign extends VerticalLayout {
 
     public VerticalLayout getIframeHolder() {
         return iframeHolder;
+    }
+
+    public VerticalLayout getProjectList() {
+        return projectList;
     }
 
 }

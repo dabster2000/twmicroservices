@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.web.dashboard.cards;
 import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.Project;
@@ -32,7 +33,7 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
 
     private LMap leafletMap;
 
-    Map<String, Point> addresses;
+    //Map<String, Point> addresses;
 
 
     public ConsultantLocationCardImpl(ProjectRepository projectRepository, int priority, int boxWidth, String name) {
@@ -48,27 +49,31 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
         leafletMap.addLayer(osm);
 
 
-        addresses = new HashMap<>();
+        //addresses = new HashMap<>();
 
         for (Project project : projectRepository.findAllByActiveTrueOrderByNameAsc()) {
             if(project.getLatitude() == 0.0) continue;
             double lat = project.getLatitude();//55.707043;
             double lon = project.getLongitude(); //12.589604000000008;
-            addresses.put(project.getAddress(), new Point(lat, lon));
-            System.out.println("project = " + project.getClient());
-            System.out.println("project = " + project.getClient().getLogo());
+            //addresses.put(project.getAddress(), new Point(lat, lon));
             if(project.getClient().getLogo()==null) continue;
-            System.out.println("project = " + project.getClient().getLogo().getLogo().length);
             LImageOverlay imageOverlay = new LImageOverlay(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(project.getClient().getLogo().getLogo()),
                     "logo.jpg"), new Bounds(new Point(lat,lon),new Point(lat+(100.0/100000.0), lon-(400.0/100000.0))));
             imageOverlay.setOpacity(0.9);
             imageOverlay.setAttribution("University of Texas");
             leafletMap.addLayer(imageOverlay);
+
+            getProjectList().setDefaultComponentAlignment(Alignment.TOP_CENTER);
+            Button button = new Button(project.getName());
+            button.addStyleName("flat");
+            button.setWidth("100%");
+            button.addClickListener(event -> leafletMap.flyTo(new Point(lat, lon), 16.0));
+            getProjectList().addComponent(button);
+
         }
 
         leafletMap.zoomToContent();
-        System.out.println("addresses.size() = " + addresses.size());
 
 /*
         ExternalResource url = new ExternalResource("http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg");

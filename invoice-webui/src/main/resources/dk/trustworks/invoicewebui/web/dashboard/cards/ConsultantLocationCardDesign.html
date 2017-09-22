@@ -15,7 +15,10 @@
         Consultant Location 
       </vaadin-label>
      </vaadin-horizontal-layout>
-     <vaadin-vertical-layout spacing="false" size-full _id="iframeHolder"></vaadin-vertical-layout>
+     <vaadin-horizontal-layout size-full>
+      <vaadin-vertical-layout spacing="false" size-full _id="iframeHolder" :expand></vaadin-vertical-layout>
+      <vaadin-vertical-layout spacing="false" size-auto margin="false" _id="projectList"></vaadin-vertical-layout>
+     </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>
   </vaadin-vertical-layout>

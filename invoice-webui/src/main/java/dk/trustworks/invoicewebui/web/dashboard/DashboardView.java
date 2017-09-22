@@ -44,10 +44,9 @@ public class DashboardView extends VerticalLayout implements View {
      * Apps i Trustworks
      * Projects nearly ending
      * Reminder til projektowners at en client ikke har et logo
-     * Reminder til projektejer at projekt ikke bør være aktivt mere (3måneder uden arbeje)
+     * Reminder til projektejer at projekt ikke bør være aktivt mere (3 måneder uden arbeje)
      * Reminder om at der ikke er en projektejer til sales team
      * Reminder til projektejer at budgettet er ved at løbe ud på projekt/konsulent
-     * Photos
      */
 
     public static final String VIEW_NAME = "mainmenu";
