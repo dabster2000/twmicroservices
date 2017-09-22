@@ -48,7 +48,7 @@ public class NewsImpl extends NewsDesign implements Box {
                 continue;
             }
             LocalDate dateWithCurrentYear = firstStatus.getStatusdate().withYear(LocalDate.now().getYear());
-            if(dateWithCurrentYear.isAfter(LocalDate.now()) &&
+            if(dateWithCurrentYear.isAfter(LocalDate.now().minusWeeks(1)) &&
                     dateWithCurrentYear.isBefore(LocalDate.now().plusMonths(1))) {
                 newsItems.add(new NewsItem(dateWithCurrentYear,
                         user.getFirstname()+" "+user.getLastname()+
