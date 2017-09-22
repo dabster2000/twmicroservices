@@ -57,35 +57,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         if(userSession == null) return this;
 
-        getBtnWeekNumberDecr().addClickListener(event -> {
-            currentDate = currentDate.minusWeeks(1);
-            setDateFields();
-            updateGrid(userSession);
-        });
-
-        getBtnWeekNumberIncr().addClickListener(event -> {
-            currentDate = currentDate.plusWeeks(1);
-            setDateFields();
-            updateGrid(userSession);
-        });
-
-        getBtnYearDecr().addClickListener(event -> {
-            currentDate = currentDate.minusYears(1);
-            setDateFields();
-            updateGrid(userSession);
-        });
-
-        getBtnYearIncr().addClickListener(event -> {
-            currentDate = currentDate.plusYears(1);
-            setDateFields();
-            updateGrid(userSession);
-        });
-
-        getSelActiveUser().setItemCaptionGenerator(User::getUsername);
-
         List<User> users = userRepository.findByActiveTrue();
-
-
+        getSelActiveUser().setItemCaptionGenerator(User::getUsername);
         getSelActiveUser().setItems(users);
 
         // find userSession user
@@ -93,11 +66,40 @@ public class TimeManagerImpl extends TimeManagerDesign {
             if(user.getUuid().equals(userSession.getUser().getUuid())) getSelActiveUser().setSelectedItem(user);
         }
 
-        updateGrid(userSession);
+        getBtnWeekNumberDecr().addClickListener(event -> {
+            currentDate = currentDate.minusWeeks(1);
+            setDateFields();
+            updateGrid(getSelActiveUser().getSelectedItem().get());
+        });
+
+        getBtnWeekNumberIncr().addClickListener(event -> {
+            currentDate = currentDate.plusWeeks(1);
+            setDateFields();
+            updateGrid(getSelActiveUser().getSelectedItem().get());
+        });
+
+        getBtnYearDecr().addClickListener(event -> {
+            currentDate = currentDate.minusYears(1);
+            setDateFields();
+            updateGrid(getSelActiveUser().getSelectedItem().get());
+        });
+
+        getBtnYearIncr().addClickListener(event -> {
+            currentDate = currentDate.plusYears(1);
+            setDateFields();
+            updateGrid(getSelActiveUser().getSelectedItem().get());
+        });
+
+        getSelActiveUser().addValueChangeListener(event -> {
+            updateGrid(getSelActiveUser().getSelectedItem().get());
+        });
+
+
+        updateGrid(getSelActiveUser().getSelectedItem().get());
 
         getBtnCopyWeek().addClickListener(event1 -> {
-            timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), userSession.getUser());
-            loadData(userSession);
+            timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), getSelActiveUser().getSelectedItem().get());
+            loadData(getSelActiveUser().getSelectedItem().get());
         });
 
         getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
@@ -170,7 +172,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                         getSelActiveUser().getValue(),
                         taskComboBox.getSelectedItem().get()));
                 window.close();
-                loadData(userSession);
+                loadData(getSelActiveUser().getSelectedItem().get());
             });
 
             window.setContent(new VerticalLayout(clientComboBox, projectComboBox, taskComboBox, addTaskButton));
@@ -180,8 +182,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
     }
 
     @Transactional
-    private void updateGrid(UserSession userSession) {
-        loadData(userSession);
+    private void updateGrid(User user) {
+        loadData(user);
 
         setGridHeaderLabels();
 
@@ -249,7 +251,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     event.getBean().getUser(),
                     event.getBean().getTask()));
 
-            loadData(userSession);
+            loadData(user);
         });
         getGridTimeTable().getEditor().setEnabled(true);
         getGridTimeTable().getEditor().setBuffered(true);
@@ -324,16 +326,16 @@ public class TimeManagerImpl extends TimeManagerDesign {
     }
 
     @Transactional
-    private void loadData(UserSession userSession) {
+    private void loadData(User user) {
         long start = System.currentTimeMillis();
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), userSession.getUser());
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), user);
         if(weeks.size()>0) getBtnCopyWeek().setEnabled(false);
         else getBtnCopyWeek().setEnabled(true);
         System.out.println("Load weeks = " + (System.currentTimeMillis() - start));
         System.out.println("weeks.size() = " + weeks.size());
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
-        List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), userSession.getUser().getUuid());
+        List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
         System.out.println("Load work = " + (System.currentTimeMillis() - start));
         System.out.println("workResources.size() = " + workResources.size());
 
@@ -344,7 +346,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
             Task task = week.getTask();
             Hibernate.initialize(task);
             //System.out.println("task = " + task);
-            WeekItem weekItem = new WeekItem(task, userSession.getUser());
+            WeekItem weekItem = new WeekItem(task, user);
             weekItems.add(weekItem);
             weekItem.setTaskname(
                     task.getName()

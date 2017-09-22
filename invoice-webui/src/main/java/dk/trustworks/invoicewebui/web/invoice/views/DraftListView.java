@@ -78,6 +78,6 @@ public class DraftListView extends VerticalLayout implements View, Broadcaster.B
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         //Authorizer.authorize(this);
         draftListComponent.loadInvoicesToGrid();
-        leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
+        //leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
     }
 }
