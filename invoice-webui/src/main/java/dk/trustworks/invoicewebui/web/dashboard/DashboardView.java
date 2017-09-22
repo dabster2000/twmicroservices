@@ -96,22 +96,15 @@ public class DashboardView extends VerticalLayout implements View {
         BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
         //irthdayCard.setHeight("600px");
         PhotosCardImpl photoCard = new PhotosCardImpl(dropboxAPI, 4, 6, "photoCard");
-        photoCard.setHeight("400px");
+        //photoCard.setHeight("500px");
         NewsImpl newsCard = new NewsImpl(userRepository, projectRepository, 1, 6, "newsCard");
         //newsCard.setHeight("600px");
         DnaCardImpl dnaCard = new DnaCardImpl(3, 4, "dnaCard");
-        dnaCard.setHeight("400px");
+        //dnaCard.setHeight("500px");
 
         ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, 2, 8, "locationCardDesign");
         locationCardDesign.init();
         locationCardDesign.setWidth("100%");
-        /*
-        BrowserFrame browser = new BrowserFrame(null,
-                new ExternalResource("http://map.trustworks.dk:9096/map"));
-        browser.setHeight("400px");
-        browser.setWidth("100%");
-        locationCardDesign.getIframeHolder().addComponent(browser);
-        */
 
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(1, 4 , "monthNewsCardDesign");
         monthNewsCardDesign.setWidth("100%");
@@ -131,23 +124,7 @@ public class DashboardView extends VerticalLayout implements View {
         boxes.add(locationCardDesign);
         boxes.add(monthNewsCardDesign);
         boxes.add(dnaCard);
-/*
-        ResponsiveLayout newsLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        ResponsiveRow row = newsLayout.addRow();
-        row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(birthdayCard);
-        row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(newsCard);
 
-        ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        ResponsiveRow row2 = mainLayout.addRow();
-        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthNewsCardDesign);
-        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(photoCard);
-        row2.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(locationCardDesign);
-        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
-
-        ResponsiveRow row3 = board.addRow();
-        row3.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(mainLayout);
-        row3.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(newsLayout);
-*/
         createRows(board, boxes);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
@@ -322,64 +299,3 @@ public class DashboardView extends VerticalLayout implements View {
     }
 
 }
-
-
-/*
-        MenuItemCardImpl timeCard = new MenuItemCardImpl(
-                "time-card.jpg",
-                "Time Manager",
-                "NOT IMPLEMENTED YET!!!"
-        );
-        timeCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
-            getUI().getNavigator().navigateTo("time");
-        });
-        timeCard.setHeight("100%");
-
-        MenuItemCardImpl invoiceCard = new MenuItemCardImpl(
-                "invoice-card.jpg",
-                "Invoice Manager",
-                "Invoice Manager is a simple and powerful online invoicing solution for Trustworks. Create PDF invoices, (eventually) send over email, and register online payments."
-        );
-        invoiceCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
-            getUI().getNavigator().navigateTo("invoice");
-        });
-
-
-
-        MenuItemCardImpl resourcePlanningCard = new MenuItemCardImpl(
-                "resource-planning-card.jpg",
-                "Resource Planner",
-                "Get the ultimate birds eye view of our team with Resource Planner . View availability, capacity and schedule our resources on projects."
-        );
-        resourcePlanningCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
-            getUI().getNavigator().navigateTo("resourceplanning");
-            //getUI().getPage().setLocation("http://stats.trustworks.dk:9098");
-        });
-
-        MenuItemCardImpl clientCard = new MenuItemCardImpl(
-                "client-card.jpg",
-                "Client Manager",
-                "Client Manager is where all Trustworks clients live, including their contact information and logos."
-        );
-
-        clientCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
-            getUI().getNavigator().navigateTo("client");
-        });
-
-        MenuItemCardImpl projectCard = new MenuItemCardImpl(
-                "project-card.png",
-                "Project Manager",
-                "Project Manager is to projects what Client Manager is to clients. Create and manage projects, budgets, and rates. NOT IMPLEMENTED YET."
-        );
-        projectCard.getCardHolder().addLayoutClickListener(layoutClickEvent -> {
-            getUI().getNavigator().navigateTo("project");
-        });
-
-        MenuItemCardImpl mapCard = new MenuItemCardImpl("map-card.jpg",
-                "Map Manager",
-                "With Map Manager you can follow your fellow colegues. Which customers are they working with and where on earth (probably Copenhagen) are they located.");
-        mapCard.getCardHolder().addLayoutClickListener(
-                layoutClickEvent -> getUI().getPage().setLocation("http://map.trustworks.dk:9096/map"));
-        mapCard.setHeight("100%");
-
- */
