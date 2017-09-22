@@ -192,8 +192,6 @@ public class TimeManagerImpl extends TimeManagerDesign {
         getGridTimeTable().setSelectionMode(Grid.SelectionMode.NONE);
 
         getGridTimeTable().getEditor().addSaveListener(event -> {
-            System.out.println("event.getBean() = " + event.getBean());
-            System.out.println("event.getBean() = " + event.getSource());
             LocalDate saveDate = this.currentDate;
             workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
@@ -331,33 +329,23 @@ public class TimeManagerImpl extends TimeManagerDesign {
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), user);
         if(weeks.size()>0) getBtnCopyWeek().setEnabled(false);
         else getBtnCopyWeek().setEnabled(true);
-        System.out.println("Load weeks = " + (System.currentTimeMillis() - start));
-        System.out.println("weeks.size() = " + weeks.size());
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
         List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
-        System.out.println("Load work = " + (System.currentTimeMillis() - start));
-        System.out.println("workResources.size() = " + workResources.size());
 
         List<WeekItem> weekItems = new ArrayList<>();
         double sumHours = 0.0;
         for (Week week : weeks) {
-            System.out.println("weekResource.getContent() = " + week);
             Task task = week.getTask();
             Hibernate.initialize(task);
             //System.out.println("task = " + task);
             WeekItem weekItem = new WeekItem(task, user);
             weekItems.add(weekItem);
             weekItem.setTaskname(
-                    task.getName()
+                    task.getProject().getName() + " / " + task.getName()
             );
             long innerStart = System.currentTimeMillis();
             for (Work work : workResources) {
-                if(work.getWorkduration() == 3000) {
-                    System.out.println("3000 ----");
-                    System.out.println("work = " + work);
-                    System.out.println("task = " + task);
-                }
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
                 sumHours += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
