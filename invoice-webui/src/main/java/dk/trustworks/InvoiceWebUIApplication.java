@@ -17,7 +17,7 @@ import java.util.Locale;
 /**
  * Created by hans on 02/07/2017.
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "dk.trustworks"})
 @EnableAsync
 @EnableCaching
 @EnableVaadin
@@ -35,38 +35,4 @@ public class InvoiceWebUIApplication {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
-/*
-    final static String queueName = "update-queue";
-
-    @Bean
-    Queue queue() {
-        return new Queue(queueName, false);
-    }
-
-    @Bean
-    TopicExchange exchange() {
-        return new TopicExchange("update-exchange");
-    }
-
-    @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(queueName);
-    }
-
-    @Bean
-    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-                                             MessageListenerAdapter listenerAdapter) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(queueName);
-        container.setMessageListener(listenerAdapter);
-        return container;
-    }
-
-    @Bean
-    MessageListenerAdapter listenerAdapter(TopicReceiver receiver) {
-        return new MessageListenerAdapter(receiver, "receiveMessage");
-    }
-*/
-
 }

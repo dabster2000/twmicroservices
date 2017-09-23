@@ -29,6 +29,10 @@ spring:
     rest:
       basePath: /api
 
+slackBotToken: xoxb-51526069511-NDQN3KpwJeDwMGLZ5bKH6lLu
+slashCommandToken: P5i2tVZ0P9WGGMsT0FkRhks2
+slackIncomingWebhookUrl: https://hooks.slack.com/services/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
+rtmUrl: https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads
 
 flyway:
   baseline-version: 1 # version to start migration

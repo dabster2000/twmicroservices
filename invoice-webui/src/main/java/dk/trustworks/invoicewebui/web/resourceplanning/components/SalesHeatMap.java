@@ -6,28 +6,16 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Grid;
-import dk.trustworks.invoicewebui.db.ConnectionHelper;
 import dk.trustworks.invoicewebui.model.Budget;
-import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.repositories.BudgetRepository;
 import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.web.model.AmountPerItem;
-import dk.trustworks.invoicewebui.web.model.RawBudgetDataRow;
-import dk.trustworks.invoicewebui.web.model.UserBudget;
-import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.sql2o.Connection;
-import org.sql2o.Sql2o;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
