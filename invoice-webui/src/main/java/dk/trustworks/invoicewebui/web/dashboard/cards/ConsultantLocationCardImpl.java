@@ -70,7 +70,6 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
             button.setWidth("100%");
             button.addClickListener(event -> leafletMap.flyTo(new Point(lat, lon), 16.0));
             getProjectList().addComponent(button);
-
         }
 
         leafletMap.zoomToContent();

@@ -98,14 +98,6 @@ public class ClientManagerImpl extends ClientManagerDesign {
     }
 
     private void fillBoard(Client client, ResponsiveLayout clientDetailBoard, Window window2) {
-        /*
-        Image image = createTopBarImage();
-        clientDetailBoard.addRow()
-                .withAlignment(Alignment.TOP_CENTER)
-                .addColumn()
-                .withDisplayRules(12, 12, 12, 12)
-                .withComponent(image);
-*/
         Image logo = createCompanyLogo(client);
         logo.setWidth("100%");
         LogoCardDesign cardLogo = new LogoCardDesign();
