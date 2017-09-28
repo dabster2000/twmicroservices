@@ -1,10 +1,6 @@
 package dk.trustworks.invoicewebui.bots;
 
-import allbegray.slack.SlackClientFactory;
 import allbegray.slack.bot.SlackbotClient;
-import allbegray.slack.type.Attachment;
-import allbegray.slack.type.Field;
-import allbegray.slack.type.Payload;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webhook.SlackWebhookClient;
 import me.ramswaroop.jbot.core.slack.Bot;
@@ -38,9 +34,10 @@ public class HalSlackBot extends Bot {
 
     @PostConstruct
     public void invokeSlackWebhook() {
-        webhookClient = SlackClientFactory.createWebhookClient(slackIncomingWebhookUrl);
-        slackbotClient = SlackClientFactory.createSlackbotClient(slackbotUrl);
-        webApiClient = SlackClientFactory.createWebApiClient(slackToken);
+        //webhookClient = SlackClientFactory.createWebhookClient(slackIncomingWebhookUrl);
+        //slackbotClient = SlackClientFactory.createSlackbotClient(slackbotUrl);
+        //webApiClient = SlackClientFactory.createWebApiClient(slackToken);
+        /*
         Payload payload = new Payload();
         payload.setText("test text");
         payload.setChannel("@hans");
@@ -55,10 +52,10 @@ public class HalSlackBot extends Bot {
         payload.addAttachment(attachment);
 
         webhookClient.post(payload);
-
+*/
         //slackbotClient.post("@hans", "test message 2");
 
-        webApiClient.postMessage("U036JELTN", "Test", "hal", true);
+       // webApiClient.postMessage("U036JELTN", "Test", "hal", true);
 
     }
 

@@ -17,7 +17,13 @@
      </vaadin-horizontal-layout>
      <vaadin-horizontal-layout size-full>
       <vaadin-vertical-layout spacing="false" size-full _id="iframeHolder" :expand></vaadin-vertical-layout>
-      <vaadin-vertical-layout spacing="false" size-auto margin="false" _id="projectList"></vaadin-vertical-layout>
+      <vaadin-panel style-name="v-scrollable" height="400px" :expand>
+       <vaadin-vertical-layout spacing="false" _id="projectList">
+        <vaadin-label style-name="large top-bar-grey1 center-label bold" width-full plain-text>
+          PROJECTS 
+        </vaadin-label>
+       </vaadin-vertical-layout>
+      </vaadin-panel>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>

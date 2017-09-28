@@ -1,24 +1,25 @@
 package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.StreamResource;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 import org.vaadin.addon.leaflet.LImageOverlay;
 import org.vaadin.addon.leaflet.LMap;
 import org.vaadin.addon.leaflet.LOpenStreetMapLayer;
 import org.vaadin.addon.leaflet.shared.Bounds;
 import org.vaadin.addon.leaflet.shared.Point;
+import org.vaadin.viritin.label.MLabel;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 11/08/2017.
@@ -51,7 +52,8 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
 
         //addresses = new HashMap<>();
 
-        for (Project project : projectRepository.findAllByActiveTrueOrderByNameAsc()) {
+        String clientName = "";
+        for (Project project : projectRepository.findAllByActiveTrueOrderByNameAsc().stream().sorted(Comparator.comparing(o -> o.getClient().getName())).collect(Collectors.toCollection(ArrayList::new))) {
             if(project.getLatitude() == 0.0) continue;
             double lat = project.getLatitude();//55.707043;
             double lon = project.getLongitude(); //12.589604000000008;
@@ -59,12 +61,18 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
             if(project.getClient().getLogo()==null) continue;
             LImageOverlay imageOverlay = new LImageOverlay(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(project.getClient().getLogo().getLogo()),
-                    "logo.jpg"), new Bounds(new Point(lat,lon),new Point(lat+(100.0/100000.0), lon-(400.0/100000.0))));
+                    project.getUuid()+".jpg"), new Bounds(new Point(lat,lon),new Point(lat+(100.0/100000.0), lon-(400.0/100000.0))));
             imageOverlay.setOpacity(0.9);
-            imageOverlay.setAttribution("University of Texas");
+            //imageOverlay.setAttribution(project.getName());
+            imageOverlay.addClickListener(event -> UI.getCurrent().getNavigator().navigateTo(ProjectManagerView.VIEW_NAME+"/"+project.getUuid()));
             leafletMap.addLayer(imageOverlay);
 
             getProjectList().setDefaultComponentAlignment(Alignment.TOP_CENTER);
+            if(!clientName.equals(project.getClient().getName())) {
+                clientName = project.getClient().getName();
+                MLabel clientNameLabel = new MLabel(clientName).withStyleName("small dark-green-font");
+                getProjectList().addComponents(clientNameLabel);
+            }
             Button button = new Button(project.getName());
             button.addStyleName("flat");
             button.setWidth("100%");

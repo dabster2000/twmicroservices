@@ -33675,6 +33675,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	background-color: #8dacbf;
 }
 
+.invoice .center-label {
+	text-align: center;
+}
+
 .invoice .white-font .v-icon {
 	color: #ffffff;
 }

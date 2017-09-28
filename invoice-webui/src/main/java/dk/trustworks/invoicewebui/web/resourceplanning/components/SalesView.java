@@ -38,10 +38,10 @@ public class SalesView extends VerticalLayout {
         availabilityChartCard.getCardHolder().addComponent(salesHeatMap.getAvailabilityChart(localDateStart, localDateEnd));
 
         row.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
+                .withDisplayRules(12, 12, 6, 6)
                 .withComponent(heatMapCard);
         row.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
+                .withDisplayRules(12, 12, 6, 6)
                 .withComponent(availabilityChartCard);
 
         this.addComponent(responsiveLayout);

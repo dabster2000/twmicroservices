@@ -244,6 +244,13 @@
             <version>1.0.0</version>
         </dependency>
 
+        <!-- video -->
+        <dependency>
+            <groupId>com.clickntap</groupId>
+            <artifactId>vimeo</artifactId>
+            <version>1.10</version>
+        </dependency>
+
         <!-- database -->
         <dependency>
             <groupId>org.sql2o</groupId>

@@ -38,7 +38,7 @@ public class CheckTimeRegistrationJob {
     private SlackWebApiClient halWebApiClient;
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
-    @Scheduled(cron = "0 15 10 ? * 6L")
+    @Scheduled(cron = "0 30 11 * * MON-FRI")
     public void checkTimeRegistrationJob() {
         halWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
         log.info("CheckTimeRegistrationJob.execute");

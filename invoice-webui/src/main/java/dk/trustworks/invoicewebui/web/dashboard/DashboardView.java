@@ -1,5 +1,8 @@
 package dk.trustworks.invoicewebui.web.dashboard;
 
+import com.clickntap.vimeo.Vimeo;
+import com.clickntap.vimeo.VimeoResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.navigator.View;
@@ -9,9 +12,9 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.vimeo.Response;
 import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
@@ -19,7 +22,6 @@ import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by hans on 12/08/2017.
@@ -93,13 +95,10 @@ public class DashboardView extends VerticalLayout implements View {
         board.setScrollable(true);
 
         BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
-        //irthdayCard.setHeight("600px");
-        PhotosCardImpl photoCard = new PhotosCardImpl(dropboxAPI, 4, 6, "photoCard");
-        //photoCard.setHeight("500px");
+        PhotosCardImpl photoCard = new PhotosCardImpl(dropboxAPI, 5, 6, "photoCard");
         NewsImpl newsCard = new NewsImpl(userRepository, projectRepository, 1, 6, "newsCard");
-        //newsCard.setHeight("600px");
         DnaCardImpl dnaCard = new DnaCardImpl(3, 4, "dnaCard");
-        //dnaCard.setHeight("500px");
+        StatusImpl statusCard = new StatusImpl(projectRepository,4, 4, "statusCard");
 
         ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, 2, 8, "locationCardDesign");
         locationCardDesign.init();
@@ -107,10 +106,23 @@ public class DashboardView extends VerticalLayout implements View {
 
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(1, 4 , "monthNewsCardDesign");
         monthNewsCardDesign.setWidth("100%");
-        BrowserFrame browser2 = new BrowserFrame(null,
-                new ExternalResource("https://www.youtube-nocookie.com/embed/PWoyyHDRd7U?rel=0&amp;controls=0&amp;showinfo=0"));
+        Vimeo vimeo = new Vimeo("3d9ddc80cd730219bc1d58714408fb96");
+        String videoIframe = "";
+        try {
+            VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4783832/videos?direction=desc&sort=date");
+            ObjectMapper mapper = new ObjectMapper();
+            Response response = mapper.readValue(vimeoResponse.getJson().toString(), Response.class);
+            videoIframe = response.getData().get(0).getUri();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource("https://www.youtube-nocookie.com/embed/zYg2mVstANw?rel=0&amp;controls=0&amp;showinfo=0"));
+        BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource("https://player.vimeo.com"+videoIframe.replace("videos", "video")));
         browser2.setHeight("400px");
         browser2.setWidth("100%");
+
         monthNewsCardDesign.getIframeHolder().addComponent(browser2);
         monthNewsCardDesign.getLblTitle().setValue("State of Trustworks");
 
@@ -123,6 +135,7 @@ public class DashboardView extends VerticalLayout implements View {
         boxes.add(locationCardDesign);
         boxes.add(monthNewsCardDesign);
         boxes.add(dnaCard);
+        boxes.add(statusCard);
 
         createRows(board, boxes);
 
