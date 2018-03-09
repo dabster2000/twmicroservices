@@ -9,6 +9,7 @@ import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -24,7 +25,9 @@ public class DropboxAPI {
 
     private static final Logger log = LoggerFactory.getLogger(DropboxAPI.class);
 
-    private static final String ACCESS_TOKEN = "er5JfC5WCOAAAAAAAACBHbjYDH7GWXxx_YzmAmRMOpP8JKiNmoQDNxVhVlNsQkSn";
+    @Value("${dropboxToken}")
+    private String ACCESS_TOKEN;
+
     private final DbxTeamClientV2 client;
 
     public DropboxAPI() {

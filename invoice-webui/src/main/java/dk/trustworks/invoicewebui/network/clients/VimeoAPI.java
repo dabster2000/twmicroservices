@@ -7,6 +7,7 @@ import dk.trustworks.invoicewebui.model.vimeo.DataItem;
 import dk.trustworks.invoicewebui.model.vimeo.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,10 +17,14 @@ public class VimeoAPI {
 
     private static final Logger log = LoggerFactory.getLogger(VimeoAPI.class);
 
+
+    @Value("${vimeoToken}")
+    private String ACCESS_TOKEN;
+
     private String createdTime;
 
     public String getTrustworksStatus() {
-        Vimeo vimeo = new Vimeo("3d9ddc80cd730219bc1d58714408fb96");
+        Vimeo vimeo = new Vimeo(ACCESS_TOKEN);
         try {
             VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4783832/videos?direction=desc&sort=date");
             ObjectMapper mapper = new ObjectMapper();
@@ -35,7 +40,7 @@ public class VimeoAPI {
     }
 
     public String[] getTrustworksTrips() {
-        Vimeo vimeo = new Vimeo("3d9ddc80cd730219bc1d58714408fb96");
+        Vimeo vimeo = new Vimeo(ACCESS_TOKEN);
         try {
             VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4783108/videos?direction=desc&sort=date");
             ObjectMapper mapper = new ObjectMapper();
@@ -54,7 +59,7 @@ public class VimeoAPI {
     }
 
     public String[] getTrustworksKnowledge() {
-        Vimeo vimeo = new Vimeo("3d9ddc80cd730219bc1d58714408fb96");
+        Vimeo vimeo = new Vimeo(ACCESS_TOKEN);
         try {
             VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4831161/videos?direction=desc&sort=date");
             ObjectMapper mapper = new ObjectMapper();
