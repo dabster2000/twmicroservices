@@ -46,6 +46,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private ClientdataRepository clientdataRepository;
+
     private ProjectMapLocationImpl projectMapLocation;
 
     @Autowired
@@ -54,11 +57,20 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     @Autowired
     private BudgetRepository budgetRepository;
 
+    @Autowired
+    private PhotoRepository photoRepository;
+
+    @Autowired
+    private NewsRepository newsRepository;
+
     private ResponsiveLayout responsiveLayout;
 
     private Project currentProject;
 
     private TreeGrid<TaskRow> treeGrid;
+
+    private BudgetCardDesign budgetCard;
+
 
     @Transactional
     public ProjectManagerImpl init() {
@@ -76,27 +88,39 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         getSelProject().addValueChangeListener(event -> {
             reloadGrid();
         });
-        getBtnAddNewProject().addClickListener(event -> {
+
+        getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Create Project");
             window.setWidth("330px");
-            window.setHeight("220px");
+            window.setHeight("300px");
             window.setModal(true);
             NewProjectDesign newProject = new NewProjectDesign();
             window.setContent(newProject);
             UI.getCurrent().addWindow(window);
             newProject.getCbClients().setItems(clientRepository.findByActiveTrue());
+            newProject.getCbClients().addValueChangeListener(event1 -> {
+                List<Clientdata> clientdataList = clientdataRepository.findByClient(event1.getValue());
+                newProject.getCbClientdatas().setVisible(true);
+                newProject.getCbClientdatas().setItems(clientdataList);
+                newProject.getCbClientdatas().setItemCaptionGenerator(item -> item.getStreetnamenumber() + ", "
+                        + item.getPostalcode() + " " + item.getCity() + ", "
+                        + item.getContactperson());
+                newProject.getCbClientdatas().setSelectedItem(clientdataList.get(0));
+                newProject.getBtnCreate().setEnabled(true);
+            });
             newProject.getCbClients().setItemCaptionGenerator(Client::getName);
             newProject.getBtnCreate().addClickListener(event1 -> {
-                Project project = projectRepository.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue()));
+                Clientdata clientdata = newProject.getCbClientdatas().getValue();
+                Project project = projectRepository.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue(), clientdata));
                 List<Project> reloadedProjects = newArrayList(projectRepository.findAll());
                 getSelProject().setItems(reloadedProjects);
                 getSelProject().setSelectedItem(project);
                 getSelProject().setValue(project);
+                window.close();
+                UI.getCurrent().removeWindow(window);
                 reloadGrid();
             });
-            newProject.getBtnCancel().addClickListener(event1 -> {
-                window.close();
-            });
+            newProject.getBtnCancel().addClickListener(event1 -> window.close());
         });
         return this;
     }
@@ -108,26 +132,29 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         reloadGrid();
     }
 
-    @Transactional
     private void createDetailLayout() {
         projectMapLocation = new ProjectMapLocationImpl(projectRepository);
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
-        Logo logoResource = currentProject.getClient().getLogo();
+        Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userRepository.findAll(), photoResource, projectRepository, newsRepository, userRepository);
+        projectDetailCard.getBtnUpdate().addClickListener(event -> {
+            projectDetailCard.save();
+            updateTreeGrid();
+        });
 
         ResponsiveRow clientDetailsRow = responsiveLayout.addRow();
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
-                .withComponent(new ProjectDetailCardImpl(currentProject, userRepository.findAll(), logoResource, projectRepository));
+                .withComponent(projectDetailCard);
 
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(projectMapLocation.init(currentProject));
 
-        BudgetCardDesign budgetCard = new BudgetCardDesign();
-        treeGrid = createTreeGrid();
-        budgetCard.getContainer().addComponent(treeGrid);
+        budgetCard = new BudgetCardDesign();
+        updateTreeGrid();
 
         ResponsiveRow budgetRow = responsiveLayout.addRow();
         budgetRow.addColumn()
@@ -135,11 +162,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 .withComponent(budgetCard);
     }
 
-    @Transactional
+    private void updateTreeGrid() {
+        treeGrid = createTreeGrid();
+        budgetCard.getContainer().removeAllComponents();
+        budgetCard.getContainer().addComponent(treeGrid);
+    }
+
     private TreeGrid createTreeGrid() {
-        LocalDate startDate = new LocalDate(currentProject.getStartdate().getYear(),
-                currentProject.getStartdate().getMonthValue(),
-                currentProject.getStartdate().getDayOfMonth());
+        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
         LocalDate endDate = new LocalDate(currentProject.getEnddate().getYear(),
                 currentProject.getEnddate().getMonthValue(),
                 currentProject.getEnddate().getDayOfMonth());
@@ -150,15 +180,10 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         Map<String, User> usersMap = userRepository.findAll().stream().collect(Collectors.toMap(User::getUuid, user -> user));
 
-        //ArrayList<Taskworkerconstraint> taskworkerconstraints = Lists.newArrayList(taskworkerconstraintRepository.findAll());
-
-        //List<Budget> budgets = Lists.newArrayList(budgetRepository.findAll());
-
         for (Task task : currentProject.getTasks()) {
             List<Budget> budgets = budgetRepository.findByTaskuuid(task.getUuid());
             TaskRow taskRow = new TaskRow(task, monthsBetween.getMonths()+1);
             taskRows.add(taskRow);
-            System.out.println("task = " + task);
             for (User user : usersMap.values()) {
                 LocalDate budgetDate = startDate;
                 List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTask(task);
@@ -169,7 +194,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                                 p.getTask().getUuid().equals(task.getUuid()) &&
                                 p.getUser().getUuid().equals(user.getUuid()))
                         .findFirst();
-                if(user.getUsername().equals("hans.lassen")) System.out.println("taskworkerconstraint = " + taskworkerconstraint);
+                //if(user.getUsername().equals("hans.lassen")) System.out.println("taskworkerconstraint = " + taskworkerconstraint);
 
                 if(!taskworkerconstraint.isPresent()) continue;
 
@@ -253,6 +278,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 LocalDate budgetCountDate = startDate;
                 List<Budget> budgetList = new ArrayList<>();
                 for (String budgetString : userRow.getBudget()) {
+                    if(budgetString==null) budgetString = "0.0";
                     Budget budget = new Budget(
                             budgetCountDate.getMonthOfYear()-1,
                             budgetCountDate.getYear(),
@@ -265,29 +291,29 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 }
 
                 budgetRepository.save(budgetList);
+                //updateTreeGrid();
             } else {
                 taskRow.getTask().setName(taskRow.getTaskName());
                 taskRepository.save(taskRow.getTask());
+                //updateTreeGrid();
             }
         });
         treeGrid.setItems(taskRows, TaskRow::getUserRows);
         return treeGrid;
     }
 
-    @Transactional
     private void reloadGrid() {
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
         currentProject = getSelProject().getValue();
         if(getSelProject().getSelectedItem().isPresent()) createDetailLayout();
     }
 
-    @Transactional
     private void updateGridBodyMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<TaskRow> event) {
         event.getContextMenu().removeItems();
         if (event.getItem() != null) {
             if(event.getItem().getClass().equals(TaskRow.class)) {
                 event.getContextMenu().addItem("Add Consultant to "+((TaskRow)event.getItem()).getTaskName(), VaadinIcons.PLUS, selectedItem -> {
-                    Window subWindow = new Window("Sub-window");
+                    Window subWindow = new Window("");
                     VerticalLayout subContent = new VerticalLayout();
                     subWindow.setContent(subContent);
 
@@ -301,7 +327,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     addButton.addClickListener(event1 -> {
                         Taskworkerconstraint taskworkerconstraint = new Taskworkerconstraint(0.0, userComboBox.getSelectedItem().get(), ((TaskRow) event.getItem()).getTask());
                         taskworkerconstraintRepository.save(taskworkerconstraint);
-                        reloadGrid();
+                        subWindow.close();
+                        updateTreeGrid();
                     });
                     subContent.addComponent(addButton);
 
@@ -317,9 +344,10 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             }
         } else {
             event.getContextMenu().addItem("Add Task", VaadinIcons.PLUS, selectedItem -> {
-                Task task = new Task("new task", currentProject.getUuid(), currentProject);
+                Task task = new Task("new task", currentProject);
+                currentProject.getTasks().add(task);
                 taskRepository.save(task);
-                reloadGrid();
+                updateTreeGrid();
             });
         }
     }

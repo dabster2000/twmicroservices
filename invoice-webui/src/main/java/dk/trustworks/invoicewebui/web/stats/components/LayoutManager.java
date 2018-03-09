@@ -20,9 +20,6 @@ public class LayoutManager extends VerticalLayout {
     private TopGrossingProjectsChart topGrossingProjectsChart;
 
     @Autowired
-    private TopGrossingConsultantsChart topGrossingConsultantsChart;
-
-    @Autowired
     private ConsultantsPerProjectChart consultantsPerProjectChart;
 
     public LayoutManager init() {
@@ -37,10 +34,6 @@ public class LayoutManager extends VerticalLayout {
         projectGrossingCard.getLblTitle().setValue("Top Grossing Projects");
         projectGrossingCard.getContent().addComponent(topGrossingProjectsChart.createTopGrossingProjectsChart(localDateStart, localDateEnd));
 
-        Card consultantGrossingCard = new Card();
-        consultantGrossingCard.getLblTitle().setValue("Top Grossing Consultants");
-        consultantGrossingCard.getContent().addComponent(topGrossingConsultantsChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
-
         Card consultantsPerProjectCard = new Card();
         consultantsPerProjectCard.getLblTitle().setValue("Number of Consultants per Project");
         consultantsPerProjectCard.getContent().addComponent(consultantsPerProjectChart.createConsultantsPerProjectChart(localDateStart, localDateEnd));
@@ -48,9 +41,6 @@ public class LayoutManager extends VerticalLayout {
         row.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(projectGrossingCard);
-        row.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
-                .withComponent(consultantGrossingCard);
         row.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsPerProjectCard);

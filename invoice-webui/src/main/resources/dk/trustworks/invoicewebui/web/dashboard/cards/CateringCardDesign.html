@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
+    <vaadin-vertical-layout spacing="false" size-full :expand>
+     <vaadin-label style-name="h5 bold" plain-text _id="lblHeading" :center>
+       Order refreshments for meetings 
+     </vaadin-label>
+     <vaadin-form-layout style-name="v-scrollable" height="200px">
+      <vaadin-text-field caption="Title" placeholder="Meeting name" width-full _id="meetingName"></vaadin-text-field>
+      <vaadin-combo-box caption="Contact" placeholder="" width-full data-item-type="dk.trustworks.invoicewebui.model.User" _id="contact"></vaadin-combo-box>
+      <vaadin-date-time-field caption="Start" placeholder="Meeting start" width-full _id="start"></vaadin-date-time-field>
+      <vaadin-date-time-field caption="End" placeholder="Meeting end" width-full _id="end"></vaadin-date-time-field>
+      <vaadin-text-field caption="People" placeholder="Number" width="100px" _id="people"></vaadin-text-field>
+      <vaadin-check-box-group width-full data-item-type="java.lang.String" _id="orderTypes">
+       <option item="Coffee">Coffee</option>
+       <option item="Snacks">Snacks</option>
+       <option item="Drinks">Drinks</option>
+       <option item="Sandwiches">Sandwiches</option>
+       <option item="Other">Other (describe below)</option>
+      </vaadin-check-box-group>
+      <vaadin-text-area caption="Details" placeholder="Food preferences, allergies, specific serving time, etc." width-full _id="details"></vaadin-text-area>
+      <vaadin-combo-box required-indicator-visible caption="Quality" empty-selection-allowed="false" placeholder="Service level" width-full data-item-type="java.lang.String" _id="quality">
+       <option item="Normal">Normal</option>
+       <option item="Silver">Silver</option>
+       <option item="Gold">Gold</option>
+      </vaadin-combo-box>
+      <vaadin-combo-box caption="Account" placeholder="Select invoice type" width-full data-item-type="java.lang.String" _id="account">
+       <option item="Meeting">Kundemøde</option>
+       <option item="Personel">Personale</option>
+      </vaadin-combo-box>
+      <vaadin-button style-name="friendly" plain-text _id="btnOrder">
+        Order 
+      </vaadin-button>
+     </vaadin-form-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

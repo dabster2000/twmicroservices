@@ -4,18 +4,17 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.TrustworksEvent;
 import dk.trustworks.invoicewebui.model.EventType;
+import dk.trustworks.invoicewebui.model.TrustworksEvent;
 import dk.trustworks.invoicewebui.repositories.TrustworksEventRepository;
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by hans on 11/08/2017.
@@ -57,6 +56,7 @@ public class BirthdayCardImpl extends BirthdayCardDesign implements Box {
         getEventGrid().setRows(trustworksEvents.size());
         getEventGrid().setColumnExpandRatio(1, 1.0f);
 
+        this.setVisible(false);
         int i = 0;
         for (TrustworksEvent trustworksEvent : trustworksEvents) {
             Date eventDate = trustworksEvent.getEventdate();
@@ -65,13 +65,15 @@ public class BirthdayCardImpl extends BirthdayCardDesign implements Box {
             if(new SimpleDateFormat("yyyy-MM-dd").format(eventDate)
                     .equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))
                     && trustworksEvent.getEventtype().equals(EventType.BIRTHDAY)) {
-                season = "birthday3.jpg";
+                season = "birthday"+(new Random().nextInt(5 - 1 + 1) + 1)+".jpg";
                 this.boxWidth = 12;
                 this.priority = 0;
                 getLblBirthdayGreeting().setVisible(true);
                 getLblBirthdayGreeting().setValue("Happy Birthday, "+trustworksEvent.getName());
                 getEventGrid().setVisible(false);
                 getLblHeading().setVisible(false);
+                getPanelContentHolder().setHeightUndefined();
+                this.setVisible(true);
                 break;
             } else {
                 Label lblDate = new Label(new SimpleDateFormat("yyyy-MM-dd").format(eventDate));
@@ -79,6 +81,7 @@ public class BirthdayCardImpl extends BirthdayCardDesign implements Box {
                 getEventGrid().addComponent(lblDate, 0, i);
                 getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
                 getEventGrid().addComponent(lblText, 1, i);
+                this.setVisible(true);
                 i++;
             }
         }

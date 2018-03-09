@@ -32,7 +32,7 @@ public class CheckTimeRegistrationJob {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${slackBotToken}")
+    @Value("${halSlackBotToken}")
     private String slackToken;
 
     private SlackWebApiClient halWebApiClient;
@@ -56,16 +56,17 @@ public class CheckTimeRegistrationJob {
         }
         log.info("dateTime = " + dateTime);
 
-        List<Work> allWork = workRepository.findByPeriod(dateTime.minusDays(1).toString("yyyyMMdd"), dateTime.toString("yyyyMMdd"));
+        List<Work> allWork = workRepository.findByPeriod(dateTime.minusDays(1).toString("yyyy-MM-dd"), dateTime.toString("yyyy-MM-dd"));
         log.info("workByYearMonthDay.size() = " + allWork.size());
 
         for (User user : userRepository.findByActiveTrue()) {
-            if(!user.getUsername().equals("hans.lassen")) continue;
+            log.info("checking user = " + user);
+            //if(!user.getUsername().equals("hans.lassen")) continue;
             Optional<UserStatus> userStatus = user.getStatuses().stream().sorted((o1, o2) -> o1.getStatusdate().compareTo(o1.getStatusdate())).findFirst();
             if(!userStatus.isPresent()) continue;
             if(!userStatus.get().getStatus().equals(StatusType.ACTIVE)) continue;
             if(userStatus.get().getAllocation()==0) continue;
-            log.info("checking user = " + user);
+            log.info("user is valid = " + user);
             boolean hasWork = false;
             for (Work work : allWork) {
                 //if(!(work.getWorkduration()>0)) continue;
@@ -107,17 +108,17 @@ public class CheckTimeRegistrationJob {
                                 user.getFirstname()+", I really think I'm entitled to an answer to that question.",
                         "*stupid*\n " +
                                 "ˈstjuːpɪd/Submit\n adjective\n " +
-                                "1. having or showing a great lack of intelligence or common sense.\n \"_I was stupid enough to think she was perfect_\""
+                                "1. having or showing a great lack of intelligence or common sense.\n \"_I was stupid enough to think you registered your hours_\""
                 };
                 ChatPostMessageMethod textMessage = new ChatPostMessageMethod(user.getSlackusername(), responses[new Random().nextInt(responses.length)]);
                 textMessage.setAs_user(true);
-                log.info("Sending message");
+                log.info("Sending message to "+user);
                 halWebApiClient.postMessage(textMessage);
 
 
                 ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", "Notification sent to: "+ user.getUsername() +" at "+user.getSlackusername());
                 textMessage2.setAs_user(true);
-                log.info("Sending message");
+                log.info("Sending message to "+user);
                 halWebApiClient.postMessage(textMessage2);
             }
         }

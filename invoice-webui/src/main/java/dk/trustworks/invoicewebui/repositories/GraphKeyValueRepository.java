@@ -5,6 +5,7 @@ package dk.trustworks.invoicewebui.repositories;
  */
 
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "graphkeyvalues", path="graphkeyvalues")
 public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, String> {
 
+    @Cacheable("findProjectRevenueByPeriod")
     @Query(value = "SELECT p.name description, p.uuid uuid, ROUND(SUM(w.workduration * twc.price)) value " +
             "                FROM work_latest w " +
             "                INNER JOIN user u ON w.useruuid = u.uuid " +
@@ -26,6 +28,38 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "                GROUP BY p.uuid ORDER BY value DESC;", nativeQuery = true)
     List<GraphKeyValue> findProjectRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
+    @Cacheable("findRevenueByMonthByPeriod")
+    @Query(value = "SELECT w.uuid uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.workduration * twc.price)) value " +
+            "                            FROM work_latest w " +
+            "                            INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = w.useruuid " +
+            "                            WHERE ((w.year*10000)+((w.month+1)*100)+w.day) between :periodStart and :periodEnd AND w.workduration > 0 " +
+            "                            GROUP BY w.month;", nativeQuery = true)
+    List<GraphKeyValue> findRevenueByMonthByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
+
+    @Cacheable("findBudgetByMonthByPeriod")
+    @Query(value = "SELECT w.taskuuid uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.budget)) value " +
+            "    FROM taskworkerconstraint_latest w " +
+            "    WHERE ((w.year*10000)+((w.month+1)*100)+1) between :periodStart and :periodEnd AND w.budget > 0 " +
+            "    GROUP BY w.month;", nativeQuery = true)
+    List<GraphKeyValue> findBudgetByMonthByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
+
+    @Cacheable("findBudgetByMonthAndHistory")
+    @Query(value = "select yt.taskuuid uuid, CONCAT(yt.year,'-',yt.month+1,'-','01') description, ROUND(SUM(yt.budget)) value " +
+            "FROM taskworkerconstraintbudget yt " +
+            "join ( " +
+            "select twcb.uuid AS uuid, " +
+            "twcb.month AS month, " +
+            "twcb.year AS year, " +
+            "max(twcb.created) AS created, " +
+            "twcb.taskuuid AS taskuuid, " +
+            "twcb.useruuid AS useruuid " +
+            "from taskworkerconstraintbudget twcb WHERE twcb.created < :created AND twcb.month = :month AND twcb.year = :year " +
+            "group by twcb.month, twcb.year, twcb.useruuid, twcb.taskuuid " +
+            ") ss " +
+            "on (yt.month = ss.month) and (yt.year = ss.year) and (yt.created = ss.created) and (yt.useruuid = ss.useruuid) and (yt.taskuuid = ss.taskuuid);", nativeQuery = true)
+    List<GraphKeyValue> findBudgetByMonthAndHistory(@Param("month") int month, @Param("year") int year, @Param("created") String created);
+
+    @Cacheable("findConsultantRevenueByPeriod")
     @Query(value = "SELECT concat(u.firstname, ' ', u.lastname) description, u.uuid uuid, SUM(w.workduration * twc.price) value  " +
             "FROM work_latest w " +
             "INNER JOIN user u ON w.useruuid = u.uuid " +
@@ -34,6 +68,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "GROUP BY w.useruuid ORDER BY value DESC;", nativeQuery = true)
     List<GraphKeyValue> findConsultantRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
+    @Cacheable("countConsultantsPerProject")
     @Query(value = "SELECT p.uuid uuid, p.name description, COUNT(DISTINCT w.useruuid) value FROM usermanager.work_latest w " +
             "LEFT JOIN usermanager.task t ON t.uuid = w.taskuuid " +
             "LEFT JOIN usermanager.project p ON p.uuid = t.projectuuid " +

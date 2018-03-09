@@ -1,27 +1,25 @@
 package dk.trustworks.invoicewebui.web.dashboard;
 
-import com.clickntap.vimeo.Vimeo;
-import com.clickntap.vimeo.VimeoResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontIcon;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.vimeo.Response;
-import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
-import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
+import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.repositories.NewsRepository;
+import dk.trustworks.invoicewebui.repositories.TrustworksEventRepository;
+import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,11 +41,15 @@ public class DashboardView extends VerticalLayout implements View {
     /**
      * Templates
      * Apps i Trustworks
-     * Projects nearly ending
      * Reminder til projektowners at en client ikke har et logo
-     * Reminder til projektejer at projekt ikke bør være aktivt mere (3 måneder uden arbeje)
      * Reminder om at der ikke er en projektejer til sales team
      * Reminder til projektejer at budgettet er ved at løbe ud på projekt/konsulent
+     * Employee page med cv, billede, etc.
+     * Project siden skal indeholde en graf over budgetterne
+     * Man skal kunne ændre på nyhederne/events
+     * Brugerne skal have tilsendt nye passwords
+     * Man skal have overblik over sit eget IT budget
+     * Overblik over projekter
      */
 
     public static final String VIEW_NAME = "mainmenu";
@@ -63,25 +64,22 @@ public class DashboardView extends VerticalLayout implements View {
     private MainTemplate mainTemplate;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserStatusRepository userStatusRepository;
-
-    @Autowired
-    private WorkRepository workRepository;
-
-    @Autowired
-    private TaskworkerconstraintRepository taskworkerconstraintRepository;
-
-    @Autowired
     private TrustworksEventRepository trustworksEventRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private NewsRepository newsRepository;
 
     @Autowired
-    private DropboxAPI dropboxAPI;
+    private UserRepository userRepository;
+
+    @Autowired
+    private DashboardPreloader dashboardPreloader;
+
+    @Autowired
+    private DashboardBoxCreator dashboardBoxCreator;
+
+    @Autowired
+    private EmailSender emailSender;
 
     @Transactional
     @PostConstruct
@@ -90,144 +88,100 @@ public class DashboardView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         board.setSizeFull();
         board.setScrollable(true);
 
-        BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
-        PhotosCardImpl photoCard = new PhotosCardImpl(dropboxAPI, 5, 6, "photoCard");
-        NewsImpl newsCard = new NewsImpl(userRepository, projectRepository, 1, 6, "newsCard");
-        DnaCardImpl dnaCard = new DnaCardImpl(3, 4, "dnaCard");
-        StatusImpl statusCard = new StatusImpl(projectRepository,4, 4, "statusCard");
+        //BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
+        PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
+        NewsImpl newsCard = new NewsImpl(userRepository, newsRepository, 1, 12, "newsCard");
+        DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
+        CateringCardImpl cateringCard = new CateringCardImpl(userRepository.findByActiveTrueOrderByUsername(), emailSender,3, 4, "cateringCard");
+        cateringCard.init();
+        //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
+        VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
+        VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
+        //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 
-        ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, 2, 8, "locationCardDesign");
-        locationCardDesign.init();
-        locationCardDesign.setWidth("100%");
+        //projectTimeline.init();
 
-        VideoCardImpl monthNewsCardDesign = new VideoCardImpl(1, 4 , "monthNewsCardDesign");
+        //locationCardDesign.init();
+        //locationCardDesign.setWidth("100%");
+
         monthNewsCardDesign.setWidth("100%");
-        Vimeo vimeo = new Vimeo("3d9ddc80cd730219bc1d58714408fb96");
-        String videoIframe = "";
-        try {
-            VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4783832/videos?direction=desc&sort=date");
-            ObjectMapper mapper = new ObjectMapper();
-            Response response = mapper.readValue(vimeoResponse.getJson().toString(), Response.class);
-            videoIframe = response.getData().get(0).getUri();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource("https://www.youtube-nocookie.com/embed/zYg2mVstANw?rel=0&amp;controls=0&amp;showinfo=0"));
-        BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource("https://player.vimeo.com"+videoIframe.replace("videos", "video")));
+        BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrustworksStatus()));
         browser2.setHeight("400px");
         browser2.setWidth("100%");
-
         monthNewsCardDesign.getIframeHolder().addComponent(browser2);
-        monthNewsCardDesign.getLblTitle().setValue("State of Trustworks");
+
+        tripVideosCardDesign.setWidth("100%");
+        BrowserFrame tripVideoBrowser = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrips()[0]));
+        tripVideoBrowser.setHeight("400px");
+        tripVideoBrowser.setWidth("100%");
+        //tripVideosCardDesign.getLblTitle().setValue("Trustworks Travel Videos");
+        tripVideosCardDesign.getIframeHolder().addComponent(tripVideoBrowser);
+
+        dnaCard.getBoxComponent().setHeight("600px");
+        cateringCard.getBoxComponent().setHeight("600px");
+
+        photoCard.loadPhoto();
 
         createTopBoxes(board);
 
         List<Box> boxes = new ArrayList<>();
-        boxes.add(birthdayCard);
+        //boxes.add(birthdayCard);
         boxes.add(newsCard);
         boxes.add(photoCard);
-        boxes.add(locationCardDesign);
+        //boxes.add(locationCardDesign);
+        boxes.add(cateringCard);
         boxes.add(monthNewsCardDesign);
+        boxes.add(tripVideosCardDesign);
         boxes.add(dnaCard);
-        boxes.add(statusCard);
+        //boxes.add(projectTimeline);
+        //boxes.add(statusCard);
 
-        createRows(board, boxes);
+        //createRows(board, boxes);
+        ResponsiveRow mainRow = board.addRow().withGrow(true);
+        ResponsiveColumn mainComponentColumn = mainRow.addColumn().withDisplayRules(12, 12, 9, 9);
+        ResponsiveColumn leftColumn = mainRow.addColumn().withDisplayRules(12, 12, 3, 3);
+        leftColumn.withComponent(newsCard);
+
+        ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        mainComponentColumn.withComponent(mainLayout);
+        ResponsiveRow row1 = mainLayout.addRow().withGrow(true);
+        //ResponsiveRow row1 = board.addRow().withGrow(true);
+        //row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(newsCard);
+        row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(photoCard);
+
+        ResponsiveRow row2 = mainLayout.addRow().withGrow(true);
+        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthNewsCardDesign);
+        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(tripVideosCardDesign);
+
+        ResponsiveRow row3 = mainLayout.addRow().withGrow(true);
+        row3.addColumn().withDisplayRules(12, 12, 6, 4).withComponent(cateringCard);
+        row3.addColumn().withDisplayRules(12, 12, 6, 4).withComponent(dnaCard);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
+
     }
 
     private void createTopBoxes(ResponsiveLayout board) {
-        TopCardDesign consultantsCard = new TopCardDesign();
-        // TODO: Count instead of load: https://stackoverflow.com/questions/37569467/spring-data-jpa-get-the-values-of-a-non-entity-column-of-a-custom-native-query
-        float goodPeopleNow = userStatusRepository.findAllActive().size();
-        String date = LocalDate.now().minusYears(1).toString("yyyy-MM-dd");
-        // TODO: Count instead of load
-        float goodPeopleLastYear = userStatusRepository.findAllActiveByDate(date).size();
-        int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
-        consultantsCard.getImgIcon().setSource(new ThemeResource("images/icons/ic_people_black_48dp_2x.png"));
-        consultantsCard.getLblNumber().setValue(Math.round(goodPeopleNow)+"");
-        consultantsCard.getLblTitle().setValue("Good People");
-        consultantsCard.getLblSubtitle().setValue(percent + "% more than last year");
-        consultantsCard.getCardHolder().addStyleName("medium-blue");
         ResponsiveRow row0 = board.addRow();
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
-                .withComponent(consultantsCard);
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getGoodPeopleBox()));
 
-        LocalDate startDate = LocalDate.now().minusMonths(1);
-        LocalDate endDate = LocalDate.now();
-        Map<String, Project> currentProjectSet = new HashMap<>();
-        Map<String, Project> noProjectSet = new HashMap<>();
-        float billableHoursThisYear = 0f;
-        for (Work work : workRepository.findByPeriod(startDate.toString("yyyy-MM-dd"), endDate.toString("yyyy-MM-dd"))) {
-            Task task = work.getTask();
-            User user = work.getUser();
-            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
-            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
-                billableHoursThisYear += work.getWorkduration();
-                currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            } else {
-                noProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            }
-        }
-
-        LocalDate lastStartDate = startDate.minusYears(1);
-        LocalDate lastEndDate = endDate.minusYears(1);
-        Map<String, Project> lastProjectSet = new HashMap<>();
-        float billableHoursLastYear = 0f;
-        for (Work work : workRepository.findByPeriod(lastStartDate.toString("yyyy-MM-dd"), lastEndDate.toString("yyyy-MM-dd"))) {
-            Task task = work.getTask();
-            User user = work.getUser();
-            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
-            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
-                billableHoursLastYear += work.getWorkduration();
-                lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            }
-        }
-        float projectsThisYear = currentProjectSet.size();
-        int projectsLastYear = lastProjectSet.size();
-        int percentProjects = Math.round((projectsThisYear / projectsLastYear) * 100) - 100;
-        int percentBillableHours = Math.round((billableHoursThisYear / billableHoursLastYear) * 100) - 100;
-        String projectsMoreOrLess = "more";
-        String hoursMoreOrLess = "more";
-        if(percentProjects < 0) projectsMoreOrLess = "less";
-        if(percentBillableHours < 0) hoursMoreOrLess = "less";
-        percentProjects = Math.abs(percentProjects);
-        TopCardDesign consultantsCard2 = new TopCardDesign();
-        consultantsCard2.getImgIcon().setSource(new ThemeResource("images/icons/ic_date_range_48pt_2x.png"));
-        consultantsCard2.getLblNumber().setValue(""+currentProjectSet.size());
-        consultantsCard2.getLblTitle().setValue("Active Projects");
-        consultantsCard2.getLblSubtitle().setValue(percentProjects+"% "+projectsMoreOrLess+" than last year");
-        consultantsCard2.getCardHolder().addStyleName("dark-green");
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
-                .withComponent(consultantsCard2);
+                .withComponent(new TopCardImpl(dashboardBoxCreator.createActiveProjectsBox()));
 
-        TopCardDesign consultantsCard3 = new TopCardDesign();
-        consultantsCard3.getImgIcon().setSource(new ThemeResource("images/icons/ic_access_time_48pt_2x.png"));
-        consultantsCard3.getLblNumber().setValue(""+billableHoursThisYear);
-        consultantsCard3.getLblTitle().setValue("Billable Hours");
-        consultantsCard3.getLblSubtitle().setValue(percentBillableHours+"% "+hoursMoreOrLess+" than last year");
-        consultantsCard3.getCardHolder().addStyleName("orange");
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
-                .withComponent(consultantsCard3);
+                .withComponent(new TopCardImpl(dashboardBoxCreator.createBillableHoursBox()));
 
-        TopCardDesign consultantsCard4 = new TopCardDesign();
-        consultantsCard4.getImgIcon().setSource(new ThemeResource("images/icons/ic_people_black_48dp_2x.png"));
-        consultantsCard4.getLblNumber().setValue("0");
-        consultantsCard4.getLblTitle().setValue("Trustworks Consultants");
-        consultantsCard4.getLblSubtitle().setValue("10% more than last year");
-        consultantsCard4.getCardHolder().addStyleName("dark-grey");
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
-                .withComponent(consultantsCard4);
+                .withComponent(new TopCardImpl(dashboardBoxCreator.createConsultantsPerProjectBox()));
     }
 
     private void createRows(ResponsiveLayout board, List<Box> boxes) {
@@ -249,7 +203,7 @@ public class DashboardView extends VerticalLayout implements View {
 
         ResponsiveRow[] responsiveRows = new ResponsiveRow[maxRows+1];
         for (int i = 0; i < maxRows + 1; i++) {
-            responsiveRows[i] = board.addRow();
+            responsiveRows[i] = board.addRow().withGrow(true);
         }
 
         Map<Box, Integer> result = boxIntegerMap.entrySet().stream()
@@ -307,7 +261,7 @@ public class DashboardView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        //Authorizer.authorize(this);
+
     }
 
 }

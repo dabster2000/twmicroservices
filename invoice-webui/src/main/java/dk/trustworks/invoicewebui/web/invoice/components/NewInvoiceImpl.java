@@ -11,7 +11,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
-import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +83,6 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         btnCreateInvoice.addClickListener(event -> {
             for (ProjectSummary projectSummary : gridProjectSummaryList.getSelectedItems()) {
                 projectSummaryClient.createInvoiceFromProject(projectSummary.getProjectuuid(), cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
-                Broadcaster.broadcast("NEW_DRAFT");
                 reloadData();
             }
         });

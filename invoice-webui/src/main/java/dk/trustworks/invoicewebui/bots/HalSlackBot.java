@@ -7,11 +7,9 @@ import me.ramswaroop.jbot.core.slack.Bot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
-@Component
 public class HalSlackBot extends Bot {
 
     private static final Logger logger = LoggerFactory.getLogger(HalSlackBot.class);
@@ -54,6 +52,7 @@ public class HalSlackBot extends Bot {
         webhookClient.post(payload);
 */
         //slackbotClient.post("@hans", "test message 2");
+
 
        // webApiClient.postMessage("U036JELTN", "Test", "hal", true);
 

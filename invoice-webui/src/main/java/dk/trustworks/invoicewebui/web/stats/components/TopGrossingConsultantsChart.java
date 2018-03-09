@@ -27,7 +27,7 @@ public class TopGrossingConsultantsChart {
         Chart chart = new Chart();
         chart.setSizeFull();
 
-        chart.setCaption("Top Grossing Projects Fiscal Year 07/"+(periodStart.getYear())+" - 06/"+periodEnd.getYear());
+        chart.setCaption("Top Grossing Consultants Fiscal Year 07/"+(periodStart.getYear())+" - 06/"+periodEnd.getYear());
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);

@@ -1,44 +1,39 @@
 package dk.trustworks.invoicewebui.web;
 
-import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Viewport;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.DefaultErrorHandler;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.repositories.NotificationRepository;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.security.Authorizer;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import dk.trustworks.invoicewebui.web.invoice.components.DraftListImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.alump.fancylayouts.FancyNotifications;
-import org.vaadin.alump.materialicons.MaterialIcons;
 
-import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by hans on 02/07/2017.
  */
-@Push
 @SpringUI
 @SpringViewDisplay
+@Viewport("width=device-width,initial-scale=1.0,user-scalable=no")
 @Theme("invoice")
 public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewDisplay {
 
-    private Panel springViewDisplay;
+    protected static Logger logger = LoggerFactory.getLogger(VaadinUI.class.getName());
 
-    @Autowired
-    private DraftListImpl draftList;
+    //DefaultNotificationHolder notifications = new DefaultNotificationHolder();
+    //DefaultBadgeHolder badge = new DefaultBadgeHolder();
+
+    private Panel springViewDisplay;
 
     @Autowired
     private Navigator navigator;
@@ -46,15 +41,10 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
     @Autowired
     private Authorizer authorizer;
 
-    private boolean clickNotifications = false;
-
-    private FancyNotifications fancyNotifications;
-
-    @Autowired
-    private NotificationRepository notificationRepository;
-
     @Override
     protected void init(VaadinRequest request) {
+        //notifications.setNotificationClickedListener(newStatus -> Notification.show(newStatus.getTitle()));
+
         final VerticalLayout root;
         root = new VerticalLayout();
         root.setSpacing(false);
@@ -62,8 +52,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         root.setSizeFull();
         setContent(root);
 
-        fancyNotifications = new FancyNotifications();
-        root.addComponent(fancyNotifications);
+        //oot.addComponent(fancyNotifications);
 
         springViewDisplay = new Panel();
         springViewDisplay.setSizeFull();
@@ -76,45 +65,46 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
             return authorizer.hasAccess(event.getNewView());
         });
 
+
         UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
-                // Find the final cause
-                String cause = "<b>The click failed because:</b><br/>";
-                for (Throwable t = event.getThrowable(); t != null;
-                     t = t.getCause())
-                    if (t.getCause() == null) // We're at final cause
-                        cause += t.getClass().getName() + "<br/>";
+                String errorUuid = UUID.randomUUID().toString();
 
-                // Do the default error handling (optional)
-                doDefault(event);
+                logger.error(errorUuid, event.getThrowable());
+
+                Notification notification = new Notification("The click failed: ",
+                        String.valueOf(errorUuid),
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
+                notification.setStyleName("failure");
+                notification.show(Page.getCurrent());
             }
         });
     }
 
     @Override
     public void receiveBroadcast(String message) {
-        System.out.println("MainWindowImpl.receiveBroadcast");
-        System.out.println("message = " + message);
-
+        logger.info("MainWindowImpl.receiveBroadcast");
+        logger.info("message = " + message);
+/*
         if(message.equals("notification")) {
             UserSession userSession = this.getSession().getAttribute(UserSession.class);
             if(userSession!=null) {
                 for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
-                    System.out.println("notification = " + notification);
+                    //System.out.println("notification = " + notification);
 
-                    getCurrent().access(() ->fancyNotifications.showNotification(null, notification.getTitel(), notification.getContent(), MaterialIcons.DATE_RANGE));
+                    //getCurrent().access(() ->fancyNotifications.showNotification(null, notification.getTitel(), notification.getContent(), MaterialIcons.DATE_RANGE));
                 }
             }
             //topMenu.reload();
         }
-
+*/
         //projectList.reloadData();
         //int numberOfDrafts = mainWindow.invoiceClient.findByStatus(DRAFT).getContent().size();
         //System.out.println("numberOfDrafts = " + numberOfDrafts);
         if(message.equals("invoice")) {
             getUI().access(() -> {
-                draftList.receiveBroadcast(message);
+                //draftList.receiveBroadcast(message);
             });
         }
 

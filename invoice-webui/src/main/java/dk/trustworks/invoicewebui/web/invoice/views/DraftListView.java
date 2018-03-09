@@ -7,11 +7,10 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.RoleType;
-import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.invoice.components.DraftListImpl;
-import dk.trustworks.invoicewebui.web.mainmenu.components.*;
+import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
+import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import javax.annotation.PostConstruct;
 @Push
 @AccessRules(roleTypes = {RoleType.ACCOUNTING})
 @SpringView(name = DraftListView.VIEW_NAME)
-public class DraftListView extends VerticalLayout implements View, Broadcaster.BroadcastListener {
+public class DraftListView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "invoice_drafts";
     public static final String MENU_NAME = "Drafts";
@@ -38,16 +37,10 @@ public class DraftListView extends VerticalLayout implements View, Broadcaster.B
     private DraftListImpl draftListComponent;
 
     @Autowired
-    private InvoiceRepository invoiceRepository;
-
-    @Autowired
     private TopMenu topMenu;
 
     @Autowired
     private MainTemplate mainTemplate;
-
-    @Autowired
-    private LeftMenu leftMenu;
 
     @PostConstruct
     void init() {
@@ -56,11 +49,9 @@ public class DraftListView extends VerticalLayout implements View, Broadcaster.B
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
 
-        Broadcaster.register(this);
         mainTemplate.setMainContent(draftListComponent, VIEW_ICON, MENU_NAME, "A list of money germs!", VIEW_BREADCRUMB);
     }
 
-    @Override
     public void receiveBroadcast(String message) {
         logger.info("MainWindowImpl.receiveBroadcast");
         logger.info("message = " + message);

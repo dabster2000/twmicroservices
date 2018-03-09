@@ -2,15 +2,11 @@ package dk.trustworks.invoicewebui.web.login;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.board.Board;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.network.clients.LoginClient;
-import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.web.login.components.LoginImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,15 +38,17 @@ public class LoginView extends VerticalLayout implements View {
         ResponsiveRow row = responsiveLayout.addRow();
         row
                 .addColumn()
-                .withDisplayRules(12,2, 3, 4)
+                .withDisplayRules(12,12, 3, 4)
+                .withVisibilityRules(false, false, true, true)
                 .withComponent(new Label());
         row
                 .addColumn()
-                .withDisplayRules(12, 8, 6, 4)
+                .withDisplayRules(12, 12, 6, 4)
                 .withComponent(login);
         row
                 .addColumn()
-                .withDisplayRules(12,2, 3, 4)
+                .withDisplayRules(12,12, 3, 4)
+                .withVisibilityRules(false, false, true, true)
                 .withComponent(new Label());
         addComponent(responsiveLayout);
     }

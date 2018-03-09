@@ -26,6 +26,21 @@ public class UserRow extends TaskRow {
         this.username = user.getUsername();
     }
 
+    @Override
+    public void setTaskName(String taskName) {
+        return;
+    }
+
+    @Override
+    public void setMonth(int month, String value) {
+        getBudget()[month] = value;
+    }
+
+    @Override
+    public String getMonth(int actualMonth) {
+        return (super.getMonth(actualMonth)!=null)?super.getMonth(actualMonth):"0.0";
+    }
+
     public String getRate() {
         return rate;
     }

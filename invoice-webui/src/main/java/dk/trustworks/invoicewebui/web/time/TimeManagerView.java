@@ -4,13 +4,12 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
-import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.web.time.components.TimeManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +39,9 @@ public class TimeManagerView extends VerticalLayout implements View {
     @Autowired
     private TimeManagerImpl timeManager;
 
+    //@Autowired
+    //private TimeCardImpl timeCard;
+
     public static final String VIEW_NAME = "timeregistration";
     public static final String MENU_NAME = "Time Sheet";
     public static final String VIEW_BREADCRUMB = "TimeManager / Time Sheet";
@@ -52,6 +54,7 @@ public class TimeManagerView extends VerticalLayout implements View {
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
         mainTemplate.setMainContent(timeManager.init(), VIEW_ICON, MENU_NAME, "You are probably doing this late...", VIEW_BREADCRUMB);
+        //mainTemplate.setMainContent(timeCard.init(), VIEW_ICON, MENU_NAME, "You are probably doing this late...", VIEW_BREADCRUMB);
     }
 
     @Override

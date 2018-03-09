@@ -3,9 +3,13 @@ package dk.trustworks.invoicewebui.web.client.components;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToLongConverter;
+import com.vaadin.server.Page;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.Clientdata;
+import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
+import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import org.vaadin.addon.vol3.OLMap;
 import org.vaadin.addon.vol3.OLMapOptions;
 import org.vaadin.addon.vol3.OLView;
@@ -18,16 +22,17 @@ import org.vaadin.addon.vol3.source.OLSource;
 import org.vaadin.addon.vol3.source.OLVectorSource;
 import org.vaadin.addon.vol3.source.OLVectorSourceOptions;
 
+import java.util.List;
+
 /**
  * Created by hans on 13/08/2017.
  */
 
 public class ClientDataImpl extends ClientDataDesign {
 
-    private OLMap map;
     private Binder<Clientdata> clientDataBinder;
 
-    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata) {
+    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata, ProjectRepository projectRepository) {
         clientDataBinder = new Binder<>();
         clientDataBinder.forField(getTxtCity()).bind(Clientdata::getCity, Clientdata::setCity);
         clientDataBinder.forField(getTxtContactName()).bind(Clientdata::getContactperson, Clientdata::setContactperson);
@@ -67,17 +72,17 @@ public class ClientDataImpl extends ClientDataDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            /*
-            Resources<Resource<Project>> projects = projectClient.findByClientdatauuid(clientdata.getUuid());
-            if(projects.getContent().size() > 0) {
+            List<Project> projects = projectRepository.findByClientdata(clientdata);
+            //Resources<Resource<Project>> projects = projectClient.findByClientdatauuid(clientdata.getUuid());
+            if(projects.size() > 0) {
                 String description = "The contact information is in use by the following projects: \n\n";
-                for (Resource<Project> projectResource : projects.getContent()) {
-                    description += projectResource.getContent().getName()+", \n";
+                for (Project projectResource : projects) {
+                    description += projectResource.getName()+", \n";
                 }
                 Notification sample = new Notification("Can't delete contact information", description);
                 sample.show(Page.getCurrent());
             } else {
-            */
+
             clientdataRepository.delete(clientdata.getUuid());
             clientdata.setClientname("DELETED");
             clientdata.setContactperson("");
@@ -90,7 +95,7 @@ public class ClientDataImpl extends ClientDataDesign {
             clientDataBinder.readBean(clientdata);
             getCssHider().setVisible(false);
             getBtnEdit().setVisible(false);
-           // }
+           }
         });
     }
 

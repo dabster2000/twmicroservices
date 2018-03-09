@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout spacing="false" margin="false" :expand>
+     <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px">
+      <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e6a8" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
+      <vaadin-label plain-text _id="lblTitle" :middle :expand>
+        Your Info 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-vertical-layout spacing="false" _id="container" :expand>
+      <vaadin-form-layout margin _id="formLayout">
+       <vaadin-text-field placeholder="full name" width-full _id="txtName"></vaadin-text-field>
+       <vaadin-combo-box placeholder="Knowledge Group" empty-selection-caption="Knowledge Group" data-item-type="java.lang.String">
+        <option item="Option1">Projectmanagers</option>
+        <option item="Option2">LAFAUX</option>
+       </vaadin-combo-box>
+       <vaadin-date-field placeholder="birthday &amp; year" _id="dfBirthday"></vaadin-date-field>
+       <vaadin-password-field placeholder="password" width-full _id="txtPassword"></vaadin-password-field>
+       <vaadin-password-field placeholder="repeat password" width-full _id="txtPasswordRepeat"></vaadin-password-field>
+      </vaadin-form-layout>
+     </vaadin-vertical-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

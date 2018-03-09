@@ -33,6 +33,8 @@ public class ProjectDetailCardDesign extends VerticalLayout {
     private Image logo;
     private FormLayout formProjectDetail;
     private TextField txtName;
+    private TextField txtDescription;
+    private ComboBox<dk.trustworks.invoicewebui.model.Clientdata> cbClientdatas;
     @PropertyId("username")
     private ComboBox<dk.trustworks.invoicewebui.model.User> selRelationManager;
     private DateField selStartDate;
@@ -67,6 +69,14 @@ public class ProjectDetailCardDesign extends VerticalLayout {
 
     public TextField getTxtName() {
         return txtName;
+    }
+
+    public TextField getTxtDescription() {
+        return txtDescription;
+    }
+
+    public ComboBox<dk.trustworks.invoicewebui.model.Clientdata> getCbClientdatas() {
+        return cbClientdatas;
     }
 
     public ComboBox<dk.trustworks.invoicewebui.model.User> getSelRelationManager() {

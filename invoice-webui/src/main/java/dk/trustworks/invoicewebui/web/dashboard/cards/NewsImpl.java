@@ -4,113 +4,179 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import com.vaadin.ui.UI;
+import dk.trustworks.invoicewebui.model.EventType;
+import dk.trustworks.invoicewebui.model.News;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.repositories.NewsRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.web.model.NewsItem;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by hans on 11/08/2017.
  */
 public class NewsImpl extends NewsDesign implements Box {
 
+    private static final Logger log = LoggerFactory.getLogger(NewsImpl.class);
 
     private int priority;
     private int boxWidth;
     private String name;
 
-    public NewsImpl(UserRepository userRepository, ProjectRepository projectRepository, int priority, int boxWidth, String name) {
+    public NewsImpl(UserRepository userRepository, NewsRepository newsRepository, int priority, int boxWidth, String name) {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
 
-        getEventGrid().setColumnExpandRatio(1, 1.0f);
+        DateTime now = DateTime.now();
+        String season;
+        int month_day = now.getMonthOfYear() * 100 + now.getDayOfMonth();
+        if (month_day <= 315) {
+            season = "winter.gif";
+        }
+        else if (month_day <= 615) {
+            season = "spring.jpg";
+        }
+        else if (month_day <= 915) {
+            season = "summer.jpg";
+        }
+        else if (month_day <= 1215) {
+            season = "fall.jpg";
+        }
+        else {
+            season = "winter.gif";
+        }
 
-        List<NewsItem> newsItems = new ArrayList<>();
-        List<Project> projects = projectRepository.findAllByActiveTrueOrderByNameAsc();
 
+        Set<News> newsList = new TreeSet<>(Comparator.comparing(News::getNewstype).thenComparing(News::getNewsdate).thenComparing(News::getSha512));
+
+        boolean isBirthdayToday = false;
         for (User user : userRepository.findByActiveTrue()) {
-            List<UserStatus> statuses = user.getStatuses();
-            statuses.sort(Comparator.comparing(UserStatus::getStatusdate));
-            UserStatus firstStatus = statuses.get(0);
-            if(firstStatus.getStatusdate().isAfter(LocalDate.now().minusMonths(1))) {
-                newsItems.add(new NewsItem(firstStatus.getStatusdate(),
-                        "A huge welcome to "+user.getFirstname()+" "+user.getLastname()+
-                                " who just joined Trustworks!"));
-                continue;
-            }
-            LocalDate dateWithCurrentYear = firstStatus.getStatusdate().withYear(LocalDate.now().getYear());
-            if(dateWithCurrentYear.isAfter(LocalDate.now().minusWeeks(1)) &&
-                    dateWithCurrentYear.isBefore(LocalDate.now().plusMonths(1))) {
-                newsItems.add(new NewsItem(dateWithCurrentYear,
-                        user.getFirstname()+" "+user.getLastname()+
-                                ", You are... terrifically tireless, exceptionally, excellent, abundantly appreciated and..." +
-                                "magnificient beyond words! So glad you're a part of our team! Happy "+
-                                (LocalDate.now().getYear()-firstStatus.getStatusdate().getYear())+
-                                ". year anniversary."));
-                continue;
-            }
-        }
+            Date birthday = user.getBirthday();
+            Date nextBirthday = LocalDate.fromDateFields(birthday).withYear(LocalDate.now().getYear()).toDate();
+            if(!isBetweenInclusive(LocalDate.now(), LocalDate.now().plusWeeks(2), LocalDate.fromDateFields(nextBirthday))) continue;
+            News news = new News(user.getFirstname() + "'s Birthday", nextBirthday.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), EventType.BIRTHDAY.name(), "", user);
+            log.info("Add news "+news, news);
+            newsList.add(news);
+            log.info("newsList.size() = "+newsList.size(), newsList);
 
-        for (Project project : projects) {
-            if(project.getStartdate().isAfter(LocalDate.now().minusMonths(1))) {
-                String consultants = "";
-                for (Task task : project.getTasks()) {
-                    for (Taskworkerconstraint taskworkerconstraint : task.getTaskworkerconstraint()) {
-                        if(taskworkerconstraint.getPrice() >= 1.0) continue;
-                        consultants += taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname() + ", ";
-                    }
-                }
-
-                newsItems.add(new NewsItem(project.getStartdate(), "We have started an exciting new project recently! " +
-                        "Its called '"+project.getName()+"' and its for our client "+project.getClient().getName()+". " +
-                        "From what have been announced, "+consultants+" have been assigned as consultants."));
-            }
-            if(project.getEnddate().isBefore(LocalDate.now().plusMonths(1)) && project.getEnddate().isAfter(LocalDate.now())) {
-                String consultants = "";
-                for (Task task : project.getTasks()) {
-                    for (Taskworkerconstraint taskworkerconstraint : task.getTaskworkerconstraint()) {
-                        if(taskworkerconstraint.getPrice() >= 1.0) continue;
-                        consultants += taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname() + ", ";
-                    }
-                }
-                newsItems.add(new NewsItem(project.getEnddate(), "The project '"+project.getName()+"' " +
-                        "for our client "+project.getClient().getName()+" is ending soon. " +
-                        "Your colleagues "+consultants+" will be available for other tasks."));
+            if(new SimpleDateFormat("yyyy-MM-dd").format(nextBirthday)
+                    .equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))) {
+                /*
+                season = "birthday"+(new Random().nextInt(5 - 1 + 1) + 1)+".jpg";
+                this.boxWidth = 12;
+                this.priority = 0;
+                getLblBirthdayGreeting().setVisible(true);
+                getLblBirthdayGreeting().setValue("Happy Birthday, "+user.getFirstname());
+                getEventGrid().setVisible(false);
+                getLblHeading().setVisible(false);
+                getPanelContentHolder().setHeightUndefined();
+                isBirthdayToday = true;
+                //break;
+                */
             }
         }
 
-        System.out.println("newsItems = " + newsItems.size());
-        for (NewsItem newsItem : newsItems) {
-            System.out.println("newsItem = " + newsItem);
+        for (News news : newsRepository.findAll()) {
+            newsList.add(news);
+            if(news.getNewstype().equalsIgnoreCase("project")) news.setNewsdate(java.time.LocalDate.now().plusMonths(12));
+            log.info("Add news "+news, news);
+            log.info("newsList.size() = "+newsList.size(), newsList);
         }
 
-
-        getEventGrid().setRows((newsItems.size()<6)?newsItems.size():5);
+        log.info("newsList.size() = "+newsList.size(), newsList);
+        getEventGrid().setRows(newsList.size());
         getEventGrid().setColumnExpandRatio(1, 1.0f);
-        System.out.println("getEventGrid().getRows() = " + getEventGrid().getRows());
-
         int i = 0;
-        for (NewsItem newsItem : newsItems) {
-            Label lblDate = new Label(newsItem.getNewsDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            Label lblText = new Label(newsItem.getNewsText());
-            lblText.setWidth("100%");
+        for (News newsItem : newsList) {
+            Label lblDate;
+            if(newsItem.getNewstype().equalsIgnoreCase("project")) {
+                lblDate = new Label("");
+            } else {
+                lblDate = new Label(newsItem.getNewsdate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            }
+            MHorizontalLayout textLayout = new MHorizontalLayout().add(new MLabel(newsItem.getDescription()).withWidth("100%")).withWidth("100%");
+            textLayout.addLayoutClickListener(e -> UI.getCurrent().getNavigator().navigateTo(newsItem.getLink()));
             getEventGrid().addComponent(lblDate, 0, i);
             getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
-            getEventGrid().addComponent(lblText, 1, i);
+            getEventGrid().addComponent(textLayout, 1, i);
             i++;
-            if(i>4) break;
         }
 
-        getImgTop().setSource(new ThemeResource("images/cards/news.jpg"));
+
+        /*
+        List<TrustworksEvent> trustworksEvents = trustworksEventRepository.findByEventdateBetweenOrEventtype(LocalDate.now().toDate(), LocalDate.now().plusMonths(1).toDate(), EventType.BIRTHDAY);
+        trustworksEvents.sort(Comparator.comparing(TrustworksEvent::getEventdate).reversed());
+        */
+
+        /*
+        int i = 0;
+        for (TrustworksEvent trustworksEvent : trustworksEvents) {
+            Date eventDate = trustworksEvent.getEventdate();
+            if(trustworksEvent.getEventtype().equals(EventType.BIRTHDAY)) eventDate = LocalDate.fromDateFields(eventDate).withYear(LocalDate.now().getYear()).toDate();
+            if(!isBetweenInclusive(LocalDate.now(), LocalDate.now().plusWeeks(2), LocalDate.fromDateFields(eventDate))) continue;
+            if(new SimpleDateFormat("yyyy-MM-dd").format(eventDate)
+                    .equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))
+                    && trustworksEvent.getEventtype().equals(EventType.BIRTHDAY)) {
+                season = "birthday"+(new Random().nextInt(5 - 1 + 1) + 1)+".jpg";
+                this.boxWidth = 12;
+                this.priority = 0;
+                getLblBirthdayGreeting().setVisible(true);
+                getLblBirthdayGreeting().setValue("Happy Birthday, "+trustworksEvent.getName());
+                getEventGrid().setVisible(false);
+                getLblHeading().setVisible(false);
+                getPanelContentHolder().setHeightUndefined();
+                birthday = true;
+                break;
+            } else {
+                Label lblDate = new Label(new SimpleDateFormat("yyyy-MM-dd").format(eventDate));
+                Label lblText = new Label(trustworksEvent.getName()+(trustworksEvent.getEventtype().equals(EventType.BIRTHDAY)?"'s Birthday":""));
+                getEventGrid().addComponent(lblDate, 0, i);
+                getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
+                getEventGrid().addComponent(lblText, 1, i);
+                i++;
+            }
+            if(i>=getEventGrid().getRows()) break;
+        }
+        */
+
+/*
+        if(!birthday) {
+            List<News> newsList = newsRepository.findTop10ByOrderByNewsdateDesc();
+
+            if (newsList.size() > 0) {
+                getEventGrid().setRows((newsList.size() < 6) ? newsList.size() : 5);
+            }
+            getEventGrid().setColumnExpandRatio(1, 1.0f);
+
+            //i = 0;
+            for (News newsItem : newsList) {
+                //if (i > 4) break;
+                //if(getEventGrid().getRows() < i) break;
+                Label lblDate = new Label(newsItem.getNewsdate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                MHorizontalLayout textLayout = new MHorizontalLayout().add(new MLabel(newsItem.getDescription()).withWidth("100%")).withWidth("100%");
+                textLayout.addLayoutClickListener(e -> UI.getCurrent().getNavigator().navigateTo(newsItem.getLink()));
+                getEventGrid().addComponent(lblDate, 0, i);
+                getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
+                getEventGrid().addComponent(textLayout, 1, i);
+                //i++;
+            }
+        //}*/
+
+        getImgTop().setSource(new ThemeResource("images/cards/"+season));
         getImgTop().setSizeFull();
     }
 
@@ -141,6 +207,10 @@ public class NewsImpl extends NewsDesign implements Box {
     @Override
     public Component getBoxComponent() {
         return this;
+    }
+
+    boolean isBetweenInclusive(LocalDate start, LocalDate end, LocalDate target) {
+        return !target.isBefore(start) && !target.isAfter(end);
     }
 
 }

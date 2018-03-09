@@ -5,6 +5,6 @@ package dk.trustworks.invoicewebui.model;
  */
 public enum EventType {
 
-    BIRTHDAY, TRIP, KNOWLEDGE, LAFAUX, PM
+    BIRTHDAY, TRIP, KNOWLEDGE, LAFAUX, PM, PROJECT,
 
 }

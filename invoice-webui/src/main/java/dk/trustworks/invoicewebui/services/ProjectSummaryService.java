@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.services;
 
 import com.google.common.collect.Lists;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
@@ -123,6 +124,7 @@ public class ProjectSummaryService {
         Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 
         for (Work workResource : workResources) {
+            if(workResource.getWorkduration() == 0) continue;
             Task task = workResource.getTask();
             logger.info("task = " + task);
 
@@ -155,7 +157,7 @@ public class ProjectSummaryService {
                         clientdata.getEan(),
                         clientdata.getCvr(),
                         clientdata.getContactperson(),
-                        LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).getMonth().maxLength()),
+                        LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).lengthOfMonth()),
                         project.getCustomerreference(),
                         "");
                 invoice.uuid = UUID.randomUUID().toString();
@@ -170,7 +172,12 @@ public class ProjectSummaryService {
             if(taskworkerconstraint == null) {
                 logger.error("Taskworkerconstraint could not be found for user (link: "+user.getUuid()+") and task (link: "+task.getUuid()+")");
                 invoice.errors = true;
-                continue;
+                Notification.show("User not assigned",
+                        user.getUsername()+ " is not assigned to task \""+ task.getName()+"\" " +
+                                "on the project \""+project.getName()+"\". " +
+                                "Please fix this on project page.",
+                        Notification.Type.ERROR_MESSAGE);
+                return;
             }
             if(!invoiceItemMap.containsKey(project.getUuid()+taskworkerconstraint.getUuid())) {
                 InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),

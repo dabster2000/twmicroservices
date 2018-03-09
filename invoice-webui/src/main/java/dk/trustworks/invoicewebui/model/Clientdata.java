@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,8 +20,8 @@ public class Clientdata {
     @JoinColumn(name="clientuuid")
     private Client client;
 
-    @OneToOne(mappedBy = "clientdata", fetch = FetchType.LAZY)
-    private Project project;
+    @OneToMany(mappedBy = "clientdata", fetch = FetchType.LAZY)
+    private List<Project> project;
 
     public Clientdata() {
     }
@@ -118,11 +119,11 @@ public class Clientdata {
         this.client = client;
     }
 
-    public Project getProject() {
+    public List<Project> getProject() {
         return project;
     }
 
-    public void setProject(Project project) {
+    public void setProject(List<Project> project) {
         this.project = project;
     }
 

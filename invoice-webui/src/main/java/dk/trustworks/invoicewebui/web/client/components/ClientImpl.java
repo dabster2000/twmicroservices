@@ -2,9 +2,8 @@ package dk.trustworks.invoicewebui.web.client.components;
 
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Client;
-import dk.trustworks.invoicewebui.model.Logo;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
-import dk.trustworks.invoicewebui.repositories.LogoRepository;
+import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import server.droporchoose.UploadComponent;
 
 import java.io.IOException;
@@ -19,11 +18,11 @@ import static com.vaadin.ui.Notification.Type.*;
  */
 public class ClientImpl extends ClientDesign {
 
-    private LogoRepository logoRepository;
+    private PhotoRepository photoRepository;
     private Client client;
 
-    public ClientImpl(LogoRepository logoRepository, Client client) {
-        this.logoRepository = logoRepository;
+    public ClientImpl(PhotoRepository photoRepository, Client client) {
+        this.photoRepository = photoRepository;
         this.client = client;
         UploadComponent uploadComponent = new UploadComponent(this::uploadReceived);
         uploadComponent.setStartedCallback(this::uploadStarted);
@@ -39,13 +38,14 @@ public class ClientImpl extends ClientDesign {
     private void uploadReceived(String fileName, Path file) {
         Notification.show("Upload finished: " + fileName, HUMANIZED_MESSAGE);
         try {
+            Photo photo = photoRepository.findByRelateduuid(client.getUuid());
             byte[] bytes = Files.readAllBytes(file);
-            if(client.getLogo()==null) {
-                client.setLogo(new Logo(UUID.randomUUID().toString(), client, bytes));
+            if(photo==null) {
+                photo = new Photo(UUID.randomUUID().toString(), client.getUuid(), bytes);
             } else {
-                client.getLogo().setLogo(bytes);
+                photo.setPhoto(bytes);
             }
-            logoRepository.save(client.getLogo());
+            photoRepository.save(photo);
         } catch (IOException e) {
             uploadFailed(fileName, file);
         }

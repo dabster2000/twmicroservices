@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.web.time.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.ComboBox;
@@ -49,6 +50,9 @@ public class TimeReportImpl extends VerticalLayout {
 
         projectComboBox = new ComboBox<>();
         date = new DateField(null, LocalDate.now().withDayOfMonth(1));
+        date.setResolution(DateResolution.MONTH);
+        date.setDateFormat("MMMM yyyy");
+        date.setWidth("200");
         HorizontalLayout horizontalLayout = new HorizontalLayout(projectComboBox, date);
         projectComboBox.setItems(projectRepository.findAllByActiveTrueOrderByNameAsc());
         projectComboBox.setItemCaptionGenerator(Project::getName);
@@ -71,6 +75,8 @@ public class TimeReportImpl extends VerticalLayout {
     }
 
     private void loadData() {
+        if(date.isEmpty()) return;
+        if(projectComboBox.isEmpty()) return;
         createMonthReportCard();
         createBudgetReportCard();
     }

@@ -4,13 +4,15 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.security.Authorizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import javax.annotation.PostConstruct;
 
@@ -20,9 +22,6 @@ import javax.annotation.PostConstruct;
 @SpringUI
 @SpringComponent
 public class AdminManagerImpl extends VerticalLayout {
-
-    @Autowired
-    private Authorizer authorizer;
 
     @Autowired
     private UserRepository userRepository;
@@ -53,15 +52,24 @@ public class AdminManagerImpl extends VerticalLayout {
         responsiveLayout.setSizeFull();
         responsiveLayout.setScrollable(true);
 
+        MButton addUserButton = new MButton("add user").withStyleName("flat", "friendly").withListener((Button.ClickListener) event -> {
+            User user = new User();
+            user.setUsername("new.new");
+            userRepository.save(user);
+            userComboBox.setItems(userRepository.findAll());
+            userComboBox.setSelectedItem(user);
+        });
+
         userComboBox = new ComboBox<>();
         userComboBox.setItems(userRepository.findAll());
         userComboBox.setItemCaptionGenerator(User::getUsername);
+        userComboBox.setEmptySelectionAllowed(false);
         responsiveLayout.addRow()
                 .addColumn()
                 .withDisplayRules(12, 12, 4, 4)
                 .withOffset(ResponsiveLayout.DisplaySize.MD, 4)
                 .withOffset(ResponsiveLayout.DisplaySize.LG, 4)
-                .withComponent(userComboBox);
+                .withComponent(new MHorizontalLayout().withFullWidth().add(userComboBox).add(addUserButton));
         userComboBox.addValueChangeListener(event -> {
             contentRow.removeAllComponents();
             loadData();

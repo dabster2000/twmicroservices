@@ -50,7 +50,7 @@ public class InvoicePdfGenerator {
         PdfCanvas canvas = new PdfCanvas(pdf.addNewPage());
 
         if(invoice.type.equals(InvoiceType.INVOICE))
-            canvas.addImage(ImageDataFactory.create(getClass().getResource  (INVOICE_IMAGE)), pageSize, false);
+            canvas.addImage(ImageDataFactory.create(getClass().getResource(INVOICE_IMAGE)), pageSize, false);
         else
             canvas.addImage(ImageDataFactory.create(getClass().getResource(CREDIT_NOTE_IMAGE)), pageSize, false);
         canvas.concatMatrix(1, 0, 0, 1, 0, PageSize.A4.getHeight());
@@ -86,7 +86,7 @@ public class InvoicePdfGenerator {
                     .add(convertDoubleToDanish(invoiceitem.hours * invoiceitem.rate))
                     .setBorder(Border.NO_BORDER));
         }
-/*
+        /*
         for (int i = 0; i < 20; i++) {
             Cell aCell = new Cell(1, 1)
                     .setTextAlignment(TextAlignment.RIGHT)

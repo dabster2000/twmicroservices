@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.web.time.components;
 
 import com.vaadin.data.Binder;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -15,9 +14,10 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.vaadin.patrik.FastNavigation;
 import tm.kod.widgets.numberfield.NumberField;
 
 import java.util.ArrayList;
@@ -30,6 +30,8 @@ import java.util.UUID;
 @SpringComponent
 @SpringUI
 public class TimeManagerImpl extends TimeManagerDesign {
+
+    private static final Logger log = LoggerFactory.getLogger(TimeManagerImpl.class);
 
     @Autowired
     ClientRepository clientRepository;
@@ -47,63 +49,53 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private WorkRepository workRepository;
 
     @Autowired
+    private BudgetRepository budgetRepository;
+
+    @Autowired
     private TimeService timeService;
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
 
-    @Transactional
-    public TimeManagerImpl init() {
-        setDateFields();
-        UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
-        if(userSession == null) return this;
-
-        List<User> users = userRepository.findByActiveTrue();
-        getSelActiveUser().setItemCaptionGenerator(User::getUsername);
-        getSelActiveUser().setItems(users);
-
-        // find userSession user
-        for (User user : users) {
-            if(user.getUuid().equals(userSession.getUser().getUuid())) getSelActiveUser().setSelectedItem(user);
-        }
-
+    public TimeManagerImpl() {
         getBtnWeekNumberDecr().addClickListener(event -> {
             currentDate = currentDate.minusWeeks(1);
+            log.info("currentDate.minusWeeks(1) = " + currentDate);
             setDateFields();
             updateGrid(getSelActiveUser().getSelectedItem().get());
         });
 
         getBtnWeekNumberIncr().addClickListener(event -> {
             currentDate = currentDate.plusWeeks(1);
+            log.info("currentDate.plusWeeks(1) = " + currentDate);
             setDateFields();
             updateGrid(getSelActiveUser().getSelectedItem().get());
         });
 
         getBtnYearDecr().addClickListener(event -> {
             currentDate = currentDate.minusYears(1);
+            log.info("currentDate.minusYears(1) = " + currentDate);
             setDateFields();
             updateGrid(getSelActiveUser().getSelectedItem().get());
         });
 
         getBtnYearIncr().addClickListener(event -> {
             currentDate = currentDate.plusYears(1);
+            log.info("currentDate.plusYears(1) = " + currentDate);
             setDateFields();
             updateGrid(getSelActiveUser().getSelectedItem().get());
         });
 
-        getSelActiveUser().addValueChangeListener(event -> {
-            updateGrid(getSelActiveUser().getSelectedItem().get());
-        });
-
-
-        updateGrid(getSelActiveUser().getSelectedItem().get());
+        getSelActiveUser().addValueChangeListener(event -> updateGrid(getSelActiveUser().getSelectedItem().get()));
 
         getBtnCopyWeek().addClickListener(event1 -> {
+            log.info("getBtnCopyWeek()");
             timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), getSelActiveUser().getSelectedItem().get());
             loadData(getSelActiveUser().getSelectedItem().get());
         });
 
         getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
-            final Window window = new Window("Invoice editor");
+            log.info("getBtnAddTask()");
+            final Window window = new Window("Add Task");
             window.setWidth(300.0f, Unit.PIXELS);
             window.setHeight(500.0f, Unit.PIXELS);
             window.setModal(true);
@@ -140,7 +132,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 taskComboBox.setVisible(false);
                 addTaskButton.setEnabled(false);
 
-                List<Project> projects = clientRepository.findOne(event1.getValue().getUuid()).getProjects();
+                //List<Project> projects = clientRepository.findOne(event1.getValue().getUuid()).getProjects();
+                List<Project> projects = projectRepository.findByClientAndActiveTrueOrderByNameAsc(clientComboBox.getValue());
 
                 projectComboBox.clear();
                 projectComboBox.setItems(projects);
@@ -178,21 +171,11 @@ public class TimeManagerImpl extends TimeManagerDesign {
             window.setContent(new VerticalLayout(clientComboBox, projectComboBox, taskComboBox, addTaskButton));
             this.getUI().addWindow(window);
         });
-        return this;
-    }
-
-    @Transactional
-    private void updateGrid(User user) {
-        loadData(user);
-
-        setGridHeaderLabels();
-
-        setGridColumns();
-
-        getGridTimeTable().setSelectionMode(Grid.SelectionMode.NONE);
 
         getGridTimeTable().getEditor().addSaveListener(event -> {
             LocalDate saveDate = this.currentDate;
+            log.info("saveDate = " + saveDate);
+            log.info("event.getBean() = " + event.getBean());
             workRepository.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
@@ -248,9 +231,42 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     NumberConverter.parseDouble(event.getBean().getSun()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
-
-            loadData(user);
+            loadData(getSelActiveUser().getSelectedItem().get());
         });
+    }
+
+    @Transactional
+    public TimeManagerImpl init() {
+        log.info("TimeManagerImpl.init");
+        setDateFields();
+        UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+        System.out.println("userSession = " + userSession);
+        if(userSession == null) return this;
+
+        List<User> users = userRepository.findByActiveTrue();
+        getSelActiveUser().setItemCaptionGenerator(User::getUsername);
+        getSelActiveUser().setItems(users);
+
+        // find userSession user
+        for (User user : users) {
+            if(user.getUuid().equals(userSession.getUser().getUuid())) getSelActiveUser().setSelectedItem(user);
+        }
+
+        updateGrid(getSelActiveUser().getSelectedItem().get());
+        return this;
+    }
+
+    private void updateGrid(User user) {
+        log.info("TimeManagerImpl.updateGrid");
+        log.info("user = [" + user + "]");
+        loadData(user);
+
+        setGridHeaderLabels();
+
+        setGridColumns();
+
+        getGridTimeTable().setSelectionMode(Grid.SelectionMode.NONE);
+
         getGridTimeTable().getEditor().setEnabled(true);
         getGridTimeTable().getEditor().setBuffered(true);
     }
@@ -323,30 +339,36 @@ public class TimeManagerImpl extends TimeManagerDesign {
         mainHeader.getCell("sun").setHtml("<center>Sun</center>");
     }
 
-    @Transactional
     private void loadData(User user) {
-        long start = System.currentTimeMillis();
+        log.info("TimeManagerImpl.loadData");
+        log.info("user = [" + user + "]");
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), user);
+        log.info("weeks.size() = " + weeks.size());
         if(weeks.size()>0) getBtnCopyWeek().setEnabled(false);
         else getBtnCopyWeek().setEnabled(true);
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
+        log.info("startOfWeek = " + startOfWeek);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
+        log.info("endOfWeek = " + endOfWeek);
         List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
+        log.info("workResources.size() = " + workResources.size());
 
         List<WeekItem> weekItems = new ArrayList<>();
         double sumHours = 0.0;
         for (Week week : weeks) {
+            log.info("week = " + week);
             Task task = week.getTask();
+            log.info("task = " + task);
             Hibernate.initialize(task);
-            //System.out.println("task = " + task);
+
             WeekItem weekItem = new WeekItem(task, user);
             weekItems.add(weekItem);
-            weekItem.setTaskname(
-                    task.getProject().getName() + " / " + task.getName()
-            );
-            long innerStart = System.currentTimeMillis();
+            weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
+            Double budgetLeftByTaskuuidAndUseruuid = budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());
+            if(budgetLeftByTaskuuidAndUseruuid!=null) weekItem.setBudgetleft(budgetLeftByTaskuuidAndUseruuid);
             for (Work work : workResources) {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
+                log.info("work = " + work);
                 sumHours += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
                 switch (workDate.getDayOfWeek()) {
@@ -373,14 +395,14 @@ public class TimeManagerImpl extends TimeManagerDesign {
                         break;
                 }
             }
-            System.out.println("Inner Duration = " + (System.currentTimeMillis() - innerStart));
         }
+        log.info("sumHours = " + sumHours);
         getLblTotalHours().setValue(NumberConverter.formatDouble(sumHours));
         getGridTimeTable().setItems(weekItems);
-        System.out.println("Duration = " + (System.currentTimeMillis() - start));
     }
 
     public NumberField createInstance() {
+        log.info("TimeManagerImpl.createInstance");
         NumberField field = new NumberField("Amount");
         field.setSigned(true);                                                 // disable negative sign, default true
         field.setUseGrouping(true);                                        // enable grouping, default false
@@ -390,61 +412,13 @@ public class TimeManagerImpl extends TimeManagerDesign {
         return field;
     }
 
-    private void initNavigation(final Grid grid) {
-        FastNavigation nav = new FastNavigation(grid,false);
-        nav.setChangeColumnAfterLastRow(false);
-
-
-        nav.addRowEditListener(event -> {
-            int rowIndex = event.getRowIndex();
-            if (rowIndex >= 0) {
-                /*
-                Indexed ds = getGridTimeTable().;
-                Object itemId = ds.getIdByIndex(rowIndex);
-                printChangedRow(rowIndex, ds, itemId);
-                */
-                System.out.println("rowIndex = " + rowIndex);
-            }
-
-        });
-
-        // Open with F2
-        nav.addEditorOpenShortcut(ShortcutAction.KeyCode.F2);
-
-        // Close with F3
-        nav.addEditorCloseShortcut(ShortcutAction.KeyCode.F3);
-
-        // Row focus change
-        nav.addRowFocusListener(event -> System.out.println("Focus moved to row " + event.getRow()));
-
-
-        // Cell focus change
-        nav.addCellFocusListener(event -> {
-            int row = event.getRow();
-            int col = event.getColumn();
-            System.out.println("Focus moved to cell [" + row + ", " + col + " ]");
-        });
-
-        nav.addRowEditListener(rowEditEvent -> {
-
-        });
-
-        // Listening to opening of editor
-        nav.addEditorOpenListener(event -> {
-            int row = event.getRow();
-            System.out.println("Editor opened on row " + row + " at column " + event.getColumn());
-        });
-
-        // Listening to closing of editor
-        nav.addEditorCloseListener(event -> {
-            System.out.println("Editor closed on row " + event.getRow() + ", column " + event.getColumn() + ", " + (event.wasCancelled() ? "user cancelled change" : "user saved change"));
-
-        });
-    }
-
     private void setDateFields() {
+        log.info("TimeManagerImpl.setDateFields");
         getTxtWeekNumber().setValue(currentDate.getWeekOfWeekyear()+"");
+        log.info("Text Weeknumber = " + currentDate.getWeekOfWeekyear());
         getTxtYear().setValue(currentDate.getYear()+"");
-        getLblCurrentDate().setValue(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.plusDays(7).toString("dd. MMM yyyy"));
+        log.info("Text Year = " + currentDate.getYear());
+        getLblCurrentDate().setValue(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy"));
+        log.info("Top Dates = "+(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy")));
     }
 }

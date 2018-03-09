@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SalesView extends VerticalLayout {
 
     @Autowired
-    SalesHeatMap salesHeatMap;
+    private SalesHeatMap salesHeatMap;
 
     public SalesView() {
     }

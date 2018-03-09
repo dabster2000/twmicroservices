@@ -1,8 +1,10 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
-import com.vaadin.addon.charts.model.style.SolidColor;
+import com.vaadin.addon.charts.model.ChartType;
+import com.vaadin.addon.charts.model.Credits;
+import com.vaadin.addon.charts.model.DataSeries;
+import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
@@ -37,12 +39,13 @@ public class ConsultantsPerProjectChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.countConsultantsPerProject(periodStart.toString("yyyyMMdd"), periodEnd.toString("yyyyMMdd"));
+        /*
         double sumRevenue = 0.0;
         for (GraphKeyValue amountPerItem : amountPerItemList) {
             sumRevenue += amountPerItem.getValue();
         }
         double avgRevenue = sumRevenue / amountPerItemList.size();
-
+        */
         String[] categories = new String[amountPerItemList.size()];
         DataSeries revenueList = new DataSeries("Number of Consultants");
 

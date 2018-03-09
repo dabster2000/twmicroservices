@@ -98,7 +98,7 @@ public class DraftListImpl extends DraftListDesign
                             e.printStackTrace();
                         }
                         invoiceRepository.save(invoice);
-                        Broadcaster.broadcast("NEW_DRAFT");
+                        loadInvoicesToGrid();
                         window.close();
                     } catch (ValidationException e) {
                         e.printStackTrace();
@@ -125,7 +125,7 @@ public class DraftListImpl extends DraftListDesign
             for (Invoice selectedInvoice : gridInvoiceList.getSelectedItems()) {
                 invoiceRepository.delete(selectedInvoice.getUuid());
             }
-            Broadcaster.broadcast("NEW_DRAFT");
+            loadInvoicesToGrid();
         });
 
         addTour();

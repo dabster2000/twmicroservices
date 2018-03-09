@@ -64,7 +64,8 @@ public class TaskRow {
     }
 
     public void setMonth(int month, String value) {
-        budget[month] = value;
+        return;
+        //budget[month] = value;
     }
 
     @Override

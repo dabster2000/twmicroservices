@@ -18,11 +18,10 @@ import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.model.InvoiceItem;
-import dk.trustworks.invoicewebui.model.InvoiceStatus;
-import dk.trustworks.invoicewebui.model.InvoiceType;
+import dk.trustworks.invoicewebui.generators.InvoicePdfGenerator;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
+import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.Broadcaster;
@@ -37,6 +36,7 @@ import org.vaadin.addons.producttour.tour.Tour;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -63,9 +63,21 @@ public class InvoiceListImpl extends InvoiceListDesign
     private List<Invoice> invoices;
 
     @Autowired
-    public InvoiceListImpl(InvoiceRepository invoiceRepository, InvoiceService invoiceService) {
+    public InvoiceListImpl(InvoiceRepository invoiceRepository, InvoiceService invoiceService, Authorizer authorizer, InvoicePdfGenerator invoicePdfGenerator) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceService = invoiceService;
+
+        if(!authorizer.hasAccess(RoleType.ADMIN)) btnRecreateInvoice.setVisible(false);
+
+        btnRecreateInvoice.addClickListener(event -> {
+            Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
+            try {
+                invoice.pdf = invoicePdfGenerator.createInvoice(invoice);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            invoiceRepository.save(invoice);
+        });
 
         Broadcaster.register(this);
 
@@ -142,6 +154,7 @@ public class InvoiceListImpl extends InvoiceListDesign
         gridInvoiceList.getEditor().setBuffered(true).setEnabled(true);
         gridInvoiceList.addSelectionListener(selectionEvent -> {
             if(gridInvoiceList.getSelectionModel().getFirstSelectedItem().isPresent()) {
+                btnRecreateInvoice.setEnabled(true);
                 btnDownloadPdf.setEnabled(true);
                 btnCreateCreditNota.setEnabled(true);
                 if(gridInvoiceList.getSelectionModel().getFirstSelectedItem().get().status.equals(CREDIT_NOTE)
@@ -149,6 +162,7 @@ public class InvoiceListImpl extends InvoiceListDesign
                     btnCreateCreditNota.setEnabled(false);
                 }
             } else {
+                btnRecreateInvoice.setEnabled(false);
                 btnDownloadPdf.setEnabled(false);
                 btnCreateCreditNota.setEnabled(false);
             }

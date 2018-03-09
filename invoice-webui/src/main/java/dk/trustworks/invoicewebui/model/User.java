@@ -23,6 +23,8 @@ public class User {
     @JsonIgnore private String password;
     private String username;
     private String slackusername;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date birthday;
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<Salary> salaries;
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
@@ -119,6 +121,14 @@ public class User {
         this.slackusername = slackusername;
     }
 
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
     public List<Salary> getSalaries() {
         return salaries;
     }
@@ -193,17 +203,17 @@ public class User {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("User{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", active=").append(active);
-        sb.append(", created=").append(created);
-        sb.append(", email='").append(email).append('\'');
-        sb.append(", firstname='").append(firstname).append('\'');
-        sb.append(", lastname='").append(lastname).append('\'');
-        sb.append(", password='").append(password).append('\'');
-        sb.append(", username='").append(username).append('\'');
-        sb.append(", slackusername='").append(slackusername).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "User{" +
+                "uuid='" + uuid + '\'' +
+                ", active=" + active +
+                ", created=" + created +
+                ", email='" + email + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", password='" + password + '\'' +
+                ", username='" + username + '\'' +
+                ", slackusername='" + slackusername + '\'' +
+                ", birthday=" + birthday +
+                '}';
     }
 }

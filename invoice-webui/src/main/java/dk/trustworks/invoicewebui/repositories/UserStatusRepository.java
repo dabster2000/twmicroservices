@@ -22,12 +22,12 @@ public interface UserStatusRepository extends CrudRepository<UserStatus, String>
             "  yt.status,\n" +
             "  yt.statusdate,\n" +
             "  yt.allocation\n" +
-            "FROM usermanager.userstatus yt INNER JOIN (\n" +
+            "FROM userstatus yt INNER JOIN (\n" +
             "                          SELECT\n" +
             "                            uuid,\n" +
             "                            useruuid,\n" +
             "                            max(statusdate) created\n" +
-            "                          FROM usermanager.userstatus\n" +
+            "                          FROM userstatus\n" +
             "                          GROUP BY useruuid\n" +
             "                        ) ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid WHERE status LIKE 'ACTIVE'", nativeQuery = true)
     List<UserStatus> findAllActive();
@@ -38,12 +38,12 @@ public interface UserStatusRepository extends CrudRepository<UserStatus, String>
             "  yt.status,\n" +
             "  yt.statusdate,\n" +
             "  yt.allocation\n" +
-            "FROM usermanager.userstatus yt INNER JOIN (\n" +
+            "FROM userstatus yt INNER JOIN (\n" +
             "                          SELECT\n" +
             "                            uuid,\n" +
             "                            useruuid,\n" +
             "                            max(statusdate) created\n" +
-            "                          FROM usermanager.userstatus WHERE statusdate < :actualdate \n" +
+            "                          FROM userstatus WHERE statusdate < :actualdate \n" +
             "                          GROUP BY useruuid\n" +
             "                        ) ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid WHERE status LIKE 'ACTIVE'", nativeQuery = true)
     List<UserStatus> findAllActiveByDate(@Param("actualdate") String actualdate);

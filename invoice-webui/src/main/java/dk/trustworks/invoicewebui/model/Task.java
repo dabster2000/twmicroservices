@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class Task {
@@ -25,9 +26,9 @@ public class Task {
     public Task() {
     }
 
-    public Task(String uuid, String name, Project project) {
+    public Task(String name, Project project) {
         type = "CONSULTANT";
-        this.uuid = uuid;
+        this.uuid = UUID.randomUUID().toString();
         this.name = name;
         this.project = project;
     }

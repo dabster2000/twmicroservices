@@ -6,10 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import javax.persistence.*;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +54,8 @@ public class Project {
     public Project() {
     }
 
-    public Project(String name, Client client) {
+    public Project(String name, Client client, Clientdata clientdata) {
+        this.clientdata = clientdata;
         uuid = UUID.randomUUID().toString();
         active = true;
         budget = 0.0;

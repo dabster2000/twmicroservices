@@ -7,9 +7,9 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.invoice.components.NewInvoiceImpl;
-import dk.trustworks.invoicewebui.web.mainmenu.components.*;
+import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
+import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
  */
 @AccessRules(roleTypes = {RoleType.ACCOUNTING})
 @SpringView(name = NewInvoiceView.VIEW_NAME)
-public class NewInvoiceView extends VerticalLayout implements View, Broadcaster.BroadcastListener {
+public class NewInvoiceView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "invoice_new";
     public static final String MENU_NAME = "New Invoice";
@@ -40,9 +40,6 @@ public class NewInvoiceView extends VerticalLayout implements View, Broadcaster.
     @Autowired
     private MainTemplate mainTemplate;
 
-    @Autowired
-    private LeftMenu leftMenu;
-
     @PostConstruct
     void init() {
         this.setMargin(false);
@@ -50,11 +47,9 @@ public class NewInvoiceView extends VerticalLayout implements View, Broadcaster.
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
 
-        Broadcaster.register(this);
         mainTemplate.setMainContent(newInvoiceComponent.init(), VIEW_ICON, MENU_NAME, "Primed for billing", VIEW_BREADCRUMB);
     }
 
-    @Override
     public void receiveBroadcast(String message) {
         logger.debug("MainWindowImpl.receiveBroadcast");
         logger.debug("message = " + message);
@@ -74,6 +69,6 @@ public class NewInvoiceView extends VerticalLayout implements View, Broadcaster.
         System.out.println("NewInvoiceView.enter");
         //Authorizer.authorize(this);
         newInvoiceComponent.reloadData();
-        leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
+        //leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
     }
 }

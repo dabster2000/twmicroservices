@@ -2,9 +2,8 @@ package dk.trustworks.invoicewebui.web.client.components;
 
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.Photo;
 
 import java.io.ByteArrayInputStream;
 
@@ -13,15 +12,12 @@ import java.io.ByteArrayInputStream;
  * Created by hans on 12/08/2017.
  */
 
-@SpringComponent
-@SpringUI
 public class ClientCardImpl extends ClientCardDesign {
 
-    public ClientCardImpl(Client client) {
-
-        if(client.getLogo()!=null && client.getLogo().getLogo().length > 0) {
+    public ClientCardImpl(Client client, Photo photo) {
+        if(photo!=null && photo.getPhoto().length > 0) {
             getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(client.getLogo().getLogo()),
+                            new ByteArrayInputStream(photo.getPhoto()),
                             "logo.jpg"));
         } else {
             getImgTop().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
@@ -29,7 +25,17 @@ public class ClientCardImpl extends ClientCardDesign {
         getImgBlackStripe().setSource(new ThemeResource("images/black-stripe.png"));
 
         getImgTop().setSizeFull();
+
+        if(client.isActive()) {
+            getBtnDelete().setCaption("DEACTIVATE");
+            getBtnDelete().removeStyleName("friendly");
+            getBtnDelete().addStyleName("danger");
+        }
+        if(!client.isActive()) {
+            getBtnDelete().setCaption("ACTIVATE");
+            getBtnDelete().removeStyleName("danger");
+            getBtnDelete().addStyleName("friendly");
+        }
         getLblHeading().setValue(client.getName());
     }
-
 }

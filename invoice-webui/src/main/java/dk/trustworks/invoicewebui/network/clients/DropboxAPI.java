@@ -7,7 +7,8 @@ import com.dropbox.core.v2.DbxTeamClientV2;
 import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
-import com.dropbox.core.v2.team.TeamMemberInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -21,6 +22,8 @@ import java.util.*;
 @Service
 public class DropboxAPI {
 
+    private static final Logger log = LoggerFactory.getLogger(DropboxAPI.class);
+
     private static final String ACCESS_TOKEN = "er5JfC5WCOAAAAAAAACBHbjYDH7GWXxx_YzmAmRMOpP8JKiNmoQDNxVhVlNsQkSn";
     private final DbxTeamClientV2 client;
 
@@ -29,18 +32,14 @@ public class DropboxAPI {
         client = new DbxTeamClientV2(config, ACCESS_TOKEN);
     }
 
-    public void getFile() {
+    public List<String> getFilesInFolder(String path) {
+        List<String> filePaths = new ArrayList<>();
         try {
-            for (TeamMemberInfo teamMemberInfo : client.team().membersList().getMembers()) {
-                System.out.println("teamMemberInfo = " + teamMemberInfo);
-            }
-
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
-
-            ListFolderResult result = files.listFolder("");
+            ListFolderResult result = files.listFolder(path);
             while (true) {
                 for (Metadata metadata : result.getEntries()) {
-                    System.out.println(metadata.getPathLower());
+                    filePaths.add(metadata.getPathLower());
                 }
 
                 if (!result.getHasMore()) {
@@ -52,6 +51,7 @@ public class DropboxAPI {
         } catch (DbxException e) {
             e.printStackTrace();
         }
+        return filePaths;
     }
 
     public List<SearchMatch> searchFiles(String query, long resultSize) {
@@ -63,20 +63,19 @@ public class DropboxAPI {
         } catch (DbxException e) {
             e.printStackTrace();
         }
-        System.out.println("no file");
+        log.debug("no file");
         return new ArrayList<>();
     }
 
     public byte[] getRandomFile(String folder) {
-        System.out.println("DropboxAPI.getRandomFile");
-        System.out.println("folder = [" + folder + "]");
+        log.info("DropboxAPI.getRandomFile");
+        log.info("folder = [" + folder + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
 
             ListFolderResult result = files.listFolder(folder);
             Metadata metadata = result.getEntries().get(new Random().nextInt(result.getEntries().size()));
             DbxDownloader<FileMetadata> thumbnail = files.download(metadata.getPathLower());
-            System.out.println("thumbnail = " + thumbnail);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             thumbnail.download(outputStream);
             return outputStream.toByteArray();
@@ -84,13 +83,13 @@ public class DropboxAPI {
         } catch (DbxException | IOException e) {
             e.printStackTrace();
         }
-        System.out.println("no file");
+        log.debug("no file");
         return new byte[0];
     }
 
     public byte[] getSpecificFile(String filePath) {
-        System.out.println("DropboxAPI.getSpecificFile");
-        System.out.println("filePath = [" + filePath + "]");
+        log.info("DropboxAPI.getSpecificFile");
+        log.info("filePath = [" + filePath + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
             DbxDownloader<FileMetadata> file = files.download(filePath);
@@ -101,13 +100,13 @@ public class DropboxAPI {
         } catch (DbxException | IOException e) {
             e.printStackTrace();
         }
-        System.out.println("no file");
+        log.debug("no file");
         return new byte[0];
     }
 
     public String getFileURL(String filePath) {
-        System.out.println("DropboxAPI.getFileURL");
-        System.out.println("filePath = [" + filePath + "]");
+        log.info("DropboxAPI.getFileURL");
+        log.info("filePath = [" + filePath + "]");
         //String relativeFilePath = filePath.replace("/Users/hans/Dropbox (TrustWorks ApS)","");
         //CacheHandler cache = CacheHandler.createCacheHandler();
 
@@ -118,12 +117,12 @@ public class DropboxAPI {
                 DbxUserSharingRequests sharing = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").sharing();
                 for (SharedLinkMetadata url : sharing.listSharedLinks().getLinks()) {
                     urls.put(url.getPathLower(), url.getUrl());
-                    System.out.println("url.getPathLower() = " + url.getPathLower() + " | url.getUrl() = " + url.getUrl());
+                    log.debug("url.getPathLower() = " + url.getPathLower() + " | url.getUrl() = " + url.getUrl());
                 }
 
             if(urls.containsKey(filePath.toLowerCase())) {
-                System.out.println("filePath.toLowerCase() = " + filePath.toLowerCase());
-                System.out.println("urls.get(filePath.toLowerCase()) = " + urls.get(filePath.toLowerCase()));
+                log.debug("filePath.toLowerCase() = " + filePath.toLowerCase());
+                log.debug("urls.get(filePath.toLowerCase()) = " + urls.get(filePath.toLowerCase()));
                 return urls.get(filePath.toLowerCase());
             }
 
@@ -138,7 +137,7 @@ public class DropboxAPI {
             sharedLink = sharing2.createSharedLinkWithSettings(filePath);
             String url = sharedLink.getUrl();
             urls.put(filePath.toLowerCase(), url);
-            System.out.println("sharedLink.getUrl() = " + url);
+            log.debug("sharedLink.getUrl() = " + url);
             return url;
         } catch (DbxException e) {
             e.printStackTrace();

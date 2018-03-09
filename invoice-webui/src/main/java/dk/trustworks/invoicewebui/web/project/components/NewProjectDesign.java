@@ -24,6 +24,7 @@ public class NewProjectDesign extends VerticalLayout {
     private TextField txtProjectName;
     @PropertyId("name")
     private ComboBox<dk.trustworks.invoicewebui.model.Client> cbClients;
+    private ComboBox<dk.trustworks.invoicewebui.model.Clientdata> cbClientdatas;
     private Button btnCreate;
     private Button btnCancel;
 
@@ -37,6 +38,10 @@ public class NewProjectDesign extends VerticalLayout {
 
     public ComboBox<dk.trustworks.invoicewebui.model.Client> getCbClients() {
         return cbClients;
+    }
+
+    public ComboBox<dk.trustworks.invoicewebui.model.Clientdata> getCbClientdatas() {
+        return cbClientdatas;
     }
 
     public Button getBtnCreate() {

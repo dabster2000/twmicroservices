@@ -1,10 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 
-import org.hibernate.annotations.Cascade;
-
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,8 +22,6 @@ public class Client {
     private List<Clientdata> clientdata;
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Project> projects;
-    @OneToOne(mappedBy = "client", fetch = FetchType.LAZY)
-    private Logo logo;
 
     public Client() {
     }
@@ -116,14 +111,6 @@ public class Client {
         this.projects = projects;
     }
 
-    public Logo getLogo() {
-        return logo;
-    }
-
-    public void setLogo(Logo logo) {
-        this.logo = logo;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Client{");
@@ -134,8 +121,6 @@ public class Client {
         sb.append(", name='").append(name).append('\'');
         sb.append(", latitude=").append(latitude);
         sb.append(", longitude=").append(longitude);
-        //sb.append(", clientdata=").append(clientdata);
-        //sb.append(", projects=").append(projects);
         sb.append('}');
         return sb.toString();
     }

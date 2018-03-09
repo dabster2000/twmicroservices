@@ -5,8 +5,6 @@ package dk.trustworks.invoicewebui.repositories;
  */
 
 import dk.trustworks.invoicewebui.model.Budget;
-import dk.trustworks.invoicewebui.model.Work;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -25,12 +23,20 @@ public interface BudgetRepository extends CrudRepository<Budget, String> {
     @Query(value = "SELECT UUID() uuid, w.month, w.year, w.taskuuid, w.useruuid, w.budget, w.created FROM taskworkerconstraint_latest w WHERE taskuuid LIKE :taskuuid ORDER BY w.taskuuid, w.useruuid, w.year, w.month;", nativeQuery = true)
     List<Budget> findByTaskuuid(@Param("taskuuid") String taskUUID);
 
-    @Cacheable("budget")
+    @Query(value = "SELECT SUM(w.budget / (( " +
+            "SELECT twc.price FROM taskworkerconstraint twc WHERE twc.taskuuid LIKE :taskuuid AND twc.useruuid LIKE :useruuid " +
+            "))) - ( " +
+            "SELECT SUM(w.workduration) FROM work_latest w WHERE w.taskuuid LIKE :taskuuid AND w.useruuid LIKE :useruuid " +
+            ") FROM taskworkerconstraint_latest w WHERE taskuuid LIKE :taskuuid AND useruuid LIKE :useruuid ORDER BY w.taskuuid, w.useruuid, w.year, w.month;", nativeQuery = true)
+    Double findBudgetLeftByTaskuuidAndUseruuid(@Param("taskuuid") String taskuuid, @Param("useruuid") String useruuid);
+
     @Query(value = "SELECT UUID() uuid, w.month, w.year, w.taskuuid, w.useruuid, w.budget, w.created FROM taskworkerconstraint_latest w WHERE ((w.year*10000)+((w.month+1)*100))+1 between :periodStart and :periodEnd and budget > 0", nativeQuery = true)
     List<Budget> findByPeriod(@Param("periodStart") int periodStart,
                             @Param("periodEnd") int periodEnd);
 
-    @Cacheable("budget")
+    @Query(value = "SELECT UUID() uuid, w.month, w.year, w.taskuuid, w.useruuid, w.budget, w.created FROM taskworkerconstraint_latest w WHERE month = :month AND year = :year", nativeQuery = true)
+    List<Budget> findByMonthAndYear(@Param("month") int month, @Param("year") int year);
+
     @Query(value = "SELECT UUID() uuid, w.month, w.year, w.taskuuid, w.useruuid, w.budget, w.created FROM taskworkerconstraint_latest w WHERE ((w.year*10000)+((w.month+1)*100))+1 between :periodStart and :periodEnd and w.useruuid = :useruuid and budget > 0", nativeQuery = true)
     List<Budget> findByPeriodAndUseruuid(@Param("periodStart") int periodStart,
                                          @Param("periodEnd") int periodEnd,
@@ -38,4 +44,6 @@ public interface BudgetRepository extends CrudRepository<Budget, String> {
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Budget entity);
+
+
 }

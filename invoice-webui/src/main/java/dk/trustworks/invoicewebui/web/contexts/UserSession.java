@@ -4,9 +4,7 @@ package dk.trustworks.invoicewebui.web.contexts;
 import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.security.CurrentUserRole;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +39,14 @@ public class UserSession {
 
     public boolean hasRole(RoleType roleType) {
         boolean present = roles.stream().map(Role::getRole).filter(roleType::equals).findFirst().isPresent();
-        System.out.println("present = " + present);
         return present;
+    }
+
+    @Override
+    public String toString() {
+        return "UserSession{" +
+                "user=" + user +
+                ", roles=" + roles +
+                '}';
     }
 }

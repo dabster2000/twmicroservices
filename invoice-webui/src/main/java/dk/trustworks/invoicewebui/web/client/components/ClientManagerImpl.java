@@ -9,9 +9,11 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
+import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
-import dk.trustworks.invoicewebui.repositories.LogoRepository;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,37 +31,63 @@ import java.util.UUID;
 public class ClientManagerImpl extends ClientManagerDesign {
 
     @Autowired
-    ClientRepository clientRepository;
+    private ClientRepository clientRepository;
 
     @Autowired
-    ClientdataRepository clientdataRepository;
+    private ClientdataRepository clientdataRepository;
 
     @Autowired
-    LogoRepository logoRepository;
+    private PhotoRepository photoRepository;
 
     @Autowired
-    MainTemplate mainTemplate;
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private MainTemplate mainTemplate;
 
     ResponsiveLayout responsiveLayout;
 
     public ClientManagerImpl init() {
-        createClientListViev();
+        createClientListView();
         return this;
     }
 
-    private void createClientListViev() {
+    private void createClientListView() {
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
+/*
+        OnOffSwitch onOffSwitch = new OnOffSwitch(false);
+        onOffSwitch
 
+        responsiveLayout.addRow().addColumn()
+                .withDisplayRules(12, 12, 4, 4)
+                .withOffset(ResponsiveLayout.DisplaySize.XS, 4)
+                .withOffset(ResponsiveLayout.DisplaySize.SM, 4)
+                .withComponent();
+*/
         int rowItemCount = 1;
         ResponsiveRow row = responsiveLayout.addRow();
 
-        Iterable<Client> clients = clientRepository.findAllByOrderByNameAsc();
+        Iterable<Client> clients = clientRepository.findAllByOrderByActiveDescNameAsc();
         for (Client client : clients) {
-            ClientCardImpl clientCard = new ClientCardImpl(client);
+            ClientCardImpl clientCard = new ClientCardImpl(client, photoRepository.findByRelateduuid(client.getUuid()));
             clientCard.getBtnEdit().addClickListener(event -> {
                 createClientDetailsView(client);
+            });
+            clientCard.getBtnDelete().addClickListener(event -> {
+                client.setActive(!client.isActive());
+                clientRepository.save(client);
+                if(client.isActive()) {
+                    clientCard.getBtnDelete().setCaption("DEACTIVATE");
+                    clientCard.getBtnDelete().setStyleName("danger");
+                    //clientCard.getBtnDelete().setStyleName("flat", true);
+                }
+                if(!client.isActive()) {
+                    clientCard.getBtnDelete().setCaption("ACTIVATE");
+                    clientCard.getBtnDelete().setStyleName("friendly");
+                    //clientCard.getBtnDelete().setStyleName("flat", true);
+                }
             });
             row.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(clientCard);
             rowItemCount++;
@@ -128,7 +156,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
             clientDataRow
                     .addColumn()
                     .withDisplayRules(12, 8, 6, 4)
-                    .withComponent(new ClientDataImpl(clientdataRepository, clientdata));
+                    .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectRepository));
             clientDataRow
                     .addColumn()
                     .withDisplayRules(0, 2, 3, 0)
@@ -168,29 +196,38 @@ public class ClientManagerImpl extends ClientManagerDesign {
     }
 
     private ClientImpl createClientBlock(Client client) {
-        ClientImpl clientComponent = new ClientImpl(logoRepository, client);
+        ClientImpl clientComponent = new ClientImpl(photoRepository, client);
         clientComponent.setHeight("100%");
+        clientComponent.getBtnActive().setValue(client.isActive());
+        clientComponent.getBtnActive().addValueChangeListener(event -> {
+            client.setActive(event.getValue());
+            saveClient(client);
+        });
         clientComponent.getTxtName().setValue(client.getName());
         clientComponent.getTxtName().addValueChangeListener(event -> {
             client.setName(event.getValue());
-            System.out.println("client = " + client);
-            if(client.getUuid() == null || client.getUuid().equals("")) {
-                client.setUuid(UUID.randomUUID().toString());
-                client.setCreated(Timestamp.from(Instant.now()));
-                clientRepository.save(client);
-            } else {
-                clientRepository.save(client);
-            }
+            saveClient(client);
         });
         return clientComponent;
     }
 
+    private void saveClient(Client client) {
+        if(client.getUuid() == null || client.getUuid().equals("")) {
+            client.setUuid(UUID.randomUUID().toString());
+            client.setCreated(Timestamp.from(Instant.now()));
+            clientRepository.save(client);
+        } else {
+            clientRepository.save(client);
+        }
+    }
+
     private Image createCompanyLogo(Client client) {
         Image logo;
-        if(client.getLogo()!=null && client.getLogo().getLogo().length > 0) {
+        Photo photo = photoRepository.findByRelateduuid(client.getUuid());
+        if(photo!=null && photo.getPhoto().length > 0) {
             logo = new Image(null,
                     new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(client.getLogo().getLogo()),
+                            new ByteArrayInputStream(photo.getPhoto()),
                             "logo.jpg"));
         } else {
             logo = new Image("Upload logo please", new ThemeResource("images/clients/missing-logo.jpg"));
@@ -209,7 +246,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         clientDataRow.addColumn().withDisplayRules(12, 8, 8, 4).withComponent(verticalLayout);
 
         btnAddContactInformation.addClickListener(event -> {
-            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, new Clientdata("", "", "", "", "", "", 0L, "", client));
+            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, new Clientdata("", "", "", "", "", "", 0L, "", client), projectRepository);
             clientData.getBtnDelete().setVisible(false);
             clientData.getCssHider().setVisible(true);
             clientData.getBtnEdit().setVisible(false);

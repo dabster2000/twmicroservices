@@ -25,14 +25,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @Service
 public class InvoiceService {
 
-    protected static Logger logger = LoggerFactory.getLogger(InvoiceService.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
 
     @Autowired
     private InvoiceRepository invoiceClient;
 
     public void createCreditNota(@RequestBody Invoice invoice) {
-        System.out.println("InvoiceController.createCreditNota");
-        System.out.println("invoice = [" + invoice + "]");
+        log.info("InvoiceController.createCreditNota");
+        log.info("invoice = [" + invoice + "]");
         invoice.status = InvoiceStatus.CREDIT_NOTE;
         invoiceClient.save(invoice);
 

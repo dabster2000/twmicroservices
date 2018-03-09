@@ -5,7 +5,9 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
+import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.Project;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 import org.vaadin.addon.leaflet.LImageOverlay;
@@ -37,7 +39,7 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
     //Map<String, Point> addresses;
 
 
-    public ConsultantLocationCardImpl(ProjectRepository projectRepository, int priority, int boxWidth, String name) {
+    public ConsultantLocationCardImpl(ProjectRepository projectRepository, PhotoRepository photoRepository, int priority, int boxWidth, String name) {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
@@ -58,9 +60,10 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
             double lat = project.getLatitude();//55.707043;
             double lon = project.getLongitude(); //12.589604000000008;
             //addresses.put(project.getAddress(), new Point(lat, lon));
-            if(project.getClient().getLogo()==null) continue;
+            Photo photo = photoRepository.findByRelateduuid(project.getClient().getUuid());
+            if(photo==null) continue;
             LImageOverlay imageOverlay = new LImageOverlay(new StreamResource((StreamResource.StreamSource) () ->
-                    new ByteArrayInputStream(project.getClient().getLogo().getLogo()),
+                    new ByteArrayInputStream(photo.getPhoto()),
                     project.getUuid()+".jpg"), new Bounds(new Point(lat,lon),new Point(lat+(100.0/100000.0), lon-(400.0/100000.0))));
             imageOverlay.setOpacity(0.9);
             //imageOverlay.setAttribution(project.getName());
