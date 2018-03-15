@@ -160,7 +160,6 @@ public class ProjectSummaryService {
                         LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).lengthOfMonth()),
                         project.getCustomerreference(),
                         "");
-                invoice.uuid = UUID.randomUUID().toString();
                 logger.info("Created new invoice: "+invoice);
             }
             Taskworkerconstraint taskworkerconstraint = null;

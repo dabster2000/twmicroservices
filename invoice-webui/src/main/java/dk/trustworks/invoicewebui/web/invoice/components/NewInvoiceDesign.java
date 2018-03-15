@@ -24,6 +24,7 @@ public class NewInvoiceDesign extends VerticalLayout {
     protected ComboBox<dk.trustworks.invoicewebui.web.model.YearMonthSelect> cbSelectYearMonth;
     protected Grid<dk.trustworks.invoicewebui.network.dto.ProjectSummary> gridProjectSummaryList;
     protected Button btnCreateInvoice;
+    protected Button btnCreateBlankInvoice;
 
     public NewInvoiceDesign() {
         Design.read(this);

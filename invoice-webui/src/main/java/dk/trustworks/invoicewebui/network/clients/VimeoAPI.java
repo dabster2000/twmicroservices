@@ -19,12 +19,12 @@ public class VimeoAPI {
 
 
     @Value("${vimeoToken}")
-    private String ACCESS_TOKEN;
+    private String vimeoToken;
 
     private String createdTime;
 
     public String getTrustworksStatus() {
-        Vimeo vimeo = new Vimeo(ACCESS_TOKEN);
+        Vimeo vimeo = new Vimeo(vimeoToken);
         try {
             VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4783832/videos?direction=desc&sort=date");
             ObjectMapper mapper = new ObjectMapper();
@@ -40,7 +40,7 @@ public class VimeoAPI {
     }
 
     public String[] getTrustworksTrips() {
-        Vimeo vimeo = new Vimeo(ACCESS_TOKEN);
+        Vimeo vimeo = new Vimeo(vimeoToken);
         try {
             VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4783108/videos?direction=desc&sort=date");
             ObjectMapper mapper = new ObjectMapper();
@@ -59,7 +59,7 @@ public class VimeoAPI {
     }
 
     public String[] getTrustworksKnowledge() {
-        Vimeo vimeo = new Vimeo(ACCESS_TOKEN);
+        Vimeo vimeo = new Vimeo(vimeoToken);
         try {
             VimeoResponse vimeoResponse = vimeo.get("https://api.vimeo.com/me/albums/4831161/videos?direction=desc&sort=date");
             ObjectMapper mapper = new ObjectMapper();

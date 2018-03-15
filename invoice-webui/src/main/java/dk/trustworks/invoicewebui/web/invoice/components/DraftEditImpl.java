@@ -22,6 +22,7 @@ public class DraftEditImpl extends DraftEditDesign {
 
     public DraftEditImpl(Invoice invoice) {
         this.invoice = invoice;
+        this.lblInvoiceHeadline.setValue(invoice.getType().name());
         this.lblDescription.setValue(invoice.description);
 
         invoiceBinder = new Binder<>();

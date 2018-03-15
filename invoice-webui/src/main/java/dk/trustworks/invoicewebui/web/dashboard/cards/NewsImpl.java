@@ -65,13 +65,11 @@ public class NewsImpl extends NewsDesign implements Box {
 
         boolean isBirthdayToday = false;
         for (User user : userRepository.findByActiveTrue()) {
-            Date birthday = user.getBirthday();
-            Date nextBirthday = LocalDate.fromDateFields(birthday).withYear(LocalDate.now().getYear()).toDate();
+            LocalDate birthday = new LocalDate(user.getBirthday().getYear(), user.getBirthday().getMonthValue(), user.getBirthday().getDayOfMonth());
+            Date nextBirthday = birthday.withYear(LocalDate.now().getYear()).toDate();
             if(!isBetweenInclusive(LocalDate.now(), LocalDate.now().plusWeeks(2), LocalDate.fromDateFields(nextBirthday))) continue;
             News news = new News(user.getFirstname() + "'s Birthday", nextBirthday.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), EventType.BIRTHDAY.name(), "", user);
-            log.info("Add news "+news, news);
             newsList.add(news);
-            log.info("newsList.size() = "+newsList.size(), newsList);
 
             if(new SimpleDateFormat("yyyy-MM-dd").format(nextBirthday)
                     .equals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))) {
@@ -93,26 +91,37 @@ public class NewsImpl extends NewsDesign implements Box {
         for (News news : newsRepository.findAll()) {
             newsList.add(news);
             if(news.getNewstype().equalsIgnoreCase("project")) news.setNewsdate(java.time.LocalDate.now().plusMonths(12));
-            log.info("Add news "+news, news);
-            log.info("newsList.size() = "+newsList.size(), newsList);
         }
 
-        log.info("newsList.size() = "+newsList.size(), newsList);
-        getEventGrid().setRows(newsList.size());
+        getEventGrid().setRows(newsList.size()+1);
         getEventGrid().setColumnExpandRatio(1, 1.0f);
         int i = 0;
+        boolean projectHeaderVisible = false;
         for (News newsItem : newsList) {
             Label lblDate;
             if(newsItem.getNewstype().equalsIgnoreCase("project")) {
                 lblDate = new Label("");
+                if(!projectHeaderVisible) {
+                    MHorizontalLayout textLayout = new MHorizontalLayout().add(new MLabel("Project Info").withStyleName("h5 bold").withWidth("100%")).withWidth("100%");
+                    textLayout.addLayoutClickListener(e -> UI.getCurrent().getNavigator().navigateTo(newsItem.getLink()));
+                    //getEventGrid().addComponent(lblDate, 0, i);
+                    //getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
+                    getEventGrid().addComponent(textLayout, 0, i, 1, i);
+                    projectHeaderVisible = true;
+                    i++;
+                }
             } else {
                 lblDate = new Label(newsItem.getNewsdate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             }
             MHorizontalLayout textLayout = new MHorizontalLayout().add(new MLabel(newsItem.getDescription()).withWidth("100%")).withWidth("100%");
             textLayout.addLayoutClickListener(e -> UI.getCurrent().getNavigator().navigateTo(newsItem.getLink()));
-            getEventGrid().addComponent(lblDate, 0, i);
-            getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
-            getEventGrid().addComponent(textLayout, 1, i);
+            if(newsItem.getNewstype().equalsIgnoreCase("project"))
+                getEventGrid().addComponent(textLayout, 0, i, 1, i);
+            else {
+                getEventGrid().addComponent(lblDate, 0, i);
+                getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
+                getEventGrid().addComponent(textLayout, 1, i);
+            }
             i++;
         }
 

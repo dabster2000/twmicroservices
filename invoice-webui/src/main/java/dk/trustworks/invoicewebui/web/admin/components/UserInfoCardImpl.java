@@ -49,6 +49,7 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
         binder.forField(getTxtEmail()).bind(User::getEmail, User::setEmail);
         binder.forField(getTxtSlackID()).bind(User::getSlackusername, User::setSlackusername);
         binder.forField(getCbActive()).bind(User::isActive, User::setActive);
+        binder.forField(getDfBirthday()).bind(User::getBirthday, User::setBirthday);
         binder.readBean(user);
     }
 }

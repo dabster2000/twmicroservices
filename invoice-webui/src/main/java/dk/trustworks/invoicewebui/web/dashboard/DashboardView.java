@@ -110,13 +110,13 @@ public class DashboardView extends VerticalLayout implements View {
 
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrustworksStatus()));
-        browser2.setHeight("400px");
+        browser2.setHeight("300px");
         browser2.setWidth("100%");
         monthNewsCardDesign.getIframeHolder().addComponent(browser2);
 
         tripVideosCardDesign.setWidth("100%");
         BrowserFrame tripVideoBrowser = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrips()[0]));
-        tripVideoBrowser.setHeight("400px");
+        tripVideoBrowser.setHeight("300px");
         tripVideoBrowser.setWidth("100%");
         //tripVideosCardDesign.getLblTitle().setValue("Trustworks Travel Videos");
         tripVideosCardDesign.getIframeHolder().addComponent(tripVideoBrowser);

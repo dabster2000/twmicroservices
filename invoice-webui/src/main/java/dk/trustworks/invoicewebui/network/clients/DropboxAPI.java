@@ -9,6 +9,7 @@ import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +26,16 @@ public class DropboxAPI {
 
     private static final Logger log = LoggerFactory.getLogger(DropboxAPI.class);
 
-    @Value("${dropboxToken}")
-    private String ACCESS_TOKEN;
+    private String dropboxToken;
 
     private final DbxTeamClientV2 client;
 
-    public DropboxAPI() {
+    @Autowired
+    public DropboxAPI(@Value("${dropboxToken}") final String dropboxToken) {
+        this.dropboxToken = dropboxToken;
         DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial", "en_US");
-        client = new DbxTeamClientV2(config, ACCESS_TOKEN);
+        System.out.println("ACCESS_TOKEN = " + dropboxToken);
+        client = new DbxTeamClientV2(config, dropboxToken);
     }
 
     public List<String> getFilesInFolder(String path) {

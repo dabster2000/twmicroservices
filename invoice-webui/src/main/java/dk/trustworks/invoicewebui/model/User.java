@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -23,8 +24,7 @@ public class User {
     @JsonIgnore private String password;
     private String username;
     private String slackusername;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date birthday;
+    private LocalDate birthday;
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<Salary> salaries;
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
@@ -121,11 +121,11 @@ public class User {
         this.slackusername = slackusername;
     }
 
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 

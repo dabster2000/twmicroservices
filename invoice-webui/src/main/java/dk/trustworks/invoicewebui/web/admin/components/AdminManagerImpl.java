@@ -61,7 +61,7 @@ public class AdminManagerImpl extends VerticalLayout {
         });
 
         userComboBox = new ComboBox<>();
-        userComboBox.setItems(userRepository.findAll());
+        userComboBox.setItems(userRepository.findByOrderByUsername());
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setEmptySelectionAllowed(false);
         responsiveLayout.addRow()

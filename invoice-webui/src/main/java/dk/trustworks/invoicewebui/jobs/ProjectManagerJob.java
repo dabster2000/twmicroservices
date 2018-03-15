@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 12/09/2017.
@@ -70,17 +73,17 @@ public class ProjectManagerJob {
             if(project.getStartdate().isAfter(LocalDate.now().minusMonths(1))) {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
-                String consultants = "";
+                Set<String> consultants = new TreeSet<>();
                 for (Task task : project.getTasks()) {
                     for (Taskworkerconstraint taskworkerconstraint : task.getTaskworkerconstraint()) {
-                        if(taskworkerconstraint.getPrice() >= 1.0) continue;
-                        consultants += taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname() + ", ";
+                        if(taskworkerconstraint.getPrice() <= 1.0) continue;
+                        consultants.add(taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname());
                     }
                 }
                 newsRepository.save(new News(
                         "We have started an exciting new project recently! " +
-                                "Its called '"+project.getName()+"' and its for our client "+project.getClient().getName()+". " +
-                                "From what have been announced, "+consultants+" have been assigned as consultants.",
+                                "It's called '"+project.getName()+"' and it's for our client "+project.getClient().getName()+". " +
+                                "From what have been announced, "+consultants.stream() .collect(Collectors.joining(", "))+" have been assigned as consultants.",
                         project.getStartdate(),
                         "project", ProjectManagerView.VIEW_NAME+"/"+project.getUuid(),
                         sha512hex
@@ -89,17 +92,17 @@ public class ProjectManagerJob {
             if(project.getEnddate().isBefore(LocalDate.now().plusMonths(1)) && project.getEnddate().isAfter(LocalDate.now())) {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
-                String consultants = "";
+                Set<String> consultants = new TreeSet<>();
                 for (Task task : project.getTasks()) {
                     for (Taskworkerconstraint taskworkerconstraint : task.getTaskworkerconstraint()) {
-                        if(taskworkerconstraint.getPrice() >= 1.0) continue;
-                        consultants += taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname() + ", ";
+                        if(taskworkerconstraint.getPrice() <= 1.0) continue;
+                        consultants.add(taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname());
                     }
                 }
                 newsRepository.save(new News(
                         "The project '"+project.getName()+"' " +
                                 "for our client "+project.getClient().getName()+" is ending soon. " +
-                                "Your colleagues "+consultants+" will be available for other tasks.",
+                                "Your colleagues "+consultants.stream() .collect(Collectors.joining(", "))+" will be available for other tasks.",
                         project.getEnddate(),
                         "project", ProjectManagerView.VIEW_NAME+"/"+project.getUuid(),
                         sha512hex

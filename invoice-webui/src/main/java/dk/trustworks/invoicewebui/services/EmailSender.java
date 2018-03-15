@@ -19,6 +19,13 @@ public class EmailSender {
         message.setSubject("Bestilling af mødeforplejning");
         message.setText(cateringEntry.toString());
         emailSender.send(message);
+
+        message = new SimpleMailMessage();
+        message.setFrom("hans.lassen@trustworks.dk");
+        message.setTo("hans.lassen@trustworks.dk");
+        message.setSubject("Bestilling af mødeforplejning");
+        message.setText(cateringEntry.toString());
+        emailSender.send(message);
     }
 
 

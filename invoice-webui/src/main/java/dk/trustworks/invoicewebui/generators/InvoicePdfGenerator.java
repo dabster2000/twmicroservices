@@ -20,6 +20,7 @@ import com.itextpdf.layout.renderer.IRenderer;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.InvoiceType;
+import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -131,7 +132,7 @@ public class InvoicePdfGenerator {
                 .setFontAndSize(PdfFontFactory.createFont(FontConstants.HELVETICA_BOLD), 12)
                 .setLeading(12 * 1.2f)
                 .moveText(380, -222);
-        canvas.newlineShowText("Faktura nr: "+getIntegerWithHyphens(invoice.invoicenumber));
+        canvas.newlineShowText("Faktura nr: "+ StringUtils.convertInvoiceNumberToString(invoice.invoicenumber));
         canvas.newlineShowText("Dato: "+invoice.invoicedate);
         canvas.endText();
 
@@ -179,13 +180,6 @@ public class InvoicePdfGenerator {
         document.close();
 
         return outputStream.toByteArray();
-    }
-
-    private String getIntegerWithHyphens(int number) {
-        return NumberFormat.getNumberInstance()
-                .format(number)
-                .replace(",", "-")
-                .replace(".", "-");
     }
 
     private BufferedImage loadImage(String imageFilename) {

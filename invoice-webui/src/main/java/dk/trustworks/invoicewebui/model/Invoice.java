@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by hans on 08/07/2017.
@@ -74,6 +75,7 @@ public class Invoice {
         this.invoicedate = invoicedate;
         this.description = description;
         this.specificdescription = specificdescription;
+        uuid = UUID.randomUUID().toString();
     }
 
     public String getUuid() {

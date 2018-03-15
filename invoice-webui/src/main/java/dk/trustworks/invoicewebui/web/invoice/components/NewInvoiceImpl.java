@@ -6,9 +6,11 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
+import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
@@ -22,6 +24,7 @@ import org.vaadin.addons.producttour.step.Step;
 import org.vaadin.addons.producttour.step.StepBuilder;
 import org.vaadin.addons.producttour.tour.Tour;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,6 +43,33 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
 
     @Autowired
     private ProjectSummaryService projectSummaryClient;
+
+    @Autowired
+    private InvoiceService invoiceService;
+
+    @PostConstruct
+    public void postConstruct() {
+        btnCreateInvoice.addClickListener(event -> {
+            logger.info(gridProjectSummaryList.getSelectedItems().size()+" new invoice created");
+            for (ProjectSummary projectSummary : gridProjectSummaryList.getSelectedItems()) {
+                projectSummaryClient.createInvoiceFromProject(projectSummary.getProjectuuid(), cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
+                reloadData();
+            }
+            Notification.show("Invoice created",
+                    "One or more invoices have been created. You can edit in them in the Drafts section",
+                    Notification.Type.TRAY_NOTIFICATION);
+        });
+
+        btnCreateBlankInvoice.addClickListener(event -> {
+            logger.info("New blank invoice created");
+            int year = LocalDate.now().getYear();
+            int month = LocalDate.now().getMonthValue();
+            invoiceService.createBlankInvoice(year, month);
+            Notification.show("Invoice created",
+                    "A new blank invoice has been created. You can edit in the Drafts section",
+                    Notification.Type.TRAY_NOTIFICATION);
+        });
+    }
 
     public NewInvoiceImpl init() {
         logger.info("NewInvoiceImpl.init");
@@ -77,13 +107,6 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                 default:
                     btnCreateInvoice.setCaption("Create invoices");
                     btnCreateInvoice.setEnabled(true);
-            }
-        });
-
-        btnCreateInvoice.addClickListener(event -> {
-            for (ProjectSummary projectSummary : gridProjectSummaryList.getSelectedItems()) {
-                projectSummaryClient.createInvoiceFromProject(projectSummary.getProjectuuid(), cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
-                reloadData();
             }
         });
 

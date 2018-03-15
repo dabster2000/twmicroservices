@@ -57,7 +57,7 @@ public class AnniversaryManagerJob {
             if(firstStatus.getStatusdate().isAfter(LocalDate.now().minusMonths(1)) && firstStatus.getStatus().equals(StatusType.ACTIVE)) {
                 newsRepository.save(new News(
                         "A huge welcome to "+user.getFirstname()+" "+user.getLastname()+
-                                " who is joining Trustworks!",
+                                " who "+ ((firstStatus.getStatusdate().isAfter(LocalDate.now()))?"is joining":"just joined") +" Trustworks!",
                         firstStatus.getStatusdate(),
                         "new_employee", null,
                         sha512hex
@@ -68,7 +68,7 @@ public class AnniversaryManagerJob {
                     statuses.get(statuses.size()-2).getStatus().equals(StatusType.TERMINATED)) {
                 newsRepository.save(new News(
                         "A huge welcome BACK to "+user.getFirstname()+" "+user.getLastname()+
-                                " who is rejoining Trustworks!",
+                                " who "+ ((statuses.get(statuses.size()-1).getStatusdate().isAfter(LocalDate.now()))?"is rejoining":"just rejoined") +" Trustworks!",
                         statuses.get(statuses.size()-1).getStatusdate(),
                         "new_employee", null,
                         sha512hex
@@ -82,6 +82,10 @@ public class AnniversaryManagerJob {
                 log.debug("user.getUsername() = " + user.getUsername());
                 log.debug("firstStatus = " + firstStatus.getStatusdate());
                 log.debug("dateWithCurrentYear = " + dateWithCurrentYear);
+                if(user.getUsername().equalsIgnoreCase("hans.lassen") ||
+                        user.getUsername().equalsIgnoreCase("tobias.kjoelsen") ||
+                        user.getUsername().equalsIgnoreCase("thomas.gammelvind") ||
+                        user.getUsername().equalsIgnoreCase("peter.gaarde")) continue;
                 newsRepository.save(new News(
                         user.getFirstname()+" "+user.getLastname()+
                                 ", You are... terrifically tireless, exceptionally, excellent, abundantly appreciated and..." +
