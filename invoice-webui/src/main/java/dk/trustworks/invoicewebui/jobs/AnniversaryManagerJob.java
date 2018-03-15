@@ -44,7 +44,6 @@ public class AnniversaryManagerJob {
     }
 
     @Transactional
-    //@Scheduled(fixedRate = 12000)
     @Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
         for (User user : userRepository.findByActiveTrue()) {
