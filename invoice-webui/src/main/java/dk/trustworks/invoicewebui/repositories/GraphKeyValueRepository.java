@@ -33,7 +33,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "                            FROM work_latest w " +
             "                            INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = w.useruuid " +
             "                            WHERE ((w.year*10000)+((w.month+1)*100)+w.day) between :periodStart and :periodEnd AND w.workduration > 0 " +
-            "                            GROUP BY w.month;", nativeQuery = true)
+            "                            GROUP BY w.month, w.year;", nativeQuery = true)
     List<GraphKeyValue> findRevenueByMonthByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
     @Cacheable("findBudgetByMonthByPeriod")
