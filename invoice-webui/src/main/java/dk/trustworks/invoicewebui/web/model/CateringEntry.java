@@ -109,7 +109,7 @@ public class CateringEntry {
     public String toString() {
         return "" +
                 "Arrangement: " + name + "\n" +
-                "Arrangør: " + contact + "\n" +
+                "Arrangør: " + contact .getFirstname()+" "+ contact.getLastname() + "\n" +
                 "Møde start: " + start + "\n" +
                 "Møde slut: " + end + "\n" +
                 "Antal deltagere: " + people + "\n" +
