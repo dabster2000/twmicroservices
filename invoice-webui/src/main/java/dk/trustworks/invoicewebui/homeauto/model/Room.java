@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Room {
 
@@ -36,6 +37,14 @@ public class Room {
         System.out.println("Room.addPerson");
         System.out.println("person = [" + person + "]");
         personSet.add(person);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPersons() {
+        return personSet.stream().map(Person::getName).collect(Collectors.joining(", "));
     }
 
     @Override

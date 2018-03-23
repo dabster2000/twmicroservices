@@ -19,6 +19,14 @@ public class Person {
         this.room.addPerson(this);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public boolean isHome() {
+        return isHome;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
