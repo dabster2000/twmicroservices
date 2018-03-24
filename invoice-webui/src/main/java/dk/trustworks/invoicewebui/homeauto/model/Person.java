@@ -28,6 +28,10 @@ public class Person {
         return isHome;
     }
 
+    public boolean isOutOfHome() {
+        return !isHome;
+    }
+
     @Override
     public String toString() {
         return "Person{" +

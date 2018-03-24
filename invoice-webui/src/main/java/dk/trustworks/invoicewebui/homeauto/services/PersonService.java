@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class PersonService {
@@ -47,7 +48,8 @@ public class PersonService {
     public String locations() {
         String locations = "[";
         for (Room room : roomMap.values()) {
-            locations += "{room = '"+room.getName()+"', persons = ["+room.getPersons()+"]}, ";
+            locations += "{room = '"+room.getName()+"', persons = ['"+room.getPersons()+"']}, ";
+            locations += "{outofhome = '"+personMap.values().stream().filter(Person::isOutOfHome).map(Person::getName).collect(Collectors.joining("', '"))+"'";
         }
         return locations;
     }

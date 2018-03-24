@@ -44,7 +44,7 @@ public class Room {
     }
 
     public String getPersons() {
-        return personSet.stream().map(Person::getName).collect(Collectors.joining(", "));
+        return personSet.stream().map(Person::getName).collect(Collectors.joining("', '"));
     }
 
     @Override
