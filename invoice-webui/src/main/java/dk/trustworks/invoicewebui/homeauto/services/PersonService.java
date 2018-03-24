@@ -35,6 +35,14 @@ public class PersonService {
         personMap.get(name).addToRoom(roomMap.get(room));
     }
 
+    @RequestMapping("/personleft")
+    public void PersonLeft(@RequestParam(value="name") String name) {
+        System.out.println("PersonService.PersonLeft");
+        System.out.println("name = [" + name + "]");
+        if(!personMap.containsKey(name)) personMap.put(name, new Person(name));
+        personMap.get(name).leftHome();
+    }
+
     @RequestMapping("/locations")
     public String locations() {
         String locations = "[";

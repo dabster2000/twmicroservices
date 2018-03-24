@@ -14,6 +14,7 @@ public class Person {
 
     public void addToRoom(Room room) {
         if(room.equals(this.room)) return;
+        isHome = true;
         if(this.room != null) this.room.removePerson(this);
         this.room = room;
         this.room.addPerson(this);
@@ -34,5 +35,10 @@ public class Person {
                 ", room=" + room +
                 ", isHome=" + isHome +
                 '}';
+    }
+
+    public void leftHome() {
+        isHome = false;
+        this.room = null;
     }
 }
