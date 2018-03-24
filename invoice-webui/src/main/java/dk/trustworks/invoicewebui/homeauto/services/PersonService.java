@@ -46,11 +46,11 @@ public class PersonService {
 
     @RequestMapping("/locations")
     public String locations() {
-        String locations = "[";
+        StringBuilder locations = new StringBuilder("[");
         for (Room room : roomMap.values()) {
-            locations += "{room = '"+room.getName()+"', persons = ['"+room.getPersons()+"']}, ";
-            locations += "{outofhome = '"+personMap.values().stream().filter(Person::isOutOfHome).map(Person::getName).collect(Collectors.joining("', '"))+"'";
+            locations.append("{room = '").append(room.getName()).append("', persons = ['").append(room.getPersons()).append("']}, ");
+            locations.append("{outofhome = '").append(personMap.values().stream().filter(Person::isOutOfHome).map(Person::getName).collect(Collectors.joining("', '"))).append("'}").append("]");
         }
-        return locations;
+        return locations.toString();
     }
 }
