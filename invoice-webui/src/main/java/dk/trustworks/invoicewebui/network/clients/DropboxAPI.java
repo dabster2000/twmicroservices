@@ -82,9 +82,9 @@ public class DropboxAPI {
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
             ListFolderResult result = files.listFolder(folder);
-            Metadata metadata = result.getEntries().stream()
-                    .filter(p -> FilenameUtils.isExtension(p.getName(), "jpg")).collect(Collectors.toList())
-                    .get(new Random().nextInt(result.getEntries().size()));
+            List<Metadata> metadataList = result.getEntries().stream()
+                    .filter(p -> FilenameUtils.isExtension(p.getName(), "jpg")).collect(Collectors.toList());
+            Metadata metadata = metadataList.get(new Random().nextInt(metadataList.size()));
             DbxDownloader<FileMetadata> thumbnail = files.download(metadata.getPathLower());
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             thumbnail.download(outputStream);
