@@ -7,6 +7,7 @@ import com.dropbox.core.v2.DbxTeamClientV2;
 import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
+import dk.trustworks.invoicewebui.network.clients.model.DropboxFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,8 +74,8 @@ public class DropboxAPI {
         return new ArrayList<>();
     }
 
-    public byte[] getRandomFile(String folder) {
-        log.info("DropboxAPI.getRandomFile");
+    public DropboxFile getRandomBinaryFile(String folder) {
+        log.info("DropboxAPI.getRandomBinaryFile");
         log.info("folder = [" + folder + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
@@ -84,17 +85,17 @@ public class DropboxAPI {
             DbxDownloader<FileMetadata> thumbnail = files.download(metadata.getPathLower());
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             thumbnail.download(outputStream);
-            return outputStream.toByteArray();
+            return new DropboxFile(outputStream.toByteArray(), metadata.getPathLower());
 
         } catch (DbxException | IOException e) {
             e.printStackTrace();
         }
         log.debug("no file");
-        return new byte[0];
+        return new DropboxFile(new byte[0], "");
     }
 
-    public byte[] getSpecificFile(String filePath) {
-        log.info("DropboxAPI.getSpecificFile");
+    public byte[] getSpecificBinaryFile(String filePath) {
+        log.info("DropboxAPI.getSpecificBinaryFile");
         log.info("filePath = [" + filePath + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
@@ -108,6 +109,23 @@ public class DropboxAPI {
         }
         log.debug("no file");
         return new byte[0];
+    }
+
+    public String getSpecificTextFile(String filePath) {
+        System.out.println("DropboxAPI.getSpecificTextFile");
+        log.info("filePath = [" + filePath + "]");
+        try {
+            DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
+            DbxDownloader<FileMetadata> file = files.download(filePath);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            file.download(outputStream);
+            return new String(outputStream.toByteArray());
+
+        } catch (DbxException | IOException e) {
+            e.printStackTrace();
+        }
+        log.debug("no file");
+        return new String();
     }
 
     public String getFileURL(String filePath) {

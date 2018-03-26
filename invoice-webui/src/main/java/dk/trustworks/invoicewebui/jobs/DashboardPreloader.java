@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.jobs;
 
 import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
 import dk.trustworks.invoicewebui.network.clients.VimeoAPI;
+import dk.trustworks.invoicewebui.network.clients.model.DropboxFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,14 +28,22 @@ public class DashboardPreloader {
     }
 
     private byte[] randomPhoto;
+    private String randomText;
 
     @Scheduled(fixedRate = 120000)
     public void loadNewPhoto() {
-        randomPhoto = dropboxAPI.getRandomFile("/Shared/Administration/Intra/Billeder/Intranet/photos");
+        DropboxFile randomBinaryFile = dropboxAPI.getRandomBinaryFile("/Shared/Administration/Intra/Billeder/Intranet/photos");
+        randomPhoto = randomBinaryFile.getFileAsByteArray();
+        if(randomBinaryFile.getFilename().contains("."))
+            randomText = dropboxAPI.getSpecificTextFile(randomBinaryFile.getFilename().substring(0, randomBinaryFile.getFilename().lastIndexOf('.'))+".html");
     }
 
     public byte[] getRandomPhoto() {
         return randomPhoto;
+    }
+
+    public String getRandomText() {
+        return randomText;
     }
 
     private String trustworksStatus;

@@ -70,7 +70,7 @@ public class FaqPowerpointPreloader {
         for (String powerpointPath : powerpointPaths) {
             String[] filenameParts = powerpointPath.split("/");
             String filename = filenameParts[filenameParts.length-1].split("\\.")[0];
-            byte[] specificFile = dropboxAPI.getSpecificFile(powerpointPath);
+            byte[] specificFile = dropboxAPI.getSpecificBinaryFile(powerpointPath);
 
             try {
 
@@ -122,7 +122,7 @@ public class FaqPowerpointPreloader {
         for (String powerpointPath : powerpointPaths) {
             String[] filenameParts = powerpointPath.split("/");
             String filename = filenameParts[filenameParts.length-1].split("\\.")[0];
-            //byte[] specificFile = dropboxAPI.getSpecificFile(powerpointPath);
+            //byte[] specificFile = dropboxAPI.getSpecificBinaryFile(powerpointPath);
             pdfs.put(filename, powerpointPath);
         }
     }

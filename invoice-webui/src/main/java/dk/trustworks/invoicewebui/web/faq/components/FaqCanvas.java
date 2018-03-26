@@ -100,7 +100,7 @@ public class FaqCanvas extends VerticalLayout {
             int i = 0;
             for (String imagePath : imageSlideShows.get(filename)) {
                 if(i==0) {
-                    byte[] specificFile = dropboxAPI.getSpecificFile(imagePath);
+                    byte[] specificFile = dropboxAPI.getSpecificBinaryFile(imagePath);
                     StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(specificFile), "logo"+i+".png");
                     com.vaadin.ui.Image image = new Image("", streamResource);
 
@@ -123,7 +123,7 @@ public class FaqCanvas extends VerticalLayout {
                 for (Component component : photosCard.getTabSheet()) {
                     if(count > 0) {
                         if(((VerticalLayout) component).getComponentCount() > 0) continue;
-                        byte[] specificFile = dropboxAPI.getSpecificFile(imagepaths.get(count));
+                        byte[] specificFile = dropboxAPI.getSpecificBinaryFile(imagepaths.get(count));
                         StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(specificFile), "logo"+count+".png");
                         com.vaadin.ui.Image image = new Image("", streamResource);
                         ((VerticalLayout) component).addComponent(image);
@@ -139,7 +139,7 @@ public class FaqCanvas extends VerticalLayout {
 
         Map<String, String> pdfs = faqPowerpointPreloader.getPdfs();
         for (String filename : pdfs.keySet()) {
-            byte[] specificFile = dropboxAPI.getSpecificFile(pdfs.get(filename));
+            byte[] specificFile = dropboxAPI.getSpecificBinaryFile(pdfs.get(filename));
             System.out.println("specificFile.length = " + specificFile.length);
             StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(specificFile), filename+".pdf");
             //WTPdfViewer pdfViewer = new WTPdfViewer();
