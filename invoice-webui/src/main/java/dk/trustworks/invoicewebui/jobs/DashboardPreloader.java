@@ -34,8 +34,10 @@ public class DashboardPreloader {
     public void loadNewPhoto() {
         DropboxFile randomBinaryFile = dropboxAPI.getRandomBinaryFile("/Shared/Administration/Intra/Billeder/Intranet/photos");
         randomPhoto = randomBinaryFile.getFileAsByteArray();
-        if(randomBinaryFile.getFilename().contains("."))
-            randomText = dropboxAPI.getSpecificTextFile(randomBinaryFile.getFilename().substring(0, randomBinaryFile.getFilename().lastIndexOf('.'))+".html");
+        if(randomBinaryFile.getFilename().contains(".")) {
+            randomText = dropboxAPI.getSpecificTextFile(randomBinaryFile.getFilename().substring(0, randomBinaryFile.getFilename().lastIndexOf('.')) + ".html");
+        }
+
     }
 
     public byte[] getRandomPhoto() {

@@ -8,6 +8,7 @@ import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 import dk.trustworks.invoicewebui.network.clients.model.DropboxFile;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 16/09/2017.
@@ -79,9 +81,10 @@ public class DropboxAPI {
         log.info("folder = [" + folder + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
-
             ListFolderResult result = files.listFolder(folder);
-            Metadata metadata = result.getEntries().get(new Random().nextInt(result.getEntries().size()));
+            Metadata metadata = result.getEntries().stream()
+                    .filter(p -> FilenameUtils.isExtension(p.getName(), "jpg")).collect(Collectors.toList())
+                    .get(new Random().nextInt(result.getEntries().size()));
             DbxDownloader<FileMetadata> thumbnail = files.download(metadata.getPathLower());
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             thumbnail.download(outputStream);
