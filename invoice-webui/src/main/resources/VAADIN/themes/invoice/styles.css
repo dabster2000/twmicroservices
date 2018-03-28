@@ -30370,6 +30370,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	color: #007163;
 }
 
+.invoice .img-circle {
+	border-radius: 50%;
+}
+
 .invoice .v-margin-left {
 	padding-left: 10px;
 }

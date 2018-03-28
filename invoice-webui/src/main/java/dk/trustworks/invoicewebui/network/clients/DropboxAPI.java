@@ -125,9 +125,9 @@ public class DropboxAPI {
             return new String(outputStream.toByteArray());
 
         } catch (DbxException | IOException e) {
-            e.printStackTrace();
+            log.warn("'"+filePath+"' not found!");
         }
-        log.debug("no file");
+        log.debug("no text file will be shown");
         return new String();
     }
 

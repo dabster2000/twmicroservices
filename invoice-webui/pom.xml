@@ -199,12 +199,12 @@
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>simplefiledownloader</artifactId>
-            <version>LATEST</version>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.vaadin.alump</groupId>
             <artifactId>materialicons</artifactId>
-            <version>LATEST</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.vaadin.alump.fancylayouts</groupId>
@@ -219,7 +219,7 @@
         <dependency>
             <groupId>com.github.appreciated</groupId>
             <artifactId>material</artifactId>
-            <version>LATEST</version>
+            <version>1.1.8</version>
         </dependency>
         <dependency>
             <groupId>org.vaadin</groupId>
@@ -231,6 +231,11 @@
             <artifactId>ilay</artifactId>
             <version>1.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>animator</artifactId>
+            <version>3.0.0</version>
+        </dependency>
 
         <!-- Data types -->
         <dependency>
@@ -241,12 +246,12 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>LATEST</version>
+            <version>2.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>LATEST</version>
+            <version>2.9.4</version>
         </dependency>
 
         <!-- iText -->

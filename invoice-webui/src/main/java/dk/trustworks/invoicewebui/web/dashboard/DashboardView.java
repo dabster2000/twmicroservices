@@ -7,8 +7,11 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontIcon;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.RoleType;
@@ -145,6 +148,12 @@ public class DashboardView extends VerticalLayout implements View {
         ResponsiveColumn mainComponentColumn = mainRow.addColumn().withDisplayRules(12, 12, 9, 9);
         ResponsiveColumn leftColumn = mainRow.addColumn().withDisplayRules(12, 12, 3, 3);
         leftColumn.withComponent(newsCard);
+        Resource res = new ThemeResource("images/hans.png");
+
+// Display the image without caption
+        Image image = new Image(null, res);
+        image.setStyleName("img-circle");
+        board.addRow().addColumn().withComponent(image);
 
         ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         mainComponentColumn.withComponent(mainLayout);
@@ -162,7 +171,6 @@ public class DashboardView extends VerticalLayout implements View {
         row3.addColumn().withDisplayRules(12, 12, 6, 4).withComponent(dnaCard);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
-
     }
 
     private void createTopBoxes(ResponsiveLayout board) {

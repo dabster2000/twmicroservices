@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-text-field caption="Name" width-full _id="txtName"></vaadin-text-field>
+   <vaadin-text-area caption="Description" width-full _id="txtDescription"></vaadin-text-area>
+   <vaadin-combo-box caption="Application type" width-full data-item-type="java.lang.String" _id="cbApplication">
+    <option item="open">Open</option>
+    <option item="invitation">Invitation</option>
+    <option item="closed">Closed</option>
+   </vaadin-combo-box>
+   <vaadin-combo-box caption="Bubble Master" width-full data-item-type="dk.trustworks.invoicewebui.model.User" data-property-id="username" _id="cbOwner"></vaadin-combo-box>
+  </vaadin-vertical-layout>
+ </body>
+</html>
