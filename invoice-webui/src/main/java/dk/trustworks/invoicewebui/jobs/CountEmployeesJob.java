@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import weka.classifiers.evaluation.NumericPrediction;
 import weka.classifiers.functions.GaussianProcesses;
 import weka.classifiers.timeseries.WekaForecaster;
@@ -103,8 +104,8 @@ public class CountEmployeesJob {
     }
 
     // http://wiki.pentaho.com/display/DATAMINING/Time+Series+Analysis+and+Forecasting+with+Weka
-    //@Transactional
-    //@Scheduled(cron = "0 0 23 * * ?")
+    @Transactional
+    @Scheduled(cron = "0 0 23 * * ?")
     public void workGraph() throws Exception {
         log.info("CountEmployeesJob.workGraph");
         LocalDate now = LocalDate.now().minusDays(7);
