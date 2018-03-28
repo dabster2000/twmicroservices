@@ -36,6 +36,9 @@ public class AdminManagerImpl extends VerticalLayout {
     private UserStatusCardImpl userStatusCard;
 
     @Autowired
+    private UserPhotoCardImpl userPhotoCard;
+
+    @Autowired
     private RoleCardImpl roleCard;
 
     ResponsiveLayout responsiveLayout;
@@ -83,6 +86,7 @@ public class AdminManagerImpl extends VerticalLayout {
         createUserSalaryCard();
         createRoleCard();
         createUserStatusCard();
+        createUserPhotoCard();
     }
 
     private void createUserSalaryCard() {
@@ -115,7 +119,17 @@ public class AdminManagerImpl extends VerticalLayout {
 
         contentRow
                 .addColumn()
-                .withDisplayRules(12, 12, 9, 6)
+                .withDisplayRules(12, 12, 8, 6)
                 .withComponent(userStatusCard);
+    }
+
+    private void createUserPhotoCard() {
+        userPhotoCard.init(userComboBox.getSelectedItem().get().getUuid());
+
+        contentRow
+                .addColumn()
+                .withDisplayRules(12, 12, 8, 6)
+                .withComponent(userPhotoCard);
+
     }
 }
