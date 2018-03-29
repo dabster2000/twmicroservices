@@ -76,7 +76,7 @@ public class UserPhotoCardImpl extends UserPhotoCardDesign {
         if(photo!=null && photo.getPhoto().length > 0) {
             getEditedImage().setSource(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()),
-                    "photo.jpg"));
+                    "photo-" + System.currentTimeMillis() + ".jpg"));
             setupFinalStep();
         } else {
             setupUploadStep();
@@ -123,14 +123,13 @@ public class UserPhotoCardImpl extends UserPhotoCardDesign {
             } else {
                 photo.setPhoto(bytes);
             }
+            StreamResource resource = new StreamResource(() -> new ByteArrayInputStream(bytes), "edited-image-" + System.currentTimeMillis() + ".jpg");
+            getEditedImage().setSource(resource);
             photoRepository.save(photo);
         } catch (IOException e) {
             Notification.show("Upload failed", ERROR_MESSAGE);
         }
 
-
-        StreamResource resource = new StreamResource(() -> inputStream, "edited-image-" + System.currentTimeMillis());
-        getEditedImage().setSource(resource);
         setupFinalStep();
     }
 
