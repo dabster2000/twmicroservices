@@ -11,17 +11,24 @@ import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.liveimageeditor.LiveImageEditor;
 import server.droporchoose.UploadComponent;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.UUID;
 
 import static com.vaadin.ui.Notification.Type.*;
@@ -116,8 +123,43 @@ public class UserPhotoCardImpl extends UserPhotoCardDesign {
     private void receiveImage(InputStream inputStream) {
         System.out.println("UserPhotoCardImpl.receiveImage");
         try {
+            BufferedImage image = ImageIO.read(inputStream);
+            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+            if (!writers.hasNext()) throw new IllegalStateException("No writers found");
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream(37628);
+
+            float quality = 0.8f;
+
+            ImageWriter writer = writers.next();
+            ImageOutputStream ios = ImageIO.createImageOutputStream(os);
+            writer.setOutput(ios);
+
+            ImageWriteParam param = writer.getDefaultWriteParam();
+
+            // compress to a given quality
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionQuality(quality);
+
+            // appends a complete image stream containing a single image and
+            //associated stream and image metadata and thumbnails to the output
+            writer.write(null, new IIOImage(image, null, null), param);
+
+            //ByteArrayInputStream bai = new ByteArrayInputStream(os.toByteArray());
+            //RenderedImage out = ImageIO.read(bai);
+            //int size = os.toByteArray().length;
+
+            byte[] bytes = os.toByteArray();
+            System.out.println("PHOTO: "+ bytes.length);
+
+                    // close all streams
+            os.close();
+            ios.close();
+            writer.dispose();
+
+
             Photo photo = photoRepository.findByRelateduuid(userUUID);
-            byte[] bytes = IOUtils.toByteArray(inputStream);
+            //byte[] bytes = IOUtils.toByteArray(inputStream);
             if(photo==null) {
                 photo = new Photo(UUID.randomUUID().toString(), userUUID, bytes);
             } else {
