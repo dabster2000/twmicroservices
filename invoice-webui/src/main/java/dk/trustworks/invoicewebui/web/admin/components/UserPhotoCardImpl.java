@@ -60,7 +60,7 @@ public class UserPhotoCardImpl extends UserPhotoCardDesign {
         imageEditor.setHeight(400, Unit.PIXELS);
 
         instructions.setContentMode(ContentMode.HTML);
-        instructions.setWidth(100, Unit.PIXELS);
+        instructions.setWidth(100, Unit.PERCENTAGE);
 
         getContainer().addComponents(uploadComponent, instructions, imageEditor, btnSavePhoto, getEditedImage());
 
