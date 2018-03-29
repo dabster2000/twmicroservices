@@ -21,6 +21,7 @@ public interface UserRepository extends CrudRepository<User, String> {
     List<User> findByOrderByUsername();
     List<User> findByActiveTrueOrderByUsername();
     User findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+    User findByUsername(@Param("username") String username);
     User findBySlackusername(@Param("slackusername") String slackusername);
 
     @Query(value = "SELECT allocation FROM user u RIGHT JOIN ( " +

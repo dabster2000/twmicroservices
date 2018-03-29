@@ -391,10 +391,25 @@
             <artifactId>commons-text</artifactId>
             <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>de.svenkubiak</groupId>
+            <artifactId>jBCrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
 
         <!-- DEEP LEARNING -->
 
         <!-- DL4J and ND4J Related Dependencies -->
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>timeseriesForecasting</artifactId>
+            <version>1.1.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>${nd4j.backend}</artifactId>
+            <version>${nd4j.version}</version>
+        </dependency>
         <!--
         <dependency>
             <groupId>org.nd4j</groupId>
@@ -429,17 +444,6 @@
             <version>1.4.0</version>
         </dependency>
         -->
-
-        <dependency>
-            <groupId>nz.ac.waikato.cms.weka</groupId>
-            <artifactId>timeseriesForecasting</artifactId>
-            <version>1.1.25</version>
-        </dependency>
-        <dependency>
-            <groupId>org.nd4j</groupId>
-            <artifactId>${nd4j.backend}</artifactId>
-            <version>${nd4j.version}</version>
-        </dependency>
         <!--
         <dependency>
             <groupId>org.deeplearning4j</groupId>

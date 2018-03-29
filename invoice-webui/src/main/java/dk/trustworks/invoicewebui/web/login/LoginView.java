@@ -7,6 +7,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.web.login.components.ForgotPasswordImpl;
 import dk.trustworks.invoicewebui.web.login.components.LoginImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,9 @@ public class LoginView extends VerticalLayout implements View {
     @Autowired
     private LoginImpl login;
 
+    @Autowired
+    private ForgotPasswordImpl forgotPassword;
+
     @Transactional
     @PostConstruct
     void init() {
@@ -35,22 +39,47 @@ public class LoginView extends VerticalLayout implements View {
         this.setSizeFull();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout();
         responsiveLayout.setSizeFull();
-        ResponsiveRow row = responsiveLayout.addRow();
-        row
+        ResponsiveRow loginRow = responsiveLayout.addRow();
+        loginRow
                 .addColumn()
                 .withDisplayRules(12,12, 3, 4)
                 .withVisibilityRules(false, false, true, true)
                 .withComponent(new Label());
-        row
+        loginRow
                 .addColumn()
                 .withDisplayRules(12, 12, 6, 4)
                 .withComponent(login);
-        row
+        loginRow
                 .addColumn()
                 .withDisplayRules(12,12, 3, 4)
                 .withVisibilityRules(false, false, true, true)
                 .withComponent(new Label());
         addComponent(responsiveLayout);
+
+        ResponsiveRow resetLoginRow = responsiveLayout.addRow();
+        resetLoginRow
+                .addColumn()
+                .withDisplayRules(12,12, 3, 4)
+                .withVisibilityRules(false, false, true, true)
+                .withComponent(new Label());
+        resetLoginRow
+                .addColumn()
+                .withDisplayRules(12, 12, 6, 4)
+                .withComponent(forgotPassword);
+        resetLoginRow
+                .addColumn()
+                .withDisplayRules(12,12, 3, 4)
+                .withVisibilityRules(false, false, true, true)
+                .withComponent(new Label());
+        resetLoginRow.setVisible(false);
+        addComponent(responsiveLayout);
+
+        login.getBtnResetPassword().addClickListener(event -> {
+            //responsiveLayout.removeComponent(loginRow);
+            //responsiveLayout.addRow(resetLoginRow);
+            loginRow.setVisible(false);
+            resetLoginRow.setVisible(true);
+        });
     }
 
     @Override
