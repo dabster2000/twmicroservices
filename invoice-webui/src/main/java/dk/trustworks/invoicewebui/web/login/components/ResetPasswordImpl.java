@@ -36,7 +36,7 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
                 Notification.show("Succes",
                         "Your may now use your new password.",
                         Notification.Type.ASSISTIVE_NOTIFICATION);
-            } else if (new PasswordConstraintValidator().isValid(getTxtPassword().getValue())) {
+            } else if (!new PasswordConstraintValidator().isValid(getTxtPassword().getValue())) {
                 Notification.show("Failed",
                         "Password not strong enough!",
                         Notification.Type.WARNING_MESSAGE);

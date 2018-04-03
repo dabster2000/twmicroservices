@@ -36,7 +36,7 @@ public class ForgotPasswordImpl extends ForgotPasswordDesign {
             Notification.show("Password reset",
                     "Please check your email for further instructions.",
                     Notification.Type.ASSISTIVE_NOTIFICATION);
-            getUI().getNavigator().navigateTo("login");
+            //getUI().getNavigator().navigateTo("login");
         });
         getBtnLogin().setClickShortcut(ShortcutAction.KeyCode.ENTER);
     }
