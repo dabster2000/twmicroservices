@@ -55,10 +55,8 @@ public class LoginImpl extends LoginDesign {
             VaadinService.getCurrentResponse().addCookie(newCookie);
             getUI().getNavigator().navigateTo("mainmenu");
         });
+        
         getBtnLogin().setClickShortcut(ShortcutAction.KeyCode.ENTER);
     }
-
-
-
 
 }

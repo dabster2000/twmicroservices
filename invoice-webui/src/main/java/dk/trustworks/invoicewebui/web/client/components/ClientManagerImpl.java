@@ -16,6 +16,7 @@ import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
+import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
@@ -130,13 +131,17 @@ public class ClientManagerImpl extends ClientManagerDesign {
         logo.setWidth("100%");
         LogoCardDesign cardLogo = new LogoCardDesign();
         cardLogo.getContainer().addComponent(logo);
+
+        LogoCardDesign cardLogoWithEditor = new LogoCardDesign();
+        cardLogoWithEditor.getContainer().addComponent(new PhotoUploader(client.getUuid(), 800, 400, "Find and upload a logo for this client.", photoRepository).getUploader());
+
         ClientImpl clientComponent = createClientBlock(client);
 
         ResponsiveRow row = clientDetailBoard.addRow();
 
-        row.addColumn().withDisplayRules(12, 0, 0, 0).withVisibilityRules(true, false, false, false).withComponent(cardLogo);
-        row.addColumn().withDisplayRules(12, 8, 6, 6).withComponent(clientComponent);
-        row.addColumn().withDisplayRules(0, 4, 6, 6).withVisibilityRules(false, true, true, true).withComponent(cardLogo);
+        row.addColumn().withDisplayRules(12, 12, 0, 0).withVisibilityRules(true, true, false, false).withComponent(cardLogo);
+        row.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(clientComponent);
+        row.addColumn().withDisplayRules(12, 12, 8, 8).withVisibilityRules(false, false, true, true).withComponent(cardLogoWithEditor);
 
         createContactInformationHeading(clientDetailBoard);
 

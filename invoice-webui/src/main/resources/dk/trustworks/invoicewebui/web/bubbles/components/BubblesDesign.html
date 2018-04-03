@@ -10,11 +10,17 @@
    <vaadin-vertical-layout style-name="card-3 card-no-padding ripple card-hoverable" spacing="false" margin="false" _id="cardHolder">
     <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
     <vaadin-vertical-layout spacing="false" size-full _id="container" :expand>
-     <vaadin-label style-name="h5 bold" plain-text _id="lblHeading">
-       [Bubble Name] 
-     </vaadin-label>
+     <vaadin-horizontal-layout spacing="false" width-full :middle>
+      <vaadin-label style-name="h5 bold" plain-text _id="lblHeading" :expand>
+        [Bubble Name] 
+      </vaadin-label>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e7fa" description="Edit your bubble" style-name="flat tiny" plain-text _id="btnEdit"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e60e" description="Get into the bubble" style-name="flat tiny" plain-text _id="btnJoin"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e60c" description="Get outside the bubble" style-name="flat tiny" plain-text _id="btnLeave"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e7dc" description="Apply for bubble membership" style-name="flat tiny" plain-text _id="btnApply"></vaadin-button>
+     </vaadin-horizontal-layout>
      <vaadin-panel style-name="v-scrollable" height="200px" _id="textContentHolder" :expand>
-      <vaadin-label width-full plain-text>
+      <vaadin-label width-full plain-text _id="lblDescription">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
       </vaadin-label>
      </vaadin-panel>

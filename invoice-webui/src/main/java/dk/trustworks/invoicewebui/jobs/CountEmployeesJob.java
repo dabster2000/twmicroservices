@@ -60,7 +60,7 @@ public class CountEmployeesJob {
     public void init() {
         countEmployees();
         try {
-            workGraph();
+            //workGraph();
         } catch (Exception e) {
             e.printStackTrace();
         }

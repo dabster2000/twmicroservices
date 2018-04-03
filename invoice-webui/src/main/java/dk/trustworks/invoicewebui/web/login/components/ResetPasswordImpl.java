@@ -4,6 +4,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
@@ -31,6 +32,17 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
                 userDb.setPassword(BCrypt.hashpw(getTxtPassword().getValue(), BCrypt.gensalt()));
                 userRepository.save(userDb);
                 getUI().getNavigator().navigateTo("login");
+                Notification.show("Succes",
+                        "Your may now use your new password.",
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
+            } else {
+                Notification.show("Failed",
+                        "The passwords do not match, please try again.",
+                        Notification.Type.WARNING_MESSAGE);
+                getTxtPassword().setValue("");
+                getTxtPassword().setWidth(100, Unit.PERCENTAGE);
+                getTxtVerifyPassword().setValue("");
+                getTxtVerifyPassword().setWidth(100, Unit.PERCENTAGE);
             }
         });
         getBtnSave().setClickShortcut(ShortcutAction.KeyCode.ENTER);

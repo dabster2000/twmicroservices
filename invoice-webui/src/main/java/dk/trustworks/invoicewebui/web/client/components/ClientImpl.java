@@ -4,7 +4,6 @@ import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
-import server.droporchoose.UploadComponent;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,15 +23,6 @@ public class ClientImpl extends ClientDesign {
     public ClientImpl(PhotoRepository photoRepository, Client client) {
         this.photoRepository = photoRepository;
         this.client = client;
-        UploadComponent uploadComponent = new UploadComponent(this::uploadReceived);
-        uploadComponent.setStartedCallback(this::uploadStarted);
-        uploadComponent.setProgressCallback(this::uploadProgress);
-        uploadComponent.setFailedCallback(this::uploadFailed);
-        uploadComponent.setWidth(100, Unit.PERCENTAGE);
-        uploadComponent.setHeight(200, Unit.PIXELS);
-        uploadComponent.setCaption("File upload");
-
-        getFormLayout().addComponent(uploadComponent);
     }
 
     private void uploadReceived(String fileName, Path file) {

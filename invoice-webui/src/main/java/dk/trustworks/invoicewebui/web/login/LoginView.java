@@ -74,11 +74,14 @@ public class LoginView extends VerticalLayout implements View {
         resetLoginRow.setVisible(false);
         addComponent(responsiveLayout);
 
-        login.getBtnResetPassword().addClickListener(event -> {
-            //responsiveLayout.removeComponent(loginRow);
-            //responsiveLayout.addRow(resetLoginRow);
+        login.getHlResetPassword().addLayoutClickListener(event -> {
             loginRow.setVisible(false);
             resetLoginRow.setVisible(true);
+        });
+
+        forgotPassword.getHlBackToLogin().addLayoutClickListener(event -> {
+            loginRow.setVisible(true);
+            resetLoginRow.setVisible(false);
         });
     }
 

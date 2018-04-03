@@ -60,6 +60,6 @@ public class PhotosCardImpl extends PhotosCardDesign implements Box {
         getLblPhotoText().setVisible(true);
         getPhoto().setSource(new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(randomPhoto),"logo.jpg"));
         getLblPhotoText().setValue(randomText);
-        if(randomText.equals("")) getLblPhotoText().setVisible(false);
+        if(randomText == null || randomText.equals("")) getLblPhotoText().setVisible(false);
     }
 }
