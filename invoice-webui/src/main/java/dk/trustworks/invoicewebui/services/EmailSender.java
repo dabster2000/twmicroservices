@@ -44,7 +44,7 @@ public class EmailSender {
     public void sendResetPassword(User user, String uuid) {
         System.out.println("EmailSender.sendResetPassword");
         System.out.println("user = [" + user + "]");
-        if(Boolean.valueOf(online)) {
+        //if(Boolean.valueOf(online)) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("hans.lassen@trustworks.dk");
             message.setTo(user.getEmail());
@@ -58,9 +58,9 @@ public class EmailSender {
             message.setSubject("Reset af password - " + user.getUsername());
             message.setText("");
             emailSender.send(message);
-        } else {
+        //} else {
             System.out.println("goto http://localhost:8080/#!reset/" + uuid);
-        }
+        //}
     }
 
 }
