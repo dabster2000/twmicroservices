@@ -24,9 +24,11 @@ import com.vaadin.ui.HorizontalLayout;
 public class ForgotPasswordDesign extends CssLayout {
     private VerticalLayout cardHolder;
     private Image imgTop;
+    private VerticalLayout vlReset;
     private TextField txtUsername;
     private Button btnLogin;
     private HorizontalLayout hlBackToLogin;
+    private VerticalLayout vlConfirmation;
 
     public ForgotPasswordDesign() {
         Design.read(this);
@@ -40,6 +42,10 @@ public class ForgotPasswordDesign extends CssLayout {
         return imgTop;
     }
 
+    public VerticalLayout getVlReset() {
+        return vlReset;
+    }
+
     public TextField getTxtUsername() {
         return txtUsername;
     }
@@ -50,6 +56,10 @@ public class ForgotPasswordDesign extends CssLayout {
 
     public HorizontalLayout getHlBackToLogin() {
         return hlBackToLogin;
+    }
+
+    public VerticalLayout getVlConfirmation() {
+        return vlConfirmation;
     }
 
 }
