@@ -31,7 +31,7 @@ public class MotherSlackBot extends Bot {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(MotherSlackBot.class);
 
-    @Value("${slackBotToken}")
+    @Value("${motherSlackBotToken}")
     private String slackToken;
 
     @Value("${apiAiToken}")

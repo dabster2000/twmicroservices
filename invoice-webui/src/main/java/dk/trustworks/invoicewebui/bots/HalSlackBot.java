@@ -16,7 +16,7 @@ public class HalSlackBot extends Bot {
      * Slack token from application.properties file. You can get your slack token
      * next <a href="https://my.slack.com/services/new/bot">creating a new bot</a>.
      */
-    @Value("${slackBotToken}")
+    @Value("${halSlackBotToken}")
     private String slackToken;
 
     @Value("${slackIncomingWebhookUrl}")
