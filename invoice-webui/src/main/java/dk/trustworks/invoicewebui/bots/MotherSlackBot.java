@@ -9,16 +9,16 @@ import dk.trustworks.invoicewebui.bots.conversations.Conversation;
 import dk.trustworks.invoicewebui.bots.conversations.model.ConversationState;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import me.ramswaroop.jbot.core.common.Controller;
+import me.ramswaroop.jbot.core.common.EventType;
+import me.ramswaroop.jbot.core.common.JBot;
 import me.ramswaroop.jbot.core.slack.Bot;
-import me.ramswaroop.jbot.core.slack.Controller;
-import me.ramswaroop.jbot.core.slack.EventType;
 import me.ramswaroop.jbot.core.slack.models.Event;
 import me.ramswaroop.jbot.core.slack.models.Message;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+@JBot
 public class MotherSlackBot extends Bot {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(MotherSlackBot.class);
@@ -54,6 +54,7 @@ public class MotherSlackBot extends Bot {
     @PostConstruct
     public void init() {
         log.info("MotherSlackBot.init");
+        log.info("slackToken: "+slackToken);
         AIConfiguration configuration = new AIConfiguration(apiAiToken);
         dataService = new AIDataService(configuration);
     }

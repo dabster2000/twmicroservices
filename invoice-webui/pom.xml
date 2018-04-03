@@ -330,7 +330,7 @@
         <dependency>
             <groupId>me.ramswaroop.jbot</groupId>
             <artifactId>jbot</artifactId>
-            <version>3.0.2</version>
+            <version>4.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.allbegray</groupId>
@@ -395,6 +395,11 @@
             <groupId>de.svenkubiak</groupId>
             <artifactId>jBCrypt</artifactId>
             <version>0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>1.0</version>
         </dependency>
 
         <!-- DEEP LEARNING -->
@@ -553,12 +558,6 @@
             <version>LATEST</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.passay</groupId>
-            <artifactId>passay</artifactId>
-            <version>1.0</version>
-        </dependency>
 
         <!-- Test -->
         <dependency>
