@@ -32,7 +32,7 @@ public class ForgotPasswordImpl extends ForgotPasswordDesign {
             String uuid = UUID.randomUUID().toString();
             uuidMap.put(uuid, user);
             getVlReset().setVisible(false);
-            getVlReset().setVisible(true);
+            getVlConfirmation().setVisible(true);
             emailSender.sendResetPassword(user, uuid);
             //getUI().getNavigator().navigateTo("login");
         });
