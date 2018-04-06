@@ -15,6 +15,7 @@ import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -56,8 +57,15 @@ public class BubbleForm {
                 .withOffset(ResponsiveLayout.DisplaySize.LG, 10)
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 2, 2)
-                .withComponent(new MButton("blow bubble", event -> newBubbleDialogRow.setVisible(true)).withWidth(100, Sizeable.Unit.PERCENTAGE));
+                .withComponent(new MButton("blow bubble", event -> {
+                    newBubbleDialogRow.setVisible(true);
+                    createFormRow(null, newBubble -> createUploadRow(newBubble, newBubble2 -> createMembersRow(newBubble2, newBubble3 -> closeDialogRow())));
+                }).withWidth(100, Sizeable.Unit.PERCENTAGE));
         return row;
+    }
+
+    public void closeDialogRow() {
+        newBubbleDialogRow.setVisible(false);
     }
 
     private void createUploadRow(final Bubble prevBubble, Next next) {
@@ -67,9 +75,9 @@ public class BubbleForm {
 
         uploadRow.setVisible(true);
         uploadRow.removeAllComponents();
-//        uploadRow.addColumn()
-  //              .withDisplayRules(12, 12, 8, 8)
-    //            .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble!", photoRepository, this::uploadFormFinished()).getUploader());
+        uploadRow.addColumn()
+                .withDisplayRules(12, 12, 8, 8)
+                .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble!", photoRepository, () -> next.next(prevBubble)).getUploader());
     }
 
     private void uploadFormFinished() {
@@ -186,6 +194,6 @@ public class BubbleForm {
 
     @FunctionalInterface
     public interface Next {
-        void next(Bubble buble);
+        void next(Bubble bubble);
     }
 }

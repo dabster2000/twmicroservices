@@ -4,7 +4,6 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Image;
@@ -21,7 +20,6 @@ import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.viritin.button.MButton;
@@ -58,12 +56,12 @@ public class BubblesLayout extends VerticalLayout {
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
 
-        BubbleForm bubbleForm = new BubbleForm(null, null, null, null);
+        BubbleForm bubbleForm = new BubbleForm(userRepository, bubbleRepository, bubbleMemberRepository, photoRepository);
 
         responsiveLayout.addRow(bubbleForm.getNewBubbleButton());
         responsiveLayout.addRow(bubbleForm.getDialogRow());
 
-        /*
+            /*
         responsiveLayout.addRow().addColumn()
                 .withOffset(ResponsiveLayout.DisplaySize.MD, 10)
                 .withOffset(ResponsiveLayout.DisplaySize.LG, 10)
@@ -241,7 +239,8 @@ public class BubblesLayout extends VerticalLayout {
                 bubblesDesign.getBtnJoin().setVisible(false);
             }
 
-            User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+            //User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+            User user = userRepository.findByUsername("hans.lassen");
 
             if(bubbleMemberRepository.findByBubbleAndMember(bubble, user) != null) {
                 bubblesDesign.getBtnLeave().setVisible(true);
