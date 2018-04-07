@@ -60,7 +60,7 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
         binder.forField(getTxtLastname()).bind(User::getLastname, User::setLastname);
         binder.forField(getTxtUsername()).bind(User::getUsername, User::setUsername);
         binder.forField(getTxtEmail()).bind(User::getEmail, User::setEmail);
-        binder.forField(getCbSlackID()).bind(value -> slackUserList.stream().filter(p -> p.getId().equals(value.getSlackusername())).findFirst().get(), (user, slackUser) -> user.setSlackusername(slackUser.getId()));
+        binder.forField(getCbSlackID()).bind(value -> slackUserList.stream().filter(p -> p.getId().equals(value.getSlackusername())).findFirst().orElse(null), (user, slackUser) -> user.setSlackusername(slackUser.getId()));
         binder.forField(getCbActive()).bind(User::isActive, User::setActive);
         binder.forField(getDfBirthday()).bind(User::getBirthday, User::setBirthday);
         binder.readBean(this.user);
