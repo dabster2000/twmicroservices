@@ -38,6 +38,7 @@ public class PhotoUploader {
     private final int width;
     private final int height;
     private String caption;
+    private final Step startStep;
     private Done done = null;
 
     private LiveImageEditor imageEditor;
@@ -46,16 +47,17 @@ public class PhotoUploader {
     private UploadComponent uploadComponent = new UploadComponent();
     private Image editedImage = new Image();
 
-    public PhotoUploader(String uuid, int width, int height, String caption, PhotoRepository photoRepository) {
+    public PhotoUploader(String uuid, int width, int height, String caption, Step startStep, PhotoRepository photoRepository) {
         this.width = width;
         this.height = height;
         this.caption = caption;
+        this.startStep = startStep;
         this.photoRepository = photoRepository;
         this.uuid = uuid;
     }
 
-    public PhotoUploader(String uuid, int width, int height, String caption, PhotoRepository photoRepository, Done done) {
-        this(uuid, width, height, caption, photoRepository);
+    public PhotoUploader(String uuid, int width, int height, String caption, Step startStep, PhotoRepository photoRepository, Done done) {
+        this(uuid, width, height, caption, startStep, photoRepository);
         this.done = done;
     }
 
@@ -85,12 +87,12 @@ public class PhotoUploader {
         editedImage.addClickListener(event -> setupUploadStep());
 
         Photo photo = photoRepository.findByRelateduuid(uuid);
-        if(photo!=null && photo.getPhoto().length > 0) {
+        if(photo!=null && photo.getPhoto().length > 0 && startStep.equals(Step.PHOTO)) {
             editedImage.setSource(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()),
                     "photo-" + System.currentTimeMillis() + ".jpg"));
             setupFinalStep();
-        } else {
+        } else if(startStep.equals(Step.UPLOAD)) {
             setupUploadStep();
         }
         return vlContainer;
@@ -223,5 +225,9 @@ public class PhotoUploader {
     @FunctionalInterface
     public interface Done {
         void uploaderDone();
+    }
+
+    public enum Step {
+        PHOTO, UPLOAD, RESIZE
     }
 }

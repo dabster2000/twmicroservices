@@ -6,6 +6,7 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Bubble;
@@ -59,17 +60,30 @@ public class BubbleForm {
                 .withDisplayRules(12, 12, 2, 2)
                 .withComponent(new MButton("blow bubble", event -> {
                     newBubbleDialogRow.setVisible(true);
+                    UI.getCurrent().scrollIntoView(newBubbleDialogRow);
                     createFormRow(null, newBubble -> createUploadRow(newBubble, newBubble2 -> createMembersRow(newBubble2, newBubble3 -> closeDialogRow())));
                 }).withWidth(100, Sizeable.Unit.PERCENTAGE));
         return row;
     }
 
+    public void editPhotoAction(Bubble bubble) {
+        newBubbleDialogRow.setVisible(true);
+        UI.getCurrent().scrollIntoView(newBubbleDialogRow);
+        createUploadRow(bubble, newBubble -> closeDialogRow());
+    }
+
+    public void editFormAction(Bubble bubble) {
+        newBubbleDialogRow.setVisible(true);
+        UI.getCurrent().scrollIntoView(newBubbleDialogRow);
+        createFormRow(bubble,  newBubble2 -> createMembersRow(newBubble2, newBubble3 -> closeDialogRow()));
+    }
+
     public void closeDialogRow() {
         newBubbleDialogRow.setVisible(false);
+        Page.getCurrent().reload();
     }
 
     private void createUploadRow(final Bubble prevBubble, Next next) {
-        bubbleBinder.readBean(new Bubble());
         newBubbleResponsiveLayout.removeAllComponents();
         uploadRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
@@ -77,16 +91,12 @@ public class BubbleForm {
         uploadRow.removeAllComponents();
         uploadRow.addColumn()
                 .withDisplayRules(12, 12, 8, 8)
-                .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble!", photoRepository, () -> next.next(prevBubble)).getUploader());
-    }
-
-    private void uploadFormFinished() {
-
+                .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble!", PhotoUploader.Step.UPLOAD, photoRepository, () -> next.next(prevBubble)).getUploader());
     }
 
     private void createMembersRow(final Bubble prevBubble, Next next) {
+        newBubbleResponsiveLayout.removeAllComponents();
         bubbleBinder.readBean(new Bubble());
-        //newBubbleResponsiveLayout.removeAllComponents();
         membersRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
         List<BubbleMember> bubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
@@ -122,8 +132,9 @@ public class BubbleForm {
     }
 
     private void createFormRow(final Bubble prevBubble, Next next) {
-        bubbleBinder.readBean(new Bubble());
-        //newBubbleResponsiveLayout.removeAllComponents();
+        newBubbleResponsiveLayout.removeAllComponents();
+        final Bubble bubble = (prevBubble != null)?prevBubble:new Bubble();
+
         formRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
         TextField bubbleName = new TextField("Bubble name");
@@ -147,14 +158,13 @@ public class BubbleForm {
         OnOffSwitch active = new OnOffSwitch();
         active.setCaption("Active");
         bubbleBinder.forField(active).bind(Bubble::isActive, Bubble::setActive);
-        MButton createButton = new MButton("Blow new bubble!").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
-            Bubble bubble = new Bubble();
+        MButton createButton = new MButton((prevBubble==null)?"Blow new bubble!":"Update bubble").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
             try {
                 bubbleBinder.writeBean(bubble);
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
-            bubble = bubbleRepository.save(bubble);
+            bubbleRepository.save(bubble);
             newBubbleResponsiveLayout.removeAllComponents();
             if(next!=null) next.next(bubble);
         });
@@ -173,6 +183,8 @@ public class BubbleForm {
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(createButton);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+
+        bubbleBinder.readBean(bubble);
     }
 
     private ResponsiveRow getDialogRow(ResponsiveLayout newBubbleResponsiveLayout) {

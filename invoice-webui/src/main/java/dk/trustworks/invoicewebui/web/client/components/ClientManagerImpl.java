@@ -133,7 +133,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         cardLogo.getContainer().addComponent(logo);
 
         LogoCardDesign cardLogoWithEditor = new LogoCardDesign();
-        cardLogoWithEditor.getContainer().addComponent(new PhotoUploader(client.getUuid(), 800, 400, "Find and upload a logo for this client.", photoRepository).getUploader());
+        cardLogoWithEditor.getContainer().addComponent(new PhotoUploader(client.getUuid(), 800, 400, "Find and upload a logo for this client.", PhotoUploader.Step.PHOTO, photoRepository).getUploader());
 
         ClientImpl clientComponent = createClientBlock(client);
 
