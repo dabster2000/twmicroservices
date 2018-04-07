@@ -103,16 +103,10 @@ public class BubblesLayout extends VerticalLayout {
                 bubblesDesign.getBtnLeave().setVisible(false);
             }
 
+            bubblesDesign.getPhotoContainer().addComponent(getMemberImage(bubble.getUser(), true));
             for (BubbleMember member : bubbleMemberRepository.findByBubble(bubble)) {
-                Photo photo = photoRepository.findByRelateduuid(member.getMember().getUuid());
-
-                Image image = new Image(null,
-                        new StreamResource((StreamResource.StreamSource) () ->
-                                new ByteArrayInputStream(photo.getPhoto()),
-                                member.getMember().getUsername()+System.currentTimeMillis()+".jpg"));
-                image.setStyleName("img-circle");
-                image.setWidth(75, Unit.PIXELS);
-                image.setHeight(75, Unit.PIXELS);
+                if(member.getMember().getUuid().equals(bubble.getUser().getUuid())) continue;
+                Image image = getMemberImage(member.getMember(), false);
                 bubblesDesign.getPhotoContainer().addComponent(image);
             }
 
@@ -126,5 +120,19 @@ public class BubblesLayout extends VerticalLayout {
             }
             bubblesRow.addColumn().withDisplayRules(12, 12, 6,4).withComponent(bubblesDesign);
         }
+    }
+
+    private Image getMemberImage(User member, boolean isOwner) {
+        Photo photo = photoRepository.findByRelateduuid(member.getUuid());
+
+        Image image = new Image(null,
+                new StreamResource((StreamResource.StreamSource) () ->
+                        new ByteArrayInputStream(photo.getPhoto()),
+                        member.getUsername()+System.currentTimeMillis()+".jpg"));
+        if(isOwner) image.setStyleName("img-circle-gold");
+        else image.setStyleName("img-circle");
+        image.setWidth(75, Unit.PIXELS);
+        image.setHeight(75, Unit.PIXELS);
+        return image;
     }
 }
