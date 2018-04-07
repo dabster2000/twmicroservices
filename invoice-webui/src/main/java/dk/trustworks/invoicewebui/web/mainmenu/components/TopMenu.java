@@ -3,13 +3,17 @@ package dk.trustworks.invoicewebui.web.mainmenu.components;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Notification;
+import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.NotificationRepository;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +23,7 @@ import org.vaadin.alump.fancylayouts.FancyTransition;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
-
+import java.io.ByteArrayInputStream;
 import java.util.Date;
 
 import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.SM;
@@ -35,6 +39,9 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private PhotoRepository photoRepository;
+
     private FancyNotifications notifications;
 
     private UserSession userSession;
@@ -48,7 +55,10 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
     private TopMenuUserDesign topMenuUserDesign;
 
     @PostConstruct
-    void init() {
+    public void init() {
+        if((userSession = VaadinSession.getCurrent().getAttribute(UserSession.class)) == null) return;
+        User user = userSession.getUser();
+
         Broadcaster.register(this);
         setStyleName("v-component-group material");
         setWidth("100%");
@@ -92,12 +102,20 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
                 .withComponent(new Label());
 
         topMenuUserDesign = new TopMenuUserDesign();
-        topMenuUserDesign.getBtnUser().setIcon(MaterialIcons.ACCOUNT_CIRCLE);
+        Photo photo;
+        if((photo = photoRepository.findByRelateduuid(user.getUuid())) != null) {
+            topMenuUserDesign.getImgUser().setSource(
+                    new StreamResource((StreamResource.StreamSource) () ->
+                            new ByteArrayInputStream(photo.getPhoto()), user.getUsername() + System.currentTimeMillis() + ".jpg"));
+            //topMenuUserDesign.getImgUser().setStyleName("img-circle");
+        } else {
+            topMenuUserDesign.getImgUser().setSource(MaterialIcons.ACCOUNT_CIRCLE);
+        }
         topMenuUserDesign.getBtnNotification().setIcon(MaterialIcons.SMS_FAILED);
 
         createNotifications();
 
-        userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+
         topMenuUserDesign.getBtnNotification().addClickListener(event -> {
             if(!notifications.isAttached()) {
                 ((ComponentContainer)this.getParent()).removeComponent(notifications);
@@ -148,4 +166,5 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
         }
 */
     }
+
 }
