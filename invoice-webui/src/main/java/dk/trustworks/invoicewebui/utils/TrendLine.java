@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.utils;
 
 public interface TrendLine {
-    public void setValues(double[] y, double[] x); // y ~ f(x)
-    public double predict(double x); // get a predicted y for a given x
+    void setValues(double[] y, double[] x); // y ~ f(x)
+    double predict(double x); // get a predicted y for a given x
 }

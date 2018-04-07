@@ -103,14 +103,19 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
 
         topMenuUserDesign = new TopMenuUserDesign();
         Photo photo;
+        Image image;
         if((photo = photoRepository.findByRelateduuid(user.getUuid())) != null) {
-            topMenuUserDesign.getImgUser().setSource(
+            image = new Image(null,
                     new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(photo.getPhoto()), user.getUsername() + System.currentTimeMillis() + ".jpg"));
-            //topMenuUserDesign.getImgUser().setStyleName("img-circle");
+                            new ByteArrayInputStream(photo.getPhoto()),
+                            user.getUsername()+System.currentTimeMillis()+".jpg"));
+            image.setStyleName("img-circle");
+            image.setWidth(75, Unit.PIXELS);
+            image.setHeight(75, Unit.PIXELS);
         } else {
-            topMenuUserDesign.getImgUser().setSource(MaterialIcons.ACCOUNT_CIRCLE);
+            image = new Image(null, MaterialIcons.ACCOUNT_CIRCLE);
         }
+        topMenuUserDesign.addComponent(image);
         topMenuUserDesign.getBtnNotification().setIcon(MaterialIcons.SMS_FAILED);
 
         createNotifications();

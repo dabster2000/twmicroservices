@@ -148,7 +148,7 @@ public class DraftListImpl extends DraftListDesign
 
     public void loadInvoicesToGrid() {
         System.out.println("DraftListImpl.loadInvoicesToGrid");
-        System.out.println("");
+        System.out.println();
         List<Invoice> invoices = invoiceRepository.findByStatus(DRAFT);
         gridInvoiceList.setItems(invoices);
         gridInvoiceList.getDataProvider().refreshAll();

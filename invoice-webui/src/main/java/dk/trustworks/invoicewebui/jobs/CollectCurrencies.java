@@ -20,7 +20,7 @@ public class CollectCurrencies {
     private CurrencyRepository currencyRepository;
 
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
         //collectCryptoCompare();
     }
 

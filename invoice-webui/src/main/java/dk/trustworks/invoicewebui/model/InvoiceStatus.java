@@ -5,6 +5,6 @@ package dk.trustworks.invoicewebui.model;
  */
 public enum InvoiceStatus {
 
-    DRAFT, CREATED, SUBMITTED, PAID, CANCELLED, CREDIT_NOTE;
+    DRAFT, CREATED, SUBMITTED, PAID, CANCELLED, CREDIT_NOTE
 
 }

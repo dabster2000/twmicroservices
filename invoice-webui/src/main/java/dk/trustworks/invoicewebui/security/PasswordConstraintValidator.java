@@ -11,9 +11,6 @@ public class PasswordConstraintValidator {
         PasswordValidator validator = new PasswordValidator(Arrays.asList(new LengthRule(8, 30)));
 
         RuleResult result = validator.validate(new PasswordData(password));
-        if (result.isValid()) {
-            return true;
-        }
-        return false;
+        return result.isValid();
     }
 }

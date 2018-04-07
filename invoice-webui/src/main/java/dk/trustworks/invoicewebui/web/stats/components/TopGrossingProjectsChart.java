@@ -53,7 +53,7 @@ public class TopGrossingProjectsChart {
                 String[] s = amountPerItem.getDescription().split(" ");
                 //for (String s : amountPerItem.description.split(" ")) {
                 int subLength = s[0].length()<3?s[0].length():3;
-                shortname.append(s[0].substring(0,subLength));
+                shortname.append(s[0], 0, subLength);
                 //}
                 categories[i] = shortname.toString();
             } else {

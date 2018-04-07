@@ -12,14 +12,13 @@ import com.itextpdf.kernel.pdf.canvas.parser.data.TextRenderInfo;
 import com.itextpdf.kernel.pdf.canvas.parser.filter.TextRegionEventFilter;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.FilteredEventListener;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
-import org.dom4j.DocumentException;
 
 import java.io.IOException;
 
 public class PdfParse {
     public static final String SRC = "1558_001.pdf";
 
-    public static void main(String[] args) throws IOException, DocumentException {
+    public static void main(String[] args) throws IOException {
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(SRC));
         Rectangle rect = new Rectangle(36, 750, 523, 56);
 

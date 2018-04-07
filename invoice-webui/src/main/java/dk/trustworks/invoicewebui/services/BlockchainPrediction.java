@@ -15,7 +15,7 @@ public class BlockchainPrediction {
 
     private final int forecastPeriod = 500;
 
-    public Currency[] forecast(String currencyType) throws Exception {
+    public Currency[] forecast(String currencyType) {
         System.out.println("BlockchainPrediction.forecast");
         long begin = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
