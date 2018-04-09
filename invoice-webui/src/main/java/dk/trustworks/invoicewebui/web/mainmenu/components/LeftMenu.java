@@ -24,6 +24,7 @@ import dk.trustworks.invoicewebui.web.stats.StatsManagerView;
 import dk.trustworks.invoicewebui.web.stats.TrustworksStatsView;
 import dk.trustworks.invoicewebui.web.time.ReportView;
 import dk.trustworks.invoicewebui.web.time.TimeManagerView;
+import dk.trustworks.invoicewebui.web.time.TimeManagerViewSecond;
 import dk.trustworks.invoicewebui.web.trips.TripsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -93,6 +94,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("timemanager", timemanager);
         MenuItemContainer time = new MenuItemContainer(order++).createItem(TimeManagerView.MENU_NAME, false, TimeManagerView.VIEW_ICON, TimeManagerView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(TimeManagerView.VIEW_NAME, time);
+        MenuItemContainer timeBeta = new MenuItemContainer(order++).createItem(TimeManagerViewSecond.MENU_NAME, false, TimeManagerViewSecond.VIEW_ICON, TimeManagerViewSecond.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(TimeManagerViewSecond.VIEW_NAME, timeBeta);
         MenuItemContainer reportView = new MenuItemContainer(order++).createItem(ReportView.MENU_NAME, false, ReportView.VIEW_ICON, ReportView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.USER);
         menuItems.put(ReportView.VIEW_NAME, reportView);
 

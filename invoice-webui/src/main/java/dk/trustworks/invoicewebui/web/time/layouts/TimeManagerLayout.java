@@ -5,6 +5,7 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.data.Binder;
+import com.vaadin.data.HasValue;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -349,7 +350,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("SUM").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+                .withComponent(new MLabel("BUDGET").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
     }
 
     private void createFooterRow() {
@@ -367,6 +368,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         weekValuesBinder.bind(txtFri, WeekValues::getFriString, null);
         weekValuesBinder.bind(txtSat, WeekValues::getSatString, null);
         weekValuesBinder.bind(txtSun, WeekValues::getSunString, null);
+        weekValuesBinder.readBean(weekDaySums);
 
         ResponsiveRow footerRow = responsiveLayout.addRow()
                 .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL,true)
@@ -440,106 +442,92 @@ public class TimeManagerLayout extends ResponsiveLayout {
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getMon(), event -> {
-                    LocalDate workDate = weekItem.getDate().plusDays(0);
-                    Work work = null;
-                    try {
-                        work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-                        workRepository.save(work);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
+                    weekDaySums.mon += updateTimefield(weekItem, 0, event);
+                    updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getTue(), event -> {
-                    LocalDate workDate = weekItem.getDate().plusDays(1);
-                    Work work = null;
-                    try {
-                        work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-                        workRepository.save(work);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    weekDaySums.tue += updateTimefield(weekItem, 1, event);
+                    updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getWed(), event -> {
-                    LocalDate workDate = weekItem.getDate().plusDays(2);
-                    Work work = null;
-                    try {
-                        work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-                        workRepository.save(work);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    weekDaySums.wed += updateTimefield(weekItem, 2, event);
+                    updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getThu(), event -> {
-                    LocalDate workDate = weekItem.getDate().plusDays(3);
-                    Work work = null;
-                    try {
-                        work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-                        workRepository.save(work);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    weekDaySums.thu += updateTimefield(weekItem, 3, event);
+                    updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getFri(), event -> {
-                    LocalDate workDate = weekItem.getDate().plusDays(4);
-                    Work work = null;
-                    try {
-                        work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-                        workRepository.save(work);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    weekDaySums.fri += updateTimefield(weekItem, 4, event);
+                    updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getSat(), event -> {
-                    LocalDate workDate = weekItem.getDate().plusDays(5);
-                    Work work = null;
-                    try {
-                        work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-                        workRepository.save(work);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    weekDaySums.sat += updateTimefield(weekItem, 5, event);
+                    updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getSun(), event -> {
-                    LocalDate workDate = weekItem.getDate().plusDays(6);
-                    Work work = null;
-                    try {
-                        work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-                        workRepository.save(work);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    weekDaySums.sun += updateTimefield(weekItem, 6, event);
+                    updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("20").withWidth(100, Unit.PERCENTAGE).withStyleName("h5"));
+                .withComponent(new MLabel(weekItem.getBudgetleft()+"").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+    }
+
+    private double updateTimefield(WeekItem weekItem, int day, HasValue.ValueChangeEvent<String> event) {
+        double weekDaySumDelta = 0.0;
+        LocalDate workDate = weekItem.getDate().plusDays(day);
+        try {
+            weekDaySumDelta -= nf.parse(event.getOldValue()).doubleValue();
+        } catch (ParseException e) {
+            log.warn("Gammel værdi var ikke et tal: "+event.getOldValue());
+        }
+        try {
+            weekDaySumDelta += nf.parse(event.getValue()).doubleValue();
+        } catch (ParseException e) {
+            log.warn("Ny værdi er ikke et tal: "+event.getValue());
+            return weekDaySumDelta;
+        }
+        try {
+            Work work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
+            event.getSource().setValue(nf.format(work.getWorkduration()));
+            workRepository.save(work);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return weekDaySumDelta;
+    }
+
+    private void updateSums() {
+        weekValuesBinder.readBean(weekDaySums);
+        sumHours = weekDaySums.sum();
     }
 
     private class WeekValues {
@@ -552,54 +540,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
         private double sun = 0.0;
 
         public WeekValues() {
-        }
-
-        public double getMon() {
-            return mon;
-        }
-
-        public void setMon(double mon) {
-            this.mon = mon;
-        }
-
-        public double getTue() {
-            return tue;
-        }
-
-        public void setTue(double tue) {
-            this.tue = tue;
-        }
-
-        public double getWed() {
-            return wed;
-        }
-
-        public void setWed(double wed) {
-            this.wed = wed;
-        }
-
-        public double getThu() {
-            return thu;
-        }
-
-        public void setThu(double thu) {
-            this.thu = thu;
-        }
-
-        public double getFri() {
-            return fri;
-        }
-
-        public void setFri(double fri) {
-            this.fri = fri;
-        }
-
-        public double getSat() {
-            return sat;
-        }
-
-        public void setSat(double sat) {
-            this.sat = sat;
         }
 
         public double getSun() {
@@ -643,27 +583,31 @@ public class TimeManagerLayout extends ResponsiveLayout {
         }
 
         public String getTueString() {
-            return nf.format(mon);
+            return nf.format(tue);
         }
 
         public String getWedString() {
-            return nf.format(mon);
+            return nf.format(wed);
         }
 
         public String getThuString() {
-            return nf.format(mon);
+            return nf.format(thu);
         }
 
         public String getFriString() {
-            return nf.format(mon);
+            return nf.format(fri);
         }
 
         public String getSatString() {
-            return nf.format(mon);
+            return nf.format(sat);
         }
 
         public String getSunString() {
-            return nf.format(mon);
+            return nf.format(sun);
+        }
+
+        public double sum() {
+            return mon + tue + wed + thu + fri + sat + sun;
         }
 
         public void addWeekItem(WeekItem weekItem) {
