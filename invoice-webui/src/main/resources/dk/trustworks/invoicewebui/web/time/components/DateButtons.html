@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-horizontal-layout spacing="false" size-full>
+   <vaadin-button plain-text _id="btnWeekNumberDecr" :middle :center>
+     &lt; 
+   </vaadin-button>
+   <vaadin-text-field style-name="floating" width="45px" value="43" _id="txtWeekNumber" :middle :center></vaadin-text-field>
+   <vaadin-button plain-text _id="btnWeekNumberIncr" :middle :center>
+     &gt; 
+   </vaadin-button>
+   <vaadin-label width="20px" plain-text></vaadin-label>
+   <vaadin-combo-box style-name="floating" width-full data-item-type="dk.trustworks.invoicewebui.model.User" data-property-id="username" _id="selActiveUser" :middle :center :expand></vaadin-combo-box>
+   <vaadin-label visible="false" width="20px" plain-text></vaadin-label>
+   <vaadin-button visible="false" width="130px" plain-text :middle :center>
+     COPY WEEK 
+   </vaadin-button>
+   <vaadin-button visible="false" width="130px" plain-text :middle :center>
+     ADD TASK 
+   </vaadin-button>
+  </vaadin-horizontal-layout>
+ </body>
+</html>

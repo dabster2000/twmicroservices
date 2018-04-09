@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.web.time.model;
 
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
+import org.joda.time.LocalDate;
 
 /**
  * Created by hans on 16/08/2017.
@@ -19,6 +20,7 @@ public class WeekItem {
     private String sat = "0,0";
     private String sun = "0,0";
     private double budgetleft;
+    private LocalDate date;
 
     public WeekItem() {
     }
@@ -114,6 +116,14 @@ public class WeekItem {
 
     public void setBudgetleft(double budgetleft) {
         this.budgetleft = budgetleft;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     @Override
