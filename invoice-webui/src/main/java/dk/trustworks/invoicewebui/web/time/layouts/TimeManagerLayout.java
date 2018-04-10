@@ -12,6 +12,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.TimeService;
@@ -30,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.label.MLabel;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -206,14 +206,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
         });
     }
 
-    @PostConstruct
-    private void init() {
+    public ResponsiveLayout init() {
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         System.out.println("userSession = " + userSession);
 
-        if(userSession == null) return;
+        if(userSession == null) return new ResponsiveLayout();
 
-        List<User> users = userRepository.findByActiveTrue();
+        List<User> users = userRepository.findByActiveTrueOrderByUsername();
         dateButtons.getSelActiveUser().setItemCaptionGenerator(User::getUsername);
         dateButtons.getSelActiveUser().setItems(users);
         // find userSession user
@@ -231,6 +230,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withOffset(DisplaySize.MD, 1)
                 .withComponent(responsiveLayout);
         //card.getCardHolder().addComponent(responsiveLayout);
+        return this;
     }
 
     private void loadTimeview(User user) {
@@ -354,13 +354,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private void createFooterRow() {
-        MTextField txtMon = new MTextField().withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true);
-        MTextField txtTue = new MTextField().withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true);
-        MTextField txtWed = new MTextField().withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true);
-        MTextField txtThu = new MTextField().withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true);
-        MTextField txtFri = new MTextField().withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true);
-        MTextField txtSat = new MTextField().withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true);
-        MTextField txtSun = new MTextField().withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true);
+        MTextField txtMon = getFloatingTextField();
+        MTextField txtTue = getFloatingTextField();
+        MTextField txtWed = getFloatingTextField();
+        MTextField txtThu = getFloatingTextField();
+        MTextField txtFri = getFloatingTextField();
+        MTextField txtSat = getFloatingTextField();
+        MTextField txtSun = getFloatingTextField();
         weekValuesBinder.bind(txtMon, WeekValues::getMonString, null);
         weekValuesBinder.bind(txtTue, WeekValues::getTueString, null);
         weekValuesBinder.bind(txtWed, WeekValues::getWedString, null);
@@ -379,38 +379,32 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(footerButtons, ResponsiveColumn.ColumnComponentAlignment.LEFT);
+        createFooterSumField(txtMon, footerRow);
+        createFooterSumField(txtTue, footerRow);
+        createFooterSumField(txtWed, footerRow);
+        createFooterSumField(txtThu, footerRow);
+        createFooterSumField(txtFri, footerRow);
+        createFooterSumField(txtSat, footerRow);
+        createFooterSumField(txtSun, footerRow);
+        createFooterSumField(new MTextField(null,sumHours+"")
+                .withWidth(100, Unit.PERCENTAGE)
+                .withStyleName(ValoTheme.TEXTAREA_ALIGN_RIGHT)
+                .withStyleName("borderless")
+                .withReadOnly(true), footerRow);
+    }
+
+    private void createFooterSumField(MTextField txtDayField, ResponsiveRow footerRow) {
         footerRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(txtMon, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
-                .withDisplayRules(12, 12, 1, 1)
-                .withComponent(txtTue, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
-                .withDisplayRules(12, 12, 1, 1)
-                .withComponent(txtWed, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
-                .withDisplayRules(12, 12, 1, 1)
-                .withComponent(txtThu, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
-                .withDisplayRules(12, 12, 1, 1)
-                .withComponent(txtFri, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
-                .withDisplayRules(12, 12, 1, 1)
-                .withComponent(txtSat, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
-                .withDisplayRules(12, 12, 1, 1)
-                .withComponent(txtSun, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
-                .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MTextField(null,sumHours+"").withWidth(100, Unit.PERCENTAGE).withStyleName("floating").withReadOnly(true), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(txtDayField, ResponsiveColumn.ColumnComponentAlignment.CENTER);
+    }
+
+    private MTextField getFloatingTextField() {
+        return new MTextField().withWidth(100, Unit.PERCENTAGE)
+                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                .withStyleName("borderless")
+                .withReadOnly(true);
     }
 
     private void createTimeline(WeekItem weekItem) {
@@ -446,6 +440,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
+                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
@@ -454,6 +449,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
+                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
@@ -462,6 +458,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
+                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
@@ -470,6 +467,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
+                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
@@ -478,6 +476,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
+                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
@@ -486,6 +485,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
+                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
@@ -494,6 +494,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     updateSums();
                 })
                         .withWidth(100, Unit.PERCENTAGE)
+                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating"));
         time1Row.addColumn()
                 .withVisibilityRules(false, false, true, true)
@@ -505,6 +506,14 @@ public class TimeManagerLayout extends ResponsiveLayout {
         double weekDaySumDelta = 0.0;
         LocalDate workDate = weekItem.getDate().plusDays(day);
         try {
+            if (event.getValue().trim().equals("")) {
+                saveWork(weekItem, event, workDate);
+                return -nf.parse(event.getOldValue()).doubleValue();
+            }
+        } catch (ParseException e) {
+            log.warn("Gammel værdi var ikke et tal: "+event.getOldValue());
+        }
+        try {
             weekDaySumDelta -= nf.parse(event.getOldValue()).doubleValue();
         } catch (ParseException e) {
             log.warn("Gammel værdi var ikke et tal: "+event.getOldValue());
@@ -515,14 +524,19 @@ public class TimeManagerLayout extends ResponsiveLayout {
             log.warn("Ny værdi er ikke et tal: "+event.getValue());
             return weekDaySumDelta;
         }
-        try {
-            Work work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), nf.parse(event.getValue()).doubleValue(), weekItem.getUser(), weekItem.getTask());
-            event.getSource().setValue(nf.format(work.getWorkduration()));
-            workRepository.save(work);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        saveWork(weekItem, event, workDate);
         return weekDaySumDelta;
+    }
+
+    private void saveWork(WeekItem weekItem, HasValue.ValueChangeEvent<String> event, LocalDate workDate) {
+        try {
+            double newValue = event.getValue().equals("")?0.0:nf.parse(event.getValue()).doubleValue();
+            Work work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask());
+            workRepository.save(work);
+            if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));
+        } catch (ParseException e) {
+            log.error("Could not save work for weekItem " + weekItem, e);
+        }
     }
 
     private void updateSums() {

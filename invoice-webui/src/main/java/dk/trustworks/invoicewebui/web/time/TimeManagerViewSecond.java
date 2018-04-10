@@ -50,7 +50,7 @@ public class TimeManagerViewSecond extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        mainTemplate.setMainContent(timeManager, VIEW_ICON, MENU_NAME, "You are probably doing this late...", VIEW_BREADCRUMB);
+        mainTemplate.setMainContent(timeManager.init(), VIEW_ICON, MENU_NAME, "You are probably doing this late...", VIEW_BREADCRUMB);
         //mainTemplate.setMainContent(timeCard.init(), VIEW_ICON, MENU_NAME, "You are probably doing this late...", VIEW_BREADCRUMB);
     }
 

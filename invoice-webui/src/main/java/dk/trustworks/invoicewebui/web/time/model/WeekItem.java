@@ -128,17 +128,19 @@ public class WeekItem {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("WeekItem{");
-        sb.append(", taskname='").append(taskname).append('\'');
-        sb.append(", mon='").append(mon).append('\'');
-        sb.append(", tue='").append(tue).append('\'');
-        sb.append(", wed='").append(wed).append('\'');
-        sb.append(", thu='").append(thu).append('\'');
-        sb.append(", fri='").append(fri).append('\'');
-        sb.append(", sat='").append(sat).append('\'');
-        sb.append(", sun='").append(sun).append('\'');
-        sb.append(", budgetleft=").append(budgetleft);
-        sb.append('}');
-        return sb.toString();
+        return "WeekItem{" +
+                "task=" + task +
+                ", user=" + user.getUsername() +
+                ", taskname='" + taskname + '\'' +
+                ", mon='" + mon + '\'' +
+                ", tue='" + tue + '\'' +
+                ", wed='" + wed + '\'' +
+                ", thu='" + thu + '\'' +
+                ", fri='" + fri + '\'' +
+                ", sat='" + sat + '\'' +
+                ", sun='" + sun + '\'' +
+                ", budgetleft=" + budgetleft +
+                ", date=" + date +
+                '}';
     }
 }
