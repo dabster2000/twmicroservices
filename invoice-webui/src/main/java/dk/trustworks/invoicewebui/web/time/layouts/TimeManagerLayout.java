@@ -376,7 +376,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withStyleName("card-1");
 
         footerRow.addColumn()
-                .withVisibilityRules(false, false, true, true)
+                .withVisibilityRules(true, true, true, true)
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(footerButtons, ResponsiveColumn.ColumnComponentAlignment.LEFT);
         createFooterSumField(txtMon, footerRow);
