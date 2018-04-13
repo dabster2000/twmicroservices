@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Created by hans on 12/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.USER})
+@AccessRules(roleTypes = {RoleType.USER, RoleType.EXTERNAL})
 @SpringView(name = DashboardView.VIEW_NAME)
 public class DashboardView extends VerticalLayout implements View {
 
