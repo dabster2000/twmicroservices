@@ -162,8 +162,21 @@ $v-focus-color: #00BCD4;
     -webkit-border-image: none;
   }
 
-  .v-textfield-center{
-    text-align:center;
+  .v-caption-mystyle
+  {
+    display: inline;
+    color: green;
+  }
+
+  .v-caption-mystyle[width-range~="0-300px"] {
+    color: red;
+  }
+
+  .v-caption-mystyle[width-range~="301px-600px"] {
+    color: blue;
+  }
+  .v-caption-mystyle[width-range~="601px-"] {
+    color: yellow;
   }
 
   //rgba(255, 255, 255, 0.5);

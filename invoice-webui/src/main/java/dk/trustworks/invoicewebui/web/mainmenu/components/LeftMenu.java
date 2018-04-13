@@ -23,7 +23,6 @@ import dk.trustworks.invoicewebui.web.resourceplanning.ResourcePlanningView;
 import dk.trustworks.invoicewebui.web.stats.StatsManagerView;
 import dk.trustworks.invoicewebui.web.stats.TrustworksStatsView;
 import dk.trustworks.invoicewebui.web.time.ReportView;
-import dk.trustworks.invoicewebui.web.time.TimeManagerView;
 import dk.trustworks.invoicewebui.web.time.TimeManagerViewSecond;
 import dk.trustworks.invoicewebui.web.trips.TripsView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,13 +89,13 @@ public class LeftMenu extends ResponsiveRow {
         MenuItemContainer projects = new MenuItemContainer(order++).createItem(ProjectManagerView.MENU_NAME, false, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ProjectManagerView.VIEW_NAME, projects);
 
-        MenuItemContainer timemanager = new MenuItemContainer(order++).createItem("TimeManager ---", true, null, null, false, RoleType.USER);
+        MenuItemContainer timemanager = new MenuItemContainer(order++).createItem("TimeManager ---", true, null, null, false, RoleType.USER, RoleType.EXTERNAL);
         menuItems.put("timemanager", timemanager);
-        MenuItemContainer time = new MenuItemContainer(order++).createItem(TimeManagerView.MENU_NAME, false, TimeManagerView.VIEW_ICON, TimeManagerView.VIEW_NAME, false, RoleType.USER);
-        menuItems.put(TimeManagerView.VIEW_NAME, time);
-        MenuItemContainer timeBeta = new MenuItemContainer(order++).createItem(TimeManagerViewSecond.MENU_NAME, false, TimeManagerViewSecond.VIEW_ICON, TimeManagerViewSecond.VIEW_NAME, false, RoleType.USER);
+        //MenuItemContainer time = new MenuItemContainer(order++).createItem(TimeManagerView.MENU_NAME, false, TimeManagerView.VIEW_ICON, TimeManagerView.VIEW_NAME, false, RoleType.USER, RoleType.EXTERNAL);
+        //menuItems.put(TimeManagerView.VIEW_NAME, time);
+        MenuItemContainer timeBeta = new MenuItemContainer(order++).createItem(TimeManagerViewSecond.MENU_NAME, false, TimeManagerViewSecond.VIEW_ICON, TimeManagerViewSecond.VIEW_NAME, false, RoleType.USER, RoleType.EXTERNAL);
         menuItems.put(TimeManagerViewSecond.VIEW_NAME, timeBeta);
-        MenuItemContainer reportView = new MenuItemContainer(order++).createItem(ReportView.MENU_NAME, false, ReportView.VIEW_ICON, ReportView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.USER);
+        MenuItemContainer reportView = new MenuItemContainer(order++).createItem(ReportView.MENU_NAME, false, ReportView.VIEW_ICON, ReportView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.USER, RoleType.EXTERNAL);
         menuItems.put(ReportView.VIEW_NAME, reportView);
 
 

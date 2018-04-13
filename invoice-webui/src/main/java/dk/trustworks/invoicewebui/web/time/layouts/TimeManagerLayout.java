@@ -6,6 +6,7 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
+import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -433,15 +434,17 @@ public class TimeManagerLayout extends ResponsiveLayout {
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(taskTitle, ResponsiveColumn.ColumnComponentAlignment.LEFT);
+        MTextField mTextField = new MTextField(null, weekItem.getMon(), event -> {
+            weekDaySums.mon += updateTimefield(weekItem, 0, event);
+            updateSums();
+        })
+                .withWidth(100, Unit.PERCENTAGE)
+                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER, "floating");
+        Responsive.makeResponsive(mTextField);
+
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(new MTextField(null, weekItem.getMon(), event -> {
-                    weekDaySums.mon += updateTimefield(weekItem, 0, event);
-                    updateSums();
-                })
-                        .withWidth(100, Unit.PERCENTAGE)
-                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating"));
+                .withComponent(mTextField);
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(new MTextField(null, weekItem.getTue(), event -> {

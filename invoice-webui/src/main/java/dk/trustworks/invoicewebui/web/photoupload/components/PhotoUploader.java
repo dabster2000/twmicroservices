@@ -87,14 +87,16 @@ public class PhotoUploader {
         editedImage.addClickListener(event -> setupUploadStep());
 
         Photo photo = photoRepository.findByRelateduuid(uuid);
+        System.out.println("startStep = " + startStep);
         if(photo!=null && photo.getPhoto().length > 0 && startStep.equals(Step.PHOTO)) {
             editedImage.setSource(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()),
                     "photo-" + System.currentTimeMillis() + ".jpg"));
             setupFinalStep();
-        } else if(startStep.equals(Step.UPLOAD)) {
+        } else {
             setupUploadStep();
         }
+
         return vlContainer;
     }
 

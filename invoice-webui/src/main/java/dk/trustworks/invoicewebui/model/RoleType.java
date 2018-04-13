@@ -5,6 +5,6 @@ package dk.trustworks.invoicewebui.model;
  */
 public enum RoleType {
 
-    USER, EDITOR, CXO, SALES, ACCOUNTING, PARTNER, ADMIN
+    USER, EXTERNAL, EDITOR, CXO, SALES, ACCOUNTING, PARTNER, ADMIN
 
 }
