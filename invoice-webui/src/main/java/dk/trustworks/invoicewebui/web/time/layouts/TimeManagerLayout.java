@@ -369,7 +369,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
         weekValuesBinder.bind(txtFri, WeekValues::getFriString, null);
         weekValuesBinder.bind(txtSat, WeekValues::getSatString, null);
         weekValuesBinder.bind(txtSun, WeekValues::getSunString, null);
-        weekValuesBinder.readBean(weekDaySums);
 
         ResponsiveRow footerRow = responsiveLayout.addRow()
                 .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL,true)
@@ -387,11 +386,22 @@ public class TimeManagerLayout extends ResponsiveLayout {
         createFooterSumField(txtFri, footerRow);
         createFooterSumField(txtSat, footerRow);
         createFooterSumField(txtSun, footerRow);
-        createFooterSumField(new MTextField(null,sumHours+"")
+        footerRow.addColumn().withDisplayRules(1, 1, 1, 1).withVisibilityRules(false, false, true,true);
+
+        ResponsiveRow sumRow = responsiveLayout.addRow();
+        sumRow.addColumn().withDisplayRules(12, 12, 9, 9).withVisibilityRules(false, false, true, true);
+        MTextField sumTextField = new MTextField("total", sumHours + "")
                 .withWidth(100, Unit.PERCENTAGE)
                 .withStyleName(ValoTheme.TEXTAREA_ALIGN_RIGHT)
                 .withStyleName("borderless")
-                .withReadOnly(true), footerRow);
+                .withReadOnly(true);
+        weekValuesBinder.bind(sumTextField, WeekValues::sum, null);
+        sumRow.addColumn()
+                .withVisibilityRules(false, false, true, true)
+                .withDisplayRules(12, 12, 2, 2)
+                .withComponent(sumTextField, ResponsiveColumn.ColumnComponentAlignment.CENTER);
+
+        weekValuesBinder.readBean(weekDaySums);
     }
 
     private void createFooterSumField(MTextField txtDayField, ResponsiveRow footerRow) {
@@ -544,7 +554,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void updateSums() {
         weekValuesBinder.readBean(weekDaySums);
-        sumHours = weekDaySums.sum();
+        //sumHours = weekDaySums.sum();
     }
 
     private class WeekValues {
@@ -623,8 +633,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
             return nf.format(sun);
         }
 
-        public double sum() {
-            return mon + tue + wed + thu + fri + sat + sun;
+        public String sum() {
+            return nf.format(mon + tue + wed + thu + fri + sat + sun);
         }
 
         public void addWeekItem(WeekItem weekItem) {
