@@ -60,7 +60,7 @@ public class CountEmployeesJob {
     public void init() {
         countEmployees();
         try {
-            //workGraph();
+            workGraph();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -194,13 +194,13 @@ public class CountEmployeesJob {
 
         // forecast for 12 units (months) beyond the end of the
         // training data
-        List<List<NumericPrediction>> forecast = forecaster.forecast(730, System.out);
+        List<List<NumericPrediction>> forecast = forecaster.forecast(365, System.out);
 
         // output the predictions. Outer list is over the steps; inner list is over
         // the targets
 
         double sum = 0.0;
-        for (int i = 0; i < 730; i++) {
+        for (int i = 0; i < 365; i++) {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();

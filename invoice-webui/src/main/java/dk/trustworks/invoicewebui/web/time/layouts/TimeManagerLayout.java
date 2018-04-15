@@ -388,12 +388,10 @@ public class TimeManagerLayout extends ResponsiveLayout {
         createFooterSumField(txtSun, footerRow);
         footerRow.addColumn().withDisplayRules(1, 1, 1, 1).withVisibilityRules(false, false, true,true);
 
-        ResponsiveRow sumRow = responsiveLayout.addRow();
+        ResponsiveRow sumRow = responsiveLayout.addRow().withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true);
         sumRow.addColumn().withDisplayRules(12, 12, 9, 9).withVisibilityRules(false, false, true, true);
-        MTextField sumTextField = new MTextField("total", sumHours + "")
-                .withWidth(100, Unit.PERCENTAGE)
-                .withStyleName(ValoTheme.TEXTAREA_ALIGN_RIGHT)
-                .withStyleName("borderless")
+        MTextField sumTextField = new MTextField("week total:", sumHours + "")
+                .withStyleName("floating")
                 .withReadOnly(true);
         weekValuesBinder.bind(sumTextField, WeekValues::sum, null);
         sumRow.addColumn()
