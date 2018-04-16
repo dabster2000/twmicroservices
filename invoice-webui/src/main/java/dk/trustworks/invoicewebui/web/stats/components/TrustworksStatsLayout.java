@@ -133,12 +133,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
         consultantHoursPerMonth.getContent().addComponent(consultantHoursPerMonthChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
         notification.setDescription("4 out of 7 charts created!");
 
-/*
         Card cumulativePredictiveRevenuePerMonthCard = new Card();
         cumulativePredictiveRevenuePerMonthCard.getLblTitle().setValue("Cumulative Predicted Revenue");
         cumulativePredictiveRevenuePerMonthCard.getContent().addComponent(cumulativePredictiveRevenuePerMonthChart.createCumulativePredictiveRevenuePerMonthChart());
         notification.setDescription("5 out of 7 charts created!");
-*/
 
         Card cumulativePredictiveRevenuePerYearCard = new Card();
         cumulativePredictiveRevenuePerYearCard.getLblTitle().setValue("Cumulative Predicted Revenue");
@@ -167,11 +165,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(cumulativePredictiveRevenuePerYearCard);
-        /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(cumulativePredictiveRevenuePerMonthCard);
-                */
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(consultantHoursPerMonth);

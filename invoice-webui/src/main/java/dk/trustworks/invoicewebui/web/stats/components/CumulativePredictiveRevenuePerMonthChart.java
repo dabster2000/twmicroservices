@@ -43,7 +43,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
         List<Double> dailyForecast = countEmployeesJob.getDailyForecast();
         LocalDate localDate = countEmployeesJob.getStartDate();
         //Period period = Period.between(countEmployeesJob.getStartDate(), LocalDate.now());
-        int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(localDate, LocalDate.now()))+13;
+        int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(localDate, LocalDate.now()))+30;
         System.out.println("countEmployeesJob.getStartDate() = " + countEmployeesJob.getStartDate());
         System.out.println("period = " + monthsInPeriod);
         String[] categories = new String[monthsInPeriod];
@@ -56,7 +56,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
         for (Double amount : dailyForecast) {
             if(localDate.getMonthValue() != month) {
                 revenueSeries.add(new DataSeriesItem(localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(monthSum)));
-                //System.out.println("localDate.format(DateTimeFormatter.ofPattern(\"MMM-yyyy\")) = " + localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
+                System.out.println("localDate.format(DateTimeFormatter.ofPattern(\"MMM-yyyy\")) = " + localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
                 categories[i++] = localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
                 monthSum = 0.0;
                 month = localDate.getMonthValue();
