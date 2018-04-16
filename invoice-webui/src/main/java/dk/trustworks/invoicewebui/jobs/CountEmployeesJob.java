@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import weka.classifiers.evaluation.NumericPrediction;
-import weka.classifiers.functions.GaussianProcesses;
+import weka.classifiers.functions.SMOreg;
 import weka.classifiers.timeseries.WekaForecaster;
 import weka.core.Instances;
 
@@ -167,7 +167,7 @@ public class CountEmployeesJob {
 
         // default underlying classifier is SMOreg (SVM) - we'll use
         // gaussian processes for regression instead
-        forecaster.setBaseForecaster(new GaussianProcesses());
+        forecaster.setBaseForecaster(new SMOreg());
 
         forecaster.getTSLagMaker().setTimeStampField("timestamp"); // date time stamp
         //forecaster.getTSLagMaker().setMinLag(1);
