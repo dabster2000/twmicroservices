@@ -178,8 +178,6 @@ public class CountEmployeesJob {
         forecaster.getTSLagMaker().setAddDayOfWeek(true);
         forecaster.getTSLagMaker().setAddWeekendIndicator(true);
         forecaster.getTSLagMaker().setAddDayOfMonth(true);
-        forecaster.getTSLagMaker().setAdjustForTrends(true);
-        forecaster.getTSLagMaker().setAdjustForVariance(true);
 
         // add a quarter of the year indicator field
         //forecaster.getTSLagMaker().setAddQuarterOfYear(true);
