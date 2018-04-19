@@ -3,10 +3,8 @@ package dk.trustworks.invoicewebui.jobs;
 import allbegray.slack.SlackClientFactory;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
-import dk.trustworks.invoicewebui.model.StatusType;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserStatus;
-import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.repositories.BudgetRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import org.joda.time.DateTime;
@@ -31,6 +29,9 @@ public class CheckTimeRegistrationJob {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BudgetRepository budgetRepository;
 
     @Value("${halSlackBotToken}")
     private String slackToken;
@@ -73,6 +74,9 @@ public class CheckTimeRegistrationJob {
                 if(work.getUser().getUuid().equals(user.getUuid())) hasWork = true;
             }
             log.info("hasWork = " + hasWork);
+
+            hasWork = budgetRepository.findByMonthAndYearAndUser(dateTime.getMonthOfYear() - 1, dateTime.getYear(), user).stream().filter(e -> e.getBudget() > 0.0).count() == 0;
+
             if(!hasWork) {
                 String[] responses = {
                         "Look "+ user.getFirstname() +", I can see you're really upset about all this work. I honestly think you ought " +
