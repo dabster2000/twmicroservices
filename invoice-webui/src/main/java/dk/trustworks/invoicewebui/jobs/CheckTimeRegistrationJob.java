@@ -75,7 +75,7 @@ public class CheckTimeRegistrationJob {
             }
             log.info("hasWork = " + hasWork);
 
-            hasWork = budgetRepository.findByMonthAndYearAndUser(dateTime.getMonthOfYear() - 1, dateTime.getYear(), user).stream().filter(e -> e.getBudget() > 0.0).count() == 0;
+            hasWork = budgetRepository.findByMonthAndYearAndUseruuid(dateTime.getMonthOfYear() - 1, dateTime.getYear(), user.getUuid()).stream().filter(e -> e.getBudget() > 0.0).count() == 0;
 
             if(!hasWork) {
                 String[] responses = {
