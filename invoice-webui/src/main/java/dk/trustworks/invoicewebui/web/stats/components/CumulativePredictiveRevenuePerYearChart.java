@@ -1,10 +1,8 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Credits;
-import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
@@ -41,11 +39,34 @@ public class CumulativePredictiveRevenuePerYearChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         List<Double> dailyForecast = countEmployeesJob.getDailyForecast();
+        List<Integer> peopleForecast = countEmployeesJob.getPeopleForecast();
         LocalDate localDate = countEmployeesJob.getStartDate();
         int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(localDate, LocalDate.now()))+24;
         System.out.println("countEmployeesJob.getStartDate() = " + countEmployeesJob.getStartDate());
         System.out.println("period = " + monthsInPeriod);
         String[] categories = new String[monthsInPeriod];
+
+        YAxis y1 = new YAxis();
+        Labels labels = new Labels();
+        labels.setFormatter("this.value +' kr'");
+        Style style = new Style();
+        labels.setStyle(style);
+        y1.setLabels(labels);
+        y1.setOpposite(true);
+        AxisTitle title = new AxisTitle("Revenue");
+        y1.setTitle(title);
+        chart.getConfiguration().addyAxis(y1);
+
+        YAxis y2 = new YAxis();
+        y2.setGridLineWidth(0);
+        y2.setTitle(new AxisTitle("People"));
+        style = new Style();
+        labels = new Labels();
+        labels.setFormatter("this.value +' people'");
+        labels.setStyle(style);
+        y2.setLabels(labels);
+        chart.getConfiguration().addyAxis(y2);
+
         DataSeries revenueSeries = new DataSeries("Revenue");
 
         double monthSum = 0.0;
@@ -61,8 +82,24 @@ public class CumulativePredictiveRevenuePerYearChart {
             localDate = localDate.plusDays(1);
         }
 
+        localDate = countEmployeesJob.getStartDate();
+        DataSeries peopleSeries = new DataSeries("People");
+
+        int people = 0;
+        for (Integer amount : peopleForecast) {
+            if(localDate.getMonthValue() == 6) {
+                peopleSeries.add(new DataSeriesItem(createFiscalYearName(localDate.minusYears(1)), amount));
+                people = 0;
+            }
+            //people += amount;
+            localDate = localDate.plusMonths(1);
+        }
+
         chart.getConfiguration().getxAxis().setCategories(categories);
         chart.getConfiguration().addSeries(revenueSeries);
+        chart.getConfiguration().addSeries(peopleSeries);
+        revenueSeries.setyAxis(y1);
+        peopleSeries.setyAxis(y2);
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;

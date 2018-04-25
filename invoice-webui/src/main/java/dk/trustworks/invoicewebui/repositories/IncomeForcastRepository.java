@@ -16,9 +16,9 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "incomeforecast", path="incomeforecast")
 public interface IncomeForcastRepository extends CrudRepository<IncomeForecast, String> {
 
-    List<IncomeForecast> findByCreatedOrderBySortAsc(@Param("created") Date created);
+    List<IncomeForecast> findByCreatedAndItemtypeOrderBySortAsc(@Param("created") Date created, @Param("itemtype") String itemtype);
 
     @Transactional
-    void deleteByCreated(@Param("created") Date created);
+    void deleteByCreatedAndItemtype(@Param("created") Date created, @Param("itemtype") String itemtype);
 
 }

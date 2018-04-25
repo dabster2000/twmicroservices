@@ -14,15 +14,15 @@ public class IncomeForecast {
     private Date created;
     private int sort;
     private double amount;
+    private String itemtype;
 
-    public IncomeForecast() {
-    }
 
-    public IncomeForecast(int sort, double amount) {
+    public IncomeForecast(int sort, double amount, String itemtype) {
         this.uuid = UUID.randomUUID().toString();
         this.created = new Date();
         this.sort = sort;
         this.amount = amount;
+        this.itemtype = itemtype;
     }
 
     public String getUuid() {
@@ -53,6 +53,16 @@ public class IncomeForecast {
         this.amount = amount;
     }
 
+    public void setItemtype(String itemtype) {
+        this.itemtype = itemtype;
+    }
+    public String getItemtype() {
+        return itemtype;
+    }
+
+    public IncomeForecast() {
+    }
+
     @Override
     public String toString() {
         return "IncomeForecast{" +
@@ -60,6 +70,7 @@ public class IncomeForecast {
                 ", created=" + created +
                 ", sort=" + sort +
                 ", amount=" + amount +
+                ", itemtype='" + itemtype + '\'' +
                 '}';
     }
 }

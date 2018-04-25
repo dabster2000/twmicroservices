@@ -16,6 +16,7 @@ import weka.classifiers.evaluation.NumericPrediction;
 import weka.classifiers.functions.GaussianProcesses;
 import weka.classifiers.timeseries.WekaForecaster;
 import weka.core.Instances;
+import weka.filters.supervised.attribute.TSLagMaker;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
@@ -45,6 +46,10 @@ public class CountEmployeesJob {
 
     private final List<Double> dailyForecast;
 
+    private final List <Integer> dailyPeopleForecast;
+
+
+
     @Autowired
     public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkRepository workRepository, TaskworkerconstraintRepository taskworkerconstraintRepository, UserRepository userRepository) {
         this.incomeForcastRepository = incomeForcastRepository;
@@ -54,13 +59,15 @@ public class CountEmployeesJob {
         usersByLocalDate = new HashMap<>();
         startDate = LocalDate.of(2014, 2, 1);
         dailyForecast = new ArrayList<>();
+        dailyPeopleForecast = new ArrayList<>();
     }
 
     @PostConstruct
     public void init() {
         countEmployees();
         try {
-            workGraph();
+            forecastIncome();
+            forecastPeople();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,16 +113,16 @@ public class CountEmployeesJob {
     // http://wiki.pentaho.com/display/DATAMINING/Time+Series+Analysis+and+Forecasting+with+Weka
     @Transactional
     @Scheduled(cron = "0 0 23 * * ?")
-    public void workGraph() throws Exception {
-        log.info("CountEmployeesJob.workGraph");
+    public void forecastIncome() throws Exception {
+        log.info("CountEmployeesJob.forecastIncome");
         LocalDate now = LocalDate.now().minusDays(7);
         dailyForecast.clear();
 
-        incomeForcastRepository.deleteByCreated(Date.valueOf(LocalDate.now()));
+        incomeForcastRepository.deleteByCreatedAndItemtype(Date.valueOf(LocalDate.now()), "INCOME");
 
         String pattern = "yyyy-MM-dd";
         Map<String, Double> workByDate = new HashMap<>();
-        for (Work work : workRepository.findByPeriod("2014-02-01", now.format(DateTimeFormatter.ofPattern(pattern)))) {
+        for (Work work : workRepository.findByPeriod(startDate.format(DateTimeFormatter.ofPattern(pattern)), now.format(DateTimeFormatter.ofPattern(pattern)))) {
             String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay()).format(DateTimeFormatter.ofPattern(pattern));
             if(!workByDate.containsKey(dateString)) {
                 workByDate.put(dateString, new Double(0.0));
@@ -195,20 +202,99 @@ public class CountEmployeesJob {
 
         // forecast for 12 units (months) beyond the end of the
         // training data
-        List<List<NumericPrediction>> forecast = forecaster.forecast(800, System.out);
+        List<List<NumericPrediction>> forecast = forecaster.forecast(1600, System.out);
 
         // output the predictions. Outer list is over the steps; inner list is over
         // the targets
 
         double sum = 0.0;
-        for (int i = 0; i < 800; i++) {
+        for (int i = 0; i < 1600; i++) {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
             //System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
             Double amount = new Double((predForTarget.predicted() < 0.0) ? 0.0 : predForTarget.predicted());
             dailyForecast.add(amount);
-            incomeForcastRepository.save(new IncomeForecast(i, amount));
+            incomeForcastRepository.save(new IncomeForecast(i, amount, "INCOME"));
+        }
+
+        log.debug("dailyForecast.size() = " + dailyForecast.size());
+        log.debug("forecast = " + sum);
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 22 * * ?")
+    public void forecastPeople() throws Exception {
+        log.info("CountEmployeesJob.forecastPeople");
+        LocalDate now = LocalDate.now().minusDays(7);
+        dailyPeopleForecast.clear();
+
+        incomeForcastRepository.deleteByCreatedAndItemtype(Date.valueOf(LocalDate.now()), "PEOPLE");
+
+        String pattern = "yyyy-MM-dd";
+        Map<String, Double> peopleByDate = new HashMap<>();
+
+        log.debug("dailyPeopleForecast.size() = " + dailyPeopleForecast.size());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("@RELATION Timestamps\n");
+        sb.append("\n");
+        sb.append("@ATTRIBUTE timestamp DATE \"yyyy-MM-dd HH:mm:ss\"\n");
+        sb.append("@ATTRIBUTE people  NUMERIC\n");
+        sb.append("\n");
+        sb.append("@DATA\n");
+        LocalDate localDate = startDate;
+        while(localDate.isBefore(now)) {
+            String dateString = localDate.format(DateTimeFormatter.ofPattern(pattern));
+            int consultants = 0;
+            for (User user : getUsersByLocalDate(localDate)) {
+                if(user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).findFirst().get().getAllocation()>0) consultants++;
+            }
+            sb.append(patternizer(dateString)+","+consultants+"\n");
+            dailyPeopleForecast.add(consultants);
+            localDate = localDate.plusMonths(1);
+        }
+
+        System.out.println(sb.toString());
+
+        Instances data = new Instances(new BufferedReader(new StringReader(sb.toString())));
+        if (data.classIndex() == -1)  data.setClassIndex(data.numAttributes() - 1);
+        WekaForecaster forecaster = new WekaForecaster();
+        forecaster.setFieldsToForecast("people");
+        forecaster.setBaseForecaster(new GaussianProcesses());
+        forecaster.getTSLagMaker().setTimeStampField("timestamp"); // date time stamp
+        forecaster.getTSLagMaker().setPeriodicity(TSLagMaker.Periodicity.MONTHLY);
+        forecaster.getTSLagMaker().setAddMonthOfYear(true);
+        forecaster.getTSLagMaker().setAddQuarterOfYear(true);
+
+        // build the model
+        forecaster.buildForecaster(data, System.out);
+
+        // prime the forecaster with enough recent historical data
+        // to cover up to the maximum lag. In our case, we could just supply
+        // the 12 most recent historical instances, as this covers our maximum
+        // lag period
+        forecaster.primeForecaster(data);
+
+        //int daysInCurrentYear = Math.toIntExact(ChronoUnit.DAYS.between(LocalDate.of(now.getYear(), 7, 1), now));
+
+        // forecast for 12 units (months) beyond the end of the
+        // training data
+        List<List<NumericPrediction>> forecast = forecaster.forecast(48, System.out);
+
+        // output the predictions. Outer list is over the steps; inner list is over
+        // the targets
+
+        double sum = 0.0;
+        for (int i = 0; i < 48; i++) {
+            List<NumericPrediction> predsAtStep = forecast.get(i);
+            NumericPrediction predForTarget = predsAtStep.get(0);
+            sum += predForTarget.predicted();
+            //System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
+            Integer amount = new Long((predForTarget.predicted() < 0.0) ? 0 : Math.round(predForTarget.predicted())).intValue();
+            dailyPeopleForecast.add(amount);
+            incomeForcastRepository.save(new IncomeForecast(i, amount, "PEOPLE"));
+            System.out.println("amount = " + amount);
         }
 
         log.debug("dailyForecast.size() = " + dailyForecast.size());
@@ -233,11 +319,22 @@ public class CountEmployeesJob {
 
     public List<Double> getDailyForecast() {
         if(dailyForecast.size() == 0) try {
-            workGraph();
+            log.warn("Daily revenue forecast not run!!!");
+            forecastIncome();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return dailyForecast;
+    }
+
+    public List<Integer> getPeopleForecast() {
+        if(dailyPeopleForecast.size() == 0) try {
+            log.warn("Daily people forecast not run!!!");
+            forecastPeople();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dailyPeopleForecast;
     }
 
     public LocalDate getStartDate() {
