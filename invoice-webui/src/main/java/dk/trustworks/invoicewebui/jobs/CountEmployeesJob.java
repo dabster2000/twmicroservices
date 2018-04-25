@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -198,17 +199,17 @@ public class CountEmployeesJob {
         // lag period
         forecaster.primeForecaster(data);
 
-        //int daysInCurrentYear = Math.toIntExact(ChronoUnit.DAYS.between(LocalDate.of(now.getYear(), 7, 1), now));
-
+        int daysLeftInCurrentYear = Math.toIntExact(ChronoUnit.DAYS.between(now, LocalDate.of((now.getMonthValue()>=7)?now.getYear()+1:now.getYear(), 7, 1)));
+        log.info("daysLeftInCurrentYear: " + daysLeftInCurrentYear);
         // forecast for 12 units (months) beyond the end of the
         // training data
-        List<List<NumericPrediction>> forecast = forecaster.forecast(1200, System.out);
+        List<List<NumericPrediction>> forecast = forecaster.forecast(730+daysLeftInCurrentYear+150, System.out);
 
         // output the predictions. Outer list is over the steps; inner list is over
         // the targets
 
         double sum = 0.0;
-        for (int i = 0; i < 1200; i++) {
+        for (int i = 0; i < 730+daysLeftInCurrentYear+150; i++) {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
@@ -218,7 +219,7 @@ public class CountEmployeesJob {
             incomeForcastRepository.save(new IncomeForecast(i, amount, "INCOME"));
         }
 
-        log.debug("dailyForecast.size() = " + dailyForecast.size());
+        log.info("dailyForecast.size() = " + dailyForecast.size());
         log.debug("forecast = " + sum);
     }
 
