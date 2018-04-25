@@ -202,13 +202,13 @@ public class CountEmployeesJob {
 
         // forecast for 12 units (months) beyond the end of the
         // training data
-        List<List<NumericPrediction>> forecast = forecaster.forecast(1600, System.out);
+        List<List<NumericPrediction>> forecast = forecaster.forecast(1200, System.out);
 
         // output the predictions. Outer list is over the steps; inner list is over
         // the targets
 
         double sum = 0.0;
-        for (int i = 0; i < 1600; i++) {
+        for (int i = 0; i < 1200; i++) {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
