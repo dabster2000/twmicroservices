@@ -182,8 +182,9 @@ public class CountEmployeesJob {
         forecaster.setBaseForecaster(new GaussianProcesses());
 
         forecaster.getTSLagMaker().setTimeStampField("timestamp"); // date time stamp
-        //forecaster.getTSLagMaker().setMinLag(1);
-        //forecaster.getTSLagMaker().setMaxLag(12); // monthly data
+        forecaster.getTSLagMaker().setPeriodicity(TSLagMaker.Periodicity.MONTHLY);
+        forecaster.getTSLagMaker().setMinLag(1);
+        forecaster.getTSLagMaker().setMaxLag(12); // monthly data
 
         // add a month of the year indicator field
         forecaster.getTSLagMaker().setAddMonthOfYear(true);
@@ -272,6 +273,8 @@ public class CountEmployeesJob {
         forecaster.setBaseForecaster(new GaussianProcesses());
         forecaster.getTSLagMaker().setTimeStampField("timestamp"); // date time stamp
         forecaster.getTSLagMaker().setPeriodicity(TSLagMaker.Periodicity.MONTHLY);
+        forecaster.getTSLagMaker().setMinLag(1);
+        forecaster.getTSLagMaker().setMaxLag(12); // monthly data
 
         forecaster.getTSLagMaker().setAddMonthOfYear(true);
         forecaster.getTSLagMaker().setAddNumDaysInMonth(true);
