@@ -24,7 +24,6 @@ import java.io.StringReader;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -124,7 +123,8 @@ public class CountEmployeesJob {
         String pattern = "yyyy-MM-dd";
         Map<String, Double> workByDate = new HashMap<>();
         for (Work work : workRepository.findByPeriod(startDate.format(DateTimeFormatter.ofPattern(pattern)), now.format(DateTimeFormatter.ofPattern(pattern)))) {
-            String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay()).format(DateTimeFormatter.ofPattern(pattern));
+            //String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay()).format(DateTimeFormatter.ofPattern(pattern));
+            String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, 1).format(DateTimeFormatter.ofPattern(pattern));
             if(!workByDate.containsKey(dateString)) {
                 workByDate.put(dateString, new Double(0.0));
             }
@@ -145,6 +145,10 @@ public class CountEmployeesJob {
         sb.append("@DATA\n");
         LocalDate localDate = startDate;
         while(localDate.isBefore(now)) {
+            if(localDate.getDayOfMonth() != 1) {
+                localDate = localDate.plusDays(1);
+                continue;
+            }
             String dateString = localDate.format(DateTimeFormatter.ofPattern(pattern));
             if(workByDate.containsKey(dateString)) {
                 sb.append(patternizer(dateString)+","+workByDate.get(dateString)+"\n");
@@ -157,7 +161,7 @@ public class CountEmployeesJob {
         }
 
         //System.out.println("sb = " + sb);
-        //System.out.println(sb.toString());
+        System.out.println(sb.toString());
         //System.out.println("localDate = " + localDate);
         //System.out.println("dailyForecast.size() = " + dailyForecast.size());
 
@@ -183,9 +187,11 @@ public class CountEmployeesJob {
 
         // add a month of the year indicator field
         forecaster.getTSLagMaker().setAddMonthOfYear(true);
-        forecaster.getTSLagMaker().setAddDayOfWeek(true);
-        forecaster.getTSLagMaker().setAddWeekendIndicator(true);
-        forecaster.getTSLagMaker().setAddDayOfMonth(true);
+        forecaster.getTSLagMaker().setAddNumDaysInMonth(true);
+        forecaster.getTSLagMaker().setAddQuarterOfYear(true);
+        //forecaster.getTSLagMaker().setAddDayOfWeek(true);
+        //forecaster.getTSLagMaker().setAddWeekendIndicator(true);
+        //forecaster.getTSLagMaker().setAddDayOfMonth(true);
 
         // add a quarter of the year indicator field
         //forecaster.getTSLagMaker().setAddQuarterOfYear(true);
@@ -199,21 +205,22 @@ public class CountEmployeesJob {
         // lag period
         forecaster.primeForecaster(data);
 
-        int daysLeftInCurrentYear = Math.toIntExact(ChronoUnit.DAYS.between(now, LocalDate.of((now.getMonthValue()>=7)?now.getYear()+1:now.getYear(), 7, 1)));
+        //int daysLeftInCurrentYear = 1095 + 150 + Math.toIntExact(ChronoUnit.DAYS.between(now, LocalDate.of((now.getMonthValue()>=7)?now.getYear()+1:now.getYear(), 7, 1)));
+        int daysLeftInCurrentYear = 48;
         log.info("daysLeftInCurrentYear: " + daysLeftInCurrentYear);
         // forecast for 12 units (months) beyond the end of the
         // training data
-        List<List<NumericPrediction>> forecast = forecaster.forecast(730+daysLeftInCurrentYear+150, System.out);
+        List<List<NumericPrediction>> forecast = forecaster.forecast(daysLeftInCurrentYear, System.out);
 
         // output the predictions. Outer list is over the steps; inner list is over
         // the targets
 
         double sum = 0.0;
-        for (int i = 0; i < 730+daysLeftInCurrentYear+150; i++) {
+        for (int i = 0; i < daysLeftInCurrentYear; i++) {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
-            //System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
+            System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
             Double amount = new Double((predForTarget.predicted() < 0.0) ? 0.0 : predForTarget.predicted());
             dailyForecast.add(amount);
             incomeForcastRepository.save(new IncomeForecast(i, amount, "INCOME"));
@@ -265,7 +272,9 @@ public class CountEmployeesJob {
         forecaster.setBaseForecaster(new GaussianProcesses());
         forecaster.getTSLagMaker().setTimeStampField("timestamp"); // date time stamp
         forecaster.getTSLagMaker().setPeriodicity(TSLagMaker.Periodicity.MONTHLY);
+
         forecaster.getTSLagMaker().setAddMonthOfYear(true);
+        forecaster.getTSLagMaker().setAddNumDaysInMonth(true);
         forecaster.getTSLagMaker().setAddQuarterOfYear(true);
 
         // build the model

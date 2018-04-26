@@ -79,7 +79,7 @@ public class CumulativePredictiveRevenuePerYearChart {
                 monthSum = 0.0;
             }
             monthSum += amount;
-            localDate = localDate.plusDays(1);
+            localDate = localDate.plusMonths(1);
         }
 
         localDate = countEmployeesJob.getStartDate();

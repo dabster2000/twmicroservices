@@ -43,7 +43,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
         List<Double> dailyForecast = countEmployeesJob.getDailyForecast();
         LocalDate localDate = countEmployeesJob.getStartDate();
         //Period period = Period.between(countEmployeesJob.getStartDate(), LocalDate.now());
-        int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(localDate, LocalDate.now()))+(dailyForecast.size() / 12);
+        int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(localDate, LocalDate.now()))+(dailyForecast.size());
         System.out.println("countEmployeesJob.getStartDate() = " + countEmployeesJob.getStartDate());
         System.out.println("period = " + monthsInPeriod);
         String[] categories = new String[monthsInPeriod];
@@ -62,7 +62,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
                 month = localDate.getMonthValue();
             }
             monthSum += amount;
-            localDate = localDate.plusDays(1);
+            localDate = localDate.plusMonths(1);
         }
 
         chart.getConfiguration().getxAxis().setCategories(categories);
