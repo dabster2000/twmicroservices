@@ -257,8 +257,12 @@ public class CountEmployeesJob {
             String dateString = localDate.format(DateTimeFormatter.ofPattern(pattern));
             int consultants = 0;
             for (User user : getUsersByLocalDate(localDate)) {
-                if(user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).findFirst().get().getAllocation()>0) consultants++;
+                if(user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).findFirst().get().getAllocation()>0) {
+                    consultants++;
+                    System.out.print("" + user.getLastname() + " | ");
+                }
             }
+            System.out.println();
             sb.append(patternizer(dateString)+","+consultants+"\n");
             dailyPeopleForecast.add(consultants);
             localDate = localDate.plusMonths(1);

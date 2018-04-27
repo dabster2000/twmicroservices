@@ -3,7 +3,10 @@ package dk.trustworks.invoicewebui.jobs;
 import allbegray.slack.SlackClientFactory;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.StatusType;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.BudgetRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -13,9 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Logger;
 
 
@@ -37,6 +38,30 @@ public class CheckTimeRegistrationJob {
     private String slackToken;
 
     private SlackWebApiClient halWebApiClient;
+
+    @Scheduled(cron = "0 30 14 * * MON-SUN")
+    public void checkDuplicateEntries() {
+        DateTime dateTime = DateTime.now();
+        Map<String, Work> uniqueWork = new HashMap<>();
+        List<Work> failedWork = new ArrayList<>();
+        for (Work work : workRepository.findByYearAndMonth(dateTime.getYear(), dateTime.getMonthOfYear() - 1)) {
+            String key = work.getUser().getUuid()+""+work.getTask().getUuid()+""+work.getYear()+""+work.getMonth()+""+work.getDay();
+            if(uniqueWork.containsKey(key)) {
+                failedWork.add(work);
+            } else {
+                uniqueWork.put(key, work);
+            }
+        }
+        if(failedWork.size() > 0) {
+            String text = "";
+            for (Work work : failedWork) {
+                text = work.getUser().getUsername() + " duplicate entry " + work.getTask().getName() + " on " + work.getYear() + "." + (work.getMonth()+1) + "." + work.getDay();
+            }
+            ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@hans", text);
+            textMessage3.setAs_user(true);
+            halWebApiClient.postMessage(textMessage3);
+        }
+    }
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
     @Scheduled(cron = "0 30 11 * * MON-FRI")
