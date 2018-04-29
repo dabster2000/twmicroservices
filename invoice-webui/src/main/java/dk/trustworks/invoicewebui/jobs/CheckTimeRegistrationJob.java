@@ -41,6 +41,7 @@ public class CheckTimeRegistrationJob {
 
     @Scheduled(cron = "0 30 19 * * *")
     public void checkDuplicateEntries() {
+        System.out.println("CheckTimeRegistrationJob.checkDuplicateEntries");
         DateTime dateTime = DateTime.now();
         Map<String, Work> uniqueWork = new HashMap<>();
         List<Work> failedWork = new ArrayList<>();
@@ -52,6 +53,7 @@ public class CheckTimeRegistrationJob {
                 uniqueWork.put(key, work);
             }
         }
+        System.out.println("failedWork.size() = " + failedWork.size());
         if(failedWork.size() > 0) {
             String text = "";
             for (Work work : failedWork) {
