@@ -39,7 +39,7 @@ public class CheckTimeRegistrationJob {
 
     private SlackWebApiClient halWebApiClient;
 
-    @Scheduled(cron = "0 30 19 * * *")
+    @Scheduled(cron = "0 20 11 * * MON-FRI")
     public void checkDuplicateEntries() {
         System.out.println("CheckTimeRegistrationJob.checkDuplicateEntries");
         DateTime dateTime = DateTime.now();
