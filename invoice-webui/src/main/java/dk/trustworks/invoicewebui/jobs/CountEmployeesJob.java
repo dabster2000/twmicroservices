@@ -80,7 +80,7 @@ public class CountEmployeesJob {
         for (User user : userRepository.findAll()) {
             LocalDate tryDate = startDate;
             StatusType currentStatus = StatusType.TERMINATED;
-            while(tryDate.isBefore(LocalDate.now().plusMonths(1))) {
+            while(tryDate.isBefore(LocalDate.now().plusMonths(2))) {
                 if(!usersByLocalDate.containsKey(tryDate)) {
                     usersByLocalDate.put(tryDate, new ArrayList<>());
                 }
