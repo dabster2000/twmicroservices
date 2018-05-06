@@ -3,11 +3,8 @@ package dk.trustworks.invoicewebui.web.faq.components;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.jobs.FaqPowerpointPreloader;
 import dk.trustworks.invoicewebui.model.Faq;
@@ -18,9 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.viritin.fields.MTextField;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +79,7 @@ public class FaqCanvas extends VerticalLayout {
         FaqCardDesign faqCard = null;
         List<Faq> faqList = faqRepository.findByOrderByTitleAsc();
 
+        /*
         Map<String, List<String>> imageSlideShows = faqPowerpointPreloader.getImageSlideShows();
         for (String filename : imageSlideShows.keySet()) {
             PhotosFaqCardDesign photosCard = new PhotosFaqCardDesign();
@@ -135,8 +131,9 @@ public class FaqCanvas extends VerticalLayout {
 
             });
         }
+        */
 
-
+        /*
         Map<String, String> pdfs = faqPowerpointPreloader.getPdfs();
         for (String filename : pdfs.keySet()) {
             byte[] specificFile = dropboxAPI.getSpecificBinaryFile(pdfs.get(filename));
@@ -163,8 +160,8 @@ public class FaqCanvas extends VerticalLayout {
                 e.printStackTrace();
             }
         }
-
-
+        */
+        /*
         Map<String, List<byte[]>> slidesShows = faqPowerpointPreloader.getSlidesShows();
         for (String filename : slidesShows.keySet()) {
             PhotosFaqCardDesign photosCard = new PhotosFaqCardDesign();
@@ -187,6 +184,7 @@ public class FaqCanvas extends VerticalLayout {
                 image.setHeight("100%");
             }
         }
+        */
 
         for (Faq faq : faqList) {
             if (!faq.getFaqgroup().equals(group)) {

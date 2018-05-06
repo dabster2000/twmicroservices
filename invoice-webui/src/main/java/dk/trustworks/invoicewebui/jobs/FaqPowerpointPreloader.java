@@ -44,7 +44,7 @@ public class FaqPowerpointPreloader {
 
     private Map<String, List<String>> imageSlideShows = new HashMap<>();
 
-    @Scheduled(cron = "0 1 1 * * ?")
+    //@Scheduled(cron = "0 1 1 * * ?")
     public void loadSlidephotos() {
         List<String> powerpointPaths = dropboxAPI.getFilesInFolder("/Shared/Administration/Intra/faq/img");
         for (String powerpointPath : powerpointPaths) {
