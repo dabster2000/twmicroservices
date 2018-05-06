@@ -190,7 +190,7 @@ public class FaqCanvas extends VerticalLayout {
             if (!faq.getFaqgroup().equals(group)) {
                 faqCard = new FaqCardDesign();
                 ResponsiveColumn cardColumn = cardRow.addColumn()
-                        .withDisplayRules(12, 12, 6, 4)
+                        .withDisplayRules(12, 12, 6, 6)
                         .withComponent(faqCard);
                 cardColumns.put(faq, cardColumn);
             }
