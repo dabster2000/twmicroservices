@@ -9,6 +9,7 @@ import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.web.admin.UserManagerView;
 import dk.trustworks.invoicewebui.web.blockchain.BlockchainView;
+import dk.trustworks.invoicewebui.web.bubbles.BubblesView;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.dashboard.DashboardView;
 import dk.trustworks.invoicewebui.web.economy.ExpenseView;
@@ -98,6 +99,12 @@ public class LeftMenu extends ResponsiveRow {
         MenuItemContainer reportView = new MenuItemContainer(order++).createItem(ReportView.MENU_NAME, false, ReportView.VIEW_ICON, ReportView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.USER, RoleType.EXTERNAL);
         menuItems.put(ReportView.VIEW_NAME, reportView);
 
+        MenuItemContainer knowledge = new MenuItemContainer(order++).createItem("Knowledge ---", true, null, null, false, RoleType.USER);
+        menuItems.put("knowledge", knowledge);
+        MenuItemContainer keynotes = new MenuItemContainer(order++).createItem(KnowledgeView.MENU_NAME, false, KnowledgeView.VIEW_ICON, KnowledgeView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(KnowledgeView.VIEW_NAME, keynotes);
+        MenuItemContainer bubbles = new MenuItemContainer(order++).createItem(BubblesView.MENU_NAME, false, BubblesView.VIEW_ICON, BubblesView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(BubblesView.VIEW_NAME, bubbles);
 
         MenuItemContainer invoice = new MenuItemContainer(order++).createItem("Invoice ---", true, null, null, false, RoleType.ACCOUNTING);
         menuItems.put("Invoice", invoice);
@@ -122,8 +129,6 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("Questions", questions);
         MenuItemContainer faq = new MenuItemContainer(order++).createItem(FaqView.MENU_NAME, false, FaqView.VIEW_ICON, FaqView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(FaqView.VIEW_NAME, faq);
-        MenuItemContainer knowledge = new MenuItemContainer(order++).createItem(KnowledgeView.MENU_NAME, false, KnowledgeView.VIEW_ICON, KnowledgeView.VIEW_NAME, false, RoleType.USER);
-        menuItems.put(KnowledgeView.VIEW_NAME, knowledge);
         MenuItemContainer travel = new MenuItemContainer(order++).createItem(TripsView.MENU_NAME, false, TripsView.VIEW_ICON, TripsView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(TripsView.VIEW_NAME, travel);
 

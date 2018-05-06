@@ -36,9 +36,9 @@ public class KnowledgeView extends VerticalLayout implements View {
     @Autowired
     private KnowledgeCanvas knowledgeCanvas;
 
-    public static final String VIEW_NAME = "knowledge";
-    public static final String MENU_NAME = "KNOWLEDGE";
-    public static final String VIEW_BREADCRUMB = "Knowledge Management";
+    public static final String VIEW_NAME = "keynotes";
+    public static final String MENU_NAME = "KEYNOTES";
+    public static final String VIEW_BREADCRUMB = "Keynote Videos";
     public static final FontIcon VIEW_ICON = MaterialIcons.QUESTION_ANSWER;
 
     @PostConstruct
@@ -47,7 +47,7 @@ public class KnowledgeView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        mainTemplate.setMainContent(knowledgeCanvas.init(), VIEW_ICON, MENU_NAME, "Trustworks Knowledge", VIEW_BREADCRUMB);
+        mainTemplate.setMainContent(knowledgeCanvas.init(), VIEW_ICON, MENU_NAME, "Show It AND Tell It", VIEW_BREADCRUMB);
     }
 
     @Override

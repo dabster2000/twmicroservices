@@ -1,7 +1,11 @@
 package dk.trustworks.invoicewebui.web.bubbles;
 
+import allbegray.slack.SlackClientFactory;
+import allbegray.slack.webapi.SlackWebApiClient;
+import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -18,6 +22,7 @@ import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
@@ -36,8 +41,14 @@ public class BubblesLayout extends VerticalLayout {
 
     private BubbleForm bubbleForm;
 
+    @Value("${motherSlackBotToken}")
+    private String motherSlackToken;
+
+    private SlackWebApiClient motherWebApiClient;
+
     @Autowired
     public BubblesLayout(UserRepository userRepository, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository) {
+        motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
         this.userRepository = userRepository;
         this.photoRepository = photoRepository;
         this.bubbleRepository = bubbleRepository;
@@ -87,8 +98,22 @@ public class BubblesLayout extends VerticalLayout {
                 bubblesDesign.getBtnJoin().setVisible(false);
             }
 
-            bubblesDesign.getBtnEdit().addClickListener(event -> {
-                bubbleForm.editFormAction(bubble);
+            bubblesDesign.getBtnEdit().addClickListener(event -> bubbleForm.editFormAction(bubble));
+            bubblesDesign.getBtnApply().addClickListener(event -> {
+                //bubble.getUser().getSlackusername()
+                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(user.getSlackusername(), "Hi "+bubble.getUser()+", "+user.getUsername()+" would like to join your bubble "+bubble.getName()+"!");
+                applyMessage.setAs_user(true);
+                motherWebApiClient.postMessage(applyMessage);
+            });
+
+            bubblesDesign.getBtnJoin().addClickListener(event -> {
+                bubbleMemberRepository.save(new BubbleMember(user, bubble));
+                Page.getCurrent().reload();
+            });
+
+            bubblesDesign.getBtnLeave().addClickListener(event -> {
+                bubbleMemberRepository.delete(bubbleMemberRepository.findByBubbleAndMember(bubble, user));
+                Page.getCurrent().reload();
             });
 
             if(bubbleMemberRepository.findByBubbleAndMember(bubble, user) != null) {
