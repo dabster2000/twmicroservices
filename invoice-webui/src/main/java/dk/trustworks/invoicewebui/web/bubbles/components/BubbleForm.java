@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.bubbles.components;
 
-import allbegray.slack.type.Channel;
 import allbegray.slack.type.Group;
 import allbegray.slack.webapi.SlackWebApiClient;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
@@ -125,18 +124,18 @@ public class BubbleForm {
         twinColSelect.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
         MButton doneButton = new MButton("Done").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
-            Channel channel = motherWebApiClient.getChannelInfo(prevBubble.getSlackchannel());
+            Group channel = motherWebApiClient.getGroupInfo(prevBubble.getSlackchannel());
             List<String> currentSlackMembers = channel.getMembers();
             List<BubbleMember> currentBubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
             bubbleMemberRepository.delete(currentBubbleMembers);
             List<User> userList = userRepository.findByActiveTrue();
             for (User user : twinColSelect.getSelectedItems()) {
                 bubbleMemberRepository.save(new BubbleMember(user, prevBubble));
-                if(!currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.inviteUserToChannel(channel.getId(), user.getSlackusername());
+                if(!currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.inviteUserToGroup(channel.getId(), user.getSlackusername());
                 userList = userList.stream().filter(user2 -> !user2.getUuid().equals(user.getUuid())).collect(Collectors.toList());
             }
             for (User user : userList) {
-                if(currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.kickUserFromChannel(channel.getId(), user.getSlackusername());
+                if(currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.kickUserFromGroup(channel.getId(), user.getSlackusername());
             }
 
             newBubbleResponsiveLayout.removeAllComponents();
@@ -178,22 +177,16 @@ public class BubbleForm {
         OnOffSwitch active = new OnOffSwitch();
         active.setCaption("Active");
         bubbleBinder.forField(active).bind(Bubble::isActive, Bubble::setActive);
+        /*
         ComboBox<Group> cbSlackChannel = new ComboBox<>();
-        System.out.println("motherWebApiClient = " + motherWebApiClient);
-
-        System.out.println("groups...[");
-        for (Group group : motherWebApiClient.getGroupList()) {
-            System.out.println("group.getName() = " + group.getName());
-        }
-        System.out.println("]");
-
-
-
         cbSlackChannel.setItems(motherWebApiClient.getGroupList(true));
         cbSlackChannel.setItemCaptionGenerator(Group::getName);
         cbSlackChannel.setEmptySelectionAllowed(true);
         cbSlackChannel.setEmptySelectionCaption("new slack channel");
-        bubbleBinder.forField(cbSlackChannel).bind(bubble1 -> motherWebApiClient.getGroupList(true).stream().filter(channel -> channel.getId().equals(bubble1.getSlackchannel())).findFirst().get(), (bubble1, channel) -> bubble1.setSlackchannel(channel.getId()));
+        */
+        TextField slackChannelName = new TextField("Channel name");
+        slackChannelName.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        slackChannelName.setMaxLength(19);
 
         MButton createButton = new MButton((prevBubble==null)?"Blow new bubble!":"Update bubble").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
             try {
@@ -201,10 +194,13 @@ public class BubbleForm {
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
-            if(cbSlackChannel.isEmpty()) {
-                Channel channel = motherWebApiClient.createChannel(bubbleName.getValue());
-                bubble.setSlackchannel(channel.getId());
+            if(prevBubble==null) {
+                Group group = motherWebApiClient.createGroup("b_" + slackChannelName.getValue().trim().toLowerCase());
+                bubble.setSlackchannel(group.getId());
+            } else if(!bubble.isActive()) {
+                motherWebApiClient.archiveGroup(prevBubble.getSlackchannel());
             }
+
             bubbleRepository.save(bubble);
             newBubbleResponsiveLayout.removeAllComponents();
             if(next!=null) next.next(bubble);
@@ -221,13 +217,20 @@ public class BubbleForm {
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(description);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-        formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cbSlackChannel);
-        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        if(prevBubble==null) {
+            formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+            formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(slackChannelName);
+            formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        }
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(createButton);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-
+/*
+        final Optional<Group> optGroup = motherWebApiClient.getGroupList(true).stream().filter(channel -> channel.getId().equals(bubble.getSlackchannel())).findFirst();
+        if(optGroup.isPresent()) {
+            cbSlackChannel.setValue(optGroup.get());
+        }
+        */
         bubbleBinder.readBean(bubble);
     }
 

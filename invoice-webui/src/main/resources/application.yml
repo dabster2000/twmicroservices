@@ -43,6 +43,8 @@ slackIncomingWebhookUrl: https://hooks.slack.com/services/T036JELTL/B1E7W0TJB/jQ
 
 halSlackBotToken: ${HALSLACKBOTTOKEN}
 motherSlackBotToken: ${MOTHERSLACKBOTTOKEN}
+bubbleSlackBotToken: ${BUBBLESLACKBOTTOKEN}
+bubbleSlackBotUserToken: ${BUBBLESLACKBOTUSERTOKEN}
 slackBotToken: ${MOTHERSLACKBOTTOKEN}
 
 vimeoToken: ${VIMEOTOKEN:xx}

@@ -335,7 +335,7 @@
         <dependency>
             <groupId>com.github.allbegray</groupId>
             <artifactId>slack-api</artifactId>
-            <version>v1.5.1.RELEASE</version>
+            <version>v1.6.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>

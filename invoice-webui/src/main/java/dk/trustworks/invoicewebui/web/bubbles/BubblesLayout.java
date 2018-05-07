@@ -42,10 +42,18 @@ public class BubblesLayout extends VerticalLayout {
 
     private BubbleForm bubbleForm;
 
-    @Value("${motherSlackBotToken}")
-    private String motherSlackToken;
+    //@Value("${motherSlackBotToken}")
+    //private String motherSlackToken;
 
-    private SlackWebApiClient motherWebApiClient;
+    @Value("${bubbleSlackBotToken}")
+    private String bubbleSlackToken;
+
+    @Value("${bubbleSlackBotUserToken}")
+    private String bubbleBotUserSlackToken;
+
+    private SlackWebApiClient bubbleWebApiClient;
+
+    private SlackWebApiClient bubbleUserBotClient;
 
     @Autowired
     public BubblesLayout(UserRepository userRepository, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository) {
@@ -58,8 +66,9 @@ public class BubblesLayout extends VerticalLayout {
     @Transactional
     public BubblesLayout init() {
         System.out.println("BubblesLayout.init");
-        motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
-        bubbleForm = new BubbleForm(userRepository, bubbleRepository, bubbleMemberRepository, photoRepository, motherWebApiClient);
+        bubbleWebApiClient = SlackClientFactory.createWebApiClient(bubbleSlackToken);
+        bubbleUserBotClient = SlackClientFactory.createWebApiClient(bubbleBotUserSlackToken);
+        bubbleForm = new BubbleForm(userRepository, bubbleRepository, bubbleMemberRepository, photoRepository, bubbleWebApiClient);
 
         responsiveLayout.removeAllComponents();
         responsiveLayout.addRow(bubbleForm.getNewBubbleButton());
@@ -106,19 +115,27 @@ public class BubblesLayout extends VerticalLayout {
                 //bubble.getUser().getSlackusername()
                 ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(user.getSlackusername(), "Hi "+bubble.getUser().getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
                 applyMessage.setAs_user(true);
-                motherWebApiClient.postMessage(applyMessage);
-                Notification.show("You have now applied for membership. The bubble owner will get bck to you soon!", Notification.Type.ASSISTIVE_NOTIFICATION);
+                bubbleUserBotClient.postMessage(applyMessage);
+                Notification.show("You have now applied for membership. The bubble owner will get back to you soon!", Notification.Type.ASSISTIVE_NOTIFICATION);
             });
 
             bubblesDesign.getBtnJoin().addClickListener(event -> {
                 bubbleMemberRepository.save(new BubbleMember(user, bubble));
-                motherWebApiClient.inviteUserToChannel(motherWebApiClient.getChannelInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
+                try {
+                    bubbleWebApiClient.inviteUserToGroup(bubbleWebApiClient.getGroupInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 Page.getCurrent().reload();
             });
 
             bubblesDesign.getBtnLeave().addClickListener(event -> {
                 bubbleMemberRepository.delete(bubbleMemberRepository.findByBubbleAndMember(bubble, user));
-                motherWebApiClient.kickUserFromChannel(motherWebApiClient.getChannelInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
+                try {
+                    bubbleWebApiClient.kickUserFromGroup(bubbleWebApiClient.getGroupInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 Page.getCurrent().reload();
             });
 
