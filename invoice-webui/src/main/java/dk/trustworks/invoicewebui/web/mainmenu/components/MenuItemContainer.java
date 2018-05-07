@@ -5,8 +5,6 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import dk.trustworks.invoicewebui.model.RoleType;
-import io.sentry.Sentry;
-import io.sentry.event.BreadcrumbBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.label.MLabel;
@@ -74,12 +72,7 @@ public class MenuItemContainer {
                     .withIcon(icon)
                     .withFontStyle("grey-font grey-icon")
                     .setChild(isChild);
-            ((MenuItemImpl)menuItem).addClickListener(event -> {
-                Sentry.getContext().recordBreadcrumb(
-                        new BreadcrumbBuilder().setMessage(nagivateTo).build()
-                );
-                UI.getCurrent().getNavigator().navigateTo(nagivateTo);
-            });
+            ((MenuItemImpl)menuItem).addClickListener(event -> UI.getCurrent().getNavigator().navigateTo(nagivateTo));
         }
 
         menuItemColumn

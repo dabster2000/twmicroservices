@@ -10,8 +10,6 @@ import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.network.clients.LoginClient;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import io.sentry.Sentry;
-import io.sentry.event.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.Cookie;
@@ -45,9 +43,6 @@ public class LoginImpl extends LoginDesign {
                 return;
             }
             UserSession userSession = new UserSession(user, user.getRoleList());
-            Sentry.getContext().setUser(
-                    new UserBuilder().setId(user.getUuid()).setUsername(user.getUsername()).setEmail(user.getEmail()).build()
-            );
             VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
             Cookie newCookie = new Cookie(NAME_COOKIE, user.getUuid());
             newCookie.setMaxAge(2592000);

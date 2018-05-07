@@ -15,8 +15,8 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.TrustworksEventRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.EmailSender;
@@ -67,7 +67,7 @@ public class DashboardView extends VerticalLayout implements View {
     private MainTemplate mainTemplate;
 
     @Autowired
-    private TrustworksEventRepository trustworksEventRepository;
+    private BubbleRepository bubbleRepository;
 
     @Autowired
     private NewsRepository newsRepository;
@@ -104,6 +104,7 @@ public class DashboardView extends VerticalLayout implements View {
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
+        BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, 1, 6, "bubblesCard");
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 
         //projectTimeline.init();
@@ -135,6 +136,7 @@ public class DashboardView extends VerticalLayout implements View {
         //boxes.add(birthdayCard);
         boxes.add(newsCard);
         boxes.add(photoCard);
+        boxes.add(bubblesCardDesign);
         //boxes.add(locationCardDesign);
         boxes.add(cateringCard);
         boxes.add(monthNewsCardDesign);
@@ -161,14 +163,15 @@ public class DashboardView extends VerticalLayout implements View {
         //ResponsiveRow row1 = board.addRow().withGrow(true);
         //row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(newsCard);
         row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(photoCard);
+        row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(bubblesCardDesign);
 
         ResponsiveRow row2 = mainLayout.addRow().withGrow(true);
         row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthNewsCardDesign);
         row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(tripVideosCardDesign);
 
         ResponsiveRow row3 = mainLayout.addRow().withGrow(true);
-        row3.addColumn().withDisplayRules(12, 12, 6, 4).withComponent(cateringCard);
-        row3.addColumn().withDisplayRules(12, 12, 6, 4).withComponent(dnaCard);
+        row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
+        row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
     }

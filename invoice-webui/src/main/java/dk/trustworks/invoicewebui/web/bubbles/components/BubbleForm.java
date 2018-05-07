@@ -1,5 +1,8 @@
 package dk.trustworks.invoicewebui.web.bubbles.components;
 
+import allbegray.slack.type.Channel;
+import allbegray.slack.type.Group;
+import allbegray.slack.webapi.SlackWebApiClient;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
@@ -21,6 +24,7 @@ import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BubbleForm {
 
@@ -28,6 +32,8 @@ public class BubbleForm {
     private final BubbleRepository bubbleRepository;
     private final BubbleMemberRepository bubbleMemberRepository;
     private final PhotoRepository photoRepository;
+
+    private SlackWebApiClient motherWebApiClient;
 
     private final ResponsiveRow newBubbleDialogRow;
 
@@ -39,11 +45,13 @@ public class BubbleForm {
 
     private Binder<Bubble> bubbleBinder = new Binder<>();
 
-    public BubbleForm(UserRepository userRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoRepository photoRepository) {
+    public BubbleForm(UserRepository userRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoRepository photoRepository, SlackWebApiClient motherWebApiClient) {
         this.userRepository = userRepository;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.photoRepository = photoRepository;
+        System.out.println("motherWebApiClient = " + motherWebApiClient);
+        this.motherWebApiClient = motherWebApiClient;
         newBubbleDialogRow = getDialogRow(newBubbleResponsiveLayout);
     }
 
@@ -52,6 +60,7 @@ public class BubbleForm {
     }
 
     public ResponsiveRow getNewBubbleButton() {
+        System.out.println("BubbleForm.getNewBubbleButton");
         ResponsiveRow row = new ResponsiveRow();
         row.addColumn()
                 .withOffset(ResponsiveLayout.DisplaySize.MD, 10)
@@ -116,10 +125,20 @@ public class BubbleForm {
         twinColSelect.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
         MButton doneButton = new MButton("Done").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
-            bubbleMemberRepository.delete(bubbleMemberRepository.findByBubble(prevBubble));
+            Channel channel = motherWebApiClient.getChannelInfo(prevBubble.getSlackchannel());
+            List<String> currentSlackMembers = channel.getMembers();
+            List<BubbleMember> currentBubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
+            bubbleMemberRepository.delete(currentBubbleMembers);
+            List<User> userList = userRepository.findByActiveTrue();
             for (User user : twinColSelect.getSelectedItems()) {
                 bubbleMemberRepository.save(new BubbleMember(user, prevBubble));
+                if(!currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.inviteUserToChannel(channel.getId(), user.getSlackusername());
+                userList = userList.stream().filter(user2 -> !user2.getUuid().equals(user.getUuid())).collect(Collectors.toList());
             }
+            for (User user : userList) {
+                if(currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.kickUserFromChannel(channel.getId(), user.getSlackusername());
+            }
+
             newBubbleResponsiveLayout.removeAllComponents();
             if(next!=null) next.next(prevBubble);
         });
@@ -132,6 +151,7 @@ public class BubbleForm {
     }
 
     private void createFormRow(final Bubble prevBubble, Next next) {
+        System.out.println("BubbleForm.createFormRow");
         newBubbleResponsiveLayout.removeAllComponents();
         final Bubble bubble = (prevBubble != null)?prevBubble:new Bubble();
 
@@ -158,11 +178,32 @@ public class BubbleForm {
         OnOffSwitch active = new OnOffSwitch();
         active.setCaption("Active");
         bubbleBinder.forField(active).bind(Bubble::isActive, Bubble::setActive);
+        ComboBox<Group> cbSlackChannel = new ComboBox<>();
+        System.out.println("motherWebApiClient = " + motherWebApiClient);
+
+        System.out.println("groups...[");
+        for (Group group : motherWebApiClient.getGroupList()) {
+            System.out.println("group.getName() = " + group.getName());
+        }
+        System.out.println("]");
+
+
+
+        cbSlackChannel.setItems(motherWebApiClient.getGroupList(true));
+        cbSlackChannel.setItemCaptionGenerator(Group::getName);
+        cbSlackChannel.setEmptySelectionAllowed(true);
+        cbSlackChannel.setEmptySelectionCaption("new slack channel");
+        bubbleBinder.forField(cbSlackChannel).bind(bubble1 -> motherWebApiClient.getGroupList(true).stream().filter(channel -> channel.getId().equals(bubble1.getSlackchannel())).findFirst().get(), (bubble1, channel) -> bubble1.setSlackchannel(channel.getId()));
+
         MButton createButton = new MButton((prevBubble==null)?"Blow new bubble!":"Update bubble").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
             try {
                 bubbleBinder.writeBean(bubble);
             } catch (ValidationException e) {
                 e.printStackTrace();
+            }
+            if(cbSlackChannel.isEmpty()) {
+                Channel channel = motherWebApiClient.createChannel(bubbleName.getValue());
+                bubble.setSlackchannel(channel.getId());
             }
             bubbleRepository.save(bubble);
             newBubbleResponsiveLayout.removeAllComponents();
@@ -179,6 +220,9 @@ public class BubbleForm {
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(description);
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cbSlackChannel);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(createButton);

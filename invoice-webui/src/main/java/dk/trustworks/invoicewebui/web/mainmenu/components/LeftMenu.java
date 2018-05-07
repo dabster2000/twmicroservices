@@ -104,7 +104,7 @@ public class LeftMenu extends ResponsiveRow {
         MenuItemContainer keynotes = new MenuItemContainer(order++).createItem(KnowledgeView.MENU_NAME, false, KnowledgeView.VIEW_ICON, KnowledgeView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(KnowledgeView.VIEW_NAME, keynotes);
         MenuItemContainer bubbles = new MenuItemContainer(order++).createItem(BubblesView.MENU_NAME, false, BubblesView.VIEW_ICON, BubblesView.VIEW_NAME, false, RoleType.USER);
-        menuItems.put(BubblesView.VIEW_NAME, bubbles);
+        //menuItems.put(BubblesView.VIEW_NAME, bubbles);
 
         MenuItemContainer invoice = new MenuItemContainer(order++).createItem("Invoice ---", true, null, null, false, RoleType.ACCOUNTING);
         menuItems.put("Invoice", invoice);

@@ -18,6 +18,7 @@ public class Bubble {
     private String name;
     private String description;
     private String application;
+    private String slackchannel;
 
     @ManyToOne()
     @JoinColumn(name="owner")
@@ -34,13 +35,14 @@ public class Bubble {
         this.active = true;
     }
 
-    public Bubble(String name, String description, String application, User user, boolean active) {
+    public Bubble(String name, String description, String application, User user, boolean active, String slackchannel) {
         this.uuid = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
         this.application = application;
         this.user = user;
         this.active = active;
+        this.slackchannel = slackchannel;
         this.created = LocalDate.now();
     }
 
@@ -92,6 +94,14 @@ public class Bubble {
         return created;
     }
 
+    public String getSlackchannel() {
+        return slackchannel;
+    }
+
+    public void setSlackchannel(String slackchannel) {
+        this.slackchannel = slackchannel;
+    }
+
     @Override
     public String toString() {
         return "Bubble{" +
@@ -99,7 +109,8 @@ public class Bubble {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", application='" + application + '\'' +
-                ", user=" + user +
+                ", slackchannel='" + slackchannel + '\'' +
+                ", user=" + user.getUsername() +
                 ", active=" + active +
                 ", created=" + created +
                 '}';

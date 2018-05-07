@@ -10,6 +10,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
@@ -48,23 +49,25 @@ public class BubblesLayout extends VerticalLayout {
 
     @Autowired
     public BubblesLayout(UserRepository userRepository, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository) {
-        motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
         this.userRepository = userRepository;
         this.photoRepository = photoRepository;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
+    }
 
-        bubbleForm = new BubbleForm(userRepository, bubbleRepository, bubbleMemberRepository, photoRepository);
+    @Transactional
+    public BubblesLayout init() {
+        System.out.println("BubblesLayout.init");
+        motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
+        bubbleForm = new BubbleForm(userRepository, bubbleRepository, bubbleMemberRepository, photoRepository, motherWebApiClient);
 
+        responsiveLayout.removeAllComponents();
         responsiveLayout.addRow(bubbleForm.getNewBubbleButton());
         responsiveLayout.addRow(bubbleForm.getDialogRow());
 
         bubblesRow = responsiveLayout.addRow();
         this.addComponent(responsiveLayout);
-    }
 
-    @Transactional
-    public BubblesLayout init() {
         loadBubbles();
         return this;
     }
@@ -74,7 +77,7 @@ public class BubblesLayout extends VerticalLayout {
         //User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         User user = userRepository.findByUsername("hans.lassen");
 
-        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrue()) {
+        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreated()) {
             BubblesDesign bubblesDesign = new BubblesDesign();
 
             bubblesDesign.getLblHeading().setValue(bubble.getName());
@@ -101,18 +104,21 @@ public class BubblesLayout extends VerticalLayout {
             bubblesDesign.getBtnEdit().addClickListener(event -> bubbleForm.editFormAction(bubble));
             bubblesDesign.getBtnApply().addClickListener(event -> {
                 //bubble.getUser().getSlackusername()
-                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(user.getSlackusername(), "Hi "+bubble.getUser()+", "+user.getUsername()+" would like to join your bubble "+bubble.getName()+"!");
+                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(user.getSlackusername(), "Hi "+bubble.getUser().getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
                 applyMessage.setAs_user(true);
                 motherWebApiClient.postMessage(applyMessage);
+                Notification.show("You have now applied for membership. The bubble owner will get bck to you soon!", Notification.Type.ASSISTIVE_NOTIFICATION);
             });
 
             bubblesDesign.getBtnJoin().addClickListener(event -> {
                 bubbleMemberRepository.save(new BubbleMember(user, bubble));
+                motherWebApiClient.inviteUserToChannel(motherWebApiClient.getChannelInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
                 Page.getCurrent().reload();
             });
 
             bubblesDesign.getBtnLeave().addClickListener(event -> {
                 bubbleMemberRepository.delete(bubbleMemberRepository.findByBubbleAndMember(bubble, user));
+                motherWebApiClient.kickUserFromChannel(motherWebApiClient.getChannelInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
                 Page.getCurrent().reload();
             });
 

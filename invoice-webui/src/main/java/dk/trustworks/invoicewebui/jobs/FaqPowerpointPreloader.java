@@ -39,7 +39,7 @@ public class FaqPowerpointPreloader {
     public void onStartup() {
         //loadNewPhoto();
         //loadFaqPDFs();
-        loadSlidephotos();
+        //loadSlidephotos();
     }
 
     private Map<String, List<String>> imageSlideShows = new HashMap<>();
