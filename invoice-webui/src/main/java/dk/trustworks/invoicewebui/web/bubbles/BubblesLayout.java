@@ -112,8 +112,7 @@ public class BubblesLayout extends VerticalLayout {
 
             bubblesDesign.getBtnEdit().addClickListener(event -> bubbleForm.editFormAction(bubble));
             bubblesDesign.getBtnApply().addClickListener(event -> {
-                //bubble.getUser().getSlackusername()
-                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(user.getSlackusername(), "Hi "+bubble.getUser().getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
+                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(bubble.getUser().getSlackusername(), "Hi "+bubble.getUser().getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
                 applyMessage.setAs_user(true);
                 bubbleUserBotClient.postMessage(applyMessage);
                 Notification.show("You have now applied for membership. The bubble owner will get back to you soon!", Notification.Type.ASSISTIVE_NOTIFICATION);

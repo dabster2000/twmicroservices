@@ -131,11 +131,22 @@ public class BubbleForm {
             List<User> userList = userRepository.findByActiveTrue();
             for (User user : twinColSelect.getSelectedItems()) {
                 bubbleMemberRepository.save(new BubbleMember(user, prevBubble));
-                if(!currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.inviteUserToGroup(channel.getId(), user.getSlackusername());
+                try {
+                    if (!currentSlackMembers.contains(user.getSlackusername()))
+                        motherWebApiClient.inviteUserToGroup(channel.getId(), user.getSlackusername());
+                } catch (Exception e) {
+                    System.out.println("failed join user.getUsername() = " + user.getUsername());
+                    e.printStackTrace();
+                }
                 userList = userList.stream().filter(user2 -> !user2.getUuid().equals(user.getUuid())).collect(Collectors.toList());
             }
             for (User user : userList) {
-                if(currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.kickUserFromGroup(channel.getId(), user.getSlackusername());
+                try {
+                    if(currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.kickUserFromGroup(channel.getId(), user.getSlackusername());
+                } catch (Exception e) {
+                    System.out.println("failed kick user.getUsername() = " + user.getUsername());
+                    e.printStackTrace();
+                }
             }
 
             newBubbleResponsiveLayout.removeAllComponents();
