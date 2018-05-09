@@ -26,6 +26,7 @@ public class BubblesDesign extends VerticalLayout {
     private Image imgTop;
     private VerticalLayout container;
     private Label lblHeading;
+    private HorizontalLayout gaugeContainer;
     private Button btnEdit;
     private Button btnJoin;
     private Button btnLeave;
@@ -53,6 +54,10 @@ public class BubblesDesign extends VerticalLayout {
 
     public Label getLblHeading() {
         return lblHeading;
+    }
+
+    public HorizontalLayout getGaugeContainer() {
+        return gaugeContainer;
     }
 
     public Button getBtnEdit() {

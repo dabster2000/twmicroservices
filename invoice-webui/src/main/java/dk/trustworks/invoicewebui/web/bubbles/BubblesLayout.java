@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.web.bubbles;
 
 import allbegray.slack.SlackClientFactory;
+import allbegray.slack.type.Message;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
@@ -20,6 +21,7 @@ import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.web.bubbles.components.ActivityGauge;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @SpringComponent
 @SpringUI
@@ -165,6 +173,24 @@ public class BubblesLayout extends VerticalLayout {
             if(bubble.getUser().getUuid().equals(user.getUuid())) {
                 bubblesDesign.getImgTop().addClickListener(event -> bubbleForm.editPhotoAction(bubble));
             }
+
+            Number[] activity = new Number[60];
+            for (int i = 0; i < 60; i++) {
+                activity[i] = 0;
+            }
+
+            for (Message message : bubbleWebApiClient.getGroupHistory(bubble.getSlackchannel(), 100).getMessages()) {
+                System.out.println("message = " + message);
+                if(message.getSubtype()!=null && message.getSubtype().equals("group_join")) continue;
+                Instant epochMilli = Instant.ofEpochMilli(Long.parseLong(message.getTs().split("\\.")[0])*1000L);
+                LocalDate date = LocalDateTime.ofInstant(epochMilli, ZoneOffset.UTC).toLocalDate();
+                System.out.println("DAYS.between(date, LocalDate.now()) = " + DAYS.between(date, LocalDate.now()));
+                if(DAYS.between(date, LocalDate.now())>59) continue;
+                activity[(int)DAYS.between(date, LocalDate.now())] = (activity[(int)DAYS.between(date, LocalDate.now())].intValue() + 1);
+            }
+
+            bubblesDesign.getGaugeContainer().addComponent(ActivityGauge.getChart(activity));
+
             bubblesRow.addColumn().withDisplayRules(12, 12, 6,4).withComponent(bubblesDesign);
         }
     }
