@@ -30,6 +30,7 @@ import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.label.MLabel;
 
@@ -122,6 +123,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         dateButtons.getSelActiveUser().addValueChangeListener(event -> loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get()));
 
+        footerButtons.getBtnCopyWeek().setIcon(MaterialIcons.CONTENT_COPY);
         footerButtons.getBtnCopyWeek().addClickListener(event1 -> {
             log.info("getBtnCopyWeek()");
             timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), dateButtons.getSelActiveUser().getSelectedItem().get());
@@ -129,6 +131,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             //loadData(getSelActiveUser().getSelectedItem().get());
         });
 
+        footerButtons.getBtnEdit().setIcon(MaterialIcons.EDIT);
         footerButtons.getBtnEdit().addClickListener(event -> {
             for (TaskTitle weekRowTaskTitle : weekRowTaskTitles) {
                 weekRowTaskTitle.getImgLogo().setVisible(!weekRowTaskTitle.getImgLogo().isVisible());
@@ -136,6 +139,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             }
         });
 
+        footerButtons.getBtnAddTask().setIcon(MaterialIcons.PLAYLIST_ADD);
         footerButtons.getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
             log.info("getBtnAddTask()");
             final Window window = new Window("Add Task");
@@ -454,6 +458,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         TaskTitle taskTitle = new TaskTitle();
         taskTitle.getTxtProjectname().setValue(projectName);
         taskTitle.getTxtTaskname().setValue(taskName);
+        taskTitle.getBtnDelete().setIcon(MaterialIcons.DELETE);
         taskTitle.getBtnDelete().addClickListener(event -> {
             if(weekItem.getWeekItemSum() > 0.0) {
                 Notification.show("Cannot remove row!", "Cannot remove row as long as you have registered hours on the task this week", Notification.Type.WARNING_MESSAGE);
