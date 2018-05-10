@@ -6,7 +6,10 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
-import com.vaadin.server.*;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -348,41 +351,43 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1, 1)
                 .withOffset(DisplaySize.LG, 4)
                 .withOffset(DisplaySize.MD, 4)
-                .withComponent(getDayNameTitle("MON"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle(0), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(getDayNameTitle("TUE"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle(1), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(getDayNameTitle("WED"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle(2), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(getDayNameTitle("THU"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle(3), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(getDayNameTitle("FRI"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle(4), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(getDayNameTitle("SAT"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle(5), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(getDayNameTitle("SUN"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle(6), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
                 .withComponent(new MLabel("BUDGET").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
     }
 
-    private MVerticalLayout getDayNameTitle(String mon) {
+    private MVerticalLayout getDayNameTitle(int weekDay) {
+        String[] strDays = new String[] { "Mon", "Tue", "Wed", "Thu",
+                "Fri", "Sat", "Sun" };
         return new MVerticalLayout(
-                new MLabel(mon).withStyleName("h5").withHeight(25, Unit.PIXELS),
-                new MLabel(currentDate.toString("dd/MM")).withStyleName("tiny light").withHeight(15, Unit.PIXELS)
+                new MLabel(strDays[weekDay].toUpperCase()).withStyleName("h5").withHeight(25, Unit.PIXELS),
+                new MLabel(currentDate.plusDays(weekDay).toString("dd/MM")).withStyleName("tiny light").withHeight(15, Unit.PIXELS)
         ).alignAll(Alignment.MIDDLE_CENTER).withHeight(40, Unit.PIXELS).withSpacing(false).withMargin(false);
     }
 
