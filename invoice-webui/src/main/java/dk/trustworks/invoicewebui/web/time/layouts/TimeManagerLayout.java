@@ -6,10 +6,7 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.StreamResource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.*;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -33,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
@@ -350,35 +348,42 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1, 1)
                 .withOffset(DisplaySize.LG, 4)
                 .withOffset(DisplaySize.MD, 4)
-                .withComponent(new MLabel("MON").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle("MON"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("TUE").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle("TUE"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("WED").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle("WED"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("THU").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle("THU"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("FRI").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle("FRI"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("SAT").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle("SAT"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("SUN").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+                .withComponent(getDayNameTitle("SUN"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
                 .withComponent(new MLabel("BUDGET").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+    }
+
+    private MVerticalLayout getDayNameTitle(String mon) {
+        return new MVerticalLayout(
+                new MLabel(mon).withStyleName("h5").withHeight(25, Unit.PIXELS),
+                new MLabel(currentDate.toString("dd/MM")).withStyleName("tiny light").withHeight(15, Unit.PIXELS)
+        ).alignAll(Alignment.MIDDLE_CENTER).withHeight(40, Unit.PIXELS).withSpacing(false).withMargin(false);
     }
 
     private void createFooterRow() {
