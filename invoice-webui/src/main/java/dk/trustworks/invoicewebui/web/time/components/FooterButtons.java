@@ -19,6 +19,7 @@ import com.vaadin.ui.Button;
 @SuppressWarnings("serial")
 public class FooterButtons extends HorizontalLayout {
     private Button btnAddTask;
+    private Button btnEdit;
     private Button btnCopyWeek;
 
     public FooterButtons() {
@@ -27,6 +28,10 @@ public class FooterButtons extends HorizontalLayout {
 
     public Button getBtnAddTask() {
         return btnAddTask;
+    }
+
+    public Button getBtnEdit() {
+        return btnEdit;
     }
 
     public Button getBtnCopyWeek() {

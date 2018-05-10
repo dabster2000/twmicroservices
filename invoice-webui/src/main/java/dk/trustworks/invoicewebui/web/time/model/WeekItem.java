@@ -2,6 +2,8 @@ package dk.trustworks.invoicewebui.web.time.model;
 
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.Week;
+import dk.trustworks.invoicewebui.utils.NumberConverter;
 import org.joda.time.LocalDate;
 
 /**
@@ -9,6 +11,7 @@ import org.joda.time.LocalDate;
  */
 public class WeekItem {
 
+    private Week week;
     private Task task;
     private User user;
     private String taskname;
@@ -25,9 +28,14 @@ public class WeekItem {
     public WeekItem() {
     }
 
-    public WeekItem(Task task, User user) {
+    public WeekItem(Week week, Task task, User user) {
+        this.week = week;
         this.task = task;
         this.user = user;
+    }
+
+    public Week getWeek() {
+        return week;
     }
 
     public Task getTask() {
@@ -108,6 +116,16 @@ public class WeekItem {
 
     public void setSun(String sun) {
         this.sun = sun;
+    }
+
+    public double getWeekItemSum() {
+        return NumberConverter.parseDouble(mon) +
+                NumberConverter.parseDouble(tue) +
+                NumberConverter.parseDouble(wed) +
+                NumberConverter.parseDouble(thu) +
+                NumberConverter.parseDouble(fri) +
+                NumberConverter.parseDouble(sat) +
+                NumberConverter.parseDouble(sun);
     }
 
     public double getBudgetleft() {

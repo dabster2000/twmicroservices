@@ -13,6 +13,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
@@ -81,6 +82,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private WeekValues weekDaySums;
     private double sumHours = 0.0;
 
+    private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
+
     public TimeManagerLayout() {
         footerButtons = new FooterButtons();
         dateButtons = new DateButtons();
@@ -124,6 +127,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
             timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), dateButtons.getSelActiveUser().getSelectedItem().get());
             loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
             //loadData(getSelActiveUser().getSelectedItem().get());
+        });
+
+        footerButtons.getBtnEdit().addClickListener(event -> {
+            for (TaskTitle weekRowTaskTitle : weekRowTaskTitles) {
+                weekRowTaskTitle.getImgLogo().setVisible(!weekRowTaskTitle.getImgLogo().isVisible());
+                weekRowTaskTitle.getBtnDelete().setVisible(!weekRowTaskTitle.getBtnDelete().isVisible());
+            }
         });
 
         footerButtons.getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
@@ -251,6 +261,18 @@ public class TimeManagerLayout extends ResponsiveLayout {
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
         log.info("endOfWeek = " + endOfWeek);
         List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
+        for (Work workResource : workResources) {
+            if(!weeks.stream().filter(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid())).findFirst().isPresent()) {
+                Week week = new Week(UUID.randomUUID().toString(),
+                        currentDate.getWeekOfWeekyear(),
+                        currentDate.getYear(),
+                        workResource.getUser(),
+                        workResource.getTask());
+                weekRepository.save(week);
+                weeks.add(week);
+            }
+        }
+
         log.info("workResources.size() = " + workResources.size());
         List<WeekItem> weekItems = new ArrayList<>();
         for (Week week : weeks) {
@@ -259,7 +281,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             log.info("task = " + task);
             Hibernate.initialize(task);
 
-            WeekItem weekItem = new WeekItem(task, user);
+            WeekItem weekItem = new WeekItem(week, task, user);
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
@@ -297,6 +319,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         }
         log.info("sumHours = " + sumHours);
 
+        weekRowTaskTitles.clear();
         for (WeekItem weekItem : weekItems) {
             createTimeline(weekItem);
         }
@@ -389,6 +412,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         footerRow.addColumn().withDisplayRules(1, 1, 1, 1).withVisibilityRules(false, false, true,true);
 
         ResponsiveRow sumRow = responsiveLayout.addRow().withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true);
+        sumRow.withMargin(true).withMargin(ResponsiveRow.MarginSize.SMALL);
         sumRow.addColumn().withDisplayRules(12, 12, 9, 9).withVisibilityRules(false, false, true, true);
         MTextField sumTextField = new MTextField("week total:", sumHours + "")
                 .withStyleName("floating")
@@ -430,6 +454,14 @@ public class TimeManagerLayout extends ResponsiveLayout {
         TaskTitle taskTitle = new TaskTitle();
         taskTitle.getTxtProjectname().setValue(projectName);
         taskTitle.getTxtTaskname().setValue(taskName);
+        taskTitle.getBtnDelete().addClickListener(event -> {
+            if(weekItem.getWeekItemSum() > 0.0) {
+                Notification.show("Cannot remove row!", "Cannot remove row as long as you have registered hours on the task this week", Notification.Type.WARNING_MESSAGE);
+                return;
+            }
+            weekRepository.delete(weekItem.getWeek());
+            responsiveLayout.removeComponent(time1Row);
+        });
         Photo photo = photoRepository.findByRelateduuid(weekItem.getTask().getProject().getClient().getUuid());
         if(photo!=null && photo.getPhoto().length > 0) {
             taskTitle.getImgLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
@@ -438,6 +470,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         } else {
             taskTitle.getImgLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
+        weekRowTaskTitles.add(taskTitle);
 
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
