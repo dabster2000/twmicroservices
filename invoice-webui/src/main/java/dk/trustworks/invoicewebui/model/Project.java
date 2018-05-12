@@ -47,6 +47,9 @@ public class Project {
     @JoinColumn(name = "userowneruuid")
     private User owner;
 
+    @ManyToMany(mappedBy = "projects")
+    private List<Contract> contracts = new ArrayList<>();
+
     private double longitude;
     private double latitude;
     private String address;
@@ -190,6 +193,14 @@ public class Project {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public List<Contract> getContracts() {
+        return contracts;
+    }
+
+    public void setContracts(List<Contract> contracts) {
+        this.contracts = contracts;
     }
 
     @Override
