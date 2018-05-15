@@ -8,6 +8,7 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Image;
@@ -24,6 +25,7 @@ import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.web.bubbles.components.ActivityGauge;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,8 +93,8 @@ public class BubblesLayout extends VerticalLayout {
 
     private void loadBubbles() {
         bubblesRow.removeAllComponents();
-        //User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
-        User user = userRepository.findByUsername("hans.lassen");
+        User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+        //User user = userRepository.findByUsername("hans.lassen");
 
         for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreated()) {
             BubblesDesign bubblesDesign = new BubblesDesign();
