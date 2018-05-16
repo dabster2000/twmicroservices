@@ -297,7 +297,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 Notification.show("Error loading budget...", Notification.Type.TRAY_NOTIFICATION);
                 e.printStackTrace();
             }
-            if(budgetLeftByTaskuuidAndUseruuid!=null) weekItem.setBudgetleft(budgetLeftByTaskuuidAndUseruuid);
+            if(budgetLeftByTaskuuidAndUseruuid!=null) weekItem.setBudgetleft(budgetLeftByTaskuuidAndUseruuid<0?0:Math.round(budgetLeftByTaskuuidAndUseruuid));
             for (Work work : workResources) {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
                 log.info("work = " + work);
