@@ -92,7 +92,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             reloadGrid();
         });
 
-        getSelClient().setItems(clientRepository.findByActiveTrue());
+        getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
         getSelClient().setItemCaptionGenerator(Client::getName);
         getSelClient().addValueChangeListener(event -> {
             changeOptions();
