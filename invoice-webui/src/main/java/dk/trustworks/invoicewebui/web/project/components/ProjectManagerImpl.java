@@ -89,6 +89,22 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             reloadGrid();
         });
 
+        getSelClient().setItems(clientRepository.findByActiveTrue());
+        getSelClient().setItemCaptionGenerator(Client::getName);
+        getSelClient().addValueChangeListener(event -> {
+            if(!getSelClient().getSelectedItem().isPresent()) {
+                List<Project> clientProjectList = newArrayList(((getOnOffSwitch().getValue())?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
+                getSelProject().setItems(clientProjectList);
+            } else {
+                if(getOnOffSwitch().getValue()) {
+                    getSelProject().setItems(event.getValue().getProjects());
+                } else {
+                    getSelProject().setItems(event.getValue().getProjects().stream().filter(project -> project.isActive()).collect(Collectors.toList()));
+                }
+            }
+            reloadGrid();
+        });
+
         getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Create Project");
             window.setWidth("330px");

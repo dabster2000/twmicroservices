@@ -22,12 +22,18 @@ import com.vaadin.addon.onoffswitch.OnOffSwitch;
 @SuppressWarnings("serial")
 public class ProjectManagerDesign extends VerticalLayout {
     @PropertyId("name")
+    private ComboBox<dk.trustworks.invoicewebui.model.Client> selClient;
+    @PropertyId("name")
     private ComboBox<dk.trustworks.invoicewebui.model.Project> selProject;
     private OnOffSwitch onOffSwitch;
     private Button btnAddNewProject;
 
     public ProjectManagerDesign() {
         Design.read(this);
+    }
+
+    public ComboBox<dk.trustworks.invoicewebui.model.Client> getSelClient() {
+        return selClient;
     }
 
     public ComboBox<dk.trustworks.invoicewebui.model.Project> getSelProject() {
