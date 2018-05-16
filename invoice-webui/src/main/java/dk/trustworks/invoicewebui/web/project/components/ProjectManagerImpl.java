@@ -76,10 +76,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     public ProjectManagerImpl init() {
         getOnOffSwitch().setValue(false);
         getOnOffSwitch().addValueChangeListener(event -> {
+            /*
             boolean checked = event.getValue();
             List<Project> projects = newArrayList(((checked)?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
             getSelProject().setItems(projects);
             reloadGrid();
+            */
+            changeOptions();
         });
         getSelProject().setItemCaptionGenerator(Project::getName);
         List<Project> projects = newArrayList(((getOnOffSwitch().getValue())?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
@@ -92,17 +95,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         getSelClient().setItems(clientRepository.findByActiveTrue());
         getSelClient().setItemCaptionGenerator(Client::getName);
         getSelClient().addValueChangeListener(event -> {
-            if(!getSelClient().getSelectedItem().isPresent()) {
-                List<Project> clientProjectList = newArrayList(((getOnOffSwitch().getValue())?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
-                getSelProject().setItems(clientProjectList);
-            } else {
-                if(getOnOffSwitch().getValue()) {
-                    getSelProject().setItems(event.getValue().getProjects());
-                } else {
-                    getSelProject().setItems(event.getValue().getProjects().stream().filter(project -> project.isActive()).collect(Collectors.toList()));
-                }
-            }
-            reloadGrid();
+            changeOptions();
         });
 
         getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
@@ -139,6 +132,20 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             newProject.getBtnCancel().addClickListener(event1 -> window.close());
         });
         return this;
+    }
+
+    private void changeOptions() {
+        if(!getSelClient().getSelectedItem().isPresent()) {
+            List<Project> clientProjectList = newArrayList(((getOnOffSwitch().getValue())?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
+            getSelProject().setItems(clientProjectList);
+        } else {
+            if(getOnOffSwitch().getValue()) {
+                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects());
+            } else {
+                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().filter(project -> project.isActive()).collect(Collectors.toList()));
+            }
+        }
+        reloadGrid();
     }
 
     public void setCurrentProject(String projectUUID) {
