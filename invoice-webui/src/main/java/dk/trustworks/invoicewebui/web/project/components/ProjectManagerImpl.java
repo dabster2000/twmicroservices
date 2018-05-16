@@ -24,6 +24,7 @@ import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
 
 /**
@@ -140,9 +141,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             getSelProject().setItems(clientProjectList);
         } else {
             if(getOnOffSwitch().getValue()) {
-                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects());
+                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().sorted(comparing(Project::getName)));
             } else {
-                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().filter(project -> project.isActive()).collect(Collectors.toList()));
+                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().filter(project -> project.isActive()).sorted(comparing(Project::getName)));
             }
         }
         reloadGrid();
