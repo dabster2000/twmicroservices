@@ -13,6 +13,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.List;
 
+@Deprecated
 @RepositoryRestResource(collectionResourceRel = "taskworkerconstraints", path="taskworkerconstraints")
 public interface TaskworkerconstraintRepository extends CrudRepository<Taskworkerconstraint, String> {
 

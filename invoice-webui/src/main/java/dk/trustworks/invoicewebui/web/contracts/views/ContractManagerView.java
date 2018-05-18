@@ -8,7 +8,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.contracts.components.ContractSearchImpl;
+import dk.trustworks.invoicewebui.web.contracts.layouts.ContractListLayout;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ public class ContractManagerView extends VerticalLayout implements View {
     private MainTemplate mainTemplate;
 
     @Autowired
-    private ContractSearchImpl contractSearch;
+    private ContractListLayout contractListLayout;
 
-    public static final String VIEW_NAME = "constract";
+    public static final String VIEW_NAME = "contract";
     public static final String MENU_NAME = "Contracts";
     public static final String VIEW_BREADCRUMB = "Contracts";
     public static final FontIcon VIEW_ICON = MaterialIcons.PAGES;
@@ -47,7 +47,7 @@ public class ContractManagerView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        mainTemplate.setMainContent(contractSearch.init(), VIEW_ICON, MENU_NAME, "Complete list of contracts", VIEW_BREADCRUMB);
+        mainTemplate.setMainContent(contractListLayout, VIEW_ICON, MENU_NAME, "Complete list of contracts", VIEW_BREADCRUMB);
     }
 
     @Override

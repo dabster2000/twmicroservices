@@ -23,7 +23,7 @@ public class Client {
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Project> projects;
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-    private List<Contract> contracts;
+    private List<MainContract> mainContracts;
 
     public Client() {
     }
@@ -113,12 +113,12 @@ public class Client {
         this.projects = projects;
     }
 
-    public List<Contract> getContracts() {
-        return contracts;
+    public List<MainContract> getMainContracts() {
+        return mainContracts;
     }
 
-    public void setContracts(List<Contract> contracts) {
-        this.contracts = contracts;
+    private void setMainContracts(List<MainContract> mainContracts) {
+        this.mainContracts = mainContracts;
     }
 
     @Override

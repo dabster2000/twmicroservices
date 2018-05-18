@@ -22,6 +22,7 @@ import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.bubbles.components.ActivityGauge;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
@@ -44,6 +45,7 @@ public class BubblesLayout extends VerticalLayout {
 
     private UserRepository userRepository;
     private PhotoRepository photoRepository;
+    private PhotoService photoService;
     private BubbleRepository bubbleRepository;
     private BubbleMemberRepository bubbleMemberRepository;
 
@@ -66,11 +68,12 @@ public class BubblesLayout extends VerticalLayout {
     private SlackWebApiClient bubbleUserBotClient;
 
     @Autowired
-    public BubblesLayout(UserRepository userRepository, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository) {
+    public BubblesLayout(UserRepository userRepository, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService) {
         this.userRepository = userRepository;
         this.photoRepository = photoRepository;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
+        this.photoService = photoService;
     }
 
     @Transactional
@@ -160,10 +163,10 @@ public class BubblesLayout extends VerticalLayout {
                 bubblesDesign.getBtnLeave().setVisible(false);
             }
 
-            bubblesDesign.getPhotoContainer().addComponent(getMemberImage(bubble.getUser(), true));
+            bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getUser(), true));
             for (BubbleMember member : bubbleMemberRepository.findByBubble(bubble)) {
                 if(member.getMember().getUuid().equals(bubble.getUser().getUuid())) continue;
-                Image image = getMemberImage(member.getMember(), false);
+                Image image = photoService.getRoundMemberImage(member.getMember(), false);
                 bubblesDesign.getPhotoContainer().addComponent(image);
             }
 
@@ -195,19 +198,5 @@ public class BubblesLayout extends VerticalLayout {
 
             bubblesRow.addColumn().withDisplayRules(12, 12, 6,4).withComponent(bubblesDesign);
         }
-    }
-
-    private Image getMemberImage(User member, boolean isOwner) {
-        Photo photo = photoRepository.findByRelateduuid(member.getUuid());
-
-        Image image = new Image(null,
-                new StreamResource((StreamResource.StreamSource) () ->
-                        new ByteArrayInputStream(photo.getPhoto()),
-                        member.getUsername()+System.currentTimeMillis()+".jpg"));
-        if(isOwner) image.setStyleName("img-circle-gold");
-        else image.setStyleName("img-circle");
-        image.setWidth(75, Unit.PIXELS);
-        image.setHeight(75, Unit.PIXELS);
-        return image;
     }
 }

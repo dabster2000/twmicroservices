@@ -5,14 +5,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Table(name = "contract_consultants")
 public class Consultant {
 
     @Id
     private String uuid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.LAZY)
     @JoinColumn(name = "contractuuid")
-    private Contract contract;
+    private MainContract mainContract;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "useruuid")
@@ -31,9 +35,9 @@ public class Consultant {
         uuid = UUID.randomUUID().toString();
     }
 
-    public Consultant(Contract contract, User user, double rate, double budget, double hours) {
+    public Consultant(MainContract mainContract, User user, double rate, double budget, double hours) {
         this();
-        this.contract = contract;
+        this.mainContract = mainContract;
         this.user = user;
         this.rate = rate;
         this.budget = budget;
@@ -48,12 +52,12 @@ public class Consultant {
         this.uuid = uuid;
     }
 
-    public Contract getContract() {
-        return contract;
+    public MainContract getMainContract() {
+        return mainContract;
     }
 
-    public void setContract(Contract contract) {
-        this.contract = contract;
+    public void setMainContract(MainContract mainContract) {
+        this.mainContract = mainContract;
     }
 
     public User getUser() {

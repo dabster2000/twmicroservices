@@ -2,8 +2,8 @@
 <html>
  <head>
   <meta charset="UTF-8">
-  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
-  <meta name="vaadin-version" content="8.0.5">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
   <vaadin-vertical-layout>
@@ -23,9 +23,9 @@
         <vaadin-text-field caption="Description" width-full maxlength="75" _id="txtDescription"></vaadin-text-field>
         <vaadin-combo-box caption="Contact" empty-selection-allowed="false" width-full data-item-type="dk.trustworks.invoicewebui.model.Clientdata" _id="cbClientdatas"></vaadin-combo-box>
         <vaadin-combo-box caption="RM" empty-selection-allowed="false" width-full data-item-type="dk.trustworks.invoicewebui.model.User" data-property-id="username" _id="selRelationManager"></vaadin-combo-box>
-        <vaadin-date-field caption="Start" date-format="dd MMM yyyy" _id="selStartDate"></vaadin-date-field>
-        <vaadin-date-field caption="End" date-format="dd MMM yyyy" _id="selEndDate"></vaadin-date-field>
-        <vaadin-text-field caption="Budget" _id="txtBudget"></vaadin-text-field>
+        <vaadin-date-field caption="Start" visible="false" date-format="dd MMM yyyy" _id="selStartDate"></vaadin-date-field>
+        <vaadin-date-field caption="End" visible="false" date-format="dd MMM yyyy" _id="selEndDate"></vaadin-date-field>
+        <vaadin-text-field visible="false" caption="Budget" _id="txtBudget"></vaadin-text-field>
         <vaadin-check-box caption="Active" _id="chkActive"></vaadin-check-box>
         <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
           Update 

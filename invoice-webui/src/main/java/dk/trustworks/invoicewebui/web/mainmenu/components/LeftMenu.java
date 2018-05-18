@@ -87,6 +87,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(DashboardView.VIEW_NAME, dashboard);
         MenuItemContainer clients = new MenuItemContainer(order++).createItem(ClientManagerView.MENU_NAME, false, ClientManagerView.VIEW_ICON, ClientManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ClientManagerView.VIEW_NAME, clients);
+        //MenuItemContainer contracts = new MenuItemContainer(order++).createItem(ContractManagerView.MENU_NAME, false, ContractManagerView.VIEW_ICON, ContractManagerView.VIEW_NAME, false, RoleType.SALES);
+        //menuItems.put(ContractManagerView.VIEW_NAME, contracts);
         MenuItemContainer projects = new MenuItemContainer(order++).createItem(ProjectManagerView.MENU_NAME, false, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ProjectManagerView.VIEW_NAME, projects);
 
@@ -94,8 +96,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("timemanager", timemanager);
         //MenuItemContainer time = new MenuItemContainer(order++).createItem(TimeManagerView.MENU_NAME, false, TimeManagerView.VIEW_ICON, TimeManagerView.VIEW_NAME, false, RoleType.USER, RoleType.EXTERNAL);
         //menuItems.put(TimeManagerView.VIEW_NAME, time);
-        MenuItemContainer timeBeta = new MenuItemContainer(order++).createItem(TimeManagerViewSecond.MENU_NAME, false, TimeManagerViewSecond.VIEW_ICON, TimeManagerViewSecond.VIEW_NAME, false, RoleType.USER, RoleType.EXTERNAL);
-        menuItems.put(TimeManagerViewSecond.VIEW_NAME, timeBeta);
+        MenuItemContainer time = new MenuItemContainer(order++).createItem(TimeManagerViewSecond.MENU_NAME, false, TimeManagerViewSecond.VIEW_ICON, TimeManagerViewSecond.VIEW_NAME, false, RoleType.USER, RoleType.EXTERNAL);
+        menuItems.put(TimeManagerViewSecond.VIEW_NAME, time);
         MenuItemContainer reportView = new MenuItemContainer(order++).createItem(ReportView.MENU_NAME, false, ReportView.VIEW_ICON, ReportView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.USER, RoleType.EXTERNAL);
         menuItems.put(ReportView.VIEW_NAME, reportView);
 

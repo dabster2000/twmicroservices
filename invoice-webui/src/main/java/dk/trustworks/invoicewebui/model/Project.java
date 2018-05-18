@@ -7,10 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 public class Project {
@@ -47,8 +44,8 @@ public class Project {
     @JoinColumn(name = "userowneruuid")
     private User owner;
 
-    @ManyToMany(mappedBy = "projects")
-    private List<Contract> contracts = new ArrayList<>();
+    @ManyToMany(mappedBy = "projects", fetch = FetchType.LAZY)
+    private Set<MainContract> mainContracts = new HashSet<>();
 
     private double longitude;
     private double latitude;
@@ -195,13 +192,15 @@ public class Project {
         this.address = address;
     }
 
-    public List<Contract> getContracts() {
-        return contracts;
+    public Set<MainContract> getMainContracts() {
+        return mainContracts;
     }
 
-    public void setContracts(List<Contract> contracts) {
-        this.contracts = contracts;
+    public void setMainContracts(Set<MainContract> mainContracts) {
+        this.mainContracts = mainContracts;
     }
+
+    public void addMainContract(MainContract mainContract) {this.mainContracts.add(mainContract); }
 
     @Override
     public String toString() {

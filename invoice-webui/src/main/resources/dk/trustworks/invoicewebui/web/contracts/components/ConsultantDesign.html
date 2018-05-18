@@ -9,13 +9,10 @@
  <body>
   <vaadin-vertical-layout size-full>
    <vaadin-form-layout size-auto>
-    <vaadin-combo-box caption="Consultant" width-full>
-     <option item="Option1">hans.lassen</option>
-     <option item="Option2">stephan.jensen</option>
-    </vaadin-combo-box>
-    <vaadin-text-field caption="Rate" height-full value="950.0"></vaadin-text-field>
-    <vaadin-text-field caption="Budget" width-full value="500.000"></vaadin-text-field>
-    <vaadin7-combo-box caption="Distribution" width-full>
+    <vaadin-combo-box required-indicator-visible caption="Consultant" empty-selection-allowed="false" placeholder="select consultant" empty-selection-caption="select consultant" width-full data-item-type="dk.trustworks.invoicewebui.model.User" data-property-id="username" _id="cbConsultant"></vaadin-combo-box>
+    <vaadin-text-field required-indicator-visible caption="Rate" width-full value="950.0" _id="txtRate"></vaadin-text-field>
+    <vaadin-text-field visible="false" caption="Budget" width-full value="500.000"></vaadin-text-field>
+    <vaadin7-combo-box caption="Distribution" visible="false" width-full>
      <option>1</option>
      <option>2</option>
      <option>3</option>
@@ -23,6 +20,15 @@
     </vaadin7-combo-box>
     <vaadin7-text-field caption="Allocation" visible="false" width-full value="160"></vaadin7-text-field>
    </vaadin-form-layout>
+   <vaadin-button visible="false" style-name="friendly" width-full plain-text _id="btnUpdate">
+     Update 
+   </vaadin-button>
+   <vaadin-button visible="false" style-name="danger" width-full plain-text _id="btnDelete">
+     Delete 
+   </vaadin-button>
+   <vaadin-button visible="false" width-full plain-text _id="btnCreate">
+     Create 
+   </vaadin-button>
   </vaadin-vertical-layout>
  </body>
 </html>

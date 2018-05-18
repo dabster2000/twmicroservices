@@ -6,6 +6,7 @@ import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.BudgetRepository;
 import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.ContractService;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,9 @@ public class BudgetCleanupJob {
 
     @Autowired
     private TaskworkerconstraintRepository taskworkerconstraintRepository;
+
+    @Autowired
+    private ContractService contractService;
 
     @Autowired
     private BudgetRepository budgetRepository;
