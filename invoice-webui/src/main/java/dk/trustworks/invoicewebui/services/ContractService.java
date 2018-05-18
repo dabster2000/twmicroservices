@@ -5,9 +5,9 @@ import dk.trustworks.invoicewebui.model.MainContract;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
 import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.MainContractRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
-import dk.trustworks.invoicewebui.repositories.SubContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class ContractService {
     private MainContractRepository mainContractRepository;
 
     @Autowired
-    private SubContractRepository subContractRepository;
+    private ContractRepository contractRepository;
 
     public MainContract createContract(MainContract mainContract) {
         return mainContractRepository.save(mainContract);
@@ -52,9 +52,8 @@ public class ContractService {
         return mainContract;
     }
 
-    public Taskworkerconstraint findByWork(Work work) {
-
-        return null;
+    public Taskworkerconstraint findTaskworkerconstraintByWork(Work work) {
+        return contractRepository.findByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
     }
 
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
