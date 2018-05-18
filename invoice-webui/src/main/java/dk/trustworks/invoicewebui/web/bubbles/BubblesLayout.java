@@ -99,7 +99,7 @@ public class BubblesLayout extends VerticalLayout {
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         //User user = userRepository.findByUsername("hans.lassen");
 
-        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreated()) {
+        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreatedDesc()) {
             BubblesDesign bubblesDesign = new BubblesDesign();
 
             bubblesDesign.getLblHeading().setValue(bubble.getName());

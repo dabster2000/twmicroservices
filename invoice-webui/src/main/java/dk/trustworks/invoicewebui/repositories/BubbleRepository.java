@@ -15,7 +15,7 @@ import java.util.List;
 public interface BubbleRepository extends CrudRepository<Bubble, String> {
 
     List<Bubble> findBubblesByActiveTrue();
-    List<Bubble> findBubblesByActiveTrueOrderByCreated();
+    List<Bubble> findBubblesByActiveTrueOrderByCreatedDesc();
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Bubble entity);

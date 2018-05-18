@@ -25,7 +25,7 @@ public class BubblesCardImpl extends BubblesCardDesign implements Box {
         getGridBubbles().addComponent(new MLabel("Blower").withStyleName("h4"), 1, 0);
 
         int row = 1;
-        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreated()) {
+        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreatedDesc()) {
             getGridBubbles().setRows(row+1);
             getGridBubbles().addComponent(new Label(bubble.getName()), 0, row);
             getGridBubbles().addComponent(new Label(bubble.getUser().getUsername()), 1, row);

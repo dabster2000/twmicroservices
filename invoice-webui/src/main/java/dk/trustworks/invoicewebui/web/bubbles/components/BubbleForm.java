@@ -10,6 +10,8 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
+import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
@@ -99,7 +101,7 @@ public class BubbleForm {
         uploadRow.removeAllComponents();
         uploadRow.addColumn()
                 .withDisplayRules(12, 12, 8, 8)
-                .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble!", PhotoUploader.Step.UPLOAD, photoRepository, () -> next.next(prevBubble)).getUploader());
+                .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble! It must be a PNG file thats atleast 800px wide and 400px heigh.", PhotoUploader.Step.UPLOAD, photoRepository, () -> next.next(prevBubble)).getUploader());
     }
 
     private void createMembersRow(final Bubble prevBubble, Next next) {
@@ -173,7 +175,12 @@ public class BubbleForm {
         ComboBox<String> applicationType = new ComboBox("Application type");
         applicationType.setWidth(100, Sizeable.Unit.PERCENTAGE);
         applicationType.setEmptySelectionAllowed(false);
-        applicationType.setItems("Open", "Invitation", "Closed");
+        applicationType.setItems("Open", "Invitation");
+        applicationType.setDescription("<h2>Application Type</h2>" +
+                "<ul>" +
+                "<li><b>Open:</b> People can freely enter and exit the bubble</li>" +
+                "<li><b>Invitation:</b> The bubble master must actively add and remove people from the bubble</li>" +
+                "</ul>", ContentMode.HTML);
         bubbleBinder.forField(applicationType).bind(Bubble::getApplication, Bubble::setApplication);
         ComboBox<User> bubbleMaster = new ComboBox<>("Bubble master");
         bubbleMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -198,15 +205,35 @@ public class BubbleForm {
         TextField slackChannelName = new TextField("Channel name");
         slackChannelName.setWidth(100, Sizeable.Unit.PERCENTAGE);
         slackChannelName.setMaxLength(19);
+        slackChannelName.setDescription("The name of the Slack channel, which is created along with the bubble. Remember: No spaces, maximum 19 characters and all lowercase characters");
 
         MButton createButton = new MButton((prevBubble==null)?"Blow new bubble!":"Update bubble").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
+            boolean error = false;
+            if(!bubbleName.isEmpty() || bubbleName.getValue().trim().equals("")) {
+                bubbleMaster.setComponentError(new UserError("Give the Bubble a name!!"));
+                error = true;
+            }
+            if(!applicationType.getSelectedItem().isPresent()) {
+                applicationType.setComponentError(new UserError("You need to choose an application type!"));
+                error = true;
+            }
+            if(!bubbleMaster.getSelectedItem().isPresent()) {
+                bubbleMaster.setComponentError(new UserError("You need to choose a Bubble Master!"));
+                error = true;
+            }
+            if(!slackChannelName.isEmpty() || slackChannelName.getValue().trim().equals("")) {
+                slackChannelName.setComponentError(new UserError("Give the Slack channel a name!!"));
+                error = true;
+            }
+            if(error) return;
             try {
                 bubbleBinder.writeBean(bubble);
             } catch (ValidationException e) {
                 e.printStackTrace();
+                Notification.show("Error saving bubble", e.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
             if(prevBubble==null) {
-                Group group = motherWebApiClient.createGroup("b_" + slackChannelName.getValue().trim().toLowerCase());
+                Group group = motherWebApiClient.createGroup("b_" + slackChannelName.getValue().trim().toLowerCase().replace(" ", "-"));
                 bubble.setSlackchannel(group.getId());
             } else if(!bubble.isActive()) {
                 motherWebApiClient.archiveGroup(prevBubble.getSlackchannel());
