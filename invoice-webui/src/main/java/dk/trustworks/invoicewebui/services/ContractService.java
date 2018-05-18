@@ -3,7 +3,6 @@ package dk.trustworks.invoicewebui.services;
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.MainContract;
 import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.MainContractRepository;
@@ -52,7 +51,7 @@ public class ContractService {
         return mainContract;
     }
 
-    public Taskworkerconstraint findTaskworkerconstraintByWork(Work work) {
+    public Double findTaskworkerconstraintByWork(Work work) {
         return contractRepository.findByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
     }
 

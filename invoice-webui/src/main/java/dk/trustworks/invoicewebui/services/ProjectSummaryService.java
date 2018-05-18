@@ -32,6 +32,9 @@ public class ProjectSummaryService {
     private TaskworkerconstraintRepository taskworkerconstraintClient;
 
     @Autowired
+    private ContractService contractService;
+
+    @Autowired
     private WorkRepository workClient;
 
     @Autowired
@@ -142,7 +145,7 @@ public class ProjectSummaryService {
 
             //Client client = project.getClient();
 
-            List<Taskworkerconstraint> taskworkerconstraintResources = task.getTaskworkerconstraint();
+            //List<Taskworkerconstraint> taskworkerconstraintResources = task.getTaskworkerconstraint();
 
             if(invoice == null) {
                 invoice = new Invoice(InvoiceType.INVOICE,
@@ -162,12 +165,16 @@ public class ProjectSummaryService {
                         "");
                 logger.info("Created new invoice: "+invoice);
             }
-            Taskworkerconstraint taskworkerconstraint = null;
+            //Taskworkerconstraint taskworkerconstraint = null;
+            /*
             for (Taskworkerconstraint taskworkerconstraintResource : taskworkerconstraintResources) {
                 if(taskworkerconstraintResource.getTask().getUuid().equals(task.getUuid()) && taskworkerconstraintResource.getUser().getUuid().equals(user.getUuid())) {
                     taskworkerconstraint = taskworkerconstraintResource;
                 }
             }
+            */
+            Double taskworkerconstraint = contractService.findTaskworkerconstraintByWork(workResource);
+
             if(taskworkerconstraint == null) {
                 logger.error("Taskworkerconstraint could not be found for user (link: "+user.getUuid()+") and task (link: "+task.getUuid()+")");
                 invoice.errors = true;
@@ -178,17 +185,17 @@ public class ProjectSummaryService {
                         Notification.Type.ERROR_MESSAGE);
                 return;
             }
-            if(!invoiceItemMap.containsKey(project.getUuid()+taskworkerconstraint.getUuid())) {
+            if(!invoiceItemMap.containsKey(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid())) {
                 InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
                         task.getName(),
-                        taskworkerconstraint.getPrice(),
+                        taskworkerconstraint,
                         0.0);
                 invoiceItem.uuid = UUID.randomUUID().toString();
-                invoiceItemMap.put(project.getUuid()+taskworkerconstraint.getUuid(), invoiceItem);
+                invoiceItemMap.put(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid(), invoiceItem);
                 invoice.invoiceitems.add(invoiceItem);
                 logger.info("Created new invoice item: "+invoiceItem);
             }
-            invoiceItemMap.get(project.getUuid()+taskworkerconstraint.getUuid()).hours += workResource.getWorkduration();
+            invoiceItemMap.get(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid()).hours += workResource.getWorkduration();
         }
 
         invoiceClient.save(invoice);
