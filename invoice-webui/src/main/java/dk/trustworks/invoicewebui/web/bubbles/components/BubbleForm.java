@@ -10,7 +10,6 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
-import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Bubble;
@@ -208,6 +207,7 @@ public class BubbleForm {
         slackChannelName.setDescription("The name of the Slack channel, which is created along with the bubble. Remember: No spaces, maximum 19 characters and all lowercase characters");
 
         MButton createButton = new MButton((prevBubble==null)?"Blow new bubble!":"Update bubble").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
+            /*
             boolean error = false;
             if(!bubbleName.isEmpty() || bubbleName.getValue().trim().equals("")) {
                 bubbleMaster.setComponentError(new UserError("Give the Bubble a name!!"));
@@ -226,6 +226,7 @@ public class BubbleForm {
                 error = true;
             }
             if(error) return;
+            */
             try {
                 bubbleBinder.writeBean(bubble);
             } catch (ValidationException e) {
