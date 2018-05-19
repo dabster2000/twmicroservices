@@ -5,11 +5,13 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.contextmenu.GridContextMenu;
 import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
@@ -80,20 +82,29 @@ public class ContractDetailLayout extends ResponsiveLayout {
         mainContractForm.getBtnUpdate().setVisible(true);
         mainContractForm.getBtnEdit().setVisible(false);
         mainContractForm.getTxtAmount().setVisible(mainContract.getContractType().equals(ContractType.AMOUNT));
-        //mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
+        mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
         mainContractForm.getDfFrom().setVisible(true);
-        mainContractBinder.forField(mainContractForm.getDfFrom()).bind(MainContract::getActiveFrom, Contract::setActiveTo);
+        mainContractBinder.forField(mainContractForm.getDfFrom()).bind(MainContract::getActiveFrom, MainContract::setActiveFrom);
         //mainContractForm.getDfFrom().setValue(mainContract.getActiveFrom());
         mainContractForm.getDfTo().setVisible(true);
+        mainContractBinder.forField(mainContractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
         //mainContractForm.getDfTo().setValue(mainContract.getActiveTo());
         mainContractForm.getCbType().setVisible(true);
         mainContractForm.getCbType().setEnabled(false);
+        mainContractBinder.forField(mainContractForm.getCbType()).bind(Contract::getContractType, Contract::setContractType);
         //mainContractForm.getCbType().setValue(mainContract.getContractType());
         mainContractForm.getLblTitle().setValue("Main Contract");
         mainContractBinder.readBean(mainContract);
 
         mainContractForm.getBtnUpdate().addClickListener(event -> {
-
+            try {
+                mainContractBinder.writeBean(mainContract);
+                mainContract.setAmount(NumberConverter.parseDouble(mainContractForm.getTxtAmount().getValue()));
+                contractService.updateContract(mainContract);
+            } catch (ValidationException e) {
+                e.printStackTrace();
+                Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            }
         });
 
         contractRow.addColumn()
