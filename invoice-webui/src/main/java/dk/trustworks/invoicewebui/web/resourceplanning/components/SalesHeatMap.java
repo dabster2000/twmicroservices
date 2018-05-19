@@ -10,12 +10,16 @@ import dk.trustworks.invoicewebui.model.Budget;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.repositories.BudgetRepository;
-import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import org.joda.time.*;
+import dk.trustworks.invoicewebui.services.ContractService;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -26,20 +30,20 @@ import java.util.stream.Collectors;
 @SpringUI
 public class SalesHeatMap {
 
-    @Autowired
-    private BudgetRepository budgetRepository;
+    private final BudgetRepository budgetRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private TaskworkerconstraintRepository taskworkerconstraintRepository;
+    private final ContractService contractService;
 
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
-    public SalesHeatMap() {
-
+    @Autowired
+    public SalesHeatMap(BudgetRepository budgetRepository, UserRepository userRepository, ContractService contractService) {
+        this.budgetRepository = budgetRepository;
+        this.userRepository = userRepository;
+        this.contractService = contractService;
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
@@ -80,15 +84,13 @@ public class SalesHeatMap {
                     Integer.parseInt(localDateEnd.toString("yyyyMMdd")),
                     user.getUuid());
             LocalDate localDate = localDateStart;
-            double[] budgetsPerUser = new double[monthPeriod];
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
                 final LocalDate tempDate = localDate;
                 double budgetSum = userBudgets.stream()
                         .filter(budget -> budget.getYear() == tempDate.getYear() && budget.getMonth() + 1 == tempDate.getMonthOfYear())
-                        .mapToDouble(value -> value.getBudget() / taskworkerconstraintRepository.findByTaskAndUser(value.getTask(), value.getUser()).get(0).getPrice())
+                        .mapToDouble(value -> value.getBudget() / contractService.findConsultantRate(value.getYear(), value.getMonth(), 1, user, value.getTask()))
                         .sum();
-                budgetsPerUser[m] = budgetSum;
                 List<UserStatus> userStatuses = user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
                 UserStatus userStatus = userStatuses.get(0);
                 for (UserStatus userStatusIteration : userStatuses) {
@@ -126,7 +128,7 @@ public class SalesHeatMap {
         }
 
         config.getxAxis().setCategories(monthNames);
-        config.getyAxis().setCategories(users.stream().map(user -> user.getUsername()).toArray(size -> new String[size]));
+        config.getyAxis().setCategories(users.stream().map(User::getUsername).toArray(String[]::new));
 
         PlotOptionsHeatmap plotOptionsHeatmap = new PlotOptionsHeatmap();
         plotOptionsHeatmap.setDataLabels(new DataLabels());

@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -108,5 +109,19 @@ public class Consultant {
                 ", budget=" + budget +
                 ", hours=" + hours +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Consultant that = (Consultant) o;
+        return Objects.equals(uuid, that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(uuid);
     }
 }

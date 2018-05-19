@@ -2,27 +2,21 @@ package dk.trustworks.invoicewebui.web.project.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.contextmenu.GridContextMenu;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Setter;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Notification;
-import dk.trustworks.invoicewebui.model.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.Clientdata;
+import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.web.project.model.TaskRow;
-import dk.trustworks.invoicewebui.web.project.model.UserRow;
-import org.joda.time.LocalDate;
-import org.joda.time.Months;
+import org.hibernate.validator.internal.util.CollectionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Month;
-import java.time.format.TextStyle;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static java.util.Comparator.comparing;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
@@ -35,69 +29,50 @@ import static org.hibernate.validator.internal.util.CollectionHelper.newArrayLis
 @SpringUI
 public class ProjectManagerImpl extends ProjectManagerDesign {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
 
-    @Autowired
-    private TaskworkerconstraintRepository taskworkerconstraintRepository;
+    private final ClientRepository clientRepository;
 
-    @Autowired
-    private ClientRepository clientRepository;
-
-    @Autowired
-    private ClientdataRepository clientdataRepository;
+    private final ClientdataRepository clientdataRepository;
 
     private ProjectMapLocationImpl projectMapLocation;
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final PhotoRepository photoRepository;
 
-    @Autowired
-    private BudgetRepository budgetRepository;
-
-    @Autowired
-    private PhotoRepository photoRepository;
-
-    @Autowired
-    private NewsRepository newsRepository;
+    private final NewsRepository newsRepository;
 
     private ResponsiveLayout responsiveLayout;
 
     private Project currentProject;
 
-    private TreeGrid<TaskRow> treeGrid;
-
     private BudgetCardDesign budgetCard;
+
+    @Autowired
+    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, NewsRepository newsRepository) {
+        this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
+        this.clientRepository = clientRepository;
+        this.clientdataRepository = clientdataRepository;
+        this.photoRepository = photoRepository;
+        this.newsRepository = newsRepository;
+    }
 
 
     @Transactional
     public ProjectManagerImpl init() {
         getOnOffSwitch().setValue(false);
-        getOnOffSwitch().addValueChangeListener(event -> {
-            /*
-            boolean checked = event.getValue();
-            List<Project> projects = newArrayList(((checked)?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
-            getSelProject().setItems(projects);
-            reloadGrid();
-            */
-            changeOptions();
-        });
+        getOnOffSwitch().addValueChangeListener(event -> changeOptions());
         getSelProject().setItemCaptionGenerator(Project::getName);
         List<Project> projects = newArrayList(((getOnOffSwitch().getValue())?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
 
         getSelProject().setItems(projects);
-        getSelProject().addValueChangeListener(event -> {
-            reloadGrid();
-        });
+        getSelProject().addValueChangeListener(event -> reloadGrid());
 
         getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
         getSelClient().setItemCaptionGenerator(Client::getName);
-        getSelClient().addValueChangeListener(event -> {
-            changeOptions();
-        });
+        getSelClient().addValueChangeListener(event -> changeOptions());
 
         getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Create Project");
@@ -122,7 +97,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             newProject.getBtnCreate().addClickListener(event1 -> {
                 Clientdata clientdata = newProject.getCbClientdatas().getValue();
                 Project project = projectRepository.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue(), clientdata));
-                List<Project> reloadedProjects = newArrayList(projectRepository.findAll());
+                List<Project> reloadedProjects = CollectionHelper.newArrayList(projectRepository.findAll());
                 getSelProject().setItems(reloadedProjects);
                 getSelProject().setSelectedItem(project);
                 getSelProject().setValue(project);
@@ -143,7 +118,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             if(getOnOffSwitch().getValue()) {
                 getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().sorted(comparing(Project::getName)));
             } else {
-                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().filter(project -> project.isActive()).sorted(comparing(Project::getName)));
+                getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().filter(Project::isActive).sorted(comparing(Project::getName)));
             }
         }
         reloadGrid();
@@ -187,11 +162,11 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     }
 
     private void updateTreeGrid() {
-        treeGrid = createTreeGrid();
+        //treeGrid = createTreeGrid();
         budgetCard.getContainer().removeAllComponents();
-        budgetCard.getContainer().addComponent(treeGrid);
+        //budgetCard.getContainer().addComponent(treeGrid);
     }
-
+/*
     private TreeGrid createTreeGrid() {
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
         LocalDate endDate = new LocalDate(currentProject.getEnddate().getYear(),
@@ -325,13 +300,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         treeGrid.setItems(taskRows, TaskRow::getUserRows);
         return treeGrid;
     }
+    */
 
     private void reloadGrid() {
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
         currentProject = getSelProject().getValue();
         if(getSelProject().getSelectedItem().isPresent()) createDetailLayout();
     }
-
+/*
     private void updateGridBodyMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<TaskRow> event) {
         event.getContextMenu().removeItems();
         if (event.getItem() != null) {
@@ -387,4 +363,5 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             event.getContextMenu().addItem("menu is empty", null);
         }
     }
+    */
 }

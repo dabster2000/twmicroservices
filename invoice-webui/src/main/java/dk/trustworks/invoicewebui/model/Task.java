@@ -10,8 +10,8 @@ public class Task {
     private String name;
     private String type;
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Taskworkerconstraint> taskworkerconstraint;
+    //@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    //private List<Taskworkerconstraint> taskworkerconstraint;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectuuid")
@@ -56,7 +56,7 @@ public class Task {
     public void setType(String type) {
         this.type = type;
     }
-
+/*
     public List<Taskworkerconstraint> getTaskworkerconstraint() {
         return taskworkerconstraint;
     }
@@ -64,7 +64,7 @@ public class Task {
     public void setTaskworkerconstraint(List<Taskworkerconstraint> taskworkerconstraint) {
         this.taskworkerconstraint = taskworkerconstraint;
     }
-
+*/
     public Project getProject() {
         return project;
     }

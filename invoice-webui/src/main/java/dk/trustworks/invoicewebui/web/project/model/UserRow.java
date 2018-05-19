@@ -1,15 +1,15 @@
 package dk.trustworks.invoicewebui.web.project.model;
 
 import dk.trustworks.invoicewebui.model.Task;
-import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.utils.NumberConverter;
 
 /**
  * Created by hans on 21/08/2017.
  */
 public class UserRow extends TaskRow {
 
-    private Taskworkerconstraint taskworkerconstraint;
+    //private Taskworkerconstraint taskworkerconstraint;
     private User user;
     private String username;
     private String rate;
@@ -18,10 +18,10 @@ public class UserRow extends TaskRow {
         super(month);
     }
 
-    public UserRow(Task task, Taskworkerconstraint taskworkerconstraint, int months, User user) {
+    public UserRow(Task task, int months, double rate, User user) {
         super(task, months);
-        this.rate = taskworkerconstraint.getPrice()+"";
-        this.taskworkerconstraint = taskworkerconstraint;
+        this.rate = NumberConverter.formatDouble(rate);//taskworkerconstraint.getPrice()+"";
+        //this.taskworkerconstraint = taskworkerconstraint;
         this.user = user;
         this.username = user.getUsername();
     }
@@ -48,7 +48,7 @@ public class UserRow extends TaskRow {
     public void setRate(String rate) {
         this.rate = rate;
     }
-
+/*
     public Taskworkerconstraint getTaskworkerconstraint() {
         return taskworkerconstraint;
     }
@@ -56,7 +56,7 @@ public class UserRow extends TaskRow {
     public void setTaskworkerconstraint(Taskworkerconstraint taskworkerconstraint) {
         this.taskworkerconstraint = taskworkerconstraint;
     }
-
+*/
     public User getUser() {
         return user;
     }

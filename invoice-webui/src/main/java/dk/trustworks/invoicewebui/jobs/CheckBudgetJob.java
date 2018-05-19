@@ -7,12 +7,10 @@ import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import dk.trustworks.invoicewebui.model.Budget;
 import dk.trustworks.invoicewebui.model.Task;
-import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.BudgetRepository;
-import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import org.apache.commons.lang3.StringUtils;
+import dk.trustworks.invoicewebui.services.ContractService;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,19 +28,21 @@ public class CheckBudgetJob {
 
     static final Logger log = Logger.getLogger(CheckBudgetJob.class.getName());
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private BudgetRepository budgetRepository;
+    private final BudgetRepository budgetRepository;
 
-    @Autowired
-    private TaskworkerconstraintRepository taskworkerconstraintRepository;
+    private final ContractService contractService;
 
     @Value("${motherSlackBotToken}")
     private String motherSlackToken;
 
-    private SlackWebApiClient motherWebApiClient;
+    @Autowired
+    public CheckBudgetJob(UserRepository userRepository, BudgetRepository budgetRepository, ContractService contractService) {
+        this.userRepository = userRepository;
+        this.budgetRepository = budgetRepository;
+        this.contractService = contractService;
+    }
 
     @PostConstruct
     public void startup() {
@@ -52,7 +52,7 @@ public class CheckBudgetJob {
     //@Scheduled(cron = "0 0 0 1 1/1 *")
     @Scheduled(cron = "0 30 10 8,18 * ?")
     public void checkBudgetJob() {
-        motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
+        SlackWebApiClient motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
         log.info("CheckBudgetJob.execute");
 
         LocalDate localDateStart = LocalDate.now().plusMonths(1).withDayOfMonth(1);
@@ -88,8 +88,8 @@ public class CheckBudgetJob {
                 log.info("*************************");
                 log.info("budget = " + budget);
 
-                List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(budget.getTask(), budget.getUser());
-                if (taskworkerconstraints.size() == 0) continue;
+                Double rate = contractService.findConsultantRate(budget.getYear(), budget.getMonth(), 1, budget.getUser(), budget.getTask());
+                if (rate == null) continue;
 
                 Task task = budget.getTask();
 
@@ -98,7 +98,7 @@ public class CheckBudgetJob {
                     budgetMap.put(task, budgetNumbers);
                 }
                 double[] doubles = budgetMap.get(task);
-                double budgetHours = (budget.getBudget() / taskworkerconstraints.get(0).getPrice());
+                double budgetHours = (budget.getBudget() / rate);
                 if((budget.getMonth() - (localDateStart.getMonthOfYear() - 1))>3) continue;
                 log.info("Month ("+(budget.getMonth() - (localDateStart.getMonthOfYear() - 1))+") " +
                         "now has "+budgetHours+" budget hours.");
@@ -275,22 +275,6 @@ public class CheckBudgetJob {
             currentDate = currentDate.plusMonths(1);
         }
         return capacities;
-    }
-
-    private allbegray.slack.type.User getSlackUser(User user) {
-        int levenshsteinScore = 100;
-        allbegray.slack.type.User slackUser = null;
-        for (allbegray.slack.type.User slackUserIteration : motherWebApiClient.getUserList()) {
-            int levenshteinDistance = StringUtils.getLevenshteinDistance(user.getFirstname() + " " + user.getLastname(), slackUserIteration.getProfile().getReal_name());
-            System.out.println("levenshteinDistance = " + levenshteinDistance);
-            System.out.println("slackUserIteration.getProfile().getReal_name() = " + slackUserIteration.getProfile().getReal_name());
-            if(levenshteinDistance < levenshsteinScore) {
-                levenshsteinScore = levenshteinDistance;
-                slackUser = slackUserIteration;
-            }
-        }
-        System.out.println("Identified slackUser.getName() = " + slackUser.getName());
-        return slackUser;
     }
 
     public static int getWorkingDaysBetweenTwoDates(Date startDate, Date endDate) {

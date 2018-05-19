@@ -1,10 +1,7 @@
 package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
-import dk.trustworks.invoicewebui.model.MainContract;
-import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.model.SubContract;
-import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.MainContractRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
@@ -18,14 +15,18 @@ import java.util.stream.Collectors;
 @Service
 public class ContractService {
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
+
+    private final MainContractRepository mainContractRepository;
+
+    private final ContractRepository contractRepository;
 
     @Autowired
-    private MainContractRepository mainContractRepository;
-
-    @Autowired
-    private ContractRepository contractRepository;
+    public ContractService(ProjectRepository projectRepository, MainContractRepository mainContractRepository, ContractRepository contractRepository) {
+        this.projectRepository = projectRepository;
+        this.mainContractRepository = mainContractRepository;
+        this.contractRepository = contractRepository;
+    }
 
     public MainContract createContract(MainContract mainContract) {
         return mainContractRepository.save(mainContract);
@@ -62,8 +63,13 @@ public class ContractService {
 
     public Double findConsultantRateByWork(Work work) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        Double rate = contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
-        if(rate==null) throw new IllegalArgumentException("Work has no valid contract: "+work);
+        Double rate = contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth()+1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+        return rate;
+    }
+
+    public Double findConsultantRate(int year, int month, int day, User user, Task task) {
+        if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
+        Double rate = contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), user.getUuid());
         return rate;
     }
 
