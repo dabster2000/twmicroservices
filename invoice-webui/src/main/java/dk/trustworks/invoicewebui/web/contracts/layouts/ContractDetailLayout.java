@@ -4,6 +4,7 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.contextmenu.GridContextMenu;
+import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -72,21 +73,28 @@ public class ContractDetailLayout extends ResponsiveLayout {
         this.mainContract = mainContract;
         contractRow.removeAllComponents();
 
+        Binder<MainContract> mainContractBinder = new Binder<>();
         ContractFormDesign mainContractForm = new ContractFormDesign();
         mainContractForm.getChkProjects().setVisible(false);
         mainContractForm.getBtnCreate().setVisible(false);
         mainContractForm.getBtnUpdate().setVisible(true);
         mainContractForm.getBtnEdit().setVisible(false);
         mainContractForm.getTxtAmount().setVisible(mainContract.getContractType().equals(ContractType.AMOUNT));
-        mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
+        //mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
         mainContractForm.getDfFrom().setVisible(true);
-        mainContractForm.getDfFrom().setValue(mainContract.getActiveFrom());
+        mainContractBinder.forField(mainContractForm.getDfFrom()).bind(MainContract::getActiveFrom, Contract::setActiveTo);
+        //mainContractForm.getDfFrom().setValue(mainContract.getActiveFrom());
         mainContractForm.getDfTo().setVisible(true);
-        mainContractForm.getDfTo().setValue(mainContract.getActiveTo());
+        //mainContractForm.getDfTo().setValue(mainContract.getActiveTo());
         mainContractForm.getCbType().setVisible(true);
         mainContractForm.getCbType().setEnabled(false);
-        mainContractForm.getCbType().setValue(mainContract.getContractType());
+        //mainContractForm.getCbType().setValue(mainContract.getContractType());
         mainContractForm.getLblTitle().setValue("Main Contract");
+        mainContractBinder.readBean(mainContract);
+
+        mainContractForm.getBtnUpdate().addClickListener(event -> {
+
+        });
 
         contractRow.addColumn()
                 .withDisplayRules(12, 12, 6, 4)

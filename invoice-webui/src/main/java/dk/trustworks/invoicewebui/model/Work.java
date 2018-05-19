@@ -108,14 +108,16 @@ public class Work {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Work{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", day=").append(day);
-        sb.append(", month=").append(month);
-        sb.append(", year=").append(year);
-        sb.append(", workduration=").append(workduration);
-        sb.append(", created=").append(created);
-        sb.append('}');
-        return sb.toString();
+        return "Work{" +
+                "uuid='" + uuid + '\'' +
+                ", day=" + day +
+                ", month=" + month +
+                ", year=" + year +
+                ", workduration=" + workduration +
+                ", created=" + created +
+                ", task=" + task.getUuid() +
+                ", user=" + user.getUuid() +
+                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +
+                '}';
     }
 }

@@ -111,10 +111,11 @@ public class ProjectSummaryService {
             }
             if(work.getUser()==null) logger.info("work u = " + work);
             if(work.getTask()==null) logger.info("work t = " + work);
-            List<Taskworkerconstraint> taskworkerconstraintList = taskworkerconstraintClient.findByTaskAndUser(work.getTask(), work.getUser());
-            if(taskworkerconstraintList.size()==0) continue;
-            Taskworkerconstraint taskworkerconstraint = taskworkerconstraintList.get(0);
-            projectSummaryMap.get(project.getUuid()).addAmount(work.getWorkduration() * (taskworkerconstraint.getPrice()));
+            //List<Taskworkerconstraint> taskworkerconstraintList = taskworkerconstraintClient.findByTaskAndUser(work.getTask(), work.getUser());
+            //if(taskworkerconstraintList.size()==0) continue;
+            //Taskworkerconstraint taskworkerconstraint = taskworkerconstraintList.get(0);
+
+            projectSummaryMap.get(project.getUuid()).addAmount(work.getWorkduration() * (contractService.findConsultantRateByWork(work)));
         }
         return Lists.newArrayList(projectSummaryMap.values());
     }
@@ -173,9 +174,9 @@ public class ProjectSummaryService {
                 }
             }
             */
-            Double taskworkerconstraint = contractService.findTaskworkerconstraintByWork(workResource);
+            Double rate = contractService.findConsultantRateByWork(workResource);
 
-            if(taskworkerconstraint == null) {
+            if(rate == null) {
                 logger.error("Taskworkerconstraint could not be found for user (link: "+user.getUuid()+") and task (link: "+task.getUuid()+")");
                 invoice.errors = true;
                 Notification.show("User not assigned",
@@ -188,7 +189,7 @@ public class ProjectSummaryService {
             if(!invoiceItemMap.containsKey(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid())) {
                 InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
                         task.getName(),
-                        taskworkerconstraint,
+                        rate,
                         0.0);
                 invoiceItem.uuid = UUID.randomUUID().toString();
                 invoiceItemMap.put(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid(), invoiceItem);

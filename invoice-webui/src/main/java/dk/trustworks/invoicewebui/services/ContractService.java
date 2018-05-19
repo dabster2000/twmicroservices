@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.services;
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.MainContract;
 import dk.trustworks.invoicewebui.model.Project;
+import dk.trustworks.invoicewebui.model.SubContract;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.MainContractRepository;
@@ -30,6 +31,14 @@ public class ContractService {
         return mainContractRepository.save(mainContract);
     }
 
+    public void updateContract(MainContract contract) {
+        contractRepository.save(contract);
+    }
+
+    public void updateContract(SubContract contract) {
+        contractRepository.save(contract);
+    }
+
     public MainContract addProjects(MainContract mainContract, Set<Project> projects) throws ContractValidationException {
         // validate
         for (Project project : projects) {
@@ -51,8 +60,11 @@ public class ContractService {
         return mainContract;
     }
 
-    public Double findTaskworkerconstraintByWork(Work work) {
-        return contractRepository.findByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+    public Double findConsultantRateByWork(Work work) {
+        if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
+        Double rate = contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+        if(rate==null) throw new IllegalArgumentException("Work has no valid contract: "+work);
+        return rate;
     }
 
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
