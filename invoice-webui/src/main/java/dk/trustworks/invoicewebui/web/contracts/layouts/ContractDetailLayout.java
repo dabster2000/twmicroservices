@@ -14,7 +14,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
@@ -40,31 +39,31 @@ import java.util.List;
 @SpringUI
 public class ContractDetailLayout extends ResponsiveLayout {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ContractService contractService;
+    private final ContractService contractService;
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
 
-    @Autowired
-    private ConsultantRepository consultantRepository;
+    private final ConsultantRepository consultantRepository;
 
-    @Autowired
-    private PhotoService photoService;
-
-    @Autowired
-    private BudgetNewRepository budgetNewRepository;
+    private final PhotoService photoService;
 
     private ResponsiveRow contractRow;
 
-    private ResponsiveColumn treeGridColumn;
     private Card consultantsCard;
     private Card projectsCard;
     private Grid<BudgetRow> grid;
     private MainContract mainContract;
+
+    @Autowired
+    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectRepository projectRepository, ConsultantRepository consultantRepository, PhotoService photoService) {
+        this.userRepository = userRepository;
+        this.contractService = contractService;
+        this.projectRepository = projectRepository;
+        this.consultantRepository = consultantRepository;
+        this.photoService = photoService;
+    }
 
     @PostConstruct
     public void init() {
@@ -125,7 +124,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
         createConsultantList(mainContract);
 
-        treeGridColumn = contractRow.addColumn()
+        contractRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(consultantsCard);
 
@@ -157,6 +156,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             ProjectRowDesign projectRowDesign = new ProjectRowDesign();
             projectRowDesign.getLblName().setValue(project.getName());
             projectRowDesign.getBtnIcon().setIcon(MaterialIcons.DATE_RANGE);
+            projectRowDesign.getBtnDelete().setIcon(MaterialIcons.DELETE);
+            projectRowDesign.getBtnDelete().addClickListener(event -> createProjectList(contractService.removeProject(mainContract, project)));
             projectsCard.getContent().addComponent(projectRowDesign);
         }
 
@@ -216,6 +217,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
             });
             consultantRowDesign.getVlHours().setVisible(consultant.getMainContract().getContractType().equals(ContractType.PERIOD));
             consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
+
+            consultantRowDesign.getBtnDelete().addClickListener(event -> {
+                mainContract.getConsultants().remove(consultant);
+                consultantRepository.delete(consultant);
+                //contractService.updateContract(mainContract);
+                createConsultantList(mainContract);
+            });
+
             responsiveRow.addColumn()
                     .withComponent(consultantRowDesign)
                     .withDisplayRules(12, 12, 6, 4);

@@ -7,6 +7,7 @@ import dk.trustworks.invoicewebui.repositories.MainContractRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -32,12 +33,12 @@ public class ContractService {
         return mainContractRepository.save(mainContract);
     }
 
-    public void updateContract(MainContract contract) {
-        contractRepository.save(contract);
+    public MainContract updateContract(MainContract contract) {
+        return contractRepository.save(contract);
     }
 
-    public void updateContract(SubContract contract) {
-        contractRepository.save(contract);
+    public SubContract updateContract(SubContract contract) {
+        return contractRepository.save(contract);
     }
 
     public MainContract addProjects(MainContract mainContract, Set<Project> projects) throws ContractValidationException {
@@ -75,5 +76,12 @@ public class ContractService {
 
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
         return start1.isBefore(end2) && start2.isBefore(end1);
+    }
+
+    @Transactional
+    public MainContract removeProject(MainContract mainContract, Project project) {
+        mainContract = mainContractRepository.findOne(mainContract.getUuid());
+        mainContract.getProjects().remove(project);
+        return updateContract(mainContract);
     }
 }
