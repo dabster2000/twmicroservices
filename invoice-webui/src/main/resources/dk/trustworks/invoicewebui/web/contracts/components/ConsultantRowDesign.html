@@ -7,17 +7,25 @@
   <meta name="package-mapping" content="com_jarektoro_responsivelayout:com.jarektoro.responsivelayout">
  </head>
  <body>
-  <vaadin-horizontal-layout width-full>
+  <vaadin-horizontal-layout width-full margin-left margin-right>
    <vaadin-horizontal-layout style-name="dark-blue" width-full :expand>
     <vaadin-css-layout width="75px" height="75px" _id="imgPhoto"></vaadin-css-layout>
     <vaadin-label style-name="white-font" width-full plain-text _id="lblName" :middle :expand>
       Hans Ernst Lassen 
     </vaadin-label>
    </vaadin-horizontal-layout>
-   <vaadin-text-field style-name="align-right" width="150px" value="1500.0" _id="txtRate" :middle :right></vaadin-text-field>
-   <vaadin-label style-name="align-center" plain-text :middle>
-     kr 
-   </vaadin-label>
+   <vaadin-vertical-layout spacing="false" width="100px" margin="false" :center>
+    <vaadin-label style-name="align-center tiny" plain-text :center>
+      rate 
+    </vaadin-label>
+    <vaadin-text-field style-name="align-center" width="100px" value="1500.0" _id="txtRate" :center></vaadin-text-field>
+   </vaadin-vertical-layout>
+   <vaadin-vertical-layout spacing="false" width="100px" margin="false">
+    <vaadin-label style-name="align-center tiny" plain-text :center>
+      hours 
+    </vaadin-label>
+    <vaadin-text-field style-name="align-center" width="100px" value="140" _id="txtHours" :center></vaadin-text-field>
+   </vaadin-vertical-layout>
   </vaadin-horizontal-layout>
  </body>
 </html>

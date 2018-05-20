@@ -23,6 +23,7 @@ public class ConsultantRowDesign extends HorizontalLayout {
     private CssLayout imgPhoto;
     private Label lblName;
     private TextField txtRate;
+    private TextField txtHours;
 
     public ConsultantRowDesign() {
         Design.read(this);
@@ -38,6 +39,10 @@ public class ConsultantRowDesign extends HorizontalLayout {
 
     public TextField getTxtRate() {
         return txtRate;
+    }
+
+    public TextField getTxtHours() {
+        return txtHours;
     }
 
 }

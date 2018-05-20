@@ -110,6 +110,11 @@ public class MainContract extends Contract {
         this.children = children;
     }
 
+    public LocalDate getEndDate() {
+        if(children.size() == 0) return getActiveTo();
+        return children.stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
+    }
+
     @Override
     public String toString() {
         return "MainContract{" +

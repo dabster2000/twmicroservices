@@ -2,21 +2,27 @@ package dk.trustworks.invoicewebui.web.project.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.Setter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-import dk.trustworks.invoicewebui.model.Client;
-import dk.trustworks.invoicewebui.model.Clientdata;
-import dk.trustworks.invoicewebui.model.Photo;
-import dk.trustworks.invoicewebui.model.Project;
+import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.web.contracts.model.BudgetRow;
 import org.hibernate.validator.internal.util.CollectionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import static java.util.Comparator.comparing;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
@@ -37,6 +43,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final ClientdataRepository clientdataRepository;
 
+    private final BudgetNewRepository budgetNewRepository;
+
     private ProjectMapLocationImpl projectMapLocation;
 
     private final PhotoRepository photoRepository;
@@ -49,12 +57,15 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private BudgetCardDesign budgetCard;
 
+    private Grid<BudgetRow> grid;
+
     @Autowired
-    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, NewsRepository newsRepository) {
+    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, NewsRepository newsRepository) {
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.clientRepository = clientRepository;
         this.clientdataRepository = clientdataRepository;
+        this.budgetNewRepository = budgetNewRepository;
         this.photoRepository = photoRepository;
         this.newsRepository = newsRepository;
     }
@@ -162,11 +173,132 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     }
 
     private void updateTreeGrid() {
-        //treeGrid = createTreeGrid();
+        grid = createGrid();
         budgetCard.getContainer().removeAllComponents();
-        //budgetCard.getContainer().addComponent(treeGrid);
+        budgetCard.getContainer().addComponent(grid);
     }
-/*
+
+    private Grid createGrid() {
+        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
+        if(currentProject.getMainContracts().size()==0) return new Grid();
+        LocalDate endDate = currentProject.getMainContracts().stream().max(Comparator.comparing(MainContract::getEndDate)).get().getEndDate();
+        long monthsBetween = ChronoUnit.MONTHS.between(startDate, endDate);
+        System.out.println("period.getMonths() = " + monthsBetween);
+
+        grid = new Grid<>();
+
+        grid.addColumn(BudgetRow::getUsername).setWidth(200).setCaption("Consultant").setId("name-column");
+        //grid.addColumn(ConsultantRow::getRate).setWidth(100).setCaption("Rate").setEditorComponent(new TextField(), ConsultantRow::setRate);
+        //grid.addColumn(ConsultantRow::getAmount).setWidth(100).setCaption("Budget").setEditorComponent(new TextField(), ConsultantRow::setAmount);
+        grid.setFrozenColumnCount(1);
+        grid.setWidth("100%");
+        grid.getEditor().setEnabled(true);
+
+        List<BudgetRow> budgetRows = new ArrayList<>();
+
+        for (MainContract mainContract : currentProject.getMainContracts()) {
+            if(!mainContract.getContractType().equals(ContractType.AMOUNT)) continue;
+            for (Consultant consultant : mainContract.getConsultants()) {
+                BudgetRow budgetRow = new BudgetRow(consultant, (int)(monthsBetween+1));
+                System.out.println("consultant = " + consultant);
+                LocalDate budgetDate = startDate;
+
+                int month = 0;
+                while(budgetDate.isBefore(endDate)) {
+                    /*
+                    ptional<Budget> budget = budgets.stream()
+                            .filter(p -> p.getYear()==filterDate.getYear() &&
+                                    p.getMonth()==filterDate.getMonthOfYear()-1 &&
+                                    p.getTask()!=null &&
+                                    p.getUser()!=null &&
+                                    p.getTask().getUuid().equals(task.getUuid()) &&
+                                    p.getUser().getUuid().equals(user.getUuid()))
+                            .findFirst();
+
+                    if(budget.isPresent()) {
+                        if(user.getUsername().equals("hans.lassen")) System.out.println("budget.get() = " + budget);
+                        userRow.setMonth(month, (budget.get().getBudget() / taskworkerconstraint.get().getPrice())+"");
+                    } else {
+                        userRow.setMonth(month, "0.0");
+                    }
+                    month++;
+                    budgetDate = budgetDate.plusMonths(1);
+                     */
+
+                    final LocalDate filterDate = budgetDate;
+                    System.out.println("filterDate = " + filterDate);
+
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultant(filterDate.getMonthValue()-1, filterDate.getYear(), consultant);
+                    //System.out.println("budgets.size() = " + budgets.size());
+
+                    if(budget != null) {
+                        //BudgetNew budget = budgets.get(0);
+                        System.out.println("budget = " + budget);
+                        if(consultant.getUser().getUsername().equals("hans.lassen")) System.out.println("budget.get() = " + budget);
+                        budgetRow.setMonth(month, (budget.getBudget() / consultant.getRate())+"");
+                    } else {
+                        System.out.println("0.0 = " + 0.0);
+                        budgetNewRepository.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, consultant));
+                        budgetRow.setMonth(month, "0.0");
+                    }
+                    month++;
+                    budgetDate = budgetDate.plusMonths(1);
+                }
+
+                budgetRows.add(budgetRow);
+            }
+            int month = 0;
+            int year = startDate.getYear();
+            List<String> yearColumns = new ArrayList<>();
+            LocalDate budgetDate = startDate;
+            while(budgetDate.isBefore(endDate)) {
+                final LocalDate filterDate = budgetDate;
+                final int actualMonth = month;
+                Grid.Column<BudgetRow, ?> budgetColumn = grid.addColumn(
+                        budgetRow -> budgetRow.getMonth(actualMonth))
+                        .setStyleGenerator(budgetHistory -> "align-right")
+                        .setWidth(100)
+                        .setId(Month.of(filterDate.getMonthValue()).name()+filterDate.getYear())
+                        .setCaption(Month.of(filterDate.getMonthValue()).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)+" "+ (filterDate.getYear()-2000))
+                        .setEditorComponent(new TextField(), (Setter<BudgetRow, String>) (budgetRow, budgetValue) -> budgetRow.setMonth(actualMonth, budgetValue));
+                yearColumns.add(budgetColumn.getId());
+                budgetDate = budgetDate.plusMonths(1);
+                month++;
+                if(year < budgetDate.getYear()) {
+                    //topHeader.join(yearColumns.toArray(new String[0])).setText(year + "");
+                    yearColumns = new ArrayList<>();
+                    year++;
+                }
+            }
+        }
+        grid.getEditor().setEnabled(true);
+        grid.getEditor().addSaveListener(event -> {
+            System.out.println("grid.getEditor().addSaveListener");
+            BudgetRow budgetRow = event.getBean();
+            System.out.println("consultantRow = " + budgetRow);
+            LocalDate budgetCountDate = startDate;
+            List<BudgetNew> budgetList = new ArrayList<>();
+            for (String budgetString : budgetRow.getBudget()) {
+                if(budgetString==null) budgetString = "0.0";
+                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultant(
+                        budgetCountDate.getMonthValue() - 1,
+                        budgetCountDate.getYear(),
+                        budgetRow.getConsultant());
+                budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
+                budgetNewRepository.save(budget);
+                budgetCountDate = budgetCountDate.plusMonths(1);
+            }
+
+            updateTreeGrid();
+
+        });
+        grid.setItems(budgetRows);
+
+        return grid;
+    }
+
+
+    /*
     private TreeGrid createTreeGrid() {
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
         LocalDate endDate = new LocalDate(currentProject.getEnddate().getYear(),
