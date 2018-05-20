@@ -1,8 +1,7 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import dk.trustworks.invoicewebui.model.MainContract;
-import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.MainContractRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
@@ -42,7 +41,7 @@ public class ConvertOldToNew {
     @Scheduled(fixedDelay = 1000000, initialDelay = 1000)
     public void job() {
         log.info("running work job...");
-/*
+
         for (Project project : projectRepository.findAll()) {
             log.info("Converting project to contract = " + project);
             Client client = project.getClient();
@@ -66,7 +65,7 @@ public class ConvertOldToNew {
             project.addMainContract(mainContract);
             mainContractRepository.save(mainContract);
         }
-*/
+
         Map<String, Work> noContract = new HashMap<>();
         List<Work> workNotFoundList = new ArrayList<>();
         List<Work> workOutsidePeriod = new ArrayList<>();

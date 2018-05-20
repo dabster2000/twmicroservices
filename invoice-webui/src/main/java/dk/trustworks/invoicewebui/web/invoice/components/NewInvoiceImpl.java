@@ -6,6 +6,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
@@ -107,11 +108,11 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         cbSelectYearMonth.setSelectedItem(yearMonthList.get(1));
         cbSelectYearMonth.addValueChangeListener(event -> reloadData());
 
-        Grid.Column colRegisteredAmount = gridProjectSummaryList.getColumn("registeredamount");
+        Column colRegisteredAmount = gridProjectSummaryList.getColumn("registeredamount");
         colRegisteredAmount.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
         colRegisteredAmount.setStyleGenerator(item -> "v-align-right");
 
-        Grid.Column colInvoicedAmount = gridProjectSummaryList.getColumn("invoicedamount");
+        Column colInvoicedAmount = gridProjectSummaryList.getColumn("invoicedamount");
         colInvoicedAmount.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
         colInvoicedAmount.setStyleGenerator(item -> "v-align-right");
 
