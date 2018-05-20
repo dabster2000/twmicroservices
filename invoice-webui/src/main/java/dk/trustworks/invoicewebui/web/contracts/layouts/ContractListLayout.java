@@ -7,10 +7,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.Consultant;
 import dk.trustworks.invoicewebui.model.MainContract;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractFormDesign;
@@ -24,17 +26,24 @@ import java.time.format.DateTimeFormatter;
 @SpringUI
 public class ContractListLayout extends VerticalLayout {
 
-    @Autowired
-    private ContractService contractService;
+    private final ContractService contractService;
 
-    @Autowired
-    private ContractSearchImpl contractSearch;
+    private final ContractSearchImpl contractSearch;
 
-    @Autowired
-    private ContractDetailLayout contractDetailLayout;
+    private final ContractDetailLayout contractDetailLayout;
+
+    private final PhotoService photoService;
 
     private ResponsiveLayout contractResponsiveLayout;
     private ResponsiveRow contractRow;
+
+    @Autowired
+    public ContractListLayout(ContractService contractService, ContractSearchImpl contractSearch, ContractDetailLayout contractDetailLayout, PhotoService photoService) {
+        this.contractService = contractService;
+        this.contractSearch = contractSearch;
+        this.contractDetailLayout = contractDetailLayout;
+        this.photoService = photoService;
+    }
 
     @PostConstruct
     public void init() {
@@ -72,6 +81,11 @@ public class ContractListLayout extends VerticalLayout {
                 } else {
                     contractDesign.getLblAmount().setVisible(false);
                 }
+
+                for (Consultant consultant : mainContract.getConsultants()) {
+                    contractDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
+                }
+
 
                 contractDesign.getBtnEdit().addClickListener(event3 -> {
                     this.removeComponent(contractResponsiveLayout);

@@ -108,7 +108,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         });
 
         contractRow.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
+                .withDisplayRules(12, 12, 6, 4)
                 .withComponent(mainContractForm);
 
         projectsCard = new Card();
@@ -204,21 +204,21 @@ public class ContractDetailLayout extends ResponsiveLayout {
         for (Consultant consultant : mainContract.getConsultants()) {
             ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
             consultantRowDesign.getLblName().setValue(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
-            consultantRowDesign.getTxtRate().setValue(NumberConverter.formatDouble(consultant.getRate()));
+            consultantRowDesign.getTxtRate().setValue(Math.round(consultant.getRate())+"");
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {
                 consultant.setRate(NumberConverter.parseDouble(event.getValue()));
                 consultantRepository.save(consultant);
             });
-            consultantRowDesign.getTxtHours().setValue(NumberConverter.formatDouble(consultant.getHours()));
+            consultantRowDesign.getTxtHours().setValue(Math.round(consultant.getHours())+"");
             consultantRowDesign.getTxtHours().addValueChangeListener(event -> {
                 consultant.setHours(NumberConverter.parseDouble(event.getValue()));
                 consultantRepository.save(consultant);
             });
+            consultantRowDesign.getVlHours().setVisible(consultant.getMainContract().getContractType().equals(ContractType.PERIOD));
             consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
             responsiveRow.addColumn()
                     .withComponent(consultantRowDesign)
                     .withDisplayRules(12, 12, 6, 4);
-            //consultantsCard.getContent().addComponent(consultantRowDesign);
         }
 
         consultantsCard.getContent().addComponent(new MButton(

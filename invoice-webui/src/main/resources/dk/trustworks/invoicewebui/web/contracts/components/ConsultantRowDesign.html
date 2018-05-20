@@ -8,24 +8,27 @@
  </head>
  <body>
   <vaadin-horizontal-layout width-full margin-left margin-right>
-   <vaadin-horizontal-layout style-name="dark-blue" width-full :expand>
-    <vaadin-css-layout width="75px" height="75px" _id="imgPhoto"></vaadin-css-layout>
-    <vaadin-label style-name="white-font" width-full plain-text _id="lblName" :middle :expand>
-      Hans Ernst Lassen 
-    </vaadin-label>
+   <vaadin-horizontal-layout style-name="light-blue" width-full :expand>
+    <vaadin-horizontal-layout style-name="dark-blue" width-full :expand>
+     <vaadin-css-layout width="75px" height="75px" _id="imgPhoto"></vaadin-css-layout>
+     <vaadin-label style-name="white-font" width-full plain-text _id="lblName" :middle :expand>
+       Hans Ernst Lassen 
+     </vaadin-label>
+    </vaadin-horizontal-layout>
+    <vaadin-vertical-layout spacing="false" width="65px" margin="false" :middle :center>
+     <vaadin-label style-name="align-center tiny" plain-text :center>
+       rate 
+     </vaadin-label>
+     <vaadin-text-field description="Hourly rate" style-name="align-center" width="65px" value="1500" _id="txtRate" :center></vaadin-text-field>
+    </vaadin-vertical-layout>
+    <vaadin-vertical-layout spacing="false" width="60px" margin="false" _id="vlHours" :middle :center>
+     <vaadin-label style-name="align-center tiny" plain-text :center>
+       hours 
+     </vaadin-label>
+     <vaadin-text-field description="Hours per week" style-name="align-center" width="60px" value="140" _id="txtHours" :center></vaadin-text-field>
+    </vaadin-vertical-layout>
+    <vaadin-css-layout width="8px"></vaadin-css-layout>
    </vaadin-horizontal-layout>
-   <vaadin-vertical-layout spacing="false" width="100px" margin="false" :center>
-    <vaadin-label style-name="align-center tiny" plain-text :center>
-      rate 
-    </vaadin-label>
-    <vaadin-text-field style-name="align-center" width="100px" value="1500.0" _id="txtRate" :center></vaadin-text-field>
-   </vaadin-vertical-layout>
-   <vaadin-vertical-layout spacing="false" width="100px" margin="false">
-    <vaadin-label style-name="align-center tiny" plain-text :center>
-      hours 
-    </vaadin-label>
-    <vaadin-text-field style-name="align-center" width="100px" value="140" _id="txtHours" :center></vaadin-text-field>
-   </vaadin-vertical-layout>
   </vaadin-horizontal-layout>
  </body>
 </html>

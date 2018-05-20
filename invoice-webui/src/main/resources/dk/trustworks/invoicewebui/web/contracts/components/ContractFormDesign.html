@@ -16,12 +16,12 @@
       </vaadin-label>
      </vaadin-horizontal-layout>
      <vaadin-vertical-layout spacing="false" size-full _id="container">
-      <vaadin-form-layout>
+      <vaadin-form-layout size-auto :center>
        <vaadin-combo-box caption="Type" data-item-type="dk.trustworks.invoicewebui.model.enums.ContractType" _id="cbType"></vaadin-combo-box>
        <vaadin-check-box-group visible="false" caption="Projects" width-full data-item-type="dk.trustworks.invoicewebui.model.Project" data-property-id="name" _id="chkProjects"></vaadin-check-box-group>
        <vaadin-date-field caption="Active from" resolution="month" visible="false" date-format="MMM yyyy" value="2017-09-07" _id="dfFrom"></vaadin-date-field>
        <vaadin-date-field caption="Active to" resolution="month" visible="false" date-format="MMM yyyy" value="2018-07-06" _id="dfTo"></vaadin-date-field>
-       <vaadin-text-field visible="false" caption="Amount" width-full value="1.000.000 kr" _id="txtAmount"></vaadin-text-field>
+       <vaadin-text-field visible="false" caption="Amount" value="1.000.000 kr" _id="txtAmount"></vaadin-text-field>
        <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
          Update 
        </vaadin-button>
