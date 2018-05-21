@@ -37,6 +37,8 @@ public class ContractFormDesign extends VerticalLayout {
     private Button btnUpdate;
     private Button btnCreate;
     private Button btnEdit;
+    private CssLayout cssNotification;
+    private Label lblNotification;
 
     public ContractFormDesign() {
         Design.read(this);
@@ -84,6 +86,14 @@ public class ContractFormDesign extends VerticalLayout {
 
     public Button getBtnEdit() {
         return btnEdit;
+    }
+
+    public CssLayout getCssNotification() {
+        return cssNotification;
+    }
+
+    public Label getLblNotification() {
+        return lblNotification;
     }
 
 }

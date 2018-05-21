@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.services;
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,18 +177,21 @@ public class ContractService {
         return projectsResult;
     }
 
-    public String getUsersFirstAndLastWorkOnProject(Project project, User user) {
+    public LocalDatePeriod getUsersFirstAndLastWorkOnProject(Project project, User user) {
         System.out.println("ContractService.getUsersFirstAndLastWorkOnProject");
         System.out.println("project = [" + project + "], user = [" + user + "]");
-        if(project.getTasks().size() == 0) return "";
+        if(project.getTasks().size() == 0) return null;
         List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
         List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
-        Optional<Work> workMin = workList.stream().min(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth(), o.getDay())));
-        Optional<Work> workMax = workList.stream().max(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth(), o.getDay())));
+        Optional<Work> workMin = workList.stream().min(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
+        Optional<Work> workMax = workList.stream().max(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
         if(workMin.isPresent()) {
-            return ""+workMin.get().getYear()+"/"+workMin.get().getMonth()+" - "+workMax.get().getYear()+"/"+workMax.get().getMonth();
+            return new LocalDatePeriod(
+                    LocalDate.of(workMin.get().getYear(), workMin.get().getMonth()+1, workMin.get().getDay()),
+                    LocalDate.of(workMax.get().getYear(), workMax.get().getMonth()+1, workMax.get().getDay())
+            );
         } else {
-            return "";
+            return null;
         }
     }
 

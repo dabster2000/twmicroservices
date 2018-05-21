@@ -6,7 +6,6 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -24,6 +23,7 @@ import dk.trustworks.invoicewebui.web.contracts.components.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractFormDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ProjectRowDesign;
+import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -55,6 +55,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private ContractFormDesign mainContractForm;
 
+    private LocalDatePeriod proposedPeriod;
+
     @Autowired
     public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectRepository projectRepository, ConsultantRepository consultantRepository, PhotoService photoService) {
         this.userRepository = userRepository;
@@ -71,10 +73,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     public ResponsiveLayout loadContractDetails(MainContract mainContract) {
         contractRow.removeAllComponents();
+        proposedPeriod = new LocalDatePeriod(mainContract.getActiveFrom(), mainContract.getActiveTo());
 
         Binder<MainContract> mainContractBinder = new Binder<>();
         mainContractForm = new ContractFormDesign();
-        mainContractForm.getContainer().setHeight(300, Unit.PIXELS);
+        mainContractForm.getContainer().setHeight(350, Unit.PIXELS);
         mainContractForm.getContainer().addStyleName("v-scrollable");
 
         mainContractForm.getChkProjects().setVisible(false);
@@ -98,6 +101,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 mainContractBinder.writeBean(mainContract);
                 mainContract.setAmount(NumberConverter.parseDouble(mainContractForm.getTxtAmount().getValue()));
                 contractService.updateContract(mainContract);
+                updateData(mainContract);
             } catch (ValidationException e) {
                 e.printStackTrace();
                 Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
@@ -110,7 +114,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
         Card projectsCard = new Card();
         projectsCard.getLblTitle().setValue("Projects");
-        projectsCard.getContent().setHeight(300, Unit.PIXELS);
+        projectsCard.getContent().setHeight(350, Unit.PIXELS);
         projectsCard.getContent().addStyleName("v-scrollable");
         projectsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
         projectsCard.getContent().addComponent(projectsLayout);
@@ -149,6 +153,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractFormDesign.getBtnCreate().addClickListener(event -> {
             contractRow.removeComponent(newSubContractFormColumn);
         });
+
+        updateProposedPeriod(mainContract);
 
         return this;
     }
@@ -210,9 +216,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 // is project already on contract
                 if(mainContract.getProjects().stream().filter(p -> p.getUuid().equals(project.getUuid())).findFirst().isPresent()) {
                     System.out.println("Project already exists. Trying to find work...");
-                    String period = contractService.getUsersFirstAndLastWorkOnProject(project, user);
+                    LocalDatePeriod period = contractService.getUsersFirstAndLastWorkOnProject(project, user);
                     System.out.println("period = " + period);
-                    mainContractForm.getDfTo().setComponentError(new UserError(period));
+                    if(period.getFrom().isBefore(proposedPeriod.getFrom())) proposedPeriod.setFrom(period.getFrom().minusMonths(1));
+                    if(period.getTo().isAfter(proposedPeriod.getTo())) proposedPeriod.setTo(period.getTo().plusMonths(1));
                 } else {
                     projectsWithUserWorkButNoContract.put(project.getUuid(), project);
                 }
@@ -314,32 +321,52 @@ public class ContractDetailLayout extends ResponsiveLayout {
         for (Project project : mainContract.getProjects()) {
             Set<User> employees = contractService.getEmployeesWorkingOnProjectWithNoContract(project);
             for (User employee : employees) {
-                proposedUsers.put(employee.getUuid(), employee);
+                if(!mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(employee.getUuid())).findFirst().isPresent())
+                    proposedUsers.put(employee.getUuid(), employee);
             }
         }
 
-        if(proposedUsers.size() > 0)
+        if(proposedUsers.size() > 0) {
             responsiveRow.addColumn()
                     .withDisplayRules(12, 12, 12, 12)
                     .withComponent(new MLabel("Proposed consultants:"));
-
-        for (User user : proposedUsers.values()) {
-            ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
-            consultantRowDesign.getHlBackground().setStyleName("bg-grey");
-            consultantRowDesign.getHlNameBackground().setStyleName("dark-grey");
-            consultantRowDesign.getLblName().setValue(user.getFirstname() + " " + user.getLastname());
-            consultantRowDesign.getTxtRate().setValue("0");
-            consultantRowDesign.getTxtHours().setValue("0");
-            consultantRowDesign.getVlHours().setVisible(mainContract.getContractType().equals(ContractType.PERIOD));
-            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
-            consultantRowDesign.getImgPhoto().setEnabled(false);
-            consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
-            consultantRowDesign.getBtnDelete().addClickListener(event -> createConsultant(mainContract, user));
-
-            responsiveRow.addColumn()
-                    .withComponent(consultantRowDesign)
-                    .withDisplayRules(12, 12, 6, 4);
+            for (User user : proposedUsers.values()) {
+                createConsultantRow(mainContract, responsiveRow, user);
+            }
+        } else if(mainContract.getProjects().size() == 0) {
+            for (Project project : mainContract.getClient().getProjects()) {
+                for (User user : contractService.getEmployeesWorkingOnProjectWithNoContract(project)) {
+                    if(!mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(user.getUuid())).findFirst().isPresent())
+                    proposedUsers.put(user.getUuid(), user);
+                }
+            }
+            if(proposedUsers.size() > 0) {
+                responsiveRow.addColumn()
+                        .withDisplayRules(12, 12, 12, 12)
+                        .withComponent(new MLabel("Proposed consultants:"));
+                for (User user : proposedUsers.values()) {
+                    createConsultantRow(mainContract, responsiveRow, user);
+                }
+            }
         }
+    }
+
+    private void createConsultantRow(MainContract mainContract, ResponsiveRow responsiveRow, User user) {
+        ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
+        consultantRowDesign.getHlBackground().setStyleName("bg-grey");
+        consultantRowDesign.getHlNameBackground().setStyleName("dark-grey");
+        consultantRowDesign.getLblName().setValue(user.getFirstname() + " " + user.getLastname());
+        consultantRowDesign.getTxtRate().setValue("0");
+        consultantRowDesign.getTxtHours().setValue("0");
+        consultantRowDesign.getVlHours().setVisible(mainContract.getContractType().equals(ContractType.PERIOD));
+        consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
+        consultantRowDesign.getImgPhoto().setEnabled(false);
+        consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
+        consultantRowDesign.getBtnDelete().addClickListener(event -> createConsultant(mainContract, user));
+
+        responsiveRow.addColumn()
+                .withComponent(consultantRowDesign)
+                .withDisplayRules(12, 12, 6, 4);
     }
 
     private void createProject(MainContract mainContract, Project project) {
@@ -349,29 +376,39 @@ public class ContractDetailLayout extends ResponsiveLayout {
             e.printStackTrace();
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
         }
-        createConsultantList(mainContract);
-        createProjectList(mainContract);
+        updateData(mainContract);
     }
 
     private void removeConsultant(MainContract mainContract, Consultant consultant) {
         mainContract.getConsultants().remove(consultant);
         consultantRepository.delete(consultant);
+        updateData(mainContract);
+    }
+
+    private void updateData(MainContract mainContract) {
         createConsultantList(mainContract);
         createProjectList(mainContract);
+        updateProposedPeriod(mainContract);
+    }
+
+    private void updateProposedPeriod(MainContract mainContract) {
+        mainContractForm.getCssNotification().setVisible(false);
+        if(proposedPeriod.getFrom().isBefore(mainContract.getActiveFrom()) || proposedPeriod.getTo().isAfter(mainContract.getActiveTo())) {
+            mainContractForm.getLblNotification().setValue("Consider this date range: "+proposedPeriod);
+            mainContractForm.getCssNotification().setVisible(true);
+        }
     }
 
     private void removeProject(MainContract mainContract, Project project) {
         mainContract = contractService.removeProject(mainContract, project);
-        createProjectList(mainContract);
-        createConsultantList(mainContract);
+        updateData(mainContract);
     }
 
     private void createConsultant(MainContract mainContract, User user) {
         Consultant consultant = new Consultant(mainContract, user, 0.0, 0.0, 0.0);
         mainContract.addConsultant(consultant);
         consultantRepository.save(consultant);
-        createConsultantList(mainContract);
-        createProjectList(mainContract);
+        updateData(mainContract);
     }
 
     private ContractFormDesign getSubContractComponent(Contract mainContract, boolean newContract) {
