@@ -44,6 +44,12 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work_latest w WHERE w.taskuuid LIKE :taskuuid", nativeQuery = true)
     List<Work> findByTask(@Param("taskuuid") String taskuuid);
 
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work_latest w WHERE w.taskuuid IN :taskuuid", nativeQuery = true)
+    List<Work> findByTasks(@Param("taskuuid") List<String> taskuuid);
+
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work_latest w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
+    List<Work> findByTasksAndUser(@Param("taskuuid") List<String> taskuuid, @Param("useruuid") String useruuid);
+
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Work entity);
 }

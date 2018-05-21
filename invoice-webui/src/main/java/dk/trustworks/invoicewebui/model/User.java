@@ -1,12 +1,15 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -223,12 +226,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(uuid, user.uuid);
+        return getUuid().equals(user.getUuid());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(uuid);
+        return Objects.hashCode(getUuid());
     }
 }

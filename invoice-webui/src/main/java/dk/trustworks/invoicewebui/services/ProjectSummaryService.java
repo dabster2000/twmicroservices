@@ -42,14 +42,16 @@ public class ProjectSummaryService {
     public List<ProjectSummary> loadProjectSummaryByYearAndMonth(int year, int month) {
         logger.info("InvoiceController.loadProjectSummaryByYearAndMonth");
         logger.info("year = [" + year + "], month = [" + month + "]");
+        logger.info("LOAD findByYearAndMonth");
         List<Work> workResources = workClient.findByYearAndMonth(year, month);
-        logger.info("workResources.getContent().size() = " + workResources.size());
+        logger.info("workResources.size() = " + workResources.size());
 
         Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
 
         Map<String, ProjectSummary> projectSummaryMap = new HashMap<>();
 
         for (Work work : workResources) {
+            if(!(work.getWorkduration()>0)) continue;
             Task task = work.getTask();
             Project project = task.getProject();
             Client client = project.getClient();

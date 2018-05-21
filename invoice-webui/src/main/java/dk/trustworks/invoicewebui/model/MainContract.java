@@ -14,14 +14,12 @@ import java.util.*;
 public class MainContract extends Contract {
 
     @OneToMany(mappedBy = "mainContract", cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
+            CascadeType.PERSIST
     }, fetch = FetchType.LAZY)
     private List<Consultant> consultants = new ArrayList<>();
 
     @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
+            CascadeType.PERSIST
     }, fetch = FetchType.LAZY)
     @JoinTable(name = "projectcontracts",
             joinColumns = @JoinColumn(name = "contractuuid"),

@@ -2,15 +2,14 @@ package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.ContractRepository;
-import dk.trustworks.invoicewebui.repositories.MainContractRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,27 +19,37 @@ public class ContractService {
 
     private final MainContractRepository mainContractRepository;
 
+    private final SubContractRepository subContractRepository;
+
+    private final WorkRepository workRepository;
+
     private final ContractRepository contractRepository;
 
     @Autowired
-    public ContractService(ProjectRepository projectRepository, MainContractRepository mainContractRepository, ContractRepository contractRepository) {
+    public ContractService(ProjectRepository projectRepository, MainContractRepository mainContractRepository, SubContractRepository subContractRepository, WorkRepository workRepository, ContractRepository contractRepository) {
         this.projectRepository = projectRepository;
         this.mainContractRepository = mainContractRepository;
+        this.subContractRepository = subContractRepository;
+        this.workRepository = workRepository;
         this.contractRepository = contractRepository;
     }
 
+    @Transactional
     public MainContract createContract(MainContract mainContract) {
         return mainContractRepository.save(mainContract);
     }
 
+    @Transactional
     public MainContract updateContract(MainContract contract) {
-        return contractRepository.save(contract);
+        return mainContractRepository.save(contract);
     }
 
+    @Transactional
     public SubContract updateContract(SubContract contract) {
-        return contractRepository.save(contract);
+        return subContractRepository.save(contract);
     }
 
+    @Transactional
     public MainContract addProjects(MainContract mainContract, Set<Project> projects) throws ContractValidationException {
         // validate
         for (Project project : projects) {
@@ -58,6 +67,25 @@ public class ContractService {
             projectRepository.save(project);
         }
         mainContract.addProjects(projects);
+        mainContractRepository.save(mainContract);
+        return mainContract;
+    }
+
+    @Transactional
+    public MainContract addProject(MainContract mainContract, Project project) throws ContractValidationException {
+        // validate
+        for (MainContract contract : project.getMainContracts()) {
+            Set<Object> userUUIDs = contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
+            if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), mainContract.getActiveFrom(), mainContract.getActiveTo()) &&
+                    userUUIDs.contains(mainContract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
+                throw new ContractValidationException("Overlapping another contract with same consultants");
+        }
+
+        // execute
+        project.addMainContract(mainContract);
+        projectRepository.save(project);
+
+        mainContract.addProject(project);
         mainContractRepository.save(mainContract);
         return mainContract;
     }
@@ -83,5 +111,98 @@ public class ContractService {
         mainContract = mainContractRepository.findOne(mainContract.getUuid());
         mainContract.getProjects().remove(project);
         return updateContract(mainContract);
+    }
+
+    public Map<String, Work> getWorkErrors(LocalDate errorDate, int months) {
+        Map<String, Work> errors = new HashMap<>();
+        for (Work work : workRepository.findByPeriod(
+                errorDate.minusMonths(months).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                errorDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
+            if(!(work.getWorkduration()>0)) continue;
+            if(findConsultantRateByWork(work)==null)
+                errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
+        }
+        return errors;
+    }
+
+    public Map<String, Work> getWorkErrors(LocalDate errorDate, User user, int months) {
+        Map<String, Work> errors = new HashMap<>();
+        for (Work work : workRepository.findByPeriodAndUserUUID(
+                errorDate.minusMonths(months).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                errorDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                user.getUuid())) {
+            if(!(work.getWorkduration()>0)) continue;
+            if(findConsultantRateByWork(work)==null)
+                errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
+        }
+        return errors;
+    }
+
+    public Set<User> getEmployeesWorkingOnProjectWithNoContract(Project project) {
+        Set<User> users = new HashSet<>();
+        if(project.getTasks().size() == 0) return users;
+        List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
+        //System.out.println(String.join(", ", strings));
+        for (Work work : workRepository.findByTasks(strings)) {
+            if(!(work.getWorkduration()>0)) continue;
+            if(findConsultantRateByWork(work)==null)
+                users.add(work.getUser());
+        }
+        return users;
+    }
+
+    public Set<Project> getClientProjectsNotUnderContract(Client client) {
+        Set<Project> projects = new HashSet<>();
+        for (Project project : client.getProjects()) {
+            if(project.getMainContracts().size()==0) projects.add(project);
+        }
+        return projects;
+    }
+
+    public Set<Project> getProjectsWithUserWorkButNoContract(List<Project> projects, User user) {
+        Set<Project> projectsResult = new HashSet<>();
+        for (Project project : projects) {
+            if(project.getTasks().size() == 0) continue;
+            List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
+            //System.out.println("tasks = ["+String.join(", ", strings)+"] | user = "+user.getUuid());
+            List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
+            for (Work work : workList) {
+                if(!(work.getWorkduration()>0)) continue;
+                if(findConsultantRateByWork(work)==null) {
+                    projectsResult.add(work.getTask().getProject());
+                }
+            }
+        }
+        return projectsResult;
+    }
+
+    public String getUsersFirstAndLastWorkOnProject(Project project, User user) {
+        System.out.println("ContractService.getUsersFirstAndLastWorkOnProject");
+        System.out.println("project = [" + project + "], user = [" + user + "]");
+        if(project.getTasks().size() == 0) return "";
+        List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
+        List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
+        Optional<Work> workMin = workList.stream().min(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth(), o.getDay())));
+        Optional<Work> workMax = workList.stream().max(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth(), o.getDay())));
+        if(workMin.isPresent()) {
+            return ""+workMin.get().getYear()+"/"+workMin.get().getMonth()+" - "+workMax.get().getYear()+"/"+workMax.get().getMonth();
+        } else {
+            return "";
+        }
+    }
+
+    public Collection<String> createErrorList(Map<String, Work> errors) {
+        SortedMap<String, String> errorList = new TreeMap<>();
+        for (Work work : errors.values().stream().filter(work -> work.getWorkduration()>0).sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).reversed()).collect(Collectors.toList())) {
+            String client = work.getTask().getProject().getClient().getName();
+            String project = work.getTask().getProject().getName();
+            String username = work.getUser().getUsername();
+            String error = new StringBuilder().append("There is no valid contract for ").append(username)
+                    .append(" work on ").append(client)
+                    .append("'s project ").append(project)
+                    .append(" on date ").append(work.getMonth() + 1).append("/").append(work.getYear()).toString();
+            errorList.put(client+project+username, error);
+        }
+        return errorList.values();
     }
 }

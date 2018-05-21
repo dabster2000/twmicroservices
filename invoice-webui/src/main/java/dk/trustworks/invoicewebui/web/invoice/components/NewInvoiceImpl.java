@@ -84,7 +84,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
 
         errorCard = new Card();
         errorCard.getContent().setHeight(250, Unit.PIXELS);
-        errorCard.addStyleName("v-scrollable");
+        errorCard.getContent().addStyleName("v-scrollable");
         errorCard.getLblTitle().setValue("Invoice errors");
     }
 
@@ -98,8 +98,6 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
 
     public NewInvoiceImpl init() {
         logger.info("NewInvoiceImpl.init");
-        //ResponsiveColumn invoiceMenuItem = leftMenu.getMenuItems().get(MainWindowImpl.VIEW_NAME);
-        //invoiceMenuItem.
 
         List<YearMonthSelect> yearMonthList = createYearMonthSelector();
         cbSelectYearMonth.setItems(yearMonthList);

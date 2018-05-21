@@ -3,15 +3,15 @@ package dk.trustworks.invoicewebui.web.contracts.layouts;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.contextmenu.GridContextMenu;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification;
+import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
@@ -24,16 +24,15 @@ import dk.trustworks.invoicewebui.web.contracts.components.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractFormDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ProjectRowDesign;
-import dk.trustworks.invoicewebui.web.contracts.model.BudgetRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringComponent
 @SpringUI
@@ -51,10 +50,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private ResponsiveRow contractRow;
 
-    private Card consultantsCard;
-    private Card projectsCard;
-    private Grid<BudgetRow> grid;
-    private MainContract mainContract;
+    private VerticalLayout consultantsLayout;
+    private VerticalLayout projectsLayout;
+
+    private ContractFormDesign mainContractForm;
 
     @Autowired
     public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectRepository projectRepository, ConsultantRepository consultantRepository, PhotoService photoService) {
@@ -71,11 +70,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     public ResponsiveLayout loadContractDetails(MainContract mainContract) {
-        this.mainContract = mainContract;
         contractRow.removeAllComponents();
 
         Binder<MainContract> mainContractBinder = new Binder<>();
-        ContractFormDesign mainContractForm = new ContractFormDesign();
+        mainContractForm = new ContractFormDesign();
+        mainContractForm.getContainer().setHeight(300, Unit.PIXELS);
+        mainContractForm.getContainer().addStyleName("v-scrollable");
+
         mainContractForm.getChkProjects().setVisible(false);
         mainContractForm.getBtnCreate().setVisible(false);
         mainContractForm.getBtnUpdate().setVisible(true);
@@ -84,14 +85,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
         mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
         mainContractForm.getDfFrom().setVisible(true);
         mainContractBinder.forField(mainContractForm.getDfFrom()).bind(MainContract::getActiveFrom, MainContract::setActiveFrom);
-        //mainContractForm.getDfFrom().setValue(mainContract.getActiveFrom());
         mainContractForm.getDfTo().setVisible(true);
         mainContractBinder.forField(mainContractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
-        //mainContractForm.getDfTo().setValue(mainContract.getActiveTo());
         mainContractForm.getCbType().setVisible(true);
         mainContractForm.getCbType().setEnabled(false);
         mainContractBinder.forField(mainContractForm.getCbType()).bind(Contract::getContractType, Contract::setContractType);
-        //mainContractForm.getCbType().setValue(mainContract.getContractType());
         mainContractForm.getLblTitle().setValue("Main Contract");
         mainContractBinder.readBean(mainContract);
 
@@ -110,8 +108,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 6, 4)
                 .withComponent(mainContractForm);
 
-        projectsCard = new Card();
+        Card projectsCard = new Card();
         projectsCard.getLblTitle().setValue("Projects");
+        projectsCard.getContent().setHeight(300, Unit.PIXELS);
+        projectsCard.getContent().addStyleName("v-scrollable");
+        projectsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        projectsCard.getContent().addComponent(projectsLayout);
 
         createProjectList(mainContract);
 
@@ -119,8 +121,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(projectsCard);
 
-        consultantsCard = new Card();
+        Card consultantsCard = new Card();
         consultantsCard.getLblTitle().setValue("Consultants");
+        consultantsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        consultantsCard.getContent().addComponent(consultantsLayout);
 
         createConsultantList(mainContract);
 
@@ -150,18 +154,20 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createProjectList(MainContract mainContract) {
-        projectsCard.getContent().removeAllComponents();
+        projectsLayout.removeAllComponents();
 
         for (Project project : mainContract.getProjects()) {
             ProjectRowDesign projectRowDesign = new ProjectRowDesign();
             projectRowDesign.getLblName().setValue(project.getName());
             projectRowDesign.getBtnIcon().setIcon(MaterialIcons.DATE_RANGE);
             projectRowDesign.getBtnDelete().setIcon(MaterialIcons.DELETE);
-            projectRowDesign.getBtnDelete().addClickListener(event -> createProjectList(contractService.removeProject(mainContract, project)));
-            projectsCard.getContent().addComponent(projectRowDesign);
+            projectRowDesign.getBtnDelete().addClickListener(event -> removeProject(mainContract, project));
+            projectsLayout.addComponent(projectRowDesign);
         }
 
-        projectsCard.getContent().addComponent(new MButton(
+        createProposedProjects(mainContract);
+
+        projectsLayout.addComponent(new MButton(
                 VaadinIcons.PLUS,
                 event -> {
                     Window subWindow = new Window("");
@@ -171,17 +177,15 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     // Put some components in it
                     subContent.addComponent(new Label("Add project"));
                     ComboBox<Project> projectComboBox = new ComboBox<>();
-                    projectComboBox.setItems(projectRepository.findByClientAndActiveTrueOrderByNameAsc(mainContract.getClient()));
+                    projectComboBox.setWidth(250, Unit.PIXELS);
+                    projectComboBox.setItems(projectRepository.findByClientOrderByNameAsc(mainContract.getClient()));
                     projectComboBox.setItemCaptionGenerator(Project::getName);
                     subContent.addComponent(projectComboBox);
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> {
                         Project project = projectComboBox.getSelectedItem().get();
-                        mainContract.addProject(project);
-                        project.addMainContract(mainContract);
-                        projectRepository.save(project);
+                        createProject(mainContract, project);
                         subWindow.close();
-                        createProjectList(mainContract);
                     });
                     subContent.addComponent(addButton);
 
@@ -196,10 +200,56 @@ public class ContractDetailLayout extends ResponsiveLayout {
         );
     }
 
+    private void createProposedProjects(MainContract mainContract) {
+        List<Project> deltaProjects = new ArrayList<>();
+        deltaProjects.addAll(mainContract.getClient().getProjects());
+        //deltaProjects.removeAll(mainContract.getProjects());
+        Map<String, Project> projectsWithUserWorkButNoContract = new HashMap<>();
+        for (User user : mainContract.getConsultants().stream().map(Consultant::getUser).collect(Collectors.toList())) {
+            for (Project project : contractService.getProjectsWithUserWorkButNoContract(deltaProjects, user)) {
+                // is project already on contract
+                if(mainContract.getProjects().stream().filter(p -> p.getUuid().equals(project.getUuid())).findFirst().isPresent()) {
+                    System.out.println("Project already exists. Trying to find work...");
+                    String period = contractService.getUsersFirstAndLastWorkOnProject(project, user);
+                    System.out.println("period = " + period);
+                    mainContractForm.getDfTo().setComponentError(new UserError(period));
+                } else {
+                    projectsWithUserWorkButNoContract.put(project.getUuid(), project);
+                }
+            }
+        }
+        if(projectsWithUserWorkButNoContract.size() > 0) {
+            projectsLayout.addComponent(new MLabel("Proposed projects"));
+            for (Project project : projectsWithUserWorkButNoContract.values()) {
+                createProposedProjectRow(mainContract, project);
+            }
+
+        }
+
+        Set<Project> projectsNotUnderContract = contractService.getClientProjectsNotUnderContract(mainContract.getClient());
+        if(projectsNotUnderContract.size() > 0) {
+            projectsLayout.addComponent(new MLabel("Projects with no contract"));
+            for (Project project : projectsNotUnderContract) {
+                createProposedProjectRow(mainContract, project);
+            }
+        }
+    }
+
+    private void createProposedProjectRow(MainContract mainContract, Project project) {
+            ProjectRowDesign projectRowDesign = new ProjectRowDesign();
+            projectRowDesign.getLblName().setValue(project.getName());
+            projectRowDesign.getLblName().addStyleName("semi-transparent");
+            projectRowDesign.getBtnIcon().setIcon(MaterialIcons.DATE_RANGE);
+            projectRowDesign.getBtnIcon().addStyleName("semi-transparent");
+            projectRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
+            projectRowDesign.getBtnDelete().addClickListener(event -> createProject(mainContract, project));
+        projectsLayout.addComponent(projectRowDesign);
+    }
+
     private void createConsultantList(final MainContract mainContract) {
-        consultantsCard.getContent().removeAllComponents();
+        consultantsLayout.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ContainerType.FLUID);
-        consultantsCard.getContent().addComponent(responsiveLayout);
+        consultantsLayout.addComponent(responsiveLayout);
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
         for (Consultant consultant : mainContract.getConsultants()) {
@@ -218,19 +268,16 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getVlHours().setVisible(consultant.getMainContract().getContractType().equals(ContractType.PERIOD));
             consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
 
-            consultantRowDesign.getBtnDelete().addClickListener(event -> {
-                mainContract.getConsultants().remove(consultant);
-                consultantRepository.delete(consultant);
-                //contractService.updateContract(mainContract);
-                createConsultantList(mainContract);
-            });
+            consultantRowDesign.getBtnDelete().addClickListener(event -> removeConsultant(mainContract, consultant));
 
             responsiveRow.addColumn()
                     .withComponent(consultantRowDesign)
                     .withDisplayRules(12, 12, 6, 4);
         }
 
-        consultantsCard.getContent().addComponent(new MButton(
+        createProposedConsultants(mainContract, responsiveLayout.addRow());
+
+        consultantsLayout.addComponent(new MButton(
                 VaadinIcons.PLUS,
                 event -> {
                     Window subWindow = new Window("");
@@ -240,16 +287,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     // Put some components in it
                     subContent.addComponent(new Label("Add consultant"));
                     ComboBox<User> userComboBox = new ComboBox<>();
-                    userComboBox.setItems(userRepository.findAll());
+                    userComboBox.setItems(userRepository.findByOrderByUsername());
                     userComboBox.setItemCaptionGenerator(User::getUsername);
                     subContent.addComponent(userComboBox);
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> {
-                        Consultant consultant = new Consultant(mainContract, userComboBox.getSelectedItem().get(), 0.0, 0.0, 0.0);
-                        mainContract.addConsultant(consultant);
-                        consultantRepository.save(consultant);
+                        User user = userComboBox.getSelectedItem().get();
+                        createConsultant(mainContract, user);
                         subWindow.close();
-                        createConsultantList(mainContract);
                     });
                     subContent.addComponent(addButton);
 
@@ -264,147 +309,69 @@ public class ContractDetailLayout extends ResponsiveLayout {
         );
     }
 
-    private Grid createTreeGrid() {
-        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
-        //LocalDate startDate = mainContract.getActiveFrom().withDayOfMonth(1);
-        LocalDate endDate = LocalDate.of(mainContract.getActiveTo().getYear(),
-                mainContract.getActiveTo().getMonthValue(),
-                mainContract.getActiveTo().getDayOfMonth());
-        long monthsBetween = ChronoUnit.MONTHS.between(startDate, endDate);
-        System.out.println("period.getMonths() = " + monthsBetween);
-
-
-        grid = new Grid<>();
-        grid.addColumn(BudgetRow::getUsername).setWidth(200).setCaption("Consultant").setId("name-column");
-        grid.addColumn(BudgetRow::getRate).setWidth(100).setCaption("Rate").setEditorComponent(new TextField(), BudgetRow::setRate);
-        //grid.addColumn(ConsultantRow::getAmount).setWidth(100).setCaption("Budget").setEditorComponent(new TextField(), ConsultantRow::setAmount);
-        grid.setFrozenColumnCount(2);
-        grid.setWidth("100%");
-        grid.getEditor().setEnabled(true);
-
-        GridContextMenu<BudgetRow> gridMenu = new GridContextMenu<>(grid);
-        gridMenu.addGridBodyContextMenuListener(this::updateGridBodyMenu);
-        gridMenu.addGridHeaderContextMenuListener(this::updateGridHeaderMenu);
-
-        List<BudgetRow> budgetRows = new ArrayList<>();
-
-        System.out.println("mainContract.getConsultants().size() = " + mainContract.getConsultants().size());
-        for (Consultant consultant : mainContract.getConsultants()) {
-            System.out.println("consultant = " + consultant);
-            //LocalDate budgetDate = startDate;
-            //System.out.println("budgetDate = " + budgetDate);
-
-            BudgetRow budgetRow = new BudgetRow(consultant, 0);
-            //ConsultantRow consultantRow = new ConsultantRow(consultant, (int)(monthsBetween+1));
-            //System.out.println("monthsBetween = " + (monthsBetween+1));
-/*
-            int month = 0;
-            while(budgetDate.isBefore(endDate)) {
-                final LocalDate filterDate = budgetDate;
-                System.out.println("filterDate = " + filterDate);
-
-                List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYearAndConsultant(filterDate.getMonthValue(), filterDate.getYear(), consultant);
-                System.out.println("budgets.size() = " + budgets.size());
-
-                if(budgets.size() > 0) {
-                    BudgetNew budget = budgets.get(0);
-                    if(consultant.getUser().getUsername().equals("hans.lassen")) System.out.println("budget.get() = " + budget);
-                    consultantRow.setMonth(month, (budget.getBudget() / consultant.getRate())+"");
-                } else {
-                    System.out.println("0.0 = " + 0.0);
-                    consultantRow.setMonth(month, "0.0");
-                }
-                month++;
-                budgetDate = budgetDate.plusMonths(1);
-            }
-            */
-            budgetRows.add(budgetRow);
-        }
-/*
-        int month = 0;
-        int year = startDate.getYear();
-        List<String> yearColumns = new ArrayList<>();
-        LocalDate budgetDate = startDate;
-        while(budgetDate.isBefore(endDate)) {
-            final LocalDate filterDate = budgetDate;
-            final int actualMonth = month;
-            Grid.Column<ConsultantRow, ?> budgetColumn = grid.addColumn(
-                    consultantRow -> consultantRow.getMonth(actualMonth))
-                    .setStyleGenerator(budgetHistory -> "align-right")
-                    .setWidth(100)
-                    .setId(Month.of(filterDate.getMonthValue()).name()+filterDate.getYear())
-                    .setCaption(Month.of(filterDate.getMonthValue()).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)+" "+ (filterDate.getYear()-2000))
-                    .setEditorComponent(new TextField(), (Setter<ConsultantRow, String>) (consultantRow, budgetValue) -> consultantRow.setMonth(actualMonth, budgetValue));
-            yearColumns.add(budgetColumn.getId());
-            budgetDate = budgetDate.plusMonths(1);
-            month++;
-            if(year < budgetDate.getYear()) {
-                //topHeader.join(yearColumns.toArray(new String[0])).setText(year + "");
-                yearColumns = new ArrayList<>();
-                year++;
+    private void createProposedConsultants(MainContract mainContract, ResponsiveRow responsiveRow) {
+        HashMap<String, User> proposedUsers = new HashMap<>();
+        for (Project project : mainContract.getProjects()) {
+            Set<User> employees = contractService.getEmployeesWorkingOnProjectWithNoContract(project);
+            for (User employee : employees) {
+                proposedUsers.put(employee.getUuid(), employee);
             }
         }
-*/
-        grid.setItems(budgetRows);
 
-        consultantsCard.getContent().addComponent(grid);
-        return grid;
-    }
+        if(proposedUsers.size() > 0)
+            responsiveRow.addColumn()
+                    .withDisplayRules(12, 12, 12, 12)
+                    .withComponent(new MLabel("Proposed consultants:"));
 
-    private void updateTreeGrid() {
-        grid = createTreeGrid();
-        //budgetCard.getContainer().removeAllComponents();
-        //budgetCard.getContainer().addComponent(treeGrid);
-    }
+        for (User user : proposedUsers.values()) {
+            ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
+            consultantRowDesign.getHlBackground().setStyleName("bg-grey");
+            consultantRowDesign.getHlNameBackground().setStyleName("dark-grey");
+            consultantRowDesign.getLblName().setValue(user.getFirstname() + " " + user.getLastname());
+            consultantRowDesign.getTxtRate().setValue("0");
+            consultantRowDesign.getTxtHours().setValue("0");
+            consultantRowDesign.getVlHours().setVisible(mainContract.getContractType().equals(ContractType.PERIOD));
+            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
+            consultantRowDesign.getImgPhoto().setEnabled(false);
+            consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
+            consultantRowDesign.getBtnDelete().addClickListener(event -> createConsultant(mainContract, user));
 
-    private void updateGridBodyMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<BudgetRow> event) {
-        event.getContextMenu().removeItems();
-        if (event.getItem() == null) {
-            //if(event.getItem().getClass().equals(ConsultantRow.class)) {
-                event.getContextMenu().addItem("Add Consultant", VaadinIcons.PLUS, selectedItem -> {
-                    Window subWindow = new Window("");
-                    VerticalLayout subContent = new VerticalLayout();
-                    subWindow.setContent(subContent);
-
-                    // Put some components in it
-                    subContent.addComponent(new Label("Add consultant"));
-                    ComboBox<User> userComboBox = new ComboBox<>();
-                    userComboBox.setItems(userRepository.findAll());
-                    userComboBox.setItemCaptionGenerator(User::getUsername);
-                    subContent.addComponent(userComboBox);
-                    Button addButton = new Button("Add");
-                    addButton.addClickListener(event1 -> {
-                        Consultant consultant = new Consultant(mainContract, userComboBox.getSelectedItem().get(), 0.0, 0.0, 0.0);
-                        //Taskworkerconstraint taskworkerconstraint = new Taskworkerconstraint(0.0, userComboBox.getSelectedItem().get(), ((TaskRow) event.getItem()).getTask());
-                        //taskworkerconstraintRepository.save(taskworkerconstraint);
-                        consultantRepository.save(consultant);
-                        subWindow.close();
-                        updateTreeGrid();
-                    });
-                    subContent.addComponent(addButton);
-
-                    // Center it in the browser window
-                    subWindow.center();
-
-                    // Open it in the UI
-                    UI.getCurrent().addWindow(subWindow);
-                });
-            //} else {
-                //event.getContextMenu().addItem("Remove "+((UserRow)event.getItem()).getUsername(), VaadinIcons.CLOSE, selectedItem -> Notification.show("Not possible at this time!"));
-            //}
+            responsiveRow.addColumn()
+                    .withComponent(consultantRowDesign)
+                    .withDisplayRules(12, 12, 6, 4);
         }
     }
 
-    private void updateGridHeaderMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<BudgetRow> event) {
-        event.getContextMenu().removeItems();
-        if (event.getColumn() != null) {
-            event.getContextMenu().addItem("Sort Ascending", selectedItem ->
-                    grid.sort((Grid.Column<BudgetRow, ?>) event.getColumn(), SortDirection.ASCENDING));
-            event.getContextMenu().addItem("Sort Descending", selectedItem ->
-                    grid.sort((Grid.Column<BudgetRow, ?>) event.getColumn(), SortDirection.DESCENDING));
-        } else {
-            event.getContextMenu().addItem("menu is empty", null);
+    private void createProject(MainContract mainContract, Project project) {
+        try {
+            contractService.addProject(mainContract, project);
+        } catch (ContractValidationException e) {
+            e.printStackTrace();
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
         }
+        createConsultantList(mainContract);
+        createProjectList(mainContract);
+    }
+
+    private void removeConsultant(MainContract mainContract, Consultant consultant) {
+        mainContract.getConsultants().remove(consultant);
+        consultantRepository.delete(consultant);
+        createConsultantList(mainContract);
+        createProjectList(mainContract);
+    }
+
+    private void removeProject(MainContract mainContract, Project project) {
+        mainContract = contractService.removeProject(mainContract, project);
+        createProjectList(mainContract);
+        createConsultantList(mainContract);
+    }
+
+    private void createConsultant(MainContract mainContract, User user) {
+        Consultant consultant = new Consultant(mainContract, user, 0.0, 0.0, 0.0);
+        mainContract.addConsultant(consultant);
+        consultantRepository.save(consultant);
+        createConsultantList(mainContract);
+        createProjectList(mainContract);
     }
 
     private ContractFormDesign getSubContractComponent(Contract mainContract, boolean newContract) {

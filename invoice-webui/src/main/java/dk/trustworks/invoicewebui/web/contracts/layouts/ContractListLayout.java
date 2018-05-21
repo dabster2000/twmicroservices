@@ -17,11 +17,12 @@ import dk.trustworks.invoicewebui.web.contracts.components.ContractDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractFormDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractSearchImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 
 @SpringComponent
@@ -66,26 +67,13 @@ public class ContractListLayout extends VerticalLayout {
         errorRow = contractResponsiveLayout.addRow();
         errorCard = new Card();
         errorCard.getContent().setHeight(450, Unit.PIXELS);
-        errorCard.addStyleName("v-scrollable");
+        errorCard.getContent().addStyleName("v-scrollable");
         errorCard.getLblTitle().setValue("Work registration errors");
+        errorCard.getHlTitleBar().addComponent(new MButton("load all", event -> {
+            createErrorContent(100);
+        }));
 
-        errorCard.getContent().removeAllComponents();
-        errorList = new VerticalLayout();
-        errorList.addComponent(new MLabel("Work registrations have the following errors:").withStyleName("failure"));
-        errorCard.getContent().addComponent(errorList);
-        errorRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(errorCard);
-
-        Map<String, String> errors = new HashMap<>();
-        for (Work work : workRepository.findByPeriod("2014-01-01", "2020-01-01")) {
-            if(contractService.findConsultantRateByWork(work)==null)
-                errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(),
-                        "There is no valid contract for " + work.getUser().getUsername() +
-                                " work on " + work.getTask().getProject().getClient().getName() +"'s project " +
-                                work.getTask().getProject().getName());
-        }
-        for (String error : errors.values()) {
-            errorList.addComponent(new MLabel(error).withWidth(100, Unit.PERCENTAGE));
-        }
+        createErrorContent(2);
 
         contractRow = contractResponsiveLayout.addRow();
 
@@ -177,4 +165,18 @@ public class ContractListLayout extends VerticalLayout {
         this.addComponent(contractResponsiveLayout);
     }
 
+    private void createErrorContent(int months) {
+        errorCard.getContent().removeAllComponents();
+        errorList = new VerticalLayout();
+        errorList.addComponent(new MLabel("Work registrations have the following errors:").withStyleName("failure"));
+        errorCard.getContent().addComponent(errorList);
+        errorRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(errorCard);
+
+        LocalDate errorDate = LocalDate.now().withDayOfMonth(1);
+        Map<String, Work> errors = contractService.getWorkErrors(errorDate, months);
+        for (String error : contractService.createErrorList(errors)) {
+            errorList.addComponent(new MLabel(error)
+                    .withWidth(100, Unit.PERCENTAGE));
+        }
+    }
 }
