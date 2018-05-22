@@ -97,6 +97,10 @@ public class Client {
         this.clientdata = clientdata;
     }
 
+    public void addClientdata(Clientdata clientdata) {
+        this.getClientdata().add(clientdata);
+    }
+
     public boolean isActive() {
         return active;
     }
