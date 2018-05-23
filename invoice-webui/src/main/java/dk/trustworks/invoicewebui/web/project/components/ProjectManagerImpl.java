@@ -197,7 +197,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         List<BudgetRow> budgetRows = new ArrayList<>();
 
         for (MainContract mainContract : currentProject.getMainContracts()) {
-            if(!mainContract.getContractType().equals(ContractType.AMOUNT)) continue;
+            if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) continue;
             for (Consultant consultant : mainContract.getConsultants()) {
                 BudgetRow budgetRow = new BudgetRow(consultant, (int)(monthsBetween+1));
                 System.out.println("consultant = " + consultant);

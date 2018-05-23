@@ -3,15 +3,21 @@ package dk.trustworks.invoicewebui.web.contracts.layouts;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
+import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
@@ -52,6 +58,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private VerticalLayout consultantsLayout;
     private VerticalLayout projectsLayout;
+    private Card chartCard;
 
     private ContractFormDesign mainContractForm;
 
@@ -80,17 +87,16 @@ public class ContractDetailLayout extends ResponsiveLayout {
         mainContractForm.getContainer().setHeight(350, Unit.PIXELS);
         mainContractForm.getContainer().addStyleName("v-scrollable");
 
-        mainContractForm.getChkProjects().setVisible(false);
         mainContractForm.getBtnCreate().setVisible(false);
-        mainContractForm.getBtnUpdate().setVisible(true);
-        mainContractForm.getBtnEdit().setVisible(false);
-        mainContractForm.getTxtAmount().setVisible(mainContract.getContractType().equals(ContractType.AMOUNT));
+        mainContractForm.getTxtAmount().setVisible(
+                mainContract.getContractType().equals(ContractType.AMOUNT) ||
+                mainContract.getContractType().equals(ContractType.SKI));
         mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
-        mainContractForm.getDfFrom().setVisible(true);
         mainContractBinder.forField(mainContractForm.getDfFrom()).bind(MainContract::getActiveFrom, MainContract::setActiveFrom);
-        mainContractForm.getDfTo().setVisible(true);
         mainContractBinder.forField(mainContractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
-        mainContractForm.getCbType().setVisible(true);
+        mainContractBinder.forField(mainContractForm.getTxtNote()).bind(Contract::getNote, Contract::setNote);
+        mainContractForm.getCbStatus().setItems(ContractStatus.values());
+        mainContractBinder.forField(mainContractForm.getCbStatus()).bind(Contract::getStatus, Contract::setStatus);
         mainContractForm.getCbType().setEnabled(false);
         mainContractBinder.forField(mainContractForm.getCbType()).bind(Contract::getContractType, Contract::setContractType);
         mainContractForm.getLblTitle().setValue("Main Contract");
@@ -109,7 +115,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         });
 
         contractRow.addColumn()
-                .withDisplayRules(12, 12, 6, 4)
+                .withDisplayRules(12, 12, 5, 4)
                 .withComponent(mainContractForm);
 
         Card projectsCard = new Card();
@@ -122,8 +128,18 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createProjectList(mainContract);
 
         contractRow.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
+                .withDisplayRules(12, 12, 5, 5)
                 .withComponent(projectsCard);
+
+        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
+            chartCard = new Card();
+            chartCard.getLblTitle().setValue("Used Budget");
+            chartCard.getContent().setHeight(350, Unit.PIXELS);
+            createUsedBudgetChartCard(mainContract);
+            contractRow.addColumn()
+                    .withDisplayRules(12, 12, 2, 3)
+                    .withComponent(chartCard);
+        }
 
         Card consultantsCard = new Card();
         consultantsCard.getLblTitle().setValue("Consultants");
@@ -139,7 +155,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         for (SubContract subContract : mainContract.getChildren()) {
             ContractFormDesign subContractComponent = getSubContractComponent(subContract, false);
             subContractComponent.getDfTo().setValue(subContract.getActiveTo());
-            if(subContract.getContractType().equals(ContractType.AMOUNT))
+            if(subContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI))
                 subContractComponent.getTxtAmount().setValue(NumberConverter.formatDouble(subContract.getAmount()));
             contractRow.addColumn()
                     .withDisplayRules(12, 12, 3, 3)
@@ -157,6 +173,60 @@ public class ContractDetailLayout extends ResponsiveLayout {
         updateProposedPeriod(mainContract);
 
         return this;
+    }
+
+    private void createUsedBudgetChartCard(MainContract mainContract) {
+        Chart chart = new Chart(ChartType.COLUMN);
+        chartCard.getContent().addComponent(chart);
+        chart.setSizeFull();
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("");
+        conf.setSubTitle("");
+
+        XAxis xAxis = new XAxis();
+        xAxis.setCategories(new String[] { "Main" });
+        conf.addxAxis(xAxis);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setVisible(false);
+        yAxis.setMin(0);
+        yAxis.setTitle(new AxisTitle(null));
+        //StackLabels sLabels = new StackLabels(true);
+        //yAxis.setStackLabels(sLabels);
+        conf.addyAxis(yAxis);
+
+        Legend legend = new Legend();
+        legend.setAlign(HorizontalAlign.RIGHT);
+        legend.setFloating(true);
+        legend.setVerticalAlign(VerticalAlign.TOP);
+        legend.setX(-100);
+        legend.setY(20);
+        conf.setLegend(legend);
+
+        PlotOptionsColumn plotOptions = new PlotOptionsColumn();
+        plotOptions.setStacking(Stacking.NORMAL);
+        DataLabels labels = new DataLabels(true);
+        Style style=new Style();
+        style.setTextShadow("0 0 3px black");
+        labels.setStyle(style);
+        labels.setColor(new SolidColor("white"));
+        plotOptions.setDataLabels(labels);
+        conf.setPlotOptions(plotOptions);
+
+        double sum = 0.0;
+        for (Work work : contractService.getWorkOnContractByUser(mainContract)) {
+            System.out.println("work = " + work);
+            Optional<Consultant> optionalConsultant = mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
+            if(!optionalConsultant.isPresent()) continue;
+            sum += (work.getWorkduration() * optionalConsultant.get().getRate());
+        }
+
+        conf.addSeries(new ListSeries("Budget", new Number[] { (mainContract.getAmount()-sum) }));
+        conf.addSeries(new ListSeries("Used", new Number[] { sum}));
+
+        chart.drawChart(conf);
     }
 
     private void createProjectList(MainContract mainContract) {
@@ -370,8 +440,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createProject(MainContract mainContract, Project project) {
+        System.out.println("ContractDetailLayout.createProject");
+        System.out.println("mainContract = [" + mainContract + "], project = [" + project + "]");
         try {
-            contractService.addProject(mainContract, project);
+            mainContract = contractService.addProject(mainContract, project);
         } catch (ContractValidationException e) {
             e.printStackTrace();
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
@@ -389,6 +461,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createConsultantList(mainContract);
         createProjectList(mainContract);
         updateProposedPeriod(mainContract);
+        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) createUsedBudgetChartCard(mainContract);
     }
 
     private void updateProposedPeriod(MainContract mainContract) {
@@ -413,13 +486,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private ContractFormDesign getSubContractComponent(Contract mainContract, boolean newContract) {
         ContractFormDesign contractFormDesign = new ContractFormDesign();
-        contractFormDesign.getChkProjects().setVisible(false);
         contractFormDesign.getBtnCreate().setVisible(newContract);
         contractFormDesign.getBtnUpdate().setVisible(!newContract);
-        contractFormDesign.getBtnEdit().setVisible(false);
-        contractFormDesign.getTxtAmount().setVisible(mainContract.getContractType().equals(ContractType.AMOUNT));
+        contractFormDesign.getTxtAmount().setVisible(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI));
         contractFormDesign.getDfFrom().setVisible(false);
-        contractFormDesign.getDfTo().setVisible(true);
         contractFormDesign.getCbType().setVisible(false);
         contractFormDesign.getLblTitle().setValue(newContract?"Add sub contract":"Sub Contract");
         return contractFormDesign;

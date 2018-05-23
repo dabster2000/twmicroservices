@@ -7,6 +7,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
@@ -97,7 +98,7 @@ public class ContractListLayout extends VerticalLayout {
                                 mainContract.getActiveTo().format(DateTimeFormatter.ofPattern("MMM yyyy"))
                 );
 
-                if(mainContract.getContractType().equals(ContractType.AMOUNT)) {
+                if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
                     contractDesign.getLblAmount().setValue(mainContract.getAmount()+" kr.");
                 } else {
                     contractDesign.getLblAmount().setVisible(false);
@@ -128,13 +129,7 @@ public class ContractListLayout extends VerticalLayout {
                 ContractFormDesign contractFormDesign = new ContractFormDesign();
                 contractFormDesign.getCbType().setItems(ContractType.values());
                 contractFormDesign.getCbType().addValueChangeListener(event2 -> {
-                    contractFormDesign.getChkProjects().setVisible(false);
-                    contractFormDesign.getChkProjects().setItems(client.getProjects());
-                    contractFormDesign.getChkProjects().setItemCaptionGenerator(Project::getName);
-                    contractFormDesign.getDfFrom().setVisible(true);
-                    contractFormDesign.getDfTo().setVisible(true);
-                    contractFormDesign.getBtnEdit().setVisible(false);
-                    if(contractFormDesign.getCbType().getValue().equals(ContractType.AMOUNT)) {
+                    if(contractFormDesign.getCbType().getValue().equals(ContractType.AMOUNT) || contractFormDesign.getCbType().getValue().equals(ContractType.SKI)) {
                         contractFormDesign.getTxtAmount().setVisible(true);
                     } else {
                         contractFormDesign.getTxtAmount().setVisible(false);
@@ -155,6 +150,7 @@ public class ContractListLayout extends VerticalLayout {
                     });
 
                 });
+                contractFormDesign.getCbStatus().setItems(ContractStatus.values());
 
                 contractRow.addColumn()
                         .withDisplayRules(12, 12, 4, 4)

@@ -74,6 +74,8 @@ public class ContractService {
 
     @Transactional
     public MainContract addProject(MainContract mainContract, Project project) throws ContractValidationException {
+        System.out.println("ContractService.addProject");
+        System.out.println("mainContract = [" + mainContract + "], project = [" + project + "]");
         // validate
         for (MainContract contract : project.getMainContracts()) {
             Set<Object> userUUIDs = contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
@@ -83,9 +85,10 @@ public class ContractService {
         }
 
         // execute
+        mainContract = mainContractRepository.findOne(mainContract.getUuid());
+        project = projectRepository.findOne(project.getUuid());
         project.addMainContract(mainContract);
-        projectRepository.save(project);
-
+        //project = projectRepository.save(project);
         mainContract.addProject(project);
         mainContractRepository.save(mainContract);
         return mainContract;
@@ -193,6 +196,16 @@ public class ContractService {
         } else {
             return null;
         }
+    }
+
+    public List<Work> getWorkOnContractByUser(MainContract mainContract) {
+        System.out.println("ContractService.getWorkOnContractByUser");
+        System.out.println("mainContract = [" + mainContract + "]");
+        return workRepository.findByProjectsAndUsersAndDateRange(
+                mainContract.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
+                mainContract.getConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
+                mainContract.getActiveFrom().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+                mainContract.getActiveTo().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     }
 
     public Collection<String> createErrorList(Map<String, Work> errors) {

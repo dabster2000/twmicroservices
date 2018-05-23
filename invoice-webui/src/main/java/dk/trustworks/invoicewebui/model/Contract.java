@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 
 import javax.persistence.*;
@@ -26,6 +27,10 @@ public abstract class Contract {
     @Enumerated(EnumType.STRING)
     private ContractType contractType;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ContractStatus status;
+
     @Column(name = "activeto")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -33,6 +38,8 @@ public abstract class Contract {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
+
+    private String note;
 
     public Contract() {
         uuid = UUID.randomUUID().toString();
@@ -85,6 +92,22 @@ public abstract class Contract {
         this.created = created;
     }
 
+    public ContractStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ContractStatus status) {
+        this.status = status;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -104,6 +127,7 @@ public abstract class Contract {
                 "uuid='" + uuid + '\'' +
                 ", amount=" + amount +
                 ", contractType=" + contractType +
+                ", status=" + status +
                 ", activeTo=" + activeTo +
                 ", created=" + created +
                 '}';

@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <vaadin.version>8.1.5</vaadin.version>
+        <vaadin.version>8.4.2</vaadin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <springboot.version>1.5.4.RELEASE</springboot.version>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-charts</artifactId>
-            <version>4.0.1</version>
+            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>

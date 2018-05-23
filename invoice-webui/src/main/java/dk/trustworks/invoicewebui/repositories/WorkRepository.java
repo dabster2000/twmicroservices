@@ -50,6 +50,24 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work_latest w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByTasksAndUser(@Param("taskuuid") List<String> taskuuid, @Param("useruuid") String useruuid);
 
+    /*
+    @Query(value = "select w.uuid, '2017-05-17 08:09:35' created, 0 as day, 0 as month, 0 as year, w.taskuuid as taskuuid, w.useruuid as useruuid, sum(workduration) as workduration from work_latest w " +
+            "left join task t on w.taskuuid = t.uuid " +
+            "left join project p on t.projectuuid = p.uuid " +
+            "where w.useruuid in :useruuids " +
+            "and ((w.year*10000)+((w.month+1)*100)+w.day) between :fromdate and :todate " +
+            "and t.projectuuid in :projectuuids " +
+            "group by w.useruuid;", nativeQuery = true)
+            */
+    @Query(value = "select '2017-05-17 08:09:35' created, w.uuid, w.day as day, w.month as month, w.year as year, w.taskuuid as taskuuid, w.useruuid as useruuid, workduration as workduration from work_latest w " +
+            "left join task t on w.taskuuid = t.uuid " +
+            "left join project p on t.projectuuid = p.uuid " +
+            "where w.useruuid in :useruuids " +
+            "and ((w.year*10000)+((w.month+1)*100)+w.day) between :fromdate and :todate " +
+            "and t.projectuuid in :projectuuids " +
+            "and w.workduration > 0.0", nativeQuery = true)
+    List<Work> findByProjectsAndUsersAndDateRange(@Param("projectuuids") List<String> projectuuids, @Param("useruuids") List<String> useruuids, @Param("fromdate") String fromdate, @Param("todate") String todate);
+
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Work entity);
 }

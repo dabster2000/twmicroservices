@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 public interface ContractRepository extends ContractBaseRepository<Contract> {
 
     @Query(value = "select cc.rate as price from usermanager.contracts c" +
-            "    right join ProjectContracts pc ON  pc.contractuuid = c.uuid" +
+            "    right join contract_project pc ON  pc.contractuuid = c.uuid" +
             "    right join project p ON p.uuid = pc.projectuuid" +
             "    right join task t ON t.projectuuid = p.uuid" +
             "    right join contract_consultants cc ON c.uuid = cc.contractuuid" +

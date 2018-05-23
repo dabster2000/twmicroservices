@@ -14,14 +14,14 @@ import java.util.*;
 public class MainContract extends Contract {
 
     @OneToMany(mappedBy = "mainContract", cascade = {
-            CascadeType.PERSIST
+            CascadeType.MERGE, CascadeType.PERSIST
     }, fetch = FetchType.LAZY)
     private List<Consultant> consultants = new ArrayList<>();
 
     @ManyToMany(cascade = {
-            CascadeType.PERSIST
+            CascadeType.MERGE, CascadeType.PERSIST
     }, fetch = FetchType.LAZY)
-    @JoinTable(name = "projectcontracts",
+    @JoinTable(name = "contract_project",
             joinColumns = @JoinColumn(name = "contractuuid"),
             inverseJoinColumns = @JoinColumn(name = "projectuuid")
     )
@@ -114,12 +114,27 @@ public class MainContract extends Contract {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        MainContract that = (MainContract) o;
+        return com.google.common.base.Objects.equal(getUuid(), that.getUuid());
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(super.hashCode(), getUuid());
+    }
+
+    @Override
     public String toString() {
         return "MainContract{" +
-                "consultants=" + consultants +
-                ", projects=" + projects +
+                ", uuid=" + getUuid() +
+                ", consultants=" + consultants.size() +
+                ", projects=" + projects.size() +
                 ", activeFrom=" + activeFrom +
-                ", client=" + client +
+                ", client=" + client.getName() +
                 ", children=" + children +
                 '}';
     }
