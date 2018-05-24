@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 
 import javax.persistence.*;
@@ -43,8 +44,8 @@ public class MainContract extends Contract {
         super();
     }
 
-    public MainContract(ContractType contractType, LocalDate activeFrom, LocalDate activeTo, double amount, Client client) {
-        super(amount, contractType, activeTo);
+    public MainContract(ContractType contractType, ContractStatus contractStatus, String note, LocalDate activeFrom, LocalDate activeTo, double amount, Client client) {
+        super(contractStatus, note, amount, contractType, activeTo);
         this.activeFrom = activeFrom;
         this.client = client;
     }

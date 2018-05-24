@@ -222,4 +222,9 @@ public class ContractService {
         }
         return errorList.values();
     }
+
+    @Transactional
+    public void deleteContract(MainContract mainContract) {
+        contractRepository.delete(mainContract.getUuid());
+    }
 }

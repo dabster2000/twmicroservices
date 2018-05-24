@@ -45,8 +45,10 @@ public abstract class Contract {
         uuid = UUID.randomUUID().toString();
     }
 
-    public Contract(double amount, ContractType contractType, LocalDate activeTo) {
+    public Contract(ContractStatus contractStatus, String note, double amount, ContractType contractType, LocalDate activeTo) {
         this();
+        this.status = contractStatus;
+        this.note = note;
         this.amount = amount;
         this.contractType = contractType;
         this.activeTo = activeTo;

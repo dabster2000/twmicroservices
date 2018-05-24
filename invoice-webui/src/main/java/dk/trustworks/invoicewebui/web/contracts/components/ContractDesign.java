@@ -35,6 +35,7 @@ public class ContractDesign extends VerticalLayout {
     private Panel photosContentHolder;
     private HorizontalLayout photoContainer;
     private Button btnEdit;
+    private Button btnDelete;
 
     public ContractDesign() {
         Design.read(this);
@@ -78,6 +79,10 @@ public class ContractDesign extends VerticalLayout {
 
     public Button getBtnEdit() {
         return btnEdit;
+    }
+
+    public Button getBtnDelete() {
+        return btnDelete;
     }
 
 }

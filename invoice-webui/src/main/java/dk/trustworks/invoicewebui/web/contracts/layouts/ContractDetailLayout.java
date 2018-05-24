@@ -135,7 +135,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             chartCard = new Card();
             chartCard.getLblTitle().setValue("Used Budget");
             chartCard.getContent().setHeight(350, Unit.PIXELS);
-            createUsedBudgetChartCard(mainContract);
+            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createUsedBudgetChartCard(mainContract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, 2, 3)
                     .withComponent(chartCard);
@@ -177,6 +177,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private void createUsedBudgetChartCard(MainContract mainContract) {
         Chart chart = new Chart(ChartType.COLUMN);
+        chartCard.getContent().removeAllComponents();
         chartCard.getContent().addComponent(chart);
         chart.setSizeFull();
 
@@ -461,7 +462,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createConsultantList(mainContract);
         createProjectList(mainContract);
         updateProposedPeriod(mainContract);
-        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) createUsedBudgetChartCard(mainContract);
+        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI))
+            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0)
+                createUsedBudgetChartCard(mainContract);
     }
 
     private void updateProposedPeriod(MainContract mainContract) {

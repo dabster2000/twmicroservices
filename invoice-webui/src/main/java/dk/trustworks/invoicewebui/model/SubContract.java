@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,8 +18,8 @@ public class SubContract extends Contract {
         super();
     }
 
-    public SubContract(double amount, LocalDate activeTo, MainContract parent) {
-        super(amount, parent.getContractType(), activeTo);
+    public SubContract(ContractStatus contractStatus, String note, double amount, LocalDate activeTo, MainContract parent) {
+        super(contractStatus, note, amount, parent.getContractType(), activeTo);
         this.parent = parent;
     }
 
