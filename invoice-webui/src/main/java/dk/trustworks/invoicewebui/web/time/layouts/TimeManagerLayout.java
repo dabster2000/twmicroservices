@@ -18,6 +18,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.TimeService;
+import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.components.DateButtons;
@@ -61,6 +62,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private WeekRepository weekRepository;
 
     @Autowired
+    private WorkService workService;
+
+    @Autowired
     private WorkRepository workRepository;
 
     @Autowired
@@ -102,25 +106,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
         dateButtons.getBtnWeekNumberIncr().addClickListener(event -> {
             currentDate = currentDate.plusWeeks(1);
             log.info("currentDate.plusWeeks(1) = " + currentDate);
-            //setDateFields();
             loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
-            //updateGrid(getSelActiveUser().getSelectedItem().get());
         });
-        /*
-        getBtnYearDecr().addClickListener(event -> {
-            currentDate = currentDate.minusYears(1);
-            log.info("currentDate.minusYears(1) = " + currentDate);
-            setDateFields();
-            updateGrid(getSelActiveUser().getSelectedItem().get());
-        });
-
-        getBtnYearIncr().addClickListener(event -> {
-            currentDate = currentDate.plusYears(1);
-            log.info("currentDate.plusYears(1) = " + currentDate);
-            setDateFields();
-            updateGrid(getSelActiveUser().getSelectedItem().get());
-        });
-        */
 
         dateButtons.getSelActiveUser().addValueChangeListener(event -> loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get()));
 
@@ -180,7 +167,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 taskComboBox.setVisible(false);
                 addTaskButton.setEnabled(false);
 
-                //List<Project> projects = clientRepository.findOne(event1.getValue().getUuid()).getProjects();
                 List<Project> projects = projectRepository.findByClientAndActiveTrueOrderByNameAsc(clientComboBox.getValue());
 
                 projectComboBox.clear();
@@ -597,7 +583,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         try {
             double newValue = event.getValue().equals("")?0.0:nf.parse(event.getValue()).doubleValue();
             Work work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask());
-            workRepository.save(work);
+            workService.saveWork(work);
             if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));
         } catch (ParseException e) {
             log.error("Could not save work for weekItem " + weekItem, e);
@@ -606,7 +592,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void updateSums() {
         weekValuesBinder.readBean(weekDaySums);
-        //sumHours = weekDaySums.sum();
     }
 
     private class WeekValues {

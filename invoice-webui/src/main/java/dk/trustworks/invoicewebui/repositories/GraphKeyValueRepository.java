@@ -19,7 +19,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
 
     @Cacheable("findProjectRevenueByPeriod")
     @Query(value = "SELECT p.name description, p.uuid uuid, ROUND(SUM(w.workduration * twc.price)) value " +
-            "                FROM work_latest w " +
+            "                FROM work w " +
             "                INNER JOIN user u ON w.useruuid = u.uuid " +
             "                INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = u.uuid " +
             "                INNER JOIN task t ON t.uuid = twc.taskuuid " +
@@ -29,8 +29,8 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
     List<GraphKeyValue> findProjectRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
     @Cacheable("findRevenueByMonthByPeriod")
-    @Query(value = "SELECT w.uuid uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.workduration * twc.price)) value " +
-            "                            FROM work_latest w " +
+    @Query(value = "SELECT w.id uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.workduration * twc.price)) value " +
+            "                            FROM work w " +
             "                            INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = w.useruuid " +
             "                            WHERE ((w.year*10000)+((w.month+1)*100)+w.day) between :periodStart and :periodEnd AND w.workduration > 0 " +
             "                            GROUP BY w.month, w.year;", nativeQuery = true)
@@ -61,7 +61,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
 
     @Cacheable("findConsultantRevenueByPeriod")
     @Query(value = "SELECT concat(u.firstname, ' ', u.lastname) description, u.uuid uuid, SUM(w.workduration * twc.price) value  " +
-            "FROM work_latest w " +
+            "FROM work w " +
             "INNER JOIN user u ON w.useruuid = u.uuid " +
             "INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = u.uuid " +
             "WHERE ((w.year*10000)+((w.month+1)*100)+w.day) between :periodStart and :periodEnd " +
@@ -69,11 +69,11 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
     List<GraphKeyValue> findConsultantRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
     @Cacheable("countConsultantsPerProject")
-    @Query(value = "SELECT p.uuid uuid, p.name description, COUNT(DISTINCT w.useruuid) value FROM usermanager.work_latest w " +
+    @Query(value = "SELECT p.uuid uuid, p.name description, COUNT(DISTINCT w.useruuid) value FROM usermanager.work w " +
             "LEFT JOIN usermanager.task t ON t.uuid = w.taskuuid " +
             "LEFT JOIN usermanager.project p ON p.uuid = t.projectuuid " +
             "LEFT JOIN " +
-            "(SELECT w.useruuid useruuid, p.uuid projectuuid, p.name name, SUM(w.workduration) duration FROM usermanager.work_latest w " +
+            "(SELECT w.useruuid useruuid, p.uuid projectuuid, p.name name, SUM(w.workduration) duration FROM usermanager.work w " +
             "LEFT JOIN usermanager.task t ON t.uuid = w.taskuuid " +
             "LEFT JOIN usermanager.project p ON p.uuid = t.projectuuid " +
             "GROUP BY w.useruuid, p.uuid " +

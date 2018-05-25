@@ -26,7 +26,7 @@ public interface BudgetRepository extends CrudRepository<Budget, String> {
     @Query(value = "SELECT SUM(w.budget / (( " +
             "SELECT twc.price FROM taskworkerconstraint twc WHERE twc.taskuuid LIKE :taskuuid AND twc.useruuid LIKE :useruuid " +
             "))) - ( " +
-            "SELECT SUM(w.workduration) FROM work_latest w WHERE w.taskuuid LIKE :taskuuid AND w.useruuid LIKE :useruuid " +
+            "SELECT SUM(w.workduration) FROM work w WHERE w.taskuuid LIKE :taskuuid AND w.useruuid LIKE :useruuid " +
             ") FROM taskworkerconstraint_latest w WHERE taskuuid LIKE :taskuuid AND useruuid LIKE :useruuid ORDER BY w.taskuuid, w.useruuid, w.year, w.month;", nativeQuery = true)
     Double findBudgetLeftByTaskuuidAndUseruuid(@Param("taskuuid") String taskuuid, @Param("useruuid") String useruuid);
 

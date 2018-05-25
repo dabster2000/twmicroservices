@@ -1,8 +1,6 @@
 package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.UUID;
 
 /**
  * Created by hans on 28/06/2017.
@@ -11,14 +9,12 @@ import java.util.UUID;
 @Table(schema = "timemanager")
 public class Work {
 
-    @Id private String uuid;
+    @Id
+    private int id;
     private int day;
     private int month;
     private int year;
     private double workduration;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taskuuid")
@@ -32,22 +28,20 @@ public class Work {
     }
 
     public Work(int day, int month, int year, double workduration, User user, Task task) {
-        this.uuid = UUID.randomUUID().toString();
         this.day = day;
         this.month = month;
         this.year = year;
         this.workduration = workduration;
         this.user = user;
         this.task = task;
-        this.created = new Date();
     }
 
-    public String getUuid() {
-        return uuid;
+    public int getId() {
+        return id;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getDay() {
@@ -82,14 +76,6 @@ public class Work {
         this.workduration = workduration;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
     public Task getTask() {
         return task;
     }
@@ -109,12 +95,11 @@ public class Work {
     @Override
     public String toString() {
         return "Work{" +
-                "uuid='" + uuid + '\'' +
+                "id='" + id + '\'' +
                 ", day=" + day +
                 ", month=" + month +
                 ", year=" + year +
                 ", workduration=" + workduration +
-                ", created=" + created +
                 ", task=" + task.getUuid() +
                 ", user=" + user.getUuid() +
                 ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +

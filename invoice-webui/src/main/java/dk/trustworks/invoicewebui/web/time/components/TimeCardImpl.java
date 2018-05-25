@@ -6,8 +6,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.services.TimeService;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +25,6 @@ public class TimeCardImpl extends TimeCardDesign {
     @Autowired
     ProjectRepository projectRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private WeekRepository weekRepository;
-
-    @Autowired
-    private WorkRepository workRepository;
-
-    @Autowired
-    private TimeService timeService;
-
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);
 
     private Label lblCurrentDate;
@@ -51,8 +39,6 @@ public class TimeCardImpl extends TimeCardDesign {
 
         ResponsiveRow controlsRow = responsiveLayout.addRow();
         controlsRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(getLblCurrentDate());
-
-
     }
 
 
