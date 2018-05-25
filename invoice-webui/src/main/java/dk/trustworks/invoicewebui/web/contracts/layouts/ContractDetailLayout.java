@@ -58,6 +58,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private VerticalLayout consultantsLayout;
     private VerticalLayout projectsLayout;
+    private VerticalLayout contractLayout;
     private Card chartCard;
 
     private ContractFormDesign mainContractForm;
@@ -82,41 +83,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractRow.removeAllComponents();
         proposedPeriod = new LocalDatePeriod(mainContract.getActiveFrom(), mainContract.getActiveTo());
 
-        Binder<MainContract> mainContractBinder = new Binder<>();
-        mainContractForm = new ContractFormDesign();
-        mainContractForm.getContainer().setHeight(350, Unit.PIXELS);
-        mainContractForm.getContainer().addStyleName("v-scrollable");
-
-        mainContractForm.getBtnCreate().setVisible(false);
-        mainContractForm.getTxtAmount().setVisible(
-                mainContract.getContractType().equals(ContractType.AMOUNT) ||
-                mainContract.getContractType().equals(ContractType.SKI));
-        mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
-        mainContractBinder.forField(mainContractForm.getDfFrom()).bind(MainContract::getActiveFrom, MainContract::setActiveFrom);
-        mainContractBinder.forField(mainContractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
-        mainContractBinder.forField(mainContractForm.getTxtNote()).bind(Contract::getNote, Contract::setNote);
-        mainContractForm.getCbStatus().setItems(ContractStatus.values());
-        mainContractBinder.forField(mainContractForm.getCbStatus()).bind(Contract::getStatus, Contract::setStatus);
-        mainContractForm.getCbType().setEnabled(false);
-        mainContractBinder.forField(mainContractForm.getCbType()).bind(Contract::getContractType, Contract::setContractType);
-        mainContractForm.getLblTitle().setValue("Main Contract");
-        mainContractBinder.readBean(mainContract);
-
-        mainContractForm.getBtnUpdate().addClickListener(event -> {
-            try {
-                mainContractBinder.writeBean(mainContract);
-                mainContract.setAmount(NumberConverter.parseDouble(mainContractForm.getTxtAmount().getValue()));
-                contractService.updateContract(mainContract);
-                updateData(mainContract);
-            } catch (ValidationException e) {
-                e.printStackTrace();
-                Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            }
-        });
+        contractLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE).withMargin(false).withSpacing(false).withFullWidth();
+        createContractForm(mainContract);
 
         contractRow.addColumn()
                 .withDisplayRules(12, 12, 5, 4)
-                .withComponent(mainContractForm);
+                .withComponent(contractLayout);
 
         Card projectsCard = new Card();
         projectsCard.getLblTitle().setValue("Projects");
@@ -173,6 +145,42 @@ public class ContractDetailLayout extends ResponsiveLayout {
         updateProposedPeriod(mainContract);
 
         return this;
+    }
+
+    private void createContractForm(MainContract mainContract) {
+        contractLayout.removeAllComponents();
+        mainContractForm = new ContractFormDesign();
+        contractLayout.addComponent(mainContractForm);
+        Binder<MainContract> mainContractBinder = new Binder<>();
+        mainContractForm.getContainer().setHeight(350, Unit.PIXELS);
+        mainContractForm.getContainer().addStyleName("v-scrollable");
+
+        mainContractForm.getBtnCreate().setVisible(false);
+        mainContractForm.getTxtAmount().setVisible(
+                mainContract.getContractType().equals(ContractType.AMOUNT) ||
+                mainContract.getContractType().equals(ContractType.SKI));
+        mainContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(mainContract.getAmount()));
+        mainContractBinder.forField(mainContractForm.getDfFrom()).bind(MainContract::getActiveFrom, MainContract::setActiveFrom);
+        mainContractBinder.forField(mainContractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
+        mainContractBinder.forField(mainContractForm.getTxtNote()).bind(Contract::getNote, Contract::setNote);
+        mainContractForm.getCbStatus().setItems(ContractStatus.values());
+        mainContractBinder.forField(mainContractForm.getCbStatus()).bind(Contract::getStatus, Contract::setStatus);
+        mainContractForm.getCbType().setEnabled(false);
+        mainContractBinder.forField(mainContractForm.getCbType()).bind(Contract::getContractType, Contract::setContractType);
+        mainContractForm.getLblTitle().setValue("Main Contract");
+        mainContractBinder.readBean(mainContract);
+
+        mainContractForm.getBtnUpdate().addClickListener(event -> {
+            try {
+                mainContractBinder.writeBean(mainContract);
+                mainContract.setAmount(NumberConverter.parseDouble(mainContractForm.getTxtAmount().getValue()));
+                contractService.updateContract(mainContract);
+                updateData(mainContract);
+            } catch (ValidationException e) {
+                e.printStackTrace();
+                Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            }
+        });
     }
 
     private void createUsedBudgetChartCard(MainContract mainContract) {
@@ -337,11 +345,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {
                 consultant.setRate(NumberConverter.parseDouble(event.getValue()));
                 consultantRepository.save(consultant);
+                updateData(mainContract);
             });
             consultantRowDesign.getTxtHours().setValue(Math.round(consultant.getHours())+"");
             consultantRowDesign.getTxtHours().addValueChangeListener(event -> {
                 consultant.setHours(NumberConverter.parseDouble(event.getValue()));
                 consultantRepository.save(consultant);
+                updateData(mainContract);
             });
             consultantRowDesign.getVlHours().setVisible(consultant.getMainContract().getContractType().equals(ContractType.PERIOD));
             consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
@@ -371,7 +381,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> {
                         User user = userComboBox.getSelectedItem().get();
-                        createConsultant(mainContract, user);
+                        createConsultant(mainContract, user, 0.0, 0.0);
                         subWindow.close();
                     });
                     subContent.addComponent(addButton);
@@ -433,7 +443,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
         consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
         consultantRowDesign.getImgPhoto().setEnabled(false);
         consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
-        consultantRowDesign.getBtnDelete().addClickListener(event -> createConsultant(mainContract, user));
+        consultantRowDesign.getBtnDelete().addClickListener(event -> createConsultant(
+                mainContract,
+                user,
+                NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
+                NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue())));
 
         responsiveRow.addColumn()
                 .withComponent(consultantRowDesign)
@@ -459,6 +473,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void updateData(MainContract mainContract) {
+        mainContract = contractService.getUpdatedContract(mainContract);
+        createContractForm(mainContract);
         createConsultantList(mainContract);
         createProjectList(mainContract);
         updateProposedPeriod(mainContract);
@@ -480,8 +496,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
         updateData(mainContract);
     }
 
-    private void createConsultant(MainContract mainContract, User user) {
-        Consultant consultant = new Consultant(mainContract, user, 0.0, 0.0, 0.0);
+    private void createConsultant(MainContract mainContract, User user, double hours, double rate) {
+        Consultant consultant = new Consultant(mainContract, user, rate, 0.0, hours);
         mainContract.addConsultant(consultant);
         consultantRepository.save(consultant);
         updateData(mainContract);

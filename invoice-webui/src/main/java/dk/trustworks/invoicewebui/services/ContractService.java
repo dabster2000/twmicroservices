@@ -46,6 +46,11 @@ public class ContractService {
     }
 
     @Transactional
+    public MainContract getUpdatedContract(MainContract mainContract) {
+        return mainContractRepository.findOne(mainContract.getUuid());
+    }
+
+    @Transactional
     public SubContract updateContract(SubContract contract) {
         return subContractRepository.save(contract);
     }
@@ -225,6 +230,12 @@ public class ContractService {
 
     @Transactional
     public void deleteContract(MainContract mainContract) {
-        contractRepository.delete(mainContract.getUuid());
+        System.out.println("ContractService.deleteContract");
+        System.out.println("mainContract = [" + mainContract + "]");
+        try {
+            mainContractRepository.delete(mainContract.getUuid());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

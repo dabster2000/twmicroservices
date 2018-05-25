@@ -78,7 +78,7 @@ public class ProjectManagerJob {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
                 Set<String> consultants = new TreeSet<>();
-                List<Consultant> consultantList = project.getMainContracts().stream().map(MainContract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(List::stream).distinct().collect(Collectors.toList());
+                List<Consultant> consultantList = project.getMainContracts().stream().map(MainContract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
                 for (Consultant consultant : consultantList) {
                     consultants.add(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
 
@@ -96,7 +96,7 @@ public class ProjectManagerJob {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
                 Set<String> consultants = new TreeSet<>();
-                List<Consultant> consultantList = project.getMainContracts().stream().map(MainContract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(List::stream).distinct().collect(Collectors.toList());
+                List<Consultant> consultantList = project.getMainContracts().stream().map(MainContract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
                 for (Consultant consultant : consultantList) {
                     consultants.add(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
 

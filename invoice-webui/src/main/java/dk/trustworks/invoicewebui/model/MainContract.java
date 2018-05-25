@@ -15,13 +15,13 @@ import java.util.*;
 public class MainContract extends Contract {
 
     @OneToMany(mappedBy = "mainContract", cascade = {
-            CascadeType.MERGE, CascadeType.PERSIST
-    }, fetch = FetchType.LAZY)
-    private List<Consultant> consultants = new ArrayList<>();
+            CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE
+    }, fetch = FetchType.EAGER)
+    private Set<Consultant> consultants = new HashSet<>();
 
     @ManyToMany(cascade = {
             CascadeType.MERGE, CascadeType.PERSIST
-    }, fetch = FetchType.LAZY)
+    }, fetch = FetchType.EAGER)
     @JoinTable(name = "contract_project",
             joinColumns = @JoinColumn(name = "contractuuid"),
             inverseJoinColumns = @JoinColumn(name = "projectuuid")
@@ -66,7 +66,7 @@ public class MainContract extends Contract {
 
     public void addProjects(Set<Project> projects) {this.projects.addAll(projects); }
 
-    public List<Consultant> getConsultants() {
+    public Set<Consultant> getConsultants() {
         return consultants;
     }
 
