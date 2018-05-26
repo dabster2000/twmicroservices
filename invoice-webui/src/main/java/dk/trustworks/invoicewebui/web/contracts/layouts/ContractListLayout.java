@@ -18,6 +18,7 @@ import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractFormDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractSearchImpl;
+import dk.trustworks.invoicewebui.web.contracts.components.NavigationBar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.viritin.button.MButton;
@@ -70,6 +71,7 @@ public class ContractListLayout extends VerticalLayout {
         createErrorBox();
         contractRow = contractResponsiveLayout.addRow();
         this.addComponent(contractResponsiveLayout);
+        if(contractSearch.getSelClient().getOptionalValue().isPresent()) reloadContractView(contractSearch.getSelClient().getValue());
     }
 
     private void createErrorBox() {
@@ -93,9 +95,7 @@ public class ContractListLayout extends VerticalLayout {
                 .withComponent(contractSearch);
         contractSearch.getSelClient().setItemCaptionGenerator(Client::getName);
 
-        contractSearch.getSelClient().addValueChangeListener(event -> {
-            reloadContractView(event.getValue());
-        });
+        contractSearch.getSelClient().addValueChangeListener(event -> reloadContractView(event.getValue()));
     }
 
     private void reloadContractView(Client client) {
@@ -134,7 +134,9 @@ public class ContractListLayout extends VerticalLayout {
                             NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
                             client));
                     this.removeComponent(contractResponsiveLayout);
-                    contractResponsiveLayout = contractDetailLayout.loadContractDetails(mainContract);
+                    NavigationBar navigationBar = new NavigationBar();
+                    navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
+                    contractResponsiveLayout = contractDetailLayout.loadContractDetails(mainContract, navigationBar);
                     this.addComponent(contractResponsiveLayout);
                 });
 
@@ -176,7 +178,9 @@ public class ContractListLayout extends VerticalLayout {
 
             contractDesign.getBtnEdit().addClickListener(event3 -> {
                 this.removeComponent(contractResponsiveLayout);
-                contractResponsiveLayout = contractDetailLayout.loadContractDetails(mainContract);
+                NavigationBar navigationBar = new NavigationBar();
+                navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
+                contractResponsiveLayout = contractDetailLayout.loadContractDetails(mainContract, navigationBar);
                 this.addComponent(contractResponsiveLayout);
             });
 

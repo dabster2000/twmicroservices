@@ -25,10 +25,7 @@ import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
-import dk.trustworks.invoicewebui.web.contracts.components.Card;
-import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
-import dk.trustworks.invoicewebui.web.contracts.components.ContractFormDesign;
-import dk.trustworks.invoicewebui.web.contracts.components.ProjectRowDesign;
+import dk.trustworks.invoicewebui.web.contracts.components.*;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
@@ -79,8 +76,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractRow = this.addRow();
     }
 
-    public ResponsiveLayout loadContractDetails(MainContract mainContract) {
+    public ResponsiveLayout loadContractDetails(MainContract mainContract, NavigationBar navigationBar) {
         contractRow.removeAllComponents();
+
+        contractRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(navigationBar);
+
         proposedPeriod = new LocalDatePeriod(mainContract.getActiveFrom(), mainContract.getActiveTo());
 
         contractLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE).withMargin(false).withSpacing(false).withFullWidth();
