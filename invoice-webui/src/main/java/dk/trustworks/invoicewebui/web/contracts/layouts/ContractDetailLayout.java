@@ -34,6 +34,8 @@ import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import javax.annotation.PostConstruct;
+import java.time.*;
+import java.time.temporal.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,7 +58,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private VerticalLayout consultantsLayout;
     private VerticalLayout projectsLayout;
     private VerticalLayout contractLayout;
-    private Card chartCard;
+    private Card usedBudgetChartCard;
+    private Card burndownChartCard;
+    private Card burnrateChartCard;
 
     private ContractFormDesign mainContractForm;
 
@@ -87,7 +91,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createContractForm(mainContract);
 
         contractRow.addColumn()
-                .withDisplayRules(12, 12, 5, 4)
+                .withDisplayRules(12, 12, 4, 4)
                 .withComponent(contractLayout);
 
         Card projectsCard = new Card();
@@ -104,13 +108,23 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 .withComponent(projectsCard);
 
         if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
-            chartCard = new Card();
-            chartCard.getLblTitle().setValue("Used Budget");
-            chartCard.getContent().setHeight(350, Unit.PIXELS);
+            usedBudgetChartCard = new Card();
+            usedBudgetChartCard.getLblTitle().setValue("Used Budget");
+            usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
             if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createUsedBudgetChartCard(mainContract);
             contractRow.addColumn()
-                    .withDisplayRules(12, 12, 2, 3)
-                    .withComponent(chartCard);
+                    .withDisplayRules(12, 12, 3, 3)
+                    .withComponent(usedBudgetChartCard);
+        }
+
+        if(mainContract.getContractType().equals(ContractType.PERIOD)) {
+            burnrateChartCard = new Card();
+            burnrateChartCard.getLblTitle().setValue("Burn Rate");
+            burnrateChartCard.getContent().setHeight(350, Unit.PIXELS);
+            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createBurnrateCard(mainContract);
+            contractRow.addColumn()
+                    .withDisplayRules(12, 12, 3, 3)
+                    .withComponent(burnrateChartCard);
         }
 
         Card consultantsCard = new Card();
@@ -121,8 +135,18 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createConsultantList(mainContract);
 
         contractRow.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
+                .withDisplayRules(12, 12, 9, 9)
                 .withComponent(consultantsCard);
+
+        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
+            burndownChartCard = new Card();
+            burndownChartCard.getLblTitle().setValue("Burndown");
+            burndownChartCard.getContent().setHeight(350, Unit.PIXELS);
+            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createBurndownCard(mainContract);
+            contractRow.addColumn()
+                    .withDisplayRules(12, 12, 3, 3)
+                    .withComponent(burndownChartCard);
+        }
 
         for (SubContract subContract : mainContract.getChildren()) {
             ContractFormDesign subContractComponent = getSubContractComponent(subContract, false);
@@ -138,9 +162,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         ResponsiveColumn newSubContractFormColumn = contractRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
                 .withComponent(contractFormDesign);
-        contractFormDesign.getBtnCreate().addClickListener(event -> {
-            contractRow.removeComponent(newSubContractFormColumn);
-        });
+        contractFormDesign.getBtnCreate().addClickListener(event -> contractRow.removeComponent(newSubContractFormColumn));
 
         updateProposedPeriod(mainContract);
 
@@ -185,8 +207,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private void createUsedBudgetChartCard(MainContract mainContract) {
         Chart chart = new Chart(ChartType.COLUMN);
-        chartCard.getContent().removeAllComponents();
-        chartCard.getContent().addComponent(chart);
+        usedBudgetChartCard.getContent().removeAllComponents();
+        usedBudgetChartCard.getContent().addComponent(chart);
         chart.setSizeFull();
 
         Configuration conf = chart.getConfiguration();
@@ -195,23 +217,15 @@ public class ContractDetailLayout extends ResponsiveLayout {
         conf.setSubTitle("");
 
         XAxis xAxis = new XAxis();
-        xAxis.setCategories(new String[] { "Main" });
+        xAxis.setVisible(false);
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();
         yAxis.setVisible(false);
-        yAxis.setMin(0);
-        yAxis.setTitle(new AxisTitle(null));
-        //StackLabels sLabels = new StackLabels(true);
-        //yAxis.setStackLabels(sLabels);
         conf.addyAxis(yAxis);
 
         Legend legend = new Legend();
-        legend.setAlign(HorizontalAlign.RIGHT);
-        legend.setFloating(true);
-        legend.setVerticalAlign(VerticalAlign.TOP);
-        legend.setX(-100);
-        legend.setY(20);
+        legend.setEnabled(false);
         conf.setLegend(legend);
 
         PlotOptionsColumn plotOptions = new PlotOptionsColumn();
@@ -226,14 +240,172 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
         double sum = 0.0;
         for (Work work : contractService.getWorkOnContractByUser(mainContract)) {
-            System.out.println("work = " + work);
             Optional<Consultant> optionalConsultant = mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;
             sum += (work.getWorkduration() * optionalConsultant.get().getRate());
         }
 
-        conf.addSeries(new ListSeries("Budget", new Number[] { (mainContract.getAmount()-sum) }));
-        conf.addSeries(new ListSeries("Used", new Number[] { sum}));
+        conf.addSeries(new ListSeries("Remaining", (mainContract.getAmount()-sum)));
+        conf.addSeries(new ListSeries("Used", sum));
+
+        chart.drawChart(conf);
+    }
+
+    private void createBurndownCard(MainContract mainContract) {
+        Chart chart = new Chart(ChartType.AREA);
+        burndownChartCard.getContent().removeAllComponents();
+        burndownChartCard.getContent().addComponent(chart);
+        chart.setSizeFull();
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("");
+        conf.setSubTitle("");
+
+        XAxis xAxis = new XAxis();
+        xAxis.setType(AxisType.DATETIME);
+        xAxis.setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+        conf.addxAxis(xAxis);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setVisible(false);
+        conf.addyAxis(yAxis);
+
+        Legend legend = new Legend();
+        legend.setEnabled(false);
+        conf.setLegend(legend);
+
+        PlotOptionsArea plotOptions = new PlotOptionsArea();
+        Marker marker = new Marker();
+        marker.setEnabled(false);
+        marker.setSymbol(MarkerSymbolEnum.CIRCLE);
+        marker.setRadius(2);
+        States states = new States();
+        states.setHover(new Hover(true));
+        marker.setStates(states);
+        plotOptions.setMarker(marker);
+        conf.setPlotOptions(plotOptions);
+
+        DataSeries ls = new DataSeries();
+
+        Map<LocalDate, Double> runningBudget = new TreeMap<>();
+        double budget = mainContract.getAmount();
+        for (Work work : contractService.getWorkOnContractByUser(mainContract).stream().sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).thenComparing(Work::getDay)).collect(Collectors.toList())) {
+            Optional<Consultant> optionalConsultant = mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
+            if(!optionalConsultant.isPresent()) continue;
+            budget -= (work.getWorkduration() * optionalConsultant.get().getRate());
+            LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay());
+            runningBudget.put(workDate, budget);
+        }
+
+        for (LocalDate localDate : runningBudget.keySet()) {
+            DataSeriesItem item = new DataSeriesItem(localDate.atStartOfDay().toInstant(ZoneOffset.UTC),runningBudget.get(localDate));
+            ls.add(item);
+        }
+
+        conf.addSeries(ls);
+        chart.drawChart(conf);
+    }
+
+    private void createBurnrateCard(MainContract mainContract) {
+        Chart chart = new Chart(ChartType.SPLINE);
+        burnrateChartCard.getContent().removeAllComponents();
+        burnrateChartCard.getContent().addComponent(chart);
+        chart.setSizeFull();
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("");
+        conf.setSubTitle("");
+
+        XAxis xAxis = new XAxis();
+        xAxis.setType(AxisType.DATETIME);
+        xAxis.setDateTimeLabelFormats(
+                new DateTimeLabelFormats("%e. %b", "%b"));
+        conf.addxAxis(xAxis);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setVisible(true);
+        conf.addyAxis(yAxis);
+
+        Legend legend = new Legend();
+        legend.setEnabled(false);
+        conf.setLegend(legend);
+
+        PlotOptionsArea plotOptions = new PlotOptionsArea();
+        Marker marker = new Marker();
+        marker.setEnabled(false);
+        marker.setSymbol(MarkerSymbolEnum.CIRCLE);
+        marker.setRadius(2);
+        States states = new States();
+        states.setHover(new Hover(true));
+        marker.setStates(states);
+        plotOptions.setMarker(marker);
+        conf.setPlotOptions(plotOptions);
+
+        Map<User, Map<LocalDate, Double>> userMapMap = new HashMap<>();
+        //Map<LocalDate, Double> runningBudget = new TreeMap<>();
+        //double budget = mainContract.getAmount();
+        long between = ChronoUnit.WEEKS.between(mainContract.getActiveFrom(), mainContract.getActiveTo());
+        String unit = "weeks";
+        TemporalAdjuster temporalAdjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
+        if(between > 26) {
+            unit = "months";
+            temporalAdjuster = TemporalAdjusters.firstDayOfMonth();
+        }
+        if(between > 104) {
+            unit = "quarters";
+            temporalAdjuster = new FirstDayOfQuarter();
+        }
+        for (Work work : contractService.getWorkOnContractByUser(mainContract).stream().sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).thenComparing(Work::getDay)).collect(Collectors.toList())) {
+            Optional<Consultant> optionalConsultant = mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
+            if(!optionalConsultant.isPresent()) continue;
+            //budget -= (work.getWorkduration() * optionalConsultant.get().getRate());
+            LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay()).with(temporalAdjuster);
+            Map<LocalDate, Double> runningBudget;
+            if(!userMapMap.containsKey(work.getUser())) {
+                userMapMap.put(work.getUser(), new TreeMap<>());
+            }
+            runningBudget = userMapMap.get(work.getUser());
+            double workDuration = 0.0;
+            if(!runningBudget.containsKey(workDate)) {
+                runningBudget.put(workDate, workDuration);
+            }
+            workDuration = runningBudget.get(workDate) + work.getWorkduration();
+            runningBudget.put(workDate, workDuration);
+        }
+        if(unit.equals("months")) {
+            for (User user : userMapMap.keySet()) {
+                Map<LocalDate, Double> doubleMap = userMapMap.get(user);
+                for (LocalDate localDate : doubleMap.keySet()) {
+                    double aDouble = doubleMap.get(localDate);
+                    double length = Month.from(localDate).length(true) / 7.0;
+                    doubleMap.put(localDate, aDouble / length);
+                }
+            }
+        }
+        if(unit.equals("quarters")) {
+            for (User user : userMapMap.keySet()) {
+                Map<LocalDate, Double> doubleMap = userMapMap.get(user);
+                for (LocalDate localDate : doubleMap.keySet()) {
+                    double aDouble = doubleMap.get(localDate);
+                    double length = (Month.from(localDate).length(true)
+                            + Month.from(localDate.plusMonths(1)).length(true)
+                            + Month.from(localDate.plusMonths(2)).length(true))/ 7.0;
+                    doubleMap.put(localDate, aDouble / length);
+                }
+            }
+        }
+        for (User user : userMapMap.keySet()) {
+            Map<LocalDate, Double> runningBudget = userMapMap.get(user);
+            DataSeries ls = new DataSeries(user.getFirstname()+" "+user.getLastname());
+            for (LocalDate localDate : runningBudget.keySet()) {
+                DataSeriesItem item = new DataSeriesItem(localDate.atStartOfDay().toInstant(ZoneOffset.UTC),runningBudget.get(localDate));
+                ls.add(item);
+            }
+            conf.addSeries(ls);
+        }
 
         chart.drawChart(conf);
     }
@@ -267,11 +439,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     projectComboBox.setItemCaptionGenerator(Project::getName);
                     subContent.addComponent(projectComboBox);
                     Button addButton = new Button("Add");
-                    addButton.addClickListener(event1 -> {
-                        Project project = projectComboBox.getSelectedItem().get();
-                        createProject(mainContract, project);
-                        subWindow.close();
-                    });
+                    addButton.addClickListener(event1 -> projectComboBox.getOptionalValue().ifPresent(project -> {
+                    //Project project = projectComboBox.getSelectedItem().get();
+                    createProject(mainContract, project);
+                    subWindow.close();
+                    }));
                     subContent.addComponent(addButton);
 
                     // Center it in the browser window
@@ -286,14 +458,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createProposedProjects(MainContract mainContract) {
-        List<Project> deltaProjects = new ArrayList<>();
-        deltaProjects.addAll(mainContract.getClient().getProjects());
+        List<Project> deltaProjects = new ArrayList<>(mainContract.getClient().getProjects());
         //deltaProjects.removeAll(mainContract.getProjects());
         Map<String, Project> projectsWithUserWorkButNoContract = new HashMap<>();
         for (User user : mainContract.getConsultants().stream().map(Consultant::getUser).collect(Collectors.toList())) {
             for (Project project : contractService.getProjectsWithUserWorkButNoContract(deltaProjects, user)) {
                 // is project already on contract
-                if(mainContract.getProjects().stream().filter(p -> p.getUuid().equals(project.getUuid())).findFirst().isPresent()) {
+                if(mainContract.getProjects().stream().anyMatch(p -> p.getUuid().equals(project.getUuid()))) {
                     System.out.println("Project already exists. Trying to find work...");
                     LocalDatePeriod period = contractService.getUsersFirstAndLastWorkOnProject(project, user);
                     System.out.println("period = " + period);
@@ -360,7 +531,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
             responsiveRow.addColumn()
                     .withComponent(consultantRowDesign)
-                    .withDisplayRules(12, 12, 6, 4);
+                    .withDisplayRules(12, 12, 6, 6);
         }
 
         createProposedConsultants(mainContract, responsiveLayout.addRow());
@@ -379,11 +550,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     userComboBox.setItemCaptionGenerator(User::getUsername);
                     subContent.addComponent(userComboBox);
                     Button addButton = new Button("Add");
-                    addButton.addClickListener(event1 -> {
-                        User user = userComboBox.getSelectedItem().get();
+                    addButton.addClickListener(event1 -> userComboBox.getOptionalValue().ifPresent(user -> {
+                        //User user = userComboBox.getSelectedItem().get();
                         createConsultant(mainContract, user, 0.0, 0.0);
                         subWindow.close();
-                    });
+                    }));
                     subContent.addComponent(addButton);
 
                     // Center it in the browser window
@@ -402,7 +573,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         for (Project project : mainContract.getProjects()) {
             Set<User> employees = contractService.getEmployeesWorkingOnProjectWithNoContract(project);
             for (User employee : employees) {
-                if(!mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(employee.getUuid())).findFirst().isPresent())
+                if(mainContract.getConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(employee.getUuid())))
                     proposedUsers.put(employee.getUuid(), employee);
             }
         }
@@ -417,7 +588,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         } else if(mainContract.getProjects().size() == 0) {
             for (Project project : mainContract.getClient().getProjects()) {
                 for (User user : contractService.getEmployeesWorkingOnProjectWithNoContract(project)) {
-                    if(!mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(user.getUuid())).findFirst().isPresent())
+                    if(mainContract.getConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(user.getUuid())))
                     proposedUsers.put(user.getUuid(), user);
                 }
             }
@@ -451,7 +622,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
         responsiveRow.addColumn()
                 .withComponent(consultantRowDesign)
-                .withDisplayRules(12, 12, 6, 4);
+                .withDisplayRules(12, 12, 6, 6);
     }
 
     private void createProject(MainContract mainContract, Project project) {
@@ -478,9 +649,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createConsultantList(mainContract);
         createProjectList(mainContract);
         updateProposedPeriod(mainContract);
-        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI))
-            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0)
+        if (mainContract.getProjects().size() > 0 && mainContract.getConsultants().size() > 0) {
+            if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
                 createUsedBudgetChartCard(mainContract);
+                createBurndownCard(mainContract);
+            } else {
+                createBurnrateCard(mainContract);
+            }
+        }
     }
 
     private void updateProposedPeriod(MainContract mainContract) {
@@ -512,5 +688,37 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractFormDesign.getCbType().setVisible(false);
         contractFormDesign.getLblTitle().setValue(newContract?"Add sub contract":"Sub Contract");
         return contractFormDesign;
+    }
+}
+
+class FirstDayOfQuarter implements TemporalAdjuster {
+
+    @Override
+    public Temporal adjustInto(Temporal temporal) {
+
+        int currentQuarter = YearMonth.from(temporal).get(
+                IsoFields.QUARTER_OF_YEAR);
+
+        if (currentQuarter == 1) {
+
+            return LocalDate.from(temporal).with(
+                    TemporalAdjusters.firstDayOfYear());
+
+        } else if (currentQuarter == 2) {
+
+            return LocalDate.from(temporal).withMonth(Month.APRIL.getValue())
+                    .with(TemporalAdjusters.firstDayOfMonth());
+
+        } else if (currentQuarter == 3) {
+
+            return LocalDate.from(temporal).withMonth(Month.JULY.getValue())
+                    .with(TemporalAdjusters.firstDayOfMonth());
+
+        } else {
+
+            return LocalDate.from(temporal).withMonth(Month.OCTOBER.getValue())
+                    .with(TemporalAdjusters.firstDayOfMonth());
+
+        }
     }
 }
