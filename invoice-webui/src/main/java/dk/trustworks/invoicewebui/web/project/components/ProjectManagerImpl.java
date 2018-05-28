@@ -2,6 +2,9 @@ package dk.trustworks.invoicewebui.web.project.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -59,6 +63,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     private Grid<BudgetRow> grid;
 
     private VerticalLayout consultantsLayout;
+    private MVerticalLayout contractLayout;
 
     @Autowired
     public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository) {
@@ -170,6 +175,16 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsCard);
 
+        Card contractCard = new Card();
+        contractCard.getLblTitle().setValue("Contracts");
+        contractLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        contractCard.getContent().addComponent(contractLayout);
+
+        createContractChart();
+        clientDetailsRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(contractCard);
+
         budgetCard = new BudgetCardDesign();
         updateTreeGrid();
 
@@ -177,6 +192,100 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         budgetRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(budgetCard);
+    }
+
+    private void createContractChart() {
+        contractLayout.removeAllComponents();
+        Chart chart = new Chart(ChartType.COLUMNRANGE);
+        contractLayout.addComponent(chart);
+        chart.setSizeFull();
+
+        Configuration conf = chart.getConfiguration();
+        conf.getChart().setInverted(true);
+
+        conf.setTitle("");
+        conf.setSubTitle("");
+
+        XAxis xAxis = new XAxis();
+        //xAxis.setCategories(currentProject.getMainContracts().stream().map(mainContract -> mainContract.getConsultants()).collect(Collectors.toList()).stream().map(consultants -> consultants.stream()));
+        for (MainContract mainContract : currentProject.getMainContracts()) {
+            for (Consultant consultant : mainContract.getConsultants()) {
+                xAxis.addCategory(consultant.getUser().getUsername());
+            }
+        }
+        xAxis.setVisible(false);
+
+        //xAxis.setType(AxisType.DATETIME);
+        //xAxis.setDateTimeLabelFormats(new DateTimeLabelFormats("%e. %b", "%b"));
+        //xAxis.setDateTimeLabelFormats("%b \\'%y");
+        conf.addxAxis(xAxis);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setTitle("Period");
+        //yAxis.setVisible(false);
+        yAxis.setType(AxisType.DATETIME);
+        //yAxis.setTickInterval(1);
+        conf.addyAxis(yAxis);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.series.name +': '+ Highcharts.dateFormat('%b %y', this.point.low) + ' - ' + Highcharts.dateFormat('%b %y', this.point.high)");
+        conf.setTooltip(tooltip);
+
+        PlotOptionsColumnrange columnRange = new PlotOptionsColumnrange();
+        columnRange.setGrouping(false);
+        DataLabelsRange dataLabels = new DataLabelsRange(true);
+        dataLabels
+                .setFormatter("this.y == this.point.low ? '' : this.series.name");
+        dataLabels.setInside(true);
+        dataLabels.setColor(new SolidColor("white"));
+        columnRange.setDataLabels(dataLabels);
+
+        conf.setPlotOptions(columnRange);
+
+        Legend legend = new Legend();
+        legend.setEnabled(false);
+        conf.setLegend(legend);
+/*
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShared(true);
+        tooltip.setUseHTML(true);
+        tooltip.setXDateFormat("%B %Y");
+        tooltip.setHeaderFormat("<small>{point.key}</small><table>");
+        tooltip.setPointFormat("<tr><td style=\"color: {series.color}\">{series.name}: </td></tr>");
+        tooltip.setFooterFormat("</table>");
+*/
+/*
+        PlotOptionsArea plotOptions = new PlotOptionsArea();
+        Marker marker = new Marker();
+        marker.setEnabled(false);
+        marker.setSymbol(MarkerSymbolEnum.CIRCLE);
+        marker.setRadius(2);
+        States states = new States();
+        states.setHover(new Hover(true));
+        marker.setStates(states);
+        plotOptions.setMarker(marker);
+        conf.setPlotOptions(plotOptions);
+        conf.setTooltip(tooltip);
+*/
+        for (MainContract mainContract : currentProject.getMainContracts()) {
+            for (Consultant consultant : mainContract.getConsultants()) {
+                DataSeries ls = new DataSeries(consultant.getUser().getUsername());
+                DataSeriesItem dataSeriesItem = new DataSeriesItem();
+                dataSeriesItem.setName(consultant.getUser().getUsername());
+                dataSeriesItem.setLow(mainContract.getActiveFrom().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
+                dataSeriesItem.setHigh(mainContract.getActiveTo().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
+                ls.add(dataSeriesItem);
+                /*
+                for (SubContract subContract : mainContract.getChildren()) {
+                    ls.add(new DataSeriesItem(subContract.getActiveTo().atStartOfDay().toInstant(ZoneOffset.UTC), contractNumber));
+                }
+                */
+                conf.addSeries(ls);
+            }
+
+        }
+
+        chart.drawChart(conf);
     }
 
     private void createConsultantList() {
