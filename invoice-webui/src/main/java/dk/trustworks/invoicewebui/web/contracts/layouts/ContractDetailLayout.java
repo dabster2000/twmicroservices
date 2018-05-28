@@ -19,6 +19,7 @@ import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
+import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
@@ -51,6 +52,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ConsultantRepository consultantRepository;
 
+    private final ClientdataRepository clientdataRepository;
+
     private final PhotoService photoService;
 
     private ResponsiveRow contractRow;
@@ -58,6 +61,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private VerticalLayout consultantsLayout;
     private VerticalLayout projectsLayout;
     private VerticalLayout contractLayout;
+    private MVerticalLayout contactInformationLayout;
     private Card usedBudgetChartCard;
     private Card burndownChartCard;
     private Card burnrateChartCard;
@@ -67,12 +71,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectRepository projectRepository, ConsultantRepository consultantRepository, PhotoService photoService) {
+    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectRepository projectRepository, ConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository) {
         this.userRepository = userRepository;
         this.contractService = contractService;
         this.projectRepository = projectRepository;
         this.consultantRepository = consultantRepository;
         this.photoService = photoService;
+        this.clientdataRepository = clientdataRepository;
     }
 
     @PostConstruct
@@ -82,79 +87,30 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     public ResponsiveLayout loadContractDetails(MainContract mainContract, NavigationBar navigationBar) {
         contractRow.removeAllComponents();
-
-        contractRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(navigationBar);
-
         proposedPeriod = new LocalDatePeriod(mainContract.getActiveFrom(), mainContract.getActiveTo());
 
-        contractLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE).withMargin(false).withSpacing(false).withFullWidth();
-        createContractForm(mainContract);
+        createNavigationBarCard(navigationBar, 12);
+        createUsedBudgetCard(mainContract, 6);
+        createBurndownCard(mainContract, 6);
+        createBurnrateCard(mainContract, 12);
+        createContractCard(mainContract, 4);
+        createProjectsCard(mainContract, 4);
+        createContactInformationCard(mainContract, 4);
+        createConsultantsCard(mainContract, 12);
+        createSubContractCard(mainContract, 3);
+        updateProposedPeriod(mainContract);
 
-        contractRow.addColumn()
-                .withDisplayRules(12, 12, 4, 4)
-                .withComponent(contractLayout);
+        return this;
+    }
 
-        Card projectsCard = new Card();
-        projectsCard.getLblTitle().setValue("Projects");
-        projectsCard.getContent().setHeight(350, Unit.PIXELS);
-        projectsCard.getContent().addStyleName("v-scrollable");
-        projectsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
-        projectsCard.getContent().addComponent(projectsLayout);
-
-        createProjectList(mainContract);
-
-        contractRow.addColumn()
-                .withDisplayRules(12, 12, 5, 5)
-                .withComponent(projectsCard);
-
-        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
-            usedBudgetChartCard = new Card();
-            usedBudgetChartCard.getLblTitle().setValue("Used Budget");
-            usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
-            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createUsedBudgetChartCard(mainContract);
-            contractRow.addColumn()
-                    .withDisplayRules(12, 12, 3, 3)
-                    .withComponent(usedBudgetChartCard);
-        }
-
-        if(mainContract.getContractType().equals(ContractType.PERIOD)) {
-            burnrateChartCard = new Card();
-            burnrateChartCard.getLblTitle().setValue("Burn Rate");
-            burnrateChartCard.getContent().setHeight(350, Unit.PIXELS);
-            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createBurnrateCard(mainContract);
-            contractRow.addColumn()
-                    .withDisplayRules(12, 12, 3, 3)
-                    .withComponent(burnrateChartCard);
-        }
-
-        Card consultantsCard = new Card();
-        consultantsCard.getLblTitle().setValue("Consultants");
-        consultantsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
-        consultantsCard.getContent().addComponent(consultantsLayout);
-
-        createConsultantList(mainContract);
-
-        contractRow.addColumn()
-                .withDisplayRules(12, 12, 9, 9)
-                .withComponent(consultantsCard);
-
-        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
-            burndownChartCard = new Card();
-            burndownChartCard.getLblTitle().setValue("Burndown");
-            burndownChartCard.getContent().setHeight(350, Unit.PIXELS);
-            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createBurndownCard(mainContract);
-            contractRow.addColumn()
-                    .withDisplayRules(12, 12, 3, 3)
-                    .withComponent(burndownChartCard);
-        }
-
+    private void createSubContractCard(MainContract mainContract, int width) {
         for (SubContract subContract : mainContract.getChildren()) {
             ContractFormDesign subContractComponent = getSubContractComponent(subContract, false);
             subContractComponent.getDfTo().setValue(subContract.getActiveTo());
             if(subContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI))
                 subContractComponent.getTxtAmount().setValue(NumberConverter.formatDouble(subContract.getAmount()));
             contractRow.addColumn()
-                    .withDisplayRules(12, 12, 3, 3)
+                    .withDisplayRules(12, 12, width, width)
                     .withComponent(subContractComponent);
         }
 
@@ -163,10 +119,144 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 3, 3)
                 .withComponent(contractFormDesign);
         contractFormDesign.getBtnCreate().addClickListener(event -> contractRow.removeComponent(newSubContractFormColumn));
+    }
 
-        updateProposedPeriod(mainContract);
+    private void createBurndownCard(MainContract mainContract, int width) {
+        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
+            burndownChartCard = new Card();
+            burndownChartCard.getLblTitle().setValue("Burndown");
+            burndownChartCard.getContent().setHeight(350, Unit.PIXELS);
+            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createBurndownChart(mainContract);
+            contractRow.addColumn()
+                    .withDisplayRules(12, 12, width, width)
+                    .withComponent(burndownChartCard);
+        }
+    }
 
-        return this;
+    private void createBurnrateCard(MainContract mainContract, int width) {
+        if(mainContract.getContractType().equals(ContractType.PERIOD)) {
+            burnrateChartCard = new Card();
+            burnrateChartCard.getLblTitle().setValue("Burn Rate");
+            burnrateChartCard.getContent().setHeight(350, Unit.PIXELS);
+            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createBurnrateChart(mainContract);
+            contractRow.addColumn()
+                    .withDisplayRules(12, 12, width, width)
+                    .withComponent(burnrateChartCard);
+        }
+    }
+
+    private void createConsultantsCard(MainContract mainContract, int width) {
+        Card consultantsCard = new Card();
+        consultantsCard.getLblTitle().setValue("Consultants");
+        consultantsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        consultantsCard.getContent().addComponent(consultantsLayout);
+        createConsultantList(mainContract);
+        contractRow.addColumn()
+                .withDisplayRules(12, 12, width, width)
+                .withComponent(consultantsCard);
+    }
+
+    private void createContactInformationCard(MainContract mainContract, int width) {
+        Card contactInformationCard = new Card();
+        contactInformationCard.getLblTitle().setValue("Contact Information");
+        contactInformationCard.getContent().setHeight(350, Unit.PIXELS);
+        contactInformationCard.getContent().addStyleName("v-scrollable");
+        contactInformationLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        contactInformationCard.getContent().addComponent(contactInformationLayout);
+        createContactInformation(mainContract);
+        contractRow.addColumn()
+                .withDisplayRules(12, 12, width, width)
+                .withComponent(contactInformationCard);
+    }
+
+    private void createUsedBudgetCard(MainContract mainContract, int width) {
+        if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
+            usedBudgetChartCard = new Card();
+            usedBudgetChartCard.getLblTitle().setValue("Used Budget");
+            usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
+            if(mainContract.getProjects().size()>0 && mainContract.getConsultants().size()>0) createUsedBudgetChartCard(mainContract);
+            contractRow.addColumn()
+                    .withDisplayRules(12, 12, width, width)
+                    .withComponent(usedBudgetChartCard);
+        }
+    }
+
+    private void createProjectsCard(MainContract mainContract, int width) {
+        Card projectsCard = new Card();
+        projectsCard.getLblTitle().setValue("Projects");
+        projectsCard.getContent().setHeight(350, Unit.PIXELS);
+        projectsCard.getContent().addStyleName("v-scrollable");
+        projectsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        projectsCard.getContent().addComponent(projectsLayout);
+        createProjectList(mainContract);
+        contractRow.addColumn()
+                .withDisplayRules(12, 12, width, width)
+                .withComponent(projectsCard);
+    }
+
+    private void createContractCard(MainContract mainContract, int width) {
+        contractLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE).withMargin(false).withSpacing(false).withFullWidth();
+        createContractForm(mainContract);
+        contractRow.addColumn()
+                .withDisplayRules(12, 12, width, width)
+                .withComponent(contractLayout);
+    }
+
+    private void createNavigationBarCard(NavigationBar navigationBar, int width) {
+        contractRow.addColumn().withDisplayRules(12, 12, width, width).withComponent(navigationBar);
+    }
+
+    private void createContactInformation(MainContract mainContract) {
+        contactInformationLayout.removeAllComponents();
+        Clientdata currentClientdata = mainContract.getClientdata();
+        if(currentClientdata != null) {
+            ContactInformationRowDesign contactInformationRow = new ContactInformationRowDesign();
+            contactInformationRow.getLblName().setValue(currentClientdata.getClientname());
+            contactInformationRow.getLblContact().setValue(currentClientdata.getContactperson());
+            contactInformationRow.getLblCVR().setValue(currentClientdata.getCvr());
+            contactInformationRow.getLblEAN().setValue(currentClientdata.getEan());
+            contactInformationRow.getLblStreet().setValue(currentClientdata.getStreetnamenumber());
+            contactInformationRow.getLblPostalCode().setValue(currentClientdata.getPostalcode()+"");
+            contactInformationRow.getLblCity().setValue(currentClientdata.getCity());
+            contactInformationRow.getLblOther().setValue(currentClientdata.getOtheraddressinfo());
+            contactInformationRow.getBtnChange().addClickListener(event1 -> {
+                createContactInformationSelector(mainContract);
+            });
+            contactInformationLayout.add(contactInformationRow);
+        } else {
+            contactInformationLayout.add(new MButton(MaterialIcons.ADD, event -> {
+                createContactInformationSelector(mainContract);
+            }).withStyleName("friendly").withWidth(100, Unit.PERCENTAGE));
+        }
+    }
+
+    private void createContactInformationSelector(MainContract mainContract) {
+        Window subWindow = new Window("Select Contract Recipient");
+        VerticalLayout subContent = new VerticalLayout();
+        subWindow.setContent(subContent);
+
+        for (Clientdata clientdata : mainContract.getClient().getClientdata()) {
+            CompactContactInformationRowDesign contactInformationRow = new CompactContactInformationRowDesign();
+            contactInformationRow.setStyleName("bg-grey");
+            contactInformationRow.getLblName().setValue(clientdata.getClientname());
+            contactInformationRow.getLblContact().setValue(clientdata.getContactperson());
+            contactInformationRow.getLblCVR().setValue(clientdata.getCvr());
+            contactInformationRow.getLblEAN().setValue(clientdata.getEan());
+            contactInformationRow.getLblStreet().setValue(clientdata.getStreetnamenumber());
+            contactInformationRow.getLblPostalCode().setValue(clientdata.getPostalcode()+"");
+            contactInformationRow.getLblCity().setValue(clientdata.getCity());
+            contactInformationRow.getLblOther().setValue(clientdata.getOtheraddressinfo());
+            contactInformationRow.getBtnAdd().addClickListener(event1 -> {
+                mainContract.setClientdata(clientdata);
+                MainContract newMainContract = contractService.updateContract(mainContract);
+                subWindow.close();
+                updateData(newMainContract);
+            });
+            subContent.addComponent(contactInformationRow);
+        }
+
+        subWindow.center();
+        UI.getCurrent().addWindow(subWindow);
     }
 
     private void createContractForm(MainContract mainContract) {
@@ -251,7 +341,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         chart.drawChart(conf);
     }
 
-    private void createBurndownCard(MainContract mainContract) {
+    private void createBurndownChart(MainContract mainContract) {
         Chart chart = new Chart(ChartType.AREA);
         burndownChartCard.getContent().removeAllComponents();
         burndownChartCard.getContent().addComponent(chart);
@@ -308,7 +398,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         chart.drawChart(conf);
     }
 
-    private void createBurnrateCard(MainContract mainContract) {
+    private void createBurnrateChart(MainContract mainContract) {
         Chart chart = new Chart(ChartType.SPLINE);
         burnrateChartCard.getContent().removeAllComponents();
         burnrateChartCard.getContent().addComponent(chart);
@@ -648,13 +738,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createContractForm(mainContract);
         createConsultantList(mainContract);
         createProjectList(mainContract);
+        createContactInformation(mainContract);
         updateProposedPeriod(mainContract);
         if (mainContract.getProjects().size() > 0 && mainContract.getConsultants().size() > 0) {
             if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
                 createUsedBudgetChartCard(mainContract);
-                createBurndownCard(mainContract);
+                createBurndownChart(mainContract);
             } else {
-                createBurnrateCard(mainContract);
+                createBurnrateChart(mainContract);
             }
         }
     }

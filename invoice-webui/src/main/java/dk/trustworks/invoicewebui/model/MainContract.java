@@ -28,6 +28,10 @@ public class MainContract extends Contract {
     )
     private Set<Project> projects = new HashSet<>();
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="clientdatauuid")
+    private Clientdata clientdata;
+
     @Column(name = "activefrom")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -112,6 +116,14 @@ public class MainContract extends Contract {
     public LocalDate getEndDate() {
         if(children.size() == 0) return getActiveTo();
         return children.stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
+    }
+
+    public Clientdata getClientdata() {
+        return clientdata;
+    }
+
+    public void setClientdata(Clientdata clientdata) {
+        this.clientdata = clientdata;
     }
 
     @Override
