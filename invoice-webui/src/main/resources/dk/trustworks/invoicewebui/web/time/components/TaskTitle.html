@@ -6,14 +6,17 @@
   <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
-  <vaadin-horizontal-layout width-full>
+  <vaadin-horizontal-layout width-full height="53px">
    <vaadin-button visible="false" icon="fonticon://Vaadin-Icons/e7ad" style-name="flat" plain-text _id="btnDelete" :middle :center></vaadin-button>
-   <vaadin-image height-full _id="imgLogo"></vaadin-image>
-   <vaadin-vertical-layout spacing="false" size-auto margin="false" :middle :expand>
-    <vaadin-label style-name="colored bold" plain-text _id="txtTaskname">
+   <vaadin-image height="53px" _id="imgLogo" :middle></vaadin-image>
+   <vaadin-vertical-layout spacing="false" width-auto height="53px" margin="false" :expand>
+    <vaadin-label style-name="colored bold" height="20px" plain-text _id="txtTaskname">
       Label 
     </vaadin-label>
-    <vaadin-label style-name="light small" plain-text _id="txtProjectname">
+    <vaadin-label style-name="light small" height="18px" plain-text _id="txtProjectname">
+      Label 
+    </vaadin-label>
+    <vaadin-label style-name="tiny" height="15px" plain-text _id="lblDescription">
       Label 
     </vaadin-label>
    </vaadin-vertical-layout>

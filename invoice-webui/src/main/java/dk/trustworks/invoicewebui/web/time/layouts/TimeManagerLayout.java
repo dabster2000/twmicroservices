@@ -518,6 +518,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         String projectName = weekItem.getTaskname().split("/")[0];
         String taskName = weekItem.getTaskname().split("/")[1];
         TaskTitle taskTitle = new TaskTitle();
+        taskTitle.getLblDescription().setValue(weekItem.getTask().getProject().getCustomerreference());
         taskTitle.getTxtProjectname().setValue(projectName);
         taskTitle.getTxtTaskname().setValue(taskName);
         taskTitle.getBtnDelete().setIcon(MaterialIcons.DELETE);

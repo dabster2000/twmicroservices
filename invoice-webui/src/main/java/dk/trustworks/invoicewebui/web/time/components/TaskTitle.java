@@ -25,6 +25,7 @@ public class TaskTitle extends HorizontalLayout {
     private Image imgLogo;
     private Label txtTaskname;
     private Label txtProjectname;
+    private Label lblDescription;
     private CssLayout imgConsultant;
 
     public TaskTitle() {
@@ -45,6 +46,10 @@ public class TaskTitle extends HorizontalLayout {
 
     public Label getTxtProjectname() {
         return txtProjectname;
+    }
+
+    public Label getLblDescription() {
+        return lblDescription;
     }
 
     public CssLayout getImgConsultant() {
