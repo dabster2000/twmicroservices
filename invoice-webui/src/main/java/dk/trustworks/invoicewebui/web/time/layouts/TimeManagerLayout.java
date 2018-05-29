@@ -4,6 +4,7 @@ package dk.trustworks.invoicewebui.web.time.layouts;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
 import com.vaadin.server.Responsive;
@@ -17,6 +18,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.TimeService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -39,9 +42,8 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringComponent
 @SpringUI
@@ -49,32 +51,19 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private static final Logger log = LoggerFactory.getLogger(TimeManagerImpl.class);
 
-    @Autowired
-    ClientRepository clientRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    ProjectRepository projectRepository;
+    private final WeekRepository weekRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final WorkService workService;
 
-    @Autowired
-    private WeekRepository weekRepository;
+    private final WorkRepository workRepository;
 
-    @Autowired
-    private WorkService workService;
+    private final BudgetRepository budgetRepository;
 
-    @Autowired
-    private WorkRepository workRepository;
+    private final PhotoRepository photoRepository;
 
-    @Autowired
-    private BudgetRepository budgetRepository;
-
-    @Autowired
-    private PhotoRepository photoRepository;
-
-    @Autowired
-    private TimeService timeService;
+    private final PhotoService photoService;
 
     private ResponsiveLayout responsiveLayout;
 
@@ -90,7 +79,16 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
-    public TimeManagerLayout() {
+    @Autowired
+    public TimeManagerLayout(ProjectRepository projectRepository, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, BudgetRepository budgetRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService) {
+        this.userRepository = userRepository;
+        this.weekRepository = weekRepository;
+        this.workService = workService;
+        this.workRepository = workRepository;
+        this.budgetRepository = budgetRepository;
+        this.photoRepository = photoRepository;
+        this.photoService = photoService;
+
         footerButtons = new FooterButtons();
         dateButtons = new DateButtons();
         responsiveLayout = new ResponsiveLayout(ContainerType.FLUID);
@@ -98,9 +96,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         dateButtons.getBtnWeekNumberDecr().addClickListener(event -> {
             currentDate = currentDate.minusWeeks(1);
             log.info("currentDate.minusWeeks(1) = " + currentDate);
-            //setDateFields();
             loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
-            //updateGrid(getSelActiveUser().getSelectedItem().get());
         });
 
         dateButtons.getBtnWeekNumberIncr().addClickListener(event -> {
@@ -116,7 +112,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
             log.info("getBtnCopyWeek()");
             timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), dateButtons.getSelActiveUser().getSelectedItem().get());
             loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
-            //loadData(getSelActiveUser().getSelectedItem().get());
         });
 
         footerButtons.getBtnEdit().setIcon(MaterialIcons.EDIT);
@@ -132,42 +127,98 @@ public class TimeManagerLayout extends ResponsiveLayout {
             log.info("getBtnAddTask()");
             final Window window = new Window("Add Task");
             window.setWidth(300.0f, Unit.PIXELS);
-            window.setHeight(500.0f, Unit.PIXELS);
+            window.setHeight(450.0f, Unit.PIXELS);
             window.setModal(true);
 
-            List<Client> clientResources = clientRepository.findByActiveTrue();
+            OnOffSwitch onOffSwitch = new OnOffSwitch(false);
+            onOffSwitch.setCaption("Help colleague?");
+
+            ComboBox<User> userComboBox = new ComboBox<>();
+            userComboBox.setVisible(false);
+            userComboBox.setItemCaptionGenerator(User::getUsername);
+            userComboBox.setWidth("100%");
+            userComboBox.addStyleName("floating");
+            userComboBox.setEmptySelectionAllowed(false);
+            userComboBox.setEmptySelectionCaption("Select colleague...");
+            List<User> users = userRepository.findByActiveTrueOrderByUsername();
+            userComboBox.setItems(users);
+            UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+
+            MLabel spacer = new MLabel("").withWidth(100, Unit.PERCENTAGE);
+
+            List<MainContract> activeConsultantContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getSelectedItem().get());
+            List<Client> clientResources = getClients(activeConsultantContracts);
+
             ComboBox<Client> clientComboBox = new ComboBox<>();
             clientComboBox.setItemCaptionGenerator(Client::getName);
             clientComboBox.setWidth("100%");
+            clientComboBox.addStyleName("floating");
             clientComboBox.setEmptySelectionAllowed(false);
-            clientComboBox.setEmptySelectionCaption("select client");
-            List<Client> clients = new ArrayList<>();
-            for (Client clientResource : clientResources) {
-                clients.add(clientResource);
-            }
+            clientComboBox.setEmptySelectionCaption("Select client...");
+            List<Client> clients = new ArrayList<>(clientResources);
             clientComboBox.setItems(clients);
 
             ComboBox<Project> projectComboBox = new ComboBox<>();
             projectComboBox.setItemCaptionGenerator(Project::getName);
             projectComboBox.setWidth("100%");
+            projectComboBox.addStyleName("floating");
             projectComboBox.setEmptySelectionAllowed(false);
+            projectComboBox.setEmptySelectionCaption("Select project...");
             projectComboBox.setVisible(false);
 
             ComboBox<Task> taskComboBox = new ComboBox<>();
             taskComboBox.setItemCaptionGenerator(Task::getName);
             taskComboBox.setWidth("100%");
+            taskComboBox.addStyleName("floating");
             taskComboBox.setEmptySelectionAllowed(false);
+            taskComboBox.setEmptySelectionCaption("Select task...");
             taskComboBox.setVisible(false);
 
             Button addTaskButton = new Button("add task");
             addTaskButton.addStyleName("flat friendly");
             addTaskButton.setEnabled(false);
 
-            clientComboBox.addValueChangeListener(event1 -> {
+            onOffSwitch.addValueChangeListener(event1 -> {
+                if(event1.getValue()) {
+                    userComboBox.setVisible(true);
+                    userComboBox.setSelectedItem(null);
+                    clientComboBox.setVisible(false);
+                } else {
+                    userComboBox.setVisible(false);
+                    for (User user : users) {
+                        if(user.getUuid().equals(userSession.getUser().getUuid())) userComboBox.setSelectedItem(user);
+                    }
+                }
+            });
+
+
+            userComboBox.addValueChangeListener(event1 -> {
+                clientComboBox.setVisible(false);
+                if(event1.getValue()==null) return;
+                clientComboBox.setVisible(true);
+                projectComboBox.setVisible(false);
                 taskComboBox.setVisible(false);
                 addTaskButton.setEnabled(false);
 
-                List<Project> projects = projectRepository.findByClientAndActiveTrueOrderByNameAsc(clientComboBox.getValue());
+                List<MainContract> newActiveConsultantContracts = getMainContracts(contractService, event1.getValue());
+                List<Client> newClientResources = getClients(newActiveConsultantContracts);
+
+                clientComboBox.clear();
+                clientComboBox.setItems(newClientResources);
+                clientComboBox.setVisible(true);
+            });
+
+            clientComboBox.addValueChangeListener(event1 -> {
+                taskComboBox.setVisible(false);
+                addTaskButton.setEnabled(false);
+                projectComboBox.setVisible(false);
+                if(event1.getValue()==null) return;
+
+                List<MainContract> newActiveConsultantContracts = getMainContracts(contractService, userComboBox.getSelectedItem().get());
+                List<Project> allProjects = projectRepository.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
+                System.out.println("allProjects = " + allProjects.size());
+                Set<Project> projects = newActiveConsultantContracts.stream().map(MainContract::getProjects).flatMap(Set::stream).distinct().filter(projects1 -> allProjects.contains(projects1)).collect(Collectors.toSet());
+                System.out.println("projects = " + projects.size());
 
                 projectComboBox.clear();
                 projectComboBox.setItems(projects);
@@ -175,13 +226,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
             });
 
             projectComboBox.addValueChangeListener(event1 -> {
+                projectComboBox.setVisible(false);
+                if(event1.getValue()==null) return;
+                projectComboBox.setVisible(true);
                 addTaskButton.setEnabled(false);
-                List<Task> tasks = new ArrayList<>();
                 taskComboBox.clear();
                 if(event1.getValue()==null) return;
-                for (Task task : projectRepository.findOne(event1.getValue().getUuid()).getTasks()) {
-                    tasks.add(task);
-                }
+                List<Task> tasks = new ArrayList<>(projectRepository.findOne(event1.getValue().getUuid()).getTasks());
                 taskComboBox.setItems(tasks);
                 taskComboBox.setVisible(true);
             });
@@ -193,24 +244,38 @@ public class TimeManagerLayout extends ResponsiveLayout {
             });
 
             addTaskButton.addClickListener(event1 -> {
-                weekRepository.save(new Week(UUID.randomUUID().toString(),
-                        currentDate.getWeekOfWeekyear(),
-                        currentDate.getYear(),
-                        dateButtons.getSelActiveUser().getValue(),
-                        taskComboBox.getSelectedItem().get()));
+                if(onOffSwitch.getValue()) {
+                    weekRepository.save(new Week(UUID.randomUUID().toString(),
+                            currentDate.getWeekOfWeekyear(),
+                            currentDate.getYear(),
+                            dateButtons.getSelActiveUser().getValue(),
+                            taskComboBox.getSelectedItem().get(), userComboBox.getSelectedItem().get()));
+                } else {
+                    weekRepository.save(new Week(UUID.randomUUID().toString(),
+                            currentDate.getWeekOfWeekyear(),
+                            currentDate.getYear(),
+                            dateButtons.getSelActiveUser().getValue(),
+                            taskComboBox.getSelectedItem().get()));
+                }
                 window.close();
                 loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
-                //loadData(getSelActiveUser().getSelectedItem().get());
             });
 
-            window.setContent(new VerticalLayout(clientComboBox, projectComboBox, taskComboBox, addTaskButton));
+            window.setContent(new VerticalLayout(onOffSwitch, userComboBox, spacer, clientComboBox, projectComboBox, taskComboBox, addTaskButton));
             this.getUI().addWindow(window);
         });
     }
 
+    private List<Client> getClients(List<MainContract> activeConsultantContracts) {
+        return activeConsultantContracts.stream().map(MainContract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+    }
+
+    private List<MainContract> getMainContracts(ContractService contractService, User user) {
+        return contractService.findActiveConsultantContracts(user, java.time.LocalDate.of(currentDate.getYear(), currentDate.getMonthOfYear(), currentDate.getDayOfMonth()));
+    }
+
     public ResponsiveLayout init() {
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
-        System.out.println("userSession = " + userSession);
 
         if(userSession == null) return new ResponsiveLayout();
 
@@ -248,31 +313,27 @@ public class TimeManagerLayout extends ResponsiveLayout {
         weekDaySums = new WeekValues();
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), user);
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
-        log.info("startOfWeek = " + startOfWeek);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
-        log.info("endOfWeek = " + endOfWeek);
         List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
         for (Work workResource : workResources) {
-            if(!weeks.stream().filter(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid())).findFirst().isPresent()) {
+            if(weeks.stream().noneMatch(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid()))) {
                 Week week = new Week(UUID.randomUUID().toString(),
                         currentDate.getWeekOfWeekyear(),
                         currentDate.getYear(),
                         workResource.getUser(),
-                        workResource.getTask());
+                        workResource.getTask(),
+                        workResource.getWorkas());
                 weekRepository.save(week);
                 weeks.add(week);
             }
         }
 
-        log.info("workResources.size() = " + workResources.size());
         List<WeekItem> weekItems = new ArrayList<>();
         for (Week week : weeks) {
-            log.info("week = " + week);
             Task task = week.getTask();
-            log.info("task = " + task);
             Hibernate.initialize(task);
 
-            WeekItem weekItem = new WeekItem(week, task, user);
+            WeekItem weekItem = new WeekItem(week, task, user, week.getWorkas());
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
@@ -286,7 +347,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
             if(budgetLeftByTaskuuidAndUseruuid!=null) weekItem.setBudgetleft(budgetLeftByTaskuuidAndUseruuid<0?0:Math.round(budgetLeftByTaskuuidAndUseruuid));
             for (Work work : workResources) {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
-                log.info("work = " + work);
                 sumHours += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
                 switch (workDate.getDayOfWeek()) {
@@ -477,6 +537,14 @@ public class TimeManagerLayout extends ResponsiveLayout {
         } else {
             taskTitle.getImgLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
+
+        User workas = weekItem.getWorkas();
+        if(workas!=null) {
+            Image memberImage = photoService.getRoundMemberImage(workas, false, 30);
+            memberImage.setDescription("Helping "+workas.getFirstname()+" "+workas.getLastname());
+            taskTitle.getImgConsultant().addComponent(memberImage);
+        }
+
         weekRowTaskTitles.add(taskTitle);
 
         time1Row.addColumn()

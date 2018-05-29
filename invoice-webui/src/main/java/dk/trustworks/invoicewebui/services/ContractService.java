@@ -213,6 +213,12 @@ public class ContractService {
                 mainContract.getActiveTo().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     }
 
+    public List<MainContract> findActiveConsultantContracts(User user, LocalDate activeOn) {
+        System.out.println("ContractService.findActiveConsultantContracts");
+        System.out.println("user = [" + user + "], activeOn = [" + activeOn + "]");
+        return mainContractRepository.findActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    }
+
     public Collection<String> createErrorList(Map<String, Work> errors) {
         SortedMap<String, String> errorList = new TreeMap<>();
         for (Work work : errors.values().stream().filter(work -> work.getWorkduration()>0).sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).reversed()).collect(Collectors.toList())) {

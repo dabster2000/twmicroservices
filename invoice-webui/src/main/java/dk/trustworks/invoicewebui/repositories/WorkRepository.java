@@ -27,12 +27,12 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
     List<Work> findByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
 
-    @Query(value = "SELECT w.id, w.day, w.month, w.taskuuid, w.useruuid, w.workduration, w.year, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created " +
+    @Query(value = "SELECT w.id, w.day, w.month, w.taskuuid, w.useruuid, w.workas as workas, w.workduration, w.year, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created " +
             "FROM work w INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = w.useruuid " +
             "WHERE twc.price > 0.0 AND ((w.year*10000)+((w.month+1)*100)+w.day) between :fromdate and :todate", nativeQuery = true)
     List<Work> findBillableWorkByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
 
-    @Query(value = "SELECT id, day, month, year, taskuuid, useruuid, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM work w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
+    @Query(value = "SELECT id, day, month, year, taskuuid, useruuid, w.workas as workas, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM work w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
     List<Work> findByYearAndMonth(@Param("year") int year,
                                   @Param("month") int month);
 
@@ -45,7 +45,7 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByTasksAndUser(@Param("taskuuid") List<String> taskuuid, @Param("useruuid") String useruuid);
 
-    @Query(value = "select '2017-05-17 08:09:35' created, w.id, w.day as day, w.month as month, w.year as year, w.taskuuid as taskuuid, w.useruuid as useruuid, workduration as workduration from work w " +
+    @Query(value = "select '2017-05-17 08:09:35' created, w.id, w.day as day, w.month as month, w.year as year, w.taskuuid as taskuuid, w.useruuid as useruuid, workduration as workduration, w.workas as workas from work w " +
             "left join task t on w.taskuuid = t.uuid " +
             "left join project p on t.projectuuid = p.uuid " +
             "where w.useruuid in :useruuids " +

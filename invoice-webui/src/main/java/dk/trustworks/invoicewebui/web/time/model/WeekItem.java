@@ -24,6 +24,7 @@ public class WeekItem {
     private String sun = "0,0";
     private double budgetleft;
     private LocalDate date;
+    private User workas;
 
     public WeekItem() {
     }
@@ -32,6 +33,13 @@ public class WeekItem {
         this.week = week;
         this.task = task;
         this.user = user;
+    }
+
+    public WeekItem(Week week, Task task, User user, User workas) {
+        this.week = week;
+        this.task = task;
+        this.user = user;
+        this.workas = workas;
     }
 
     public Week getWeek() {
@@ -116,6 +124,14 @@ public class WeekItem {
 
     public void setSun(String sun) {
         this.sun = sun;
+    }
+
+    public User getWorkas() {
+        return workas;
+    }
+
+    public void setWorkas(User workas) {
+        this.workas = workas;
     }
 
     public double getWeekItemSum() {

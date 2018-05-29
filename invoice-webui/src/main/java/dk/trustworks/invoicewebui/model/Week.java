@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.google.common.base.Objects;
+
 import javax.persistence.*;
 
 /**
@@ -22,6 +24,10 @@ public class Week {
     private int year;
     private int sorting;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workas")
+    private User workas;
+
     public Week() {
     }
 
@@ -31,6 +37,15 @@ public class Week {
         this.year = year;
         this.user = user;
         this.task = task;
+    }
+
+    public Week(String uuid, int weeknumber, int year, User user, Task task, User workas) {
+        this.uuid = uuid;
+        this.weeknumber = weeknumber;
+        this.year = year;
+        this.user = user;
+        this.task = task;
+        this.workas = workas;
     }
 
     public String getUuid() {
@@ -79,5 +94,42 @@ public class Week {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public User getWorkas() {
+        return workas;
+    }
+
+    public void setWorkas(User workas) {
+        this.workas = workas;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Week week = (Week) o;
+        return getWeeknumber() == week.getWeeknumber() &&
+                getYear() == week.getYear() &&
+                Objects.equal(getTask(), week.getTask()) &&
+                Objects.equal(getUser(), week.getUser()) &&
+                Objects.equal(getWorkas(), week.getWorkas());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getTask(), getUser(), getWeeknumber(), getYear(), getWorkas());
+    }
+
+    @Override
+    public String toString() {
+        return "Week{" +
+                "uuid='" + uuid + '\'' +
+                ", task=" + task.getUuid() +
+                ", user=" + user.getUuid() +
+                ", weeknumber=" + weeknumber +
+                ", year=" + year +
+                ", sorting=" + sorting +
+                '}';
     }
 }
