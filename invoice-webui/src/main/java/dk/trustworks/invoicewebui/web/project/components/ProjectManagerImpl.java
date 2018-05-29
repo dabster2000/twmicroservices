@@ -18,6 +18,7 @@ import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
 import dk.trustworks.invoicewebui.web.contracts.model.BudgetRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
@@ -42,6 +43,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final ProjectRepository projectRepository;
 
+    private final TaskRepository taskRepository;
+
     private final ClientRepository clientRepository;
 
     private final ClientdataRepository clientdataRepository;
@@ -64,11 +67,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private VerticalLayout consultantsLayout;
     private MVerticalLayout contractLayout;
+    private MVerticalLayout tasksLayout;
+
 
     @Autowired
-    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository) {
+    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository) {
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
+        this.taskRepository = taskRepository;
         this.clientRepository = clientRepository;
         this.clientdataRepository = clientdataRepository;
         this.budgetNewRepository = budgetNewRepository;
@@ -159,17 +165,24 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             projectDetailCard.save();
             updateTreeGrid();
         });
-
         ResponsiveRow clientDetailsRow = responsiveLayout.addRow();
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(projectDetailCard);
 
+        Card tasksCard = new Card();
+        tasksCard.getLblTitle().setValue("Tasks");
+        tasksLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        tasksCard.getContent().addComponent(tasksLayout);
+        createTasksList();
+        clientDetailsRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(tasksCard);
+
         Card consultantsCard = new Card();
         consultantsCard.getLblTitle().setValue("Consultants");
         consultantsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
         consultantsCard.getContent().addComponent(consultantsLayout);
-
         createConsultantList();
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -182,7 +195,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         createContractChart();
         clientDetailsRow.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
+                .withDisplayRules(12, 12, 6, 6)
                 .withComponent(contractCard);
 
         budgetCard = new BudgetCardDesign();
@@ -192,6 +205,33 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         budgetRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(budgetCard);
+    }
+
+    private void createTasksList() {
+        tasksLayout.removeAllComponents();
+        for (Task task : currentProject.getTasks()) {
+            TaskRowDesign taskRow = new TaskRowDesign();
+            taskRow.getLblName().setValue(task.getName());
+            taskRow.getTxtName().setVisible(false);
+            System.out.println("task = " + task.getName() + " : "+task.getWorkList().size());
+            if(task.getWorkList().size()>0)  taskRow.getBtnDelete().setVisible(false);
+            taskRow.getBtnDelete().setIcon(MaterialIcons.DELETE);
+            taskRow.getBtnDelete().addClickListener(event -> {
+                taskRepository.delete(task.getUuid());
+                currentProject.getTasks().remove(task);
+                createTasksList();
+            });
+            tasksLayout.add(taskRow);
+        }
+        TaskRowDesign newTaskRow = new TaskRowDesign();
+        newTaskRow.getLblName().setVisible(false);
+        newTaskRow.getBtnDelete().setIcon(MaterialIcons.ADD);
+        newTaskRow.getBtnDelete().addClickListener(event -> {
+            Task task = taskRepository.save(new Task(newTaskRow.getTxtName().getValue(), currentProject));
+            currentProject.getTasks().add(task);
+            createTasksList();
+        });
+        tasksLayout.add(newTaskRow);
     }
 
     private void createContractChart() {
@@ -207,7 +247,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         conf.setSubTitle("");
 
         XAxis xAxis = new XAxis();
-        //xAxis.setCategories(currentProject.getMainContracts().stream().map(mainContract -> mainContract.getConsultants()).collect(Collectors.toList()).stream().map(consultants -> consultants.stream()));
         for (MainContract mainContract : currentProject.getMainContracts()) {
             for (Consultant consultant : mainContract.getConsultants()) {
                 xAxis.addCategory(consultant.getUser().getUsername());
@@ -215,16 +254,11 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         }
         xAxis.setVisible(false);
 
-        //xAxis.setType(AxisType.DATETIME);
-        //xAxis.setDateTimeLabelFormats(new DateTimeLabelFormats("%e. %b", "%b"));
-        //xAxis.setDateTimeLabelFormats("%b \\'%y");
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();
-        yAxis.setTitle("Period");
-        //yAxis.setVisible(false);
+        yAxis.setTitle("");
         yAxis.setType(AxisType.DATETIME);
-        //yAxis.setTickInterval(1);
         conf.addyAxis(yAxis);
 
         Tooltip tooltip = new Tooltip();
@@ -245,28 +279,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         Legend legend = new Legend();
         legend.setEnabled(false);
         conf.setLegend(legend);
-/*
-        Tooltip tooltip = new Tooltip();
-        tooltip.setShared(true);
-        tooltip.setUseHTML(true);
-        tooltip.setXDateFormat("%B %Y");
-        tooltip.setHeaderFormat("<small>{point.key}</small><table>");
-        tooltip.setPointFormat("<tr><td style=\"color: {series.color}\">{series.name}: </td></tr>");
-        tooltip.setFooterFormat("</table>");
-*/
-/*
-        PlotOptionsArea plotOptions = new PlotOptionsArea();
-        Marker marker = new Marker();
-        marker.setEnabled(false);
-        marker.setSymbol(MarkerSymbolEnum.CIRCLE);
-        marker.setRadius(2);
-        States states = new States();
-        states.setHover(new Hover(true));
-        marker.setStates(states);
-        plotOptions.setMarker(marker);
-        conf.setPlotOptions(plotOptions);
-        conf.setTooltip(tooltip);
-*/
+
         for (MainContract mainContract : currentProject.getMainContracts()) {
             for (Consultant consultant : mainContract.getConsultants()) {
                 DataSeries ls = new DataSeries(consultant.getUser().getUsername());

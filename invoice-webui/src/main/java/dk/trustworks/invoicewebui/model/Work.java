@@ -24,6 +24,10 @@ public class Work {
     @JoinColumn(name = "useruuid")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "useruuid")
+    private User workas;
+
     public Work() {
     }
 
@@ -92,6 +96,14 @@ public class Work {
         this.user = user;
     }
 
+    public User getWorkas() {
+        return workas;
+    }
+
+    public void setWorkas(User workas) {
+        this.workas = workas;
+    }
+
     @Override
     public String toString() {
         return "Work{" +
@@ -102,6 +114,7 @@ public class Work {
                 ", workduration=" + workduration +
                 ", task=" + task.getUuid() +
                 ", user=" + user.getUuid() +
+                ", workas=" + workas.getUuid() +
                 ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +
                 '}';
     }

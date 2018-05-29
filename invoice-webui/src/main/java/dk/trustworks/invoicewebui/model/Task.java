@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,17 +12,17 @@ public class Task {
     private String type;
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Taskworkerconstraint> taskworkerconstraint;
+    private List<Taskworkerconstraint> taskworkerconstraint = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectuuid")
     private Project project;
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Budget> budget;
+    private List<Budget> budget = new ArrayList<>();
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Work> workList;
+    private List<Work> workList = new ArrayList<>();
 
     public Task() {
     }
