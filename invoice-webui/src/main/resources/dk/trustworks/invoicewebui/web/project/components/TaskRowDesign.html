@@ -7,13 +7,18 @@
   <meta name="package-mapping" content="com_jarektoro_responsivelayout:com.jarektoro.responsivelayout">
  </head>
  <body>
-  <vaadin-horizontal-layout width-full>
-   <vaadin-button icon="fonticon://Vaadin-Icons/e73d" style-name="borderless" plain-text _id="btnIcon"></vaadin-button>
-   <vaadin-label width-full plain-text _id="lblName" :middle :expand>
-     Nærpension STP 
-   </vaadin-label>
-   <vaadin-text-field placeholder="tasks name" width-full _id="txtName" :expand></vaadin-text-field>
-   <vaadin-button style-name="flat icon-only" plain-text _id="btnDelete" :middle :right></vaadin-button>
-  </vaadin-horizontal-layout>
+  <vaadin-vertical-layout spacing="false" margin="false">
+   <vaadin-horizontal-layout spacing="false" width-full>
+    <vaadin-button icon="fonticon://Vaadin-Icons/e73d" style-name="borderless" plain-text _id="btnIcon"></vaadin-button>
+    <vaadin-css-layout width-full _id="cssTaskName" :middle :expand>
+     <vaadin-label width-full plain-text _id="lblName">
+       Nærpension STP 
+     </vaadin-label>
+    </vaadin-css-layout>
+    <vaadin-text-field placeholder="tasks name" width-full _id="txtName" :expand></vaadin-text-field>
+    <vaadin-button style-name="flat icon-only" plain-text _id="btnDelete" :middle :right></vaadin-button>
+   </vaadin-horizontal-layout>
+   <vaadin-horizontal-layout visible="false" spacing="false" width-full _id="hlChart"></vaadin-horizontal-layout>
+  </vaadin-vertical-layout>
  </body>
 </html>

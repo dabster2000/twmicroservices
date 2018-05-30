@@ -24,10 +24,10 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
+import static com.vaadin.server.Sizeable.Unit.PIXELS;
 import static java.util.Comparator.comparing;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
 
@@ -57,6 +57,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final NewsRepository newsRepository;
 
+    private final WorkRepository workRepository;
+
     private ResponsiveLayout responsiveLayout;
 
     private Project currentProject;
@@ -71,7 +73,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository) {
+    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, WorkRepository workRepository) {
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.taskRepository = taskRepository;
@@ -81,6 +83,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.newsRepository = newsRepository;
+        this.workRepository = workRepository;
     }
 
 
@@ -172,7 +175,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         Card tasksCard = new Card();
         tasksCard.getLblTitle().setValue("Tasks");
-        tasksLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        tasksLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
         tasksCard.getContent().addComponent(tasksLayout);
         createTasksList();
         clientDetailsRow.addColumn()
@@ -181,7 +184,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         Card consultantsCard = new Card();
         consultantsCard.getLblTitle().setValue("Consultants");
-        consultantsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        consultantsLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
         consultantsCard.getContent().addComponent(consultantsLayout);
         createConsultantList();
         clientDetailsRow.addColumn()
@@ -190,7 +193,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         Card contractCard = new Card();
         contractCard.getLblTitle().setValue("Contracts");
-        contractLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
+        contractLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
         contractCard.getContent().addComponent(contractLayout);
 
         createContractChart();
@@ -221,10 +224,20 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 currentProject.getTasks().remove(task);
                 createTasksList();
             });
+            taskRow.getCssTaskName().addLayoutClickListener(event -> {
+                taskRow.getHlChart().removeAllComponents();
+                if(taskRow.getHlChart().isVisible()) {
+                    taskRow.getHlChart().setVisible(false);
+                } else {
+                    taskRow.getHlChart().addComponent(createTopGrossingConsultantsChart(task));
+                    taskRow.getHlChart().setVisible(true);
+                }
+            });
             tasksLayout.add(taskRow);
         }
         TaskRowDesign newTaskRow = new TaskRowDesign();
         newTaskRow.getLblName().setVisible(false);
+        newTaskRow.getCssTaskName().setVisible(false);
         newTaskRow.getBtnDelete().setIcon(MaterialIcons.ADD);
         newTaskRow.getBtnDelete().addClickListener(event -> {
             Task task = taskRepository.save(new Task(newTaskRow.getTxtName().getValue(), currentProject));
@@ -232,6 +245,55 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             createTasksList();
         });
         tasksLayout.add(newTaskRow);
+    }
+
+    private Chart createTopGrossingConsultantsChart(Task task) {
+        System.out.println("ConsultantHoursPerMonthChart.createTopGrossingConsultantsChart");
+        //System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "]");
+        //Period period = new Period(periodStart, periodEnd, PeriodType.months());
+        Chart chart = new Chart();
+        chart.setWidth(100, PERCENTAGE);
+        chart.setHeight(100, PIXELS);
+
+        //chart.setCaption("");
+        chart.getConfiguration().setTitle("");
+        chart.getConfiguration().getChart().setType(ChartType.BAR);
+        chart.getConfiguration().getChart().setAnimation(true);
+        chart.getConfiguration().getxAxis().getLabels().setEnabled(true);
+        chart.getConfiguration().getxAxis().setTickWidth(0);
+        chart.getConfiguration().getxAxis().setTitle("");
+        chart.getConfiguration().getyAxis().setTitle("");
+        chart.getConfiguration().getLegend().setEnabled(false);
+
+        XAxis x = new XAxis();
+        x.setCategories(task.getName());
+        chart.getConfiguration().addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setCategories("Consultant");
+        y.setVisible(false);
+        chart.getConfiguration().addyAxis(y);
+
+        PlotOptionsSeries plot = new PlotOptionsSeries();
+        plot.setStacking(Stacking.NORMAL);
+        chart.getConfiguration().setPlotOptions(plot);
+
+
+        Map<User, Double> userWork = new HashMap<>();
+        List<Work> workList = task.getWorkList();
+
+        for (Work work : workList) {
+            userWork.putIfAbsent(work.getUser(), 0.0);
+            userWork.put(work.getUser(), userWork.get(work.getUser())+work.getWorkduration());
+        }
+
+        for (User user : userWork.keySet()) {
+            chart.getConfiguration().addSeries(new ListSeries(user.getFirstname()+" "+user.getLastname(), userWork.get(user)));
+        }
+
+        Credits c = new Credits("");
+        chart.getConfiguration().setCredits(c);
+        return chart;
     }
 
     private void createContractChart() {
