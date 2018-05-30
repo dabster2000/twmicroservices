@@ -111,6 +111,11 @@ public class ContractService {
         return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid());
     }
 
+    public List<MainContract> findActiveMainContractsByDate(LocalDate activeDate) {
+        //if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
+        return mainContractRepository.findByActiveFromBeforeAndActiveToAfter(activeDate, activeDate);
+    }
+
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
         return start1.isBefore(end2) && start2.isBefore(end1);
     }

@@ -23,6 +23,8 @@ import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
+import dk.trustworks.invoicewebui.web.stats.components.Card;
+import dk.trustworks.invoicewebui.web.stats.components.RevenuePerMonthChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,29 +63,36 @@ public class DashboardView extends VerticalLayout implements View {
     public static final FontIcon VIEW_ICON = MaterialIcons.DASHBOARD;
     public static final String MENU_NAME = "Dashboard";
 
-    @Autowired
-    private TopMenu topMenu;
+    private final TopMenu topMenu;
+
+    private final MainTemplate mainTemplate;
+
+    private final BubbleRepository bubbleRepository;
+
+    private final NewsRepository newsRepository;
+
+    private final UserRepository userRepository;
+
+    private final DashboardPreloader dashboardPreloader;
+
+    private final DashboardBoxCreator dashboardBoxCreator;
+
+    private final EmailSender emailSender;
+
+    private final RevenuePerMonthChart revenuePerMonthChart;
 
     @Autowired
-    private MainTemplate mainTemplate;
-
-    @Autowired
-    private BubbleRepository bubbleRepository;
-
-    @Autowired
-    private NewsRepository newsRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private DashboardPreloader dashboardPreloader;
-
-    @Autowired
-    private DashboardBoxCreator dashboardBoxCreator;
-
-    @Autowired
-    private EmailSender emailSender;
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BubbleRepository bubbleRepository, NewsRepository newsRepository, UserRepository userRepository, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
+        this.topMenu = topMenu;
+        this.mainTemplate = mainTemplate;
+        this.bubbleRepository = bubbleRepository;
+        this.newsRepository = newsRepository;
+        this.userRepository = userRepository;
+        this.dashboardPreloader = dashboardPreloader;
+        this.dashboardBoxCreator = dashboardBoxCreator;
+        this.emailSender = emailSender;
+        this.revenuePerMonthChart = revenuePerMonthChart;
+    }
 
     @Transactional
     @PostConstruct
@@ -132,6 +142,15 @@ public class DashboardView extends VerticalLayout implements View {
 
         createTopBoxes(board);
 
+        Card revenuePerMonthCard = new Card();
+        revenuePerMonthCard.setHeight(300, Unit.PIXELS);
+        revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
+        int adjustStartYear = 0;
+        if(LocalDate.now().getMonthValue() >= 1 && LocalDate.now().getMonthValue() <=6)  adjustStartYear = 1;
+        LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
+        LocalDate localDateEnd = localDateStart.plusYears(1);
+        revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
+
         List<Box> boxes = new ArrayList<>();
         //boxes.add(birthdayCard);
         boxes.add(newsCard);
@@ -142,6 +161,7 @@ public class DashboardView extends VerticalLayout implements View {
         boxes.add(monthNewsCardDesign);
         boxes.add(tripVideosCardDesign);
         boxes.add(dnaCard);
+        //boxes.add(revenuePerMonthCard);
         //boxes.add(projectTimeline);
         //boxes.add(statusCard);
 
@@ -171,7 +191,10 @@ public class DashboardView extends VerticalLayout implements View {
 
         ResponsiveRow row3 = mainLayout.addRow().withGrow(true);
         row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
-        row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
+        row3.addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(revenuePerMonthCard);
+
+        ResponsiveRow row4 = mainLayout.addRow().withGrow(true);
+        row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
     }

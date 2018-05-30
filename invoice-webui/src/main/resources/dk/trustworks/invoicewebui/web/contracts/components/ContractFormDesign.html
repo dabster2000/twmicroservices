@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
   <meta name="vaadin-version" content="8.1.5">
+  <meta name="package-mapping" content="server_droporchoose:server.droporchoose">
  </head>
  <body>
   <vaadin-vertical-layout>
@@ -23,6 +24,7 @@
        <vaadin-date-field caption="Active to" resolution="month" date-format="MMM yyyy" width="185px" value="2018-07-06" _id="dfTo"></vaadin-date-field>
        <vaadin-text-field caption="Amount" value="1.000.000 kr" _id="txtAmount"></vaadin-text-field>
        <vaadin-text-area caption="Note" width-full _id="txtNote"></vaadin-text-area>
+       <server_droporchoose-upload-component caption="Contract" width-full></server_droporchoose-upload-component>
        <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
          Update 
        </vaadin-button>

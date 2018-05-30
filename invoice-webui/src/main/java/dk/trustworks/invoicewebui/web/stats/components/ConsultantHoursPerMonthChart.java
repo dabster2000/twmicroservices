@@ -9,12 +9,12 @@ import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import org.apache.commons.lang3.ArrayUtils;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.LocalDate;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,16 +29,20 @@ import java.util.Map;
 public class ConsultantHoursPerMonthChart {
 
 
-    @Autowired
-    private WorkRepository workRepository;
+    private final WorkRepository workRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public ConsultantHoursPerMonthChart(WorkRepository workRepository, UserRepository userRepository) {
+        this.workRepository = workRepository;
+        this.userRepository = userRepository;
+    }
 
     public Chart createTopGrossingConsultantsChart(LocalDate periodStart, LocalDate periodEnd) {
         System.out.println("ConsultantHoursPerMonthChart.createTopGrossingConsultantsChart");
         System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "]");
-        Period period = new Period(periodStart, periodEnd, PeriodType.months());
+        int period = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
         Chart chart = new Chart();
         chart.setSizeFull();
 
@@ -52,10 +56,10 @@ public class ConsultantHoursPerMonthChart {
         chart.getConfiguration().getyAxis().setTitle("hours");
         chart.getConfiguration().getLegend().setEnabled(true);
 
-        String[] categories = new String[period.getMonths()+1];
+        String[] categories = new String[period+1];
         LocalDate iteratorDate = periodStart;
         for (int i = 0; i < categories.length; i++) {
-            categories[i] = iteratorDate.toString("MMM-yyyy");
+            categories[i] = iteratorDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
             iteratorDate = iteratorDate.plusMonths(1);
         }
 
@@ -66,18 +70,13 @@ public class ConsultantHoursPerMonthChart {
 
 
         Map<String, double[]> userMonths = new HashMap<>();
-        List<Work> workList = workRepository.findBillableWorkByPeriod(periodStart.toString("yyyyMMdd"), periodEnd.toString("yyyyMMdd"));
+        List<Work> workList = workRepository.findBillableWorkByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
         for (Work work : workList) {
-            if(!userMonths.containsKey(work.getUser().getUuid())) userMonths.put(work.getUser().getUuid(), new double[period.getMonths()+1]);
-            LocalDate localDate = null;
-            try {
-                localDate = new LocalDate(work.getYear(), work.getMonth() + 1, work.getDay());
-            } catch (IllegalFieldValueException e) {
-                e.printStackTrace();
-                continue;
-            }
-            userMonths.get(work.getUser().getUuid())[new Period(periodStart, localDate, PeriodType.months()).getMonths()] += work.getWorkduration();
+            if(!userMonths.containsKey(work.getUser().getUuid())) userMonths.put(work.getUser().getUuid(), new double[period+1]);
+            LocalDate localDate = LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay());
+
+            userMonths.get(work.getUser().getUuid())[Period.between(periodStart, localDate).getMonths()] += work.getWorkduration();
         }
 
         for (String useruuid : userMonths.keySet()) {

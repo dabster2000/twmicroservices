@@ -5,6 +5,7 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
+import com.vaadin.server.Setter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -22,7 +23,10 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -191,15 +195,16 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsCard);
 
-        Card contractCard = new Card();
-        contractCard.getLblTitle().setValue("Contracts");
-        contractLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
-        contractCard.getContent().addComponent(contractLayout);
-
-        createContractChart();
-        clientDetailsRow.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
-                .withComponent(contractCard);
+        if(currentProject.getMainContracts().size()>0) {
+            Card contractCard = new Card();
+            contractCard.getLblTitle().setValue("Contracts");
+            contractLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
+            contractCard.getContent().addComponent(contractLayout);
+            createContractChart();
+            clientDetailsRow.addColumn()
+                    .withDisplayRules(12, 12, 6, 6)
+                    .withComponent(contractCard);
+        }
 
         budgetCard = new BudgetCardDesign();
         updateTreeGrid();
@@ -446,6 +451,31 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 }
             }
         }
+
+        int month = 0;
+        int year = startDate.getYear();
+        List<String> yearColumns = new ArrayList<>();
+        LocalDate budgetDate = startDate;
+        while(budgetDate.isBefore(endDate)) {
+            final LocalDate filterDate = budgetDate;
+            final int actualMonth = month;
+            Grid.Column<BudgetRow, ?> budgetColumn = grid.addColumn(
+                    taskRow -> taskRow.getMonth(actualMonth))
+                    .setStyleGenerator(budgetHistory -> "align-right")
+                    .setWidth(100)
+                    .setId(Month.of(filterDate.getMonthValue()).name()+filterDate.getYear())
+                    .setCaption(Month.of(filterDate.getMonthValue()).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)+" "+filterDate.format(DateTimeFormatter.ofPattern("yy")))
+                    .setEditorComponent(new TextField(), (Setter<BudgetRow, String>) (taskRow, budgetValue) -> taskRow.setMonth(actualMonth, budgetValue));
+            yearColumns.add(budgetColumn.getId());
+            budgetDate = budgetDate.plusMonths(1);
+            month++;
+            if(year < budgetDate.getYear()) {
+                //topHeader.join(yearColumns.toArray(new String[0])).setText(year + "");
+                yearColumns = new ArrayList<>();
+                year++;
+            }
+        }
+
         grid.getEditor().setEnabled(true);
         grid.getEditor().addSaveListener(event -> {
             System.out.println("grid.getEditor().addSaveListener");
