@@ -58,7 +58,7 @@ public class PhotosCardImpl extends PhotosCardDesign implements Box {
         String randomText = dashboardPreloader.getRandomText();
         System.out.println("randomText = " + randomText);
         getLblPhotoText().setVisible(true);
-        getPhoto().setSource(new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(randomPhoto),"logo.jpg"));
+        getPhoto().setSource(new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(randomPhoto),(Math.random()*2000)+".jpg"));
         getLblPhotoText().setValue(randomText);
         if(randomText == null || randomText.equals("")) getLblPhotoText().setVisible(false);
     }
