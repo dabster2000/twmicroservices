@@ -361,7 +361,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
             log.info("task = " + task);
             Hibernate.initialize(task);
 
-            WeekItem weekItem = new WeekItem(week, task, user);
+
+            WeekItem weekItem = new WeekItem(week, task, user, false);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
             Double budgetLeftByTaskuuidAndUseruuid = budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());

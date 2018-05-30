@@ -83,7 +83,7 @@ public abstract class Contract {
     }
 
     public void setActiveTo(LocalDate activeTo) {
-        this.activeTo = activeTo;
+        this.activeTo = activeTo.withDayOfMonth(activeTo.lengthOfMonth());
     }
 
     public Date getCreated() {

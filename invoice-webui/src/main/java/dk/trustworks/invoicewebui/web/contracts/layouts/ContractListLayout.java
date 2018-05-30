@@ -129,8 +129,8 @@ public class ContractListLayout extends VerticalLayout {
                             contractFormDesign.getCbType().getValue(),
                             contractFormDesign.getCbStatus().getValue(),
                             contractFormDesign.getTxtNote().getValue(),
-                            contractFormDesign.getDfFrom().getValue(),
-                            contractFormDesign.getDfTo().getValue(),
+                            contractFormDesign.getDfFrom().getValue().withDayOfMonth(1),
+                            contractFormDesign.getDfTo().getValue().withDayOfMonth(contractFormDesign.getDfTo().getValue().lengthOfMonth()),
                             NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
                             client));
                     this.removeComponent(contractResponsiveLayout);

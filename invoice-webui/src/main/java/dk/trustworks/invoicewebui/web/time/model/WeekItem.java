@@ -25,21 +25,23 @@ public class WeekItem {
     private double budgetleft;
     private LocalDate date;
     private User workas;
+    private boolean locked = false;
 
     public WeekItem() {
     }
 
-    public WeekItem(Week week, Task task, User user) {
+    public WeekItem(Week week, Task task, User user, boolean locked) {
         this.week = week;
         this.task = task;
         this.user = user;
     }
 
-    public WeekItem(Week week, Task task, User user, User workas) {
+    public WeekItem(Week week, Task task, User user, User workas, boolean locked) {
         this.week = week;
         this.task = task;
         this.user = user;
         this.workas = workas;
+        this.locked = locked;
     }
 
     public Week getWeek() {
@@ -132,6 +134,14 @@ public class WeekItem {
 
     public void setWorkas(User workas) {
         this.workas = workas;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
     public double getWeekItemSum() {

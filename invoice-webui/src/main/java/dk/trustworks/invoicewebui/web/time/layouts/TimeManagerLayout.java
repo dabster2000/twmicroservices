@@ -7,7 +7,6 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
-import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -45,6 +44,9 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
+import static com.vaadin.server.Sizeable.Unit.PIXELS;
+
 @SpringComponent
 @SpringUI
 public class TimeManagerLayout extends ResponsiveLayout {
@@ -65,6 +67,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final PhotoService photoService;
 
+    private final ContractService contractService;
+
     private ResponsiveLayout responsiveLayout;
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);
@@ -80,7 +84,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectRepository projectRepository, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, BudgetRepository budgetRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService) {
+    public TimeManagerLayout(ProjectRepository projectRepository, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, BudgetRepository budgetRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
         this.userRepository = userRepository;
         this.weekRepository = weekRepository;
         this.workService = workService;
@@ -88,6 +92,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         this.budgetRepository = budgetRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
+        this.contractService = contractService1;
 
         footerButtons = new FooterButtons();
         dateButtons = new DateButtons();
@@ -126,8 +131,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
         footerButtons.getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
             log.info("getBtnAddTask()");
             final Window window = new Window("Add Task");
-            window.setWidth(300.0f, Unit.PIXELS);
-            window.setHeight(450.0f, Unit.PIXELS);
+            window.setWidth(300.0f, PIXELS);
+            window.setHeight(450.0f, PIXELS);
             window.setModal(true);
 
             OnOffSwitch onOffSwitch = new OnOffSwitch(false);
@@ -144,7 +149,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             userComboBox.setItems(users);
             UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
 
-            MLabel spacer = new MLabel("").withWidth(100, Unit.PERCENTAGE);
+            MLabel spacer = new MLabel("").withWidth(100, PERCENTAGE);
 
             List<MainContract> activeConsultantContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getSelectedItem().get());
             List<Client> clientResources = getClients(activeConsultantContracts);
@@ -271,7 +276,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private List<MainContract> getMainContracts(ContractService contractService, User user) {
-        return contractService.findActiveConsultantContracts(user, java.time.LocalDate.of(currentDate.getYear(), currentDate.getMonthOfYear(), currentDate.getDayOfMonth()));
+        return contractService.findTimeActiveConsultantContracts(user, java.time.LocalDate.of(currentDate.getYear(), currentDate.getMonthOfYear(), 1));
     }
 
     public ResponsiveLayout init() {
@@ -333,7 +338,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
             Task task = week.getTask();
             Hibernate.initialize(task);
 
-            WeekItem weekItem = new WeekItem(week, task, user, week.getWorkas());
+            boolean onContract = isOnContract(week);
+            WeekItem weekItem = new WeekItem(week, task, user, week.getWorkas(), !onContract);
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
@@ -438,9 +444,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         String[] strDays = new String[] { "Mon", "Tue", "Wed", "Thu",
                 "Fri", "Sat", "Sun" };
         return new MVerticalLayout(
-                new MLabel(strDays[weekDay].toUpperCase()).withStyleName("h5").withHeight(25, Unit.PIXELS),
-                new MLabel(currentDate.plusDays(weekDay).toString("dd/MM")).withStyleName("tiny light").withHeight(15, Unit.PIXELS)
-        ).alignAll(Alignment.MIDDLE_CENTER).withHeight(40, Unit.PIXELS).withSpacing(false).withMargin(false);
+                new MLabel(strDays[weekDay].toUpperCase()).withStyleName("h5").withHeight(25, PIXELS),
+                new MLabel(currentDate.plusDays(weekDay).toString("dd/MM")).withStyleName("tiny light").withHeight(15, PIXELS)
+        ).alignAll(Alignment.MIDDLE_CENTER).withHeight(40, PIXELS).withSpacing(false).withMargin(false);
     }
 
     private void createFooterRow() {
@@ -500,7 +506,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private MTextField getFloatingTextField() {
-        return new MTextField().withWidth(100, Unit.PERCENTAGE)
+        return new MTextField().withWidth(100, PERCENTAGE)
                 .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                 .withStyleName("borderless")
                 .withReadOnly(true);
@@ -534,92 +540,115 @@ public class TimeManagerLayout extends ResponsiveLayout {
         if(photo!=null && photo.getPhoto().length > 0) {
             taskTitle.getImgLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()),
-                    "logo.jpg"));
+                    photo.getRelateduuid()+".jpg"));
         } else {
             taskTitle.getImgLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
 
-        User workas = weekItem.getWorkas();
-        if(workas!=null) {
-            Image memberImage = photoService.getRoundMemberImage(workas, false, 30);
-            memberImage.setDescription("Helping "+workas.getFirstname()+" "+workas.getLastname());
-            taskTitle.getImgConsultant().addComponent(memberImage);
+        if(weekItem.isLocked()) {
+            Image image = new Image();
+            image.setSource(new ThemeResource("images/icons/lock.png"));
+            image.setDescription("No active contract");
+            image.setHeight(30, PIXELS);
+            taskTitle.getImgConsultant().addComponent(image);
+        } else {
+            User workas = weekItem.getWorkas();
+            if (workas != null) {
+                Image memberImage = photoService.getRoundMemberImage(workas, false, 30);
+                memberImage.setDescription("Helping " + workas.getFirstname() + " " + workas.getLastname());
+                taskTitle.getImgConsultant().addComponent(memberImage);
+            }
         }
 
         weekRowTaskTitles.add(taskTitle);
 
+        User workingAs = (weekItem.getWorkas()!=null)?weekItem.getWorkas():weekItem.getUser();
+        Task task = weekItem.getTask();
+
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(taskTitle, ResponsiveColumn.ColumnComponentAlignment.LEFT);
-        MTextField mTextField = new MTextField(null, weekItem.getMon(), event -> {
-            weekDaySums.mon += updateTimefield(weekItem, 0, event);
-            updateSums();
-        })
-                .withWidth(100, Unit.PERCENTAGE)
-                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER, "floating");
-        Responsive.makeResponsive(mTextField);
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1,1)
+                .withComponent(disableIfNoContract(1, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getMon(), event -> {
+                            weekDaySums.mon += updateTimefield(weekItem, 0, event);
+                            updateSums();
+                        })
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
 
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(mTextField);
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(new MTextField(null, weekItem.getTue(), event -> {
+                .withComponent(disableIfNoContract(2, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getTue(), event -> {
                     weekDaySums.tue += updateTimefield(weekItem, 1, event);
                     updateSums();
                 })
-                        .withWidth(100, Unit.PERCENTAGE)
+                        .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating"));
+                        .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(new MTextField(null, weekItem.getWed(), event -> {
+                .withComponent(disableIfNoContract(3, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getWed(), event -> {
                     weekDaySums.wed += updateTimefield(weekItem, 2, event);
                     updateSums();
                 })
-                        .withWidth(100, Unit.PERCENTAGE)
+                        .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating"));
+                        .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(new MTextField(null, weekItem.getThu(), event -> {
+                .withComponent(disableIfNoContract(4, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getThu(), event -> {
                     weekDaySums.thu += updateTimefield(weekItem, 3, event);
                     updateSums();
                 })
-                        .withWidth(100, Unit.PERCENTAGE)
+                        .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating"));
+                        .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(new MTextField(null, weekItem.getFri(), event -> {
+                .withComponent(disableIfNoContract(5, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getFri(), event -> {
                     weekDaySums.fri += updateTimefield(weekItem, 4, event);
                     updateSums();
                 })
-                        .withWidth(100, Unit.PERCENTAGE)
+                        .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating"));
+                        .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(new MTextField(null, weekItem.getSat(), event -> {
+                .withComponent(disableIfNoContract(6, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getSat(), event -> {
                     weekDaySums.sat += updateTimefield(weekItem, 5, event);
                     updateSums();
                 })
-                        .withWidth(100, Unit.PERCENTAGE)
+                        .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating"));
+                        .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(new MTextField(null, weekItem.getSun(), event -> {
+                .withComponent(disableIfNoContract(7, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getSun(), event -> {
                     weekDaySums.sun += updateTimefield(weekItem, 6, event);
                     updateSums();
                 })
-                        .withWidth(100, Unit.PERCENTAGE)
+                        .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating"));
+                        .withStyleName("floating")));
         time1Row.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
                 .withComponent(new MLabel(weekItem.getBudgetleft()+"").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+    }
+
+    private MTextField disableIfNoContract(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
+        boolean onContract = isOnContract(weekItem.getDate().withDayOfWeek(weekday), workingAs, task);
+        if(!onContract) return mTextField.withEnabled(onContract);
+        return mTextField;
     }
 
     private double updateTimefield(WeekItem weekItem, int day, HasValue.ValueChangeEvent<String> event) {
@@ -661,6 +690,16 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void updateSums() {
         weekValuesBinder.readBean(weekDaySums);
+    }
+
+    private boolean isOnContract(Week week) {
+        LocalDate localDateStart = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(1);
+        LocalDate localDateEnd = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(7);
+        return isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask()) ;
+    }
+
+    private boolean isOnContract(LocalDate localDate, User user, Task task) {
+        return contractService.findConsultantRate(localDate.getYear(), localDate.getMonthOfYear(), localDate.getDayOfMonth(), user, task)!=null;
     }
 
     private class WeekValues {

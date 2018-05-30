@@ -20,7 +20,7 @@ public interface ContractRepository extends ContractBaseRepository<Contract> {
             "    right join project p ON p.uuid = pc.projectuuid" +
             "    right join task t ON t.projectuuid = p.uuid" +
             "    right join contract_consultants cc ON c.uuid = cc.contractuuid" +
-            "    where c.activefrom < :workDate and c.activeto > :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid ", nativeQuery = true)
+            "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid ", nativeQuery = true)
     Double findConsultantRateByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid);
 
     @Override @RestResource(exported = false) void delete(String id);

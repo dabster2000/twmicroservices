@@ -101,14 +101,14 @@ public class ContractService {
 
     public Double findConsultantRateByWork(Work work) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        Double rate = contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth()+1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
-        return rate;
+        return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth()+1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
     }
 
     public Double findConsultantRate(int year, int month, int day, User user, Task task) {
+        System.out.println("ContractService.findConsultantRate");
+        System.out.println("year = [" + year + "], month = [" + month + "], day = [" + day + "], user = [" + user.getUuid() + "], task = [" + task.getUuid() + "]");
         if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        Double rate = contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), user.getUuid());
-        return rate;
+        return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid());
     }
 
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
@@ -193,14 +193,10 @@ public class ContractService {
         List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
         Optional<Work> workMin = workList.stream().min(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
         Optional<Work> workMax = workList.stream().max(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
-        if(workMin.isPresent()) {
-            return new LocalDatePeriod(
-                    LocalDate.of(workMin.get().getYear(), workMin.get().getMonth()+1, workMin.get().getDay()),
-                    LocalDate.of(workMax.get().getYear(), workMax.get().getMonth()+1, workMax.get().getDay())
-            );
-        } else {
-            return null;
-        }
+        return workMin.map(work -> new LocalDatePeriod(
+                LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay()),
+                LocalDate.of(workMax.get().getYear(), workMax.get().getMonth() + 1, workMax.get().getDay())
+        )).orElse(null);
     }
 
     public List<Work> getWorkOnContractByUser(MainContract mainContract) {
@@ -213,10 +209,8 @@ public class ContractService {
                 mainContract.getActiveTo().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     }
 
-    public List<MainContract> findActiveConsultantContracts(User user, LocalDate activeOn) {
-        System.out.println("ContractService.findActiveConsultantContracts");
-        System.out.println("user = [" + user + "], activeOn = [" + activeOn + "]");
-        return mainContractRepository.findActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    public List<MainContract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
+        return mainContractRepository.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
     public Collection<String> createErrorList(Map<String, Work> errors) {
@@ -225,10 +219,10 @@ public class ContractService {
             String client = work.getTask().getProject().getClient().getName();
             String project = work.getTask().getProject().getName();
             String username = work.getUser().getUsername();
-            String error = new StringBuilder().append("There is no valid contract for ").append(username)
-                    .append(" work on ").append(client)
-                    .append("'s project ").append(project)
-                    .append(" on date ").append(work.getMonth() + 1).append("/").append(work.getYear()).toString();
+            String error = "There is no valid contract for " + username +
+                    " work on " + client +
+                    "'s project " + project +
+                    " on date " + (work.getMonth() + 1) + "/" + work.getYear();
             errorList.put(client+project+username, error);
         }
         return errorList.values();

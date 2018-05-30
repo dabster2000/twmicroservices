@@ -84,7 +84,7 @@ public class MainContract extends Contract {
     }
 
     public void setActiveFrom(LocalDate activeFrom) {
-        this.activeFrom = activeFrom;
+        this.activeFrom = activeFrom.withDayOfMonth(1);
     }
 
     public void addConsultants(List<Consultant> consultants) {
