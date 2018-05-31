@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,8 +123,7 @@ public class DropboxAPI {
             DbxDownloader<FileMetadata> file = files.download(filePath);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             file.download(outputStream);
-            return new String(outputStream.toByteArray());
-
+            return new String(outputStream.toByteArray(), StandardCharsets.ISO_8859_1);
         } catch (DbxException | IOException e) {
             log.warn("'"+filePath+"' not found!");
         }
