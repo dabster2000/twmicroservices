@@ -6,10 +6,10 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
-import dk.trustworks.invoicewebui.model.Budget;
+import dk.trustworks.invoicewebui.model.BudgetNew;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
-import dk.trustworks.invoicewebui.repositories.BudgetRepository;
+import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import org.joda.time.DateTimeConstants;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @SpringUI
 public class SalesHeatMap {
 
-    private final BudgetRepository budgetRepository;
+    private final BudgetNewRepository budgetNewRepository;
 
     private final UserRepository userRepository;
 
@@ -40,8 +40,8 @@ public class SalesHeatMap {
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetRepository budgetRepository, UserRepository userRepository, ContractService contractService) {
-        this.budgetRepository = budgetRepository;
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, UserRepository userRepository, ContractService contractService) {
+        this.budgetNewRepository = budgetNewRepository;
         this.userRepository = userRepository;
         this.contractService = contractService;
     }
@@ -79,18 +79,25 @@ public class SalesHeatMap {
         int userNumber = 0;
 
         for (User user : users) {
-            List<Budget> userBudgets = budgetRepository.findByPeriodAndUseruuid(
+            /*List<Budget> userBudgets = budgetRepository.findByPeriodAndUseruuid(
                     Integer.parseInt(localDateStart.toString("yyyyMMdd")),
                     Integer.parseInt(localDateEnd.toString("yyyyMMdd")),
                     user.getUuid());
+                    */
+            List<BudgetNew> userBudgets = budgetNewRepository.findByMonthAndYear(
+                    Integer.parseInt(localDateStart.toString("yyyyMMdd")),
+                    Integer.parseInt(localDateEnd.toString("yyyyMMdd")));
             LocalDate localDate = localDateStart;
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
                 final LocalDate tempDate = localDate;
-                double budgetSum = userBudgets.stream()
+                double budgetSum = 0.0;
+                /*
+                budgetSum = userBudgets.stream()
                         .filter(budget -> budget.getYear() == tempDate.getYear() && budget.getMonth() + 1 == tempDate.getMonthOfYear())
-                        .mapToDouble(value -> value.getBudget() / contractService.findConsultantRate(value.getYear(), value.getMonth(), 1, user, value.getTask()))
+                        .mapToDouble(value -> value.getBudget() / contractService.findConsultantRate(value.getYear(), value.getMonth(), 1, user, value.getConsultant().getTask()))
                         .sum();
+                        */
                 List<UserStatus> userStatuses = user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
                 UserStatus userStatus = userStatuses.get(0);
                 for (UserStatus userStatusIteration : userStatuses) {
