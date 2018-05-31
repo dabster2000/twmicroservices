@@ -6,20 +6,19 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
-import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Comparator;
-import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +46,7 @@ public class SalesHeatMap {
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
-        int monthPeriod = new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths()+1;
+        int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
         List<User> users = userRepository.findByActiveTrue();
@@ -78,26 +77,34 @@ public class SalesHeatMap {
         HeatSeries rs = new HeatSeries("% availability");
         int userNumber = 0;
 
+        Map<String, double[]> budgetRowList = new HashMap<>();
+        for (int i = 0; i < 12; i++) {
+            LocalDate currentDate = localDateStart.plusMonths(i);
+
+            List<MainContract> contracts = contractService.findActiveMainContractsByDate(currentDate);
+            for (MainContract contract : contracts) {
+                if(contract.getContractType().equals(ContractType.PERIOD)) {
+                    double weeks = currentDate.getMonth().length(true) / 7.0;
+                    for (Consultant consultant : contract.getConsultants()) {
+                        budgetRowList.putIfAbsent(consultant.getUser().getUuid(), new double[12]);
+                        budgetRowList.get(consultant.getUser().getUuid())[i] = (consultant.getHours() * weeks) + budgetRowList.get(consultant.getUser().getUuid())[i];
+                    }
+                }
+            }
+            List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
+            for (BudgetNew budget : budgets) {
+                Consultant consultant = budget.getConsultant();
+                budgetRowList.putIfAbsent(consultant.getUser().getUuid(), new double[12]);
+                budgetRowList.get(consultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getConsultant().getRate()) + budgetRowList.get(consultant.getUser().getUuid())[i];
+            }
+        }
+
         for (User user : users) {
-            /*List<Budget> userBudgets = budgetRepository.findByPeriodAndUseruuid(
-                    Integer.parseInt(localDateStart.toString("yyyyMMdd")),
-                    Integer.parseInt(localDateEnd.toString("yyyyMMdd")),
-                    user.getUuid());
-                    */
-            List<BudgetNew> userBudgets = budgetNewRepository.findByMonthAndYear(
-                    Integer.parseInt(localDateStart.toString("yyyyMMdd")),
-                    Integer.parseInt(localDateEnd.toString("yyyyMMdd")));
+            budgetRowList.putIfAbsent(user.getUuid(), new double[12]);
+
             LocalDate localDate = localDateStart;
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
-                final LocalDate tempDate = localDate;
-                double budgetSum = 0.0;
-                /*
-                budgetSum = userBudgets.stream()
-                        .filter(budget -> budget.getYear() == tempDate.getYear() && budget.getMonth() + 1 == tempDate.getMonthOfYear())
-                        .mapToDouble(value -> value.getBudget() / contractService.findConsultantRate(value.getYear(), value.getMonth(), 1, user, value.getConsultant().getTask()))
-                        .sum();
-                        */
                 List<UserStatus> userStatuses = user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
                 UserStatus userStatus = userStatuses.get(0);
                 for (UserStatus userStatusIteration : userStatuses) {
@@ -106,22 +113,9 @@ public class SalesHeatMap {
                 }
 
                 int weekDays = countWeekDays(localDate, localDate.plusMonths(1));
-
-                double budget = Math.round((weekDays * (userStatus.getAllocation()/5.0)) - budgetSum);
-
+                double budget = Math.round((weekDays * (userStatus.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
                 if(budget < 0.0) budget = 0.0;
-
                 budget = Math.round(budget / Math.round(weekDays * (userStatus.getAllocation()/5.0)) * 100.0);
-
-                if(user.getUuid().equals("7948c5e8-162c-4053-b905-0f59a21d7746")) {
-                    System.out.println("userNumber = " + userNumber);
-                    System.out.println("localDate = " + localDate);
-                    System.out.println("weekDays = " + weekDays);
-                    System.out.println("userStatus = " + (userStatus.getAllocation()/5.0));
-                    System.out.println("budgetSum = " + budgetSum);
-                    System.out.println("budget = " + budget);
-                    System.out.println("--- --- --- --- --- ---");
-                }
 
                 monthAvailabilites[m] += Math.round(budget);
                 monthTotalAvailabilites[m] += 100;
@@ -157,7 +151,7 @@ public class SalesHeatMap {
     }
 
     public Component getAvailabilityChart(LocalDate localDateStart, LocalDate localDateEnd) {
-        int monthPeriod = new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths()+1;
+        int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         String[] monthNames = getMonthNames(localDateStart, localDateEnd);
         Chart chart = new Chart(ChartType.AREASPLINE);
         chart.setHeight("450px");
@@ -210,9 +204,10 @@ public class SalesHeatMap {
 
 
     private String[] getMonthNames(LocalDate localDateStart, LocalDate localDateEnd) {
-        String[] monthNames = new String[new Period(localDateStart, localDateEnd, PeriodType.months()).getMonths()+1];
+        int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
+        String[] monthNames = new String[monthPeriod];
         for (int i = 0; i < monthNames.length; i++) {
-            monthNames[i] = localDateStart.plusMonths(i).monthOfYear().getAsShortText();
+            monthNames[i] = localDateStart.plusMonths(i).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         }
         return monthNames;
     }
@@ -220,15 +215,15 @@ public class SalesHeatMap {
     public int countWeekDays(LocalDate periodStart, LocalDate periodEnd) {
         LocalDate weekday = periodStart;
 
-        if (periodStart.getDayOfWeek() == DateTimeConstants.SATURDAY ||
-                periodStart.getDayOfWeek() == DateTimeConstants.SUNDAY) {
-            weekday = weekday.plusWeeks(1).withDayOfWeek(DateTimeConstants.MONDAY);
+        if (periodStart.getDayOfWeek() == DayOfWeek.SATURDAY ||
+                periodStart.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            weekday = weekday.plusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.MONDAY));
         }
 
         int count = 0;
         while (weekday.isBefore(periodEnd)) {
             count++;
-            if (weekday.getDayOfWeek() == DateTimeConstants.FRIDAY)
+            if (weekday.getDayOfWeek() == DayOfWeek.FRIDAY)
                 weekday = weekday.plusDays(3);
             else
                 weekday = weekday.plusDays(1);
