@@ -49,9 +49,6 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private WorkRepository workRepository;
 
     @Autowired
-    private BudgetRepository budgetRepository;
-
-    @Autowired
     private TimeService timeService;
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
@@ -365,7 +362,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
             WeekItem weekItem = new WeekItem(week, task, user, false);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
-            Double budgetLeftByTaskuuidAndUseruuid = budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());
+            Double budgetLeftByTaskuuidAndUseruuid = 0.0;//budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());
             if(budgetLeftByTaskuuidAndUseruuid!=null) weekItem.setBudgetleft(budgetLeftByTaskuuidAndUseruuid);
             for (Work work : workResources) {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;

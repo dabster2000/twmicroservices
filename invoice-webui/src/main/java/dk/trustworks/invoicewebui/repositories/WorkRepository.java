@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -24,8 +25,12 @@ public interface WorkRepository extends CrudRepository<Work, String> {
                                        @Param("todate") String todate,
                                        @Param("useruuid") String useruuid);
 
+    @Deprecated
     @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
     List<Work> findByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
+
+    @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
+    List<Work> findByPeriod(@Param("fromdate") LocalDate fromdate, @Param("todate") LocalDate todate);
 
     @Query(value = "SELECT w.id, w.day, w.month, w.taskuuid, w.useruuid, w.workas as workas, w.workduration, w.year, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created " +
             "FROM work w INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = w.useruuid " +

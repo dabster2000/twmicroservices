@@ -1,25 +1,8 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import dk.trustworks.invoicewebui.model.Budget;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.BudgetRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import org.joda.time.LocalDate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-@Component
+//@Component
 public class BudgetCleanupJob {
-
+/*
     private static final Logger log = LoggerFactory.getLogger(BudgetCleanupJob.class);
 
     private final WorkRepository workRepository;
@@ -110,5 +93,5 @@ public class BudgetCleanupJob {
         budgetRepository.save(newBudgets);
         log.debug("done");
     }
-
+*/
 }

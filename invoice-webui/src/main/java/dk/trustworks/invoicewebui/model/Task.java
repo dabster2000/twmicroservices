@@ -11,18 +11,15 @@ public class Task {
     private String name;
     private String type;
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Taskworkerconstraint> taskworkerconstraint = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectuuid")
     private Project project;
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Budget> budget = new ArrayList<>();
+    private List<Work> workList = new ArrayList<>();
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Work> workList = new ArrayList<>();
+    private List<Taskworkerconstraint> taskworkerconstraint;
 
     public Task() {
     }
@@ -58,28 +55,12 @@ public class Task {
         this.type = type;
     }
 
-    public List<Taskworkerconstraint> getTaskworkerconstraint() {
-        return taskworkerconstraint;
-    }
-
-    public void setTaskworkerconstraint(List<Taskworkerconstraint> taskworkerconstraint) {
-        this.taskworkerconstraint = taskworkerconstraint;
-    }
-
     public Project getProject() {
         return project;
     }
 
     public void setProject(Project project) {
         this.project = project;
-    }
-
-    public List<Budget> getBudget() {
-        return budget;
-    }
-
-    public void setBudget(List<Budget> budget) {
-        this.budget = budget;
     }
 
     public List<Work> getWorkList() {
@@ -96,9 +77,6 @@ public class Task {
         sb.append("uuid='").append(uuid).append('\'');
         sb.append(", name='").append(name).append('\'');
         sb.append(", type='").append(type).append('\'');
-        //sb.append(", taskworkerconstraint=").append(taskworkerconstraint);
-        //sb.append(", project=").append(project);
-        //sb.append(", budget=").append(budget);
         sb.append('}');
         return sb.toString();
     }
@@ -107,9 +85,7 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Task task = (Task) o;
-
         return uuid.equals(task.uuid);
     }
 
@@ -118,4 +94,7 @@ public class Task {
         return uuid.hashCode();
     }
 
+    public List<Taskworkerconstraint> getTaskworkerconstraint() {
+        return taskworkerconstraint;
+    }
 }

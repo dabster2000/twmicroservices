@@ -33,10 +33,6 @@ public class User {
     private List<Salary> salaries;
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<UserStatus> statuses;
-    //@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    //private List<Taskworkerconstraint> taskworkerconstraint;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Budget> budget;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Week> weeks;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -147,22 +143,6 @@ public class User {
 
     public void setStatuses(List<UserStatus> statuses) {
         this.statuses = statuses;
-    }
-/*
-    public List<Taskworkerconstraint> getTaskworkerconstraint() {
-        return taskworkerconstraint;
-    }
-
-    public void setTaskworkerconstraint(List<Taskworkerconstraint> taskworkerconstraint) {
-        this.taskworkerconstraint = taskworkerconstraint;
-    }
-*/
-    public List<Budget> getBudget() {
-        return budget;
-    }
-
-    public void setBudget(List<Budget> budget) {
-        this.budget = budget;
     }
 
     public List<Week> getWeeks() {

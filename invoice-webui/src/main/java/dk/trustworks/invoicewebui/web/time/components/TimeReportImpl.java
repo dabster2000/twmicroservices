@@ -30,8 +30,8 @@ public class TimeReportImpl extends VerticalLayout {
     @Autowired
     private MonthReportImpl monthReport;
 
-    @Autowired
-    private BudgetReportImpl budgetReport;
+    //@Autowired
+    //private BudgetReportImpl budgetReport;
 
     ResponsiveLayout responsiveLayout;
     ComboBox<Project> projectComboBox;
@@ -78,7 +78,7 @@ public class TimeReportImpl extends VerticalLayout {
         if(date.isEmpty()) return;
         if(projectComboBox.isEmpty()) return;
         createMonthReportCard();
-        createBudgetReportCard();
+        //createBudgetReportCard();
     }
 
     private void createMonthReportCard() {
@@ -88,7 +88,7 @@ public class TimeReportImpl extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(monthReport);
     }
-
+/*
     private void createBudgetReportCard() {
         budgetReport.init(projectComboBox.getSelectedItem().get().getUuid());
         contentRow
@@ -96,5 +96,5 @@ public class TimeReportImpl extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(budgetReport);
     }
-
+*/
 }

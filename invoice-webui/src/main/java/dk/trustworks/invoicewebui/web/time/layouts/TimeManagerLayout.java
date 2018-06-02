@@ -61,8 +61,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final WorkRepository workRepository;
 
-    private final BudgetRepository budgetRepository;
-
     private final PhotoRepository photoRepository;
 
     private final PhotoService photoService;
@@ -84,12 +82,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectRepository projectRepository, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, BudgetRepository budgetRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
+    public TimeManagerLayout(ProjectRepository projectRepository, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
         this.userRepository = userRepository;
         this.weekRepository = weekRepository;
         this.workService = workService;
         this.workRepository = workRepository;
-        this.budgetRepository = budgetRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.contractService = contractService1;
@@ -345,7 +342,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
             Double budgetLeftByTaskuuidAndUseruuid = 0.0;
             try {
-                budgetLeftByTaskuuidAndUseruuid = budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());
+                budgetLeftByTaskuuidAndUseruuid = 0.0; //budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());
             } catch (Exception e) {
                 Notification.show("Error loading budget...", Notification.Type.TRAY_NOTIFICATION);
                 e.printStackTrace();

@@ -112,8 +112,11 @@ public class ContractService {
     }
 
     public List<MainContract> findActiveMainContractsByDate(LocalDate activeDate) {
-        //if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         return mainContractRepository.findByActiveFromBeforeAndActiveToAfter(activeDate, activeDate);
+    }
+
+    public List<MainContract> findActiveMainContractsByPeriod(LocalDate activeFrom, LocalDate activeTo) {
+        return mainContractRepository.findByActiveFromBeforeAndActiveToAfter(activeTo, activeFrom);
     }
 
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {

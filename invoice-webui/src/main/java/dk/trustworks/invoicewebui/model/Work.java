@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  * Created by hans on 28/06/2017.
@@ -104,17 +105,19 @@ public class Work {
         this.workas = workas;
     }
 
+    public LocalDate getDate() {
+        return LocalDate.of(year, month+1, day);
+    }
+
     @Override
     public String toString() {
         return "Work{" +
                 "id='" + id + '\'' +
-                ", day=" + day +
-                ", month=" + month +
-                ", year=" + year +
+                ", date=" + getDate() +
                 ", workduration=" + workduration +
                 ", task=" + task.getUuid() +
                 ", user=" + user.getUuid() +
-                ", workas=" + workas.getUuid() +
+                ", workas=" + (workas!=null) +
                 ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +
                 '}';
     }

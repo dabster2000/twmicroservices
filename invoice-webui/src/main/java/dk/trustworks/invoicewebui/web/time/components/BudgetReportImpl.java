@@ -1,34 +1,12 @@
 package dk.trustworks.invoicewebui.web.time.components;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Component;
-import dk.trustworks.invoicewebui.model.Budget;
-import dk.trustworks.invoicewebui.model.RoleType;
-import dk.trustworks.invoicewebui.model.Task;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.BudgetRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.web.time.model.BudgetRemainingItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Created by hans on 09/09/2017.
  */
-@SpringUI
-@SpringComponent
+//@SpringUI
+//@SpringComponent
 public class BudgetReportImpl extends BudgetReportDesign {
-
+/*
     private final ProjectRepository projectRepository;
 
     private final WorkRepository workRepository;
@@ -72,12 +50,12 @@ public class BudgetReportImpl extends BudgetReportDesign {
                     budgetRemainingItems.add(budgetRemainingItem);
                 }
 
-                /*
+
                 Optional<Taskworkerconstraint> taskworkerconstraint = work.getTask().getTaskworkerconstraint().stream().
                         filter(p -> p.getUser().getUuid().equals(work.getUser().getUuid())
                                 && p.getTask().getUuid().equals(work.getTask().getUuid())).
                         findFirst();
-*/
+
                 Double rate = contractService.findConsultantRateByWork(work);
                 if(rate!=null) budgetRemainingItem.addUsedBudget(work.getWorkduration()*rate);
             }
@@ -151,4 +129,5 @@ public class BudgetReportImpl extends BudgetReportDesign {
 
         return chart;
     }
+    */
 }

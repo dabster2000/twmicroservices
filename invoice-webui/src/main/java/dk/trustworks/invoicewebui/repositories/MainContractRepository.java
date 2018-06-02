@@ -23,7 +23,7 @@ public interface MainContractRepository extends ContractBaseRepository<MainContr
             "    right join task t ON t.projectuuid = p.uuid" +
             "    right join contract_consultants cc ON c.uuid = cc.contractuuid" +
             "    where c.activefrom <= :workDate and c.activeto >= :workDate ", nativeQuery = true)*/
-    List<MainContract> findByActiveFromBeforeAndActiveToAfter(@Param("activeDate1") LocalDate activeDate1, @Param("activeDate2") LocalDate activeDate2);
+    List<MainContract> findByActiveFromBeforeAndActiveToAfter(LocalDate activeTo, LocalDate activeFrom);
 
     @Query(value = "select c.* from usermanager.contracts c " +
             "right join usermanager.contract_consultants cc on c.uuid = cc.contractuuid " +

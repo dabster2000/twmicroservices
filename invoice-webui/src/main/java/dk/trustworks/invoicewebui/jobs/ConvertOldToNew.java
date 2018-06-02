@@ -1,8 +1,8 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import dk.trustworks.invoicewebui.model.MainContract;
-import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.MainContractRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
@@ -10,7 +10,6 @@ import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,15 +38,15 @@ public class ConvertOldToNew {
     private ConsultantRepository consultantRepository;
 
     @Transactional
-    @Scheduled(fixedDelay = 1000000, initialDelay = 1000)
+    //@Scheduled(fixedDelay = 1000000, initialDelay = 1000)
     public void job() {
         log.info("running work job...");
-/*
+
         for (Project project : projectRepository.findAll()) {
             log.info("Converting project to contract = " + project);
             Client client = project.getClient();
             if(client.getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) continue;
-            MainContract mainContract = new MainContract(ContractType.AMOUNT, project.getStartdate(), project.getEnddate(), project.getBudget(), client);
+            MainContract mainContract = new MainContract(ContractType.AMOUNT, ContractStatus.SIGNED, "", project.getStartdate(), project.getEnddate(), project.getBudget(), client);
             mainContract.addProject(project);
             System.out.println("project.getTasks() = " + project.getTasks());
             if(project.getTasks()==null) {
@@ -66,7 +65,7 @@ public class ConvertOldToNew {
             project.addMainContract(mainContract);
             mainContractRepository.save(mainContract);
         }
-*/
+
         Map<String, Work> noContract = new HashMap<>();
         List<Work> workNotFoundList = new ArrayList<>();
         List<Work> workOutsidePeriod = new ArrayList<>();

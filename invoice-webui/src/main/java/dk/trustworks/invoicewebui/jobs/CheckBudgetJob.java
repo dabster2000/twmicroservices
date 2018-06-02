@@ -5,22 +5,17 @@ import allbegray.slack.type.Attachment;
 import allbegray.slack.type.Field;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
-import dk.trustworks.invoicewebui.model.Budget;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.BudgetRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 
 @Component
@@ -30,18 +25,12 @@ public class CheckBudgetJob {
 
     private final UserRepository userRepository;
 
-    private final BudgetRepository budgetRepository;
-
-    private final ContractService contractService;
-
     @Value("${motherSlackBotToken}")
     private String motherSlackToken;
 
     @Autowired
-    public CheckBudgetJob(UserRepository userRepository, BudgetRepository budgetRepository, ContractService contractService) {
+    public CheckBudgetJob(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.budgetRepository = budgetRepository;
-        this.contractService = contractService;
     }
 
     @PostConstruct
@@ -50,7 +39,7 @@ public class CheckBudgetJob {
     }
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
-    @Scheduled(cron = "0 30 10 8,18 * ?")
+    //@Scheduled(cron = "0 30 10 8,18 * ?")
     public void checkBudgetJob() {
         SlackWebApiClient motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
         log.info("CheckBudgetJob.execute");
@@ -80,7 +69,9 @@ public class CheckBudgetJob {
 
             //double[] totalBudget = new double[3];
 
+
             Map<Task, double[]> budgetMap = new HashMap<>();
+            /*
             for (Budget budget : budgetRepository.findByPeriodAndUseruuid(
                     Integer.parseInt(localDateStart.toString("yyyyMMdd")),
                     Integer.parseInt(localDateEnd.minusDays(1).toString("yyyyMMdd")),
@@ -105,6 +96,7 @@ public class CheckBudgetJob {
                 doubles[budget.getMonth() - (localDateStart.getMonthOfYear() - 1)] = budgetHours;
 
             }
+            */
 
             List<Attachment> attachments = new ArrayList<>();
             for (Task task : budgetMap.keySet()) {
