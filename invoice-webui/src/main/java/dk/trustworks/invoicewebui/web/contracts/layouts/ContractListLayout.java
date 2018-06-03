@@ -5,6 +5,7 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
@@ -107,8 +108,9 @@ public class ContractListLayout extends VerticalLayout {
 
     private void createNewContractButton(Client client) {
         Button btnNewContract = new Button("New Contract");
+        CssLayout cssLayout = new CssLayout(btnNewContract);
         contractRow.addColumn()
-                .withComponent(btnNewContract)
+                .withComponent(cssLayout)
                 .withDisplayRules(12, 12, 4, 4);
 
         btnNewContract.addClickListener(event1 -> {
@@ -142,15 +144,18 @@ public class ContractListLayout extends VerticalLayout {
 
             });
             contractFormDesign.getCbStatus().setItems(ContractStatus.values());
-
+            cssLayout.removeComponent(btnNewContract);
+            cssLayout.addComponent(contractFormDesign);
+            /*
             contractRow.addColumn()
                     .withDisplayRules(12, 12, 4, 4)
                     .withComponent(contractFormDesign);
+                    */
         });
     }
 
     private Client createContractView(Client client) {
-        for (MainContract mainContract : client.getMainContracts()) {
+        for (MainContract mainContract : clientRepository.findOne(client.getUuid()).getMainContracts()) {
             ContractDesign contractDesign = new ContractDesign();
 
             contractDesign.getLblType().setValue(mainContract.getContractType().name());

@@ -46,7 +46,7 @@ public class ContractService {
     }
 
     @Transactional
-    public MainContract getUpdatedContract(MainContract mainContract) {
+    public MainContract reloadMainContract(MainContract mainContract) {
         return mainContractRepository.findOne(mainContract.getUuid());
     }
 

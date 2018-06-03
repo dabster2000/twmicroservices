@@ -52,8 +52,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ConsultantRepository consultantRepository;
 
-    private final ClientdataRepository clientdataRepository;
-
     private final PhotoService photoService;
 
     private ResponsiveRow contractRow;
@@ -77,7 +75,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
         this.projectRepository = projectRepository;
         this.consultantRepository = consultantRepository;
         this.photoService = photoService;
-        this.clientdataRepository = clientdataRepository;
     }
 
     @PostConstruct
@@ -86,6 +83,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     public ResponsiveLayout loadContractDetails(MainContract mainContract, NavigationBar navigationBar) {
+        mainContract = contractService.reloadMainContract(mainContract);
         contractRow.removeAllComponents();
         proposedPeriod = new LocalDatePeriod(mainContract.getActiveFrom(), mainContract.getActiveTo());
 
@@ -734,7 +732,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void updateData(MainContract mainContract) {
-        mainContract = contractService.getUpdatedContract(mainContract);
+        mainContract = contractService.reloadMainContract(mainContract);
         createContractForm(mainContract);
         createConsultantList(mainContract);
         createProjectList(mainContract);
