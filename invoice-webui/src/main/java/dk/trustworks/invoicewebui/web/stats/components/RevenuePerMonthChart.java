@@ -71,32 +71,23 @@ public class RevenuePerMonthChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-
-        List<MainContract> mainContracts = contractService.findActiveMainContractsByPeriod(periodStart, periodEnd);
-        System.out.println("mainContracts.size() = " + mainContracts.size());
         List<Work> workList = workRepository.findByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        System.out.println("workList.size() = " + workList.size());
         List<GraphKeyValue> amountPerItemList = new ArrayList<>();
         for (int i = 0; i < months; i++) {
             amountPerItemList.add(new GraphKeyValue(i+"", periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), 0));
         }
         for (Work work : workList) {
+            if(work.getWorkduration()==0.0) continue;
+            Double rate = contractService.findConsultantRateByWork(work);
+            if(rate==null) continue;
+            WorkAmount workAmount = new WorkAmount(LocalDate.of(work.getYear(), work.getMonth()+1, 1), work.getWorkduration(), work.getWorkduration() * rate);
             Optional<GraphKeyValue> keyValue = amountPerItemList.stream().filter(graphKeyValue -> graphKeyValue.getDescription().equals(work.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))+"-01")).findFirst();
             if(!keyValue.isPresent()) {
                 System.out.println("work = " + work);
                 continue;
             }
-            //System.out.println("keyValue = " + keyValue);
-            Optional<Consultant> consultant1 = mainContracts.stream().filter(mainContract -> mainContract.getActiveFrom().isBefore(work.getDate()) && mainContract.getActiveTo().isAfter(work.getDate())).map(MainContract::getConsultants).flatMap(Set::stream).filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
-            //System.out.println("consultant1 = " + consultant1);
-            consultant1.ifPresent(consultant -> keyValue.get().addValue((int) Math.round(work.getWorkduration() * consultant.getRate())));
+            keyValue.get().addValue((int)Math.round(workAmount.amount));
         }
-        for (GraphKeyValue graphKeyValue : amountPerItemList) {
-            System.out.println("graphKeyValue = " + graphKeyValue);
-        }
-
-
-        //List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
         String[] categories = new String[months];
         DataSeries revenueSeries = new DataSeries("Revenue");
@@ -136,5 +127,17 @@ public class RevenuePerMonthChart {
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;
+    }
+}
+
+class WorkAmount {
+    LocalDate date;
+    double duration;
+    double amount;
+
+    public WorkAmount(LocalDate date, double duration, double amount) {
+        this.date = date;
+        this.duration = duration;
+        this.amount = amount;
     }
 }

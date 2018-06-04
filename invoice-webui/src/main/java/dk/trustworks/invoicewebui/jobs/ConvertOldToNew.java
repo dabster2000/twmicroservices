@@ -1,23 +1,14 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.MainContractRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class ConvertOldToNew {
@@ -29,7 +20,7 @@ public class ConvertOldToNew {
     private WorkRepository workRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private ProjectService projectService;
 
     @Autowired
     private MainContractRepository mainContractRepository;
@@ -41,8 +32,8 @@ public class ConvertOldToNew {
     //@Scheduled(fixedDelay = 1000000, initialDelay = 1000)
     public void job() {
         log.info("running work job...");
-
-        for (Project project : projectRepository.findAll()) {
+/*
+        for (Project project : projectService.findAll()) {
             log.info("Converting project to contract = " + project);
             Client client = project.getClient();
             if(client.getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) continue;
@@ -111,6 +102,7 @@ public class ConvertOldToNew {
             if(!work.getTask().getProject().getClient().getName().equals("TrustWorks")) ;
             System.out.println("[client: " + work.getTask().getProject().getClient().getName() + ", project: "+work.getTask().getProject().getName() + ", user: "+work.getUser().getUsername()+"]");
         }
+        */
 
     }
 }

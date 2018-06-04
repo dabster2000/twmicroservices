@@ -8,9 +8,11 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.TimeService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import dk.trustworks.invoicewebui.web.time.layouts.TimeManagerLayout;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
 import org.joda.time.LocalDate;
@@ -34,10 +36,10 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private static final Logger log = LoggerFactory.getLogger(TimeManagerImpl.class);
 
     @Autowired
-    ClientRepository clientRepository;
+    private ClientRepository clientRepository;
 
     @Autowired
-    ProjectRepository projectRepository;
+    private ProjectService projectService;
 
     @Autowired
     private UserRepository userRepository;
@@ -130,7 +132,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 addTaskButton.setEnabled(false);
 
                 //List<Project> projects = clientRepository.findOne(event1.getValue().getUuid()).getProjects();
-                List<Project> projects = projectRepository.findByClientAndActiveTrueOrderByNameAsc(clientComboBox.getValue());
+                List<Project> projects = projectService.findByClientAndActiveTrueOrderByNameAsc(clientComboBox.getValue());
 
                 projectComboBox.clear();
                 projectComboBox.setItems(projects);
@@ -142,7 +144,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 List<Task> tasks = new ArrayList<>();
                 taskComboBox.clear();
                 if(event1.getValue()==null) return;
-                for (Task task : projectRepository.findOne(event1.getValue().getUuid()).getTasks()) {
+                for (Task task : projectService.findOne(event1.getValue().getUuid()).getTasks()) {
                     tasks.add(task);
                 }
                 taskComboBox.setItems(tasks);
@@ -369,29 +371,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 log.info("work = " + work);
                 sumHours += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
-                switch (workDate.getDayOfWeek()) {
-                    case 1:
-                        weekItem.setMon(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 2:
-                        weekItem.setTue(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 3:
-                        weekItem.setWed(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 4:
-                        weekItem.setThu(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 5:
-                        weekItem.setFri(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 6:
-                        weekItem.setSat(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 7:
-                        weekItem.setSun(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                }
+                TimeManagerLayout.setWeekItemAmounts(weekItem, work, workDate);
             }
         }
         log.info("sumHours = " + sumHours);

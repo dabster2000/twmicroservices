@@ -8,8 +8,8 @@ import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
@@ -24,13 +24,13 @@ import java.util.Locale;
 public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
 
     private Project project;
-    private ProjectRepository projectRepository;
+    private ProjectService projectService;
     private NewsRepository newsRepository;
     private Binder<Project> projectBinder;
 
-    public ProjectDetailCardImpl(Project project, List<User> users, Photo photo, ProjectRepository projectRepository, NewsRepository newsRepository, UserRepository userRepository) {
+    public ProjectDetailCardImpl(Project project, List<User> users, Photo photo, ProjectService projectService, NewsRepository newsRepository, UserRepository userRepository) {
         this.project = project;
-        this.projectRepository = projectRepository;
+        this.projectService = projectService;
         this.newsRepository = newsRepository;
 
         if(photo !=null && photo.getPhoto()!=null && photo.getPhoto().length > 0) {
@@ -40,15 +40,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
         } else {
             getLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
-/*
-        List<Clientdata> clientdataList = project.getClient().getClientdata();
-        getCbClientdatas().setVisible(true);
-        getCbClientdatas().setItems(clientdataList);
-        getCbClientdatas().setPageLength(100);
-        getCbClientdatas().setItemCaptionGenerator(item -> item.getClient() + ", " + item.getStreetnamenumber() + ", "
-                + item.getPostalcode() + " " + item.getCity() + ", "
-                + item.getContactperson());
-*/
+
         getCbClientdatas().setVisible(false);
         getSelRelationManager().setItems(userRepository.findByOrderByUsername());
         getSelRelationManager().setItemCaptionGenerator(item -> item.getUsername());
@@ -87,7 +79,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
     public void save() {
         try {
             projectBinder.writeBean(project);
-            projectRepository.save(project);
+            projectService.save(project);
             newsRepository.deleteAll();
         } catch (ValidationException e) {
             e.printStackTrace();

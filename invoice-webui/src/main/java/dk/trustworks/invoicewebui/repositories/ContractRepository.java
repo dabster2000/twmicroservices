@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Contract;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -15,6 +16,7 @@ import javax.transaction.Transactional;
 @RepositoryRestResource(collectionResourceRel = "contracts", path = "contracts")
 public interface ContractRepository extends ContractBaseRepository<Contract> {
 
+    @Cacheable("contract")
     @Query(value = "select cc.rate as price from usermanager.contracts c" +
             "    right join contract_project pc ON  pc.contractuuid = c.uuid" +
             "    right join project p ON p.uuid = pc.projectuuid" +

@@ -12,7 +12,7 @@ public class GraphKeyValue {
     @Id
     private String uuid;
     private String description;
-    private int value;
+    private double value;
 
     public GraphKeyValue() {
     }
@@ -39,11 +39,11 @@ public class GraphKeyValue {
         this.description = description;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 

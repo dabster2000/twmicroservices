@@ -21,10 +21,10 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
@@ -48,7 +48,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ContractService contractService;
 
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
     private final ConsultantRepository consultantRepository;
 
@@ -69,10 +69,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectRepository projectRepository, ConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository) {
+    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectService projectService, ConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository) {
         this.userRepository = userRepository;
         this.contractService = contractService;
-        this.projectRepository = projectRepository;
+        this.projectService = projectService;
         this.consultantRepository = consultantRepository;
         this.photoService = photoService;
     }
@@ -523,7 +523,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     subContent.addComponent(new Label("Add project"));
                     ComboBox<Project> projectComboBox = new ComboBox<>();
                     projectComboBox.setWidth(250, Unit.PIXELS);
-                    projectComboBox.setItems(projectRepository.findByClientOrderByNameAsc(mainContract.getClient()));
+                    projectComboBox.setItems(projectService.findByClientOrderByNameAsc(mainContract.getClient()));
                     projectComboBox.setItemCaptionGenerator(Project::getName);
                     subContent.addComponent(projectComboBox);
                     Button addButton = new Button("Add");

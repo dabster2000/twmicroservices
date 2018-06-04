@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.model.enums.TaskType;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,10 @@ import java.util.UUID;
 public class Task {
     @Id private String uuid;
     private String name;
-    private String type;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private TaskType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectuuid")
@@ -18,14 +23,18 @@ public class Task {
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private List<Work> workList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Taskworkerconstraint> taskworkerconstraint;
-
     public Task() {
     }
 
     public Task(String name, Project project) {
-        type = "CONSULTANT";
+        type = TaskType.CONSULTANT;
+        this.uuid = UUID.randomUUID().toString();
+        this.name = name;
+        this.project = project;
+    }
+
+    public Task(String name, Project project, TaskType taskType) {
+        type = taskType;
         this.uuid = UUID.randomUUID().toString();
         this.name = name;
         this.project = project;
@@ -47,11 +56,11 @@ public class Task {
         this.name = name;
     }
 
-    public String getType() {
+    public TaskType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TaskType type) {
         this.type = type;
     }
 
@@ -67,18 +76,13 @@ public class Task {
         return workList;
     }
 
-    public void setWorkList(List<Work> workList) {
-        this.workList = workList;
-    }
-
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Task{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", type='").append(type).append('\'');
-        sb.append('}');
-        return sb.toString();
+        String sb = "Task{" + "uuid='" + uuid + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+        return sb;
     }
 
     @Override
@@ -87,14 +91,5 @@ public class Task {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return uuid.equals(task.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid.hashCode();
-    }
-
-    public List<Taskworkerconstraint> getTaskworkerconstraint() {
-        return taskworkerconstraint;
     }
 }

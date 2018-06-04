@@ -29,8 +29,8 @@ public class SalesView extends VerticalLayout {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         ResponsiveRow row = responsiveLayout.addRow();
 
-        LocalDate localDateStart = LocalDate.now().withDayOfMonth(1).minusMonths(1);
-        LocalDate localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(10);
+        LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
+        LocalDate localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(11);
 
         Card heatMapCard = new Card();
         heatMapCard.getCardHolder().addComponent(salesHeatMap.getChart(localDateStart, localDateEnd));

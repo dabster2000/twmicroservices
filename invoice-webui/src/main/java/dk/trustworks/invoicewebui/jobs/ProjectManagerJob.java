@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.jobs;
 import com.google.common.hash.Hashing;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +30,12 @@ public class ProjectManagerJob {
 
     private final NewsRepository newsRepository;
 
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
     @Autowired
-    public ProjectManagerJob(NewsRepository newsRepository, ProjectRepository projectRepository) {
+    public ProjectManagerJob(NewsRepository newsRepository, ProjectService projectService) {
         this.newsRepository = newsRepository;
-        this.projectRepository = projectRepository;
+        this.projectService = projectService;
     }
 
     @Transactional
@@ -43,7 +43,7 @@ public class ProjectManagerJob {
     @Scheduled(fixedRate = 12000)
     public void reportCurrentTime() {
         LocalDate dateThreeMonthsAgo = LocalDate.now().minusMonths(3);
-        for (Project project : projectRepository.findAllByActiveTrueOrderByNameAsc()) {
+        for (Project project : projectService.findAllByActiveTrueOrderByNameAsc()) {
             String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
             if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
             boolean projectHasWork = false;
@@ -72,7 +72,7 @@ public class ProjectManagerJob {
     @Transactional
     @Scheduled(fixedRate = 100000)
     public void reportEndingProjects() {
-        List<Project> projects = projectRepository.findAllByActiveTrueOrderByNameAsc();
+        List<Project> projects = projectService.findAllByActiveTrueOrderByNameAsc();
         for (Project project : projects) {
             if(project.getStartdate().isAfter(LocalDate.now().minusMonths(1))) {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();

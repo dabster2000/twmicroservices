@@ -9,7 +9,7 @@ import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import org.vaadin.addon.vol3.OLMap;
 import org.vaadin.addon.vol3.OLMapOptions;
 import org.vaadin.addon.vol3.OLView;
@@ -32,7 +32,7 @@ public class ClientDataImpl extends ClientDataDesign {
 
     private Binder<Clientdata> clientDataBinder;
 
-    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata, ProjectRepository projectRepository) {
+    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata, ProjectService projectService) {
         clientDataBinder = new Binder<>();
         clientDataBinder.forField(getTxtCity()).bind(Clientdata::getCity, Clientdata::setCity);
         clientDataBinder.forField(getTxtContactName()).bind(Clientdata::getContactperson, Clientdata::setContactperson);
@@ -72,7 +72,7 @@ public class ClientDataImpl extends ClientDataDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            List<Project> projects = projectRepository.findByClientdata(clientdata);
+            List<Project> projects = projectService.findByClientdata(clientdata);
             //Resources<Resource<Project>> projects = projectClient.findByClientdatauuid(clientdata.getUuid());
             if(projects.size() > 0) {
                 String description = "The contact information is in use by the following projects: \n\n";

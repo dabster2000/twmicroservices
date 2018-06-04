@@ -13,7 +13,7 @@ import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
@@ -31,22 +31,26 @@ import java.util.UUID;
 @SpringUI
 public class ClientManagerImpl extends ClientManagerDesign {
 
-    @Autowired
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
-    @Autowired
-    private ClientdataRepository clientdataRepository;
+    private final ClientdataRepository clientdataRepository;
 
-    @Autowired
-    private PhotoRepository photoRepository;
+    private final PhotoRepository photoRepository;
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
-    @Autowired
-    private MainTemplate mainTemplate;
+    private final MainTemplate mainTemplate;
 
     ResponsiveLayout responsiveLayout;
+
+    @Autowired
+    public ClientManagerImpl(ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, ProjectService projectService, MainTemplate mainTemplate) {
+        this.clientRepository = clientRepository;
+        this.clientdataRepository = clientdataRepository;
+        this.photoRepository = photoRepository;
+        this.projectService = projectService;
+        this.mainTemplate = mainTemplate;
+    }
 
     public ClientManagerImpl init() {
         createClientListView();
@@ -73,9 +77,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         Iterable<Client> clients = clientRepository.findAllByOrderByActiveDescNameAsc();
         for (Client client : clients) {
             ClientCardImpl clientCard = new ClientCardImpl(client, photoRepository.findByRelateduuid(client.getUuid()));
-            clientCard.getBtnEdit().addClickListener(event -> {
-                createClientDetailsView(client);
-            });
+            clientCard.getBtnEdit().addClickListener(event -> createClientDetailsView(client));
             clientCard.getBtnDelete().addClickListener(event -> {
                 client.setActive(!client.isActive());
                 clientRepository.save(client);
@@ -161,7 +163,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
             clientDataRow
                     .addColumn()
                     .withDisplayRules(12, 8, 6, 4)
-                    .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectRepository));
+                    .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectService));
             clientDataRow
                     .addColumn()
                     .withDisplayRules(0, 2, 3, 0)
@@ -251,7 +253,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         clientDataRow.addColumn().withDisplayRules(12, 8, 8, 4).withComponent(verticalLayout);
 
         btnAddContactInformation.addClickListener(event -> {
-            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, new Clientdata("", "", "", "", "", "", 0L, "", client), projectRepository);
+            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, new Clientdata("", "", "", "", "", "", 0L, "", client), projectService);
             clientData.getBtnDelete().setVisible(false);
             clientData.getCssHider().setVisible(true);
             clientData.getBtnEdit().setVisible(false);

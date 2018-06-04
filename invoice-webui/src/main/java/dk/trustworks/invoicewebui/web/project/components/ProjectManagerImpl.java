@@ -13,6 +13,7 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contracts.components.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
@@ -45,7 +46,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final UserRepository userRepository;
 
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
     private final TaskRepository taskRepository;
 
@@ -61,8 +62,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final NewsRepository newsRepository;
 
-    private final WorkRepository workRepository;
-
     private ResponsiveLayout responsiveLayout;
 
     private Project currentProject;
@@ -77,9 +76,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserRepository userRepository, ProjectRepository projectRepository, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, WorkRepository workRepository) {
+    public ProjectManagerImpl(UserRepository userRepository, ProjectService projectService, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, WorkRepository workRepository) {
         this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
+        this.projectService = projectService;
         this.taskRepository = taskRepository;
         this.clientRepository = clientRepository;
         this.clientdataRepository = clientdataRepository;
@@ -87,7 +86,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.newsRepository = newsRepository;
-        this.workRepository = workRepository;
     }
 
 
@@ -96,7 +94,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         getOnOffSwitch().setValue(false);
         getOnOffSwitch().addValueChangeListener(event -> changeOptions());
         getSelProject().setItemCaptionGenerator(Project::getName);
-        List<Project> projects = newArrayList(((getOnOffSwitch().getValue()) ? projectRepository.findAllByOrderByNameAsc() : projectRepository.findAllByActiveTrueOrderByNameAsc()));
+        List<Project> projects = newArrayList(((getOnOffSwitch().getValue()) ? projectService.findAllByOrderByNameAsc() : projectService.findAllByActiveTrueOrderByNameAsc()));
 
         getSelProject().setItems(projects);
         getSelProject().addValueChangeListener(event -> reloadGrid());
@@ -127,8 +125,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             newProject.getCbClients().setItemCaptionGenerator(Client::getName);
             newProject.getBtnCreate().addClickListener(event1 -> {
                 Clientdata clientdata = newProject.getCbClientdatas().getValue();
-                Project project = projectRepository.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue(), clientdata));
-                List<Project> reloadedProjects = newArrayList(projectRepository.findAll());
+                Project project = projectService.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue(), clientdata));
+                List<Project> reloadedProjects = newArrayList(projectService.findAll());
                 getSelProject().setItems(reloadedProjects);
                 getSelProject().setSelectedItem(project);
                 getSelProject().setValue(project);
@@ -143,7 +141,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private void changeOptions() {
         if(!getSelClient().getSelectedItem().isPresent()) {
-            List<Project> clientProjectList = newArrayList(((getOnOffSwitch().getValue())?projectRepository.findAllByOrderByNameAsc():projectRepository.findAllByActiveTrueOrderByNameAsc()));
+            List<Project> clientProjectList = newArrayList(((getOnOffSwitch().getValue())? projectService.findAllByOrderByNameAsc(): projectService.findAllByActiveTrueOrderByNameAsc()));
             getSelProject().setItems(clientProjectList);
         } else {
             if(getOnOffSwitch().getValue()) {
@@ -156,7 +154,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     }
 
     public void setCurrentProject(String projectUUID) {
-        currentProject = projectRepository.findOne(projectUUID);
+        currentProject = projectService.findOne(projectUUID);
         getSelProject().setSelectedItem(currentProject);
         getSelProject().setValue(currentProject);
         reloadGrid();
@@ -167,7 +165,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         addComponent(responsiveLayout);
 
         Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
-        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userRepository.findAll(), photoResource, projectRepository, newsRepository, userRepository);
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userRepository.findAll(), photoResource, projectService, newsRepository, userRepository);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.save();
             updateTreeGrid();

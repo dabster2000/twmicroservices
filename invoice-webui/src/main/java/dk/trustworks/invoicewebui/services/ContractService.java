@@ -2,7 +2,10 @@ package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.repositories.ContractRepository;
+import dk.trustworks.invoicewebui.repositories.MainContractRepository;
+import dk.trustworks.invoicewebui.repositories.SubContractRepository;
+import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class ContractService {
 
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
     private final MainContractRepository mainContractRepository;
 
@@ -27,8 +30,8 @@ public class ContractService {
     private final ContractRepository contractRepository;
 
     @Autowired
-    public ContractService(ProjectRepository projectRepository, MainContractRepository mainContractRepository, SubContractRepository subContractRepository, WorkRepository workRepository, ContractRepository contractRepository) {
-        this.projectRepository = projectRepository;
+    public ContractService(ProjectService projectService, MainContractRepository mainContractRepository, SubContractRepository subContractRepository, WorkRepository workRepository, ContractRepository contractRepository) {
+        this.projectService = projectService;
         this.mainContractRepository = mainContractRepository;
         this.subContractRepository = subContractRepository;
         this.workRepository = workRepository;
@@ -70,7 +73,7 @@ public class ContractService {
         // execute
         for (Project project : projects) {
             project.addMainContract(mainContract);
-            projectRepository.save(project);
+            projectService.save(project);
         }
         mainContract.addProjects(projects);
         mainContractRepository.save(mainContract);
@@ -91,7 +94,7 @@ public class ContractService {
 
         // execute
         mainContract = mainContractRepository.findOne(mainContract.getUuid());
-        project = projectRepository.findOne(project.getUuid());
+        project = projectService.findOne(project.getUuid());
         project.addMainContract(mainContract);
         //project = projectRepository.save(project);
         mainContract.addProject(project);
@@ -101,7 +104,12 @@ public class ContractService {
 
     public Double findConsultantRateByWork(Work work) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth()+1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+        Double consultantRateByWork = contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+        if(consultantRateByWork==null) {
+            System.out.println("work = " + work);
+            System.out.println("work.getTask().getProject() = " + work.getTask().getProject());
+        }
+        return consultantRateByWork;
     }
 
     public Double findConsultantRate(int year, int month, int day, User user, Task task) {

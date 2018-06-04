@@ -17,10 +17,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.TimeService;
-import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.components.DateButtons;
@@ -82,7 +79,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectRepository projectRepository, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
+    public TimeManagerLayout(ProjectService projectService, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
         this.userRepository = userRepository;
         this.weekRepository = weekRepository;
         this.workService = workService;
@@ -216,11 +213,15 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 projectComboBox.setVisible(false);
                 if(event1.getValue()==null) return;
 
-                List<MainContract> newActiveConsultantContracts = getMainContracts(contractService, userComboBox.getSelectedItem().get());
-                List<Project> allProjects = projectRepository.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
-                System.out.println("allProjects = " + allProjects.size());
-                Set<Project> projects = newActiveConsultantContracts.stream().map(MainContract::getProjects).flatMap(Set::stream).distinct().filter(projects1 -> allProjects.contains(projects1)).collect(Collectors.toSet());
-                System.out.println("projects = " + projects.size());
+                User user;
+                if(onOffSwitch.getValue()){
+                    user = userComboBox.getSelectedItem().get();
+                } else {
+                    user = userSession.getUser();
+                }
+                List<MainContract> newActiveConsultantContracts = getMainContracts(contractService, user);
+                List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
+                Set<Project> projects = newActiveConsultantContracts.stream().map(MainContract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
 
                 projectComboBox.clear();
                 projectComboBox.setItems(projects);
@@ -234,7 +235,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 addTaskButton.setEnabled(false);
                 taskComboBox.clear();
                 if(event1.getValue()==null) return;
-                List<Task> tasks = new ArrayList<>(projectRepository.findOne(event1.getValue().getUuid()).getTasks());
+                List<Task> tasks = new ArrayList<>(projectService.findOne(event1.getValue().getUuid()).getTasks());
                 taskComboBox.setItems(tasks);
                 taskComboBox.setVisible(true);
             });
@@ -292,13 +293,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         loadTimeview(user);
 
-        //Card card = new Card();
         this.addRow().addColumn()
                 .withDisplayRules(12, 12, 10, 10)
                 .withOffset(DisplaySize.LG, 1)
                 .withOffset(DisplaySize.MD, 1)
                 .withComponent(responsiveLayout);
-        //card.getCardHolder().addComponent(responsiveLayout);
         return this;
     }
 
@@ -336,6 +335,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             Hibernate.initialize(task);
 
             boolean onContract = isOnContract(week);
+            if(task.getProject().isActive() && task.getProject().getClient().isActive()) onContract = true;
             WeekItem weekItem = new WeekItem(week, task, user, week.getWorkas(), !onContract);
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
@@ -352,29 +352,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
                 sumHours += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
-                switch (workDate.getDayOfWeek()) {
-                    case 1:
-                        weekItem.setMon(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 2:
-                        weekItem.setTue(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 3:
-                        weekItem.setWed(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 4:
-                        weekItem.setThu(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 5:
-                        weekItem.setFri(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 6:
-                        weekItem.setSat(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                    case 7:
-                        weekItem.setSun(NumberConverter.formatDouble(work.getWorkduration()+0));
-                        break;
-                }
+                setWeekItemAmounts(weekItem, work, workDate);
             }
         }
         log.info("sumHours = " + sumHours);
@@ -382,6 +360,32 @@ public class TimeManagerLayout extends ResponsiveLayout {
         weekRowTaskTitles.clear();
         for (WeekItem weekItem : weekItems) {
             createTimeline(weekItem);
+        }
+    }
+
+    public static void setWeekItemAmounts(WeekItem weekItem, Work work, LocalDate workDate) {
+        switch (workDate.getDayOfWeek()) {
+            case 1:
+                weekItem.setMon(NumberConverter.formatDouble(work.getWorkduration()+0));
+                break;
+            case 2:
+                weekItem.setTue(NumberConverter.formatDouble(work.getWorkduration()+0));
+                break;
+            case 3:
+                weekItem.setWed(NumberConverter.formatDouble(work.getWorkduration()+0));
+                break;
+            case 4:
+                weekItem.setThu(NumberConverter.formatDouble(work.getWorkduration()+0));
+                break;
+            case 5:
+                weekItem.setFri(NumberConverter.formatDouble(work.getWorkduration()+0));
+                break;
+            case 6:
+                weekItem.setSat(NumberConverter.formatDouble(work.getWorkduration()+0));
+                break;
+            case 7:
+                weekItem.setSun(NumberConverter.formatDouble(work.getWorkduration()+0));
+                break;
         }
     }
 
@@ -690,9 +694,12 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private boolean isOnContract(Week week) {
+        boolean result = false;
         LocalDate localDateStart = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(1);
         LocalDate localDateEnd = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(7);
-        return isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask()) ;
+        if(isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
+        if(isOnContract(localDateEnd, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
+        return result;
     }
 
     private boolean isOnContract(LocalDate localDate, User user, Task task) {
