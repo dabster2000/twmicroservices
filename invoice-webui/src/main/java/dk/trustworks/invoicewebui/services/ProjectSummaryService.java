@@ -46,7 +46,7 @@ public class ProjectSummaryService {
         List<Work> workResources = workClient.findByYearAndMonth(year, month);
         logger.info("workResources.size() = " + workResources.size());
 
-        Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
+        //Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
 
         Map<String, ProjectSummary> projectSummaryMap = new HashMap<>();
 
@@ -55,11 +55,14 @@ public class ProjectSummaryService {
             Task task = work.getTask();
             Project project = task.getProject();
             Client client = project.getClient();
+            MainContract contract = contractService.findContractByWork(work);
+            String contractuuid = (contract==null)?"":contract.getUuid();
 
             double invoicedamount = 0.0;
 
-            if(!projectSummaryMap.containsKey(project.getUuid())) {
+            if(!projectSummaryMap.containsKey(contractuuid+project.getUuid())) {
                 int numberOfInvoicesRelatedToProject = 0;
+                /*
                 for (Invoice invoice : invoices) {
                     if(invoice.projectuuid.equals(project.getUuid()) && (
                             invoice.status.equals(InvoiceStatus.CREATED)
@@ -74,20 +77,21 @@ public class ProjectSummaryService {
                         }
                     }
                 }
+                */
                 ProjectSummary projectSummary = new ProjectSummary(
-                        project.getUuid(),
+                        contractuuid, project.getUuid(),
                         project.getName(),
                         client.getName(),
                         project.getCustomerreference(),
                         0,
                         invoicedamount, numberOfInvoicesRelatedToProject);
-                projectSummaryMap.put(project.getUuid(), projectSummary);
+                projectSummaryMap.put(contractuuid+project.getUuid(), projectSummary);
                 logger.info("Created new projectSummary: " + projectSummary);
             }
             if(work.getUser()==null) logger.info("work u = " + work);
             if(work.getTask()==null) logger.info("work t = " + work);
 
-            ProjectSummary projectSummary = projectSummaryMap.get(project.getUuid());
+            ProjectSummary projectSummary = projectSummaryMap.get(contractuuid+project.getUuid());
             Double rate = contractService.findConsultantRateByWork(work);
             if(rate != null) {
                 projectSummary.addAmount(work.getWorkduration() * (rate));
@@ -101,12 +105,15 @@ public class ProjectSummaryService {
         return Lists.newArrayList(projectSummaryMap.values());
     }
 
-    public void createInvoiceFromProject(String projectuuid, int year, int month) {
+    public void createInvoiceFromProject(ProjectSummary projectSummary, int year, int month) {
         logger.info("InvoiceController.createInvoiceFromProject");
-        logger.info("projectuuid = [" + projectuuid + "], year = [" + year + "], month = [" + month + "]");
-        List<Work> workResources = workClient.findByYearAndMonth(year, month);
+        logger.info("projectuuid = [" + projectSummary.getProjectuuid() + "], year = [" + year + "], month = [" + month + "]");
+        //List<Work> workResources = workClient.findByYearAndMonth(year, month);
+        List<Work> workResources = workClient.findByYearAndMonthAndProject(year, month, projectSummary.getProjectuuid());
         Invoice invoice = null;
         Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
+
+        MainContract contract = contractService.findOne(projectSummary.getContractuuid());
 
         for (Work workResource : workResources) {
             if(workResource.getWorkduration() == 0) continue;
@@ -114,13 +121,15 @@ public class ProjectSummaryService {
             logger.info("task = " + task);
 
             Project project = task.getProject();
-            if(!project.getUuid().equals(projectuuid)) continue;
+            //if(!project.getUuid().equals(projectSummary.getProjectuuid())) continue;
             logger.info("project = " + project);
+
+            if(!contractService.findContractByWork(workResource).getUuid().equals(contract.getUuid())) continue;
 
             User user = workResource.getUser();
 
-            if(project.getClientdata()==null) logger.info("clientdata null: "+project);
-            Clientdata clientdata = (project.getClientdata()!=null)?project.getClientdata():new Clientdata();
+            if(contract.getClientdata()==null) logger.info("clientdata null: "+contract);
+            Clientdata clientdata = (contract.getClientdata()!=null)?contract.getClientdata():new Clientdata();
 
             if(invoice == null) {
                 invoice = new Invoice(InvoiceType.INVOICE,
@@ -153,17 +162,17 @@ public class ProjectSummaryService {
                         Notification.Type.ERROR_MESSAGE);
                 return;
             }
-            if(!invoiceItemMap.containsKey(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid())) {
+            if(!invoiceItemMap.containsKey(contract.getUuid()+project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid())) {
                 InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
                         task.getName(),
                         rate,
                         0.0);
                 invoiceItem.uuid = UUID.randomUUID().toString();
-                invoiceItemMap.put(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid(), invoiceItem);
+                invoiceItemMap.put(contract.getUuid()+project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid(), invoiceItem);
                 invoice.invoiceitems.add(invoiceItem);
                 logger.info("Created new invoice item: "+invoiceItem);
             }
-            invoiceItemMap.get(project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid()).hours += workResource.getWorkduration();
+            invoiceItemMap.get(contract.getUuid()+project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid()).hours += workResource.getWorkduration();
         }
 
         invoiceClient.save(invoice);

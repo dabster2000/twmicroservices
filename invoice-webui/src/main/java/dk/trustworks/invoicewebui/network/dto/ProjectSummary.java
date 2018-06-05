@@ -8,6 +8,7 @@ import java.util.HashMap;
  */
 public class ProjectSummary {
 
+    private String contractuuid;
     private String projectuuid;
     private String projectname;
     private String clientname;
@@ -20,7 +21,8 @@ public class ProjectSummary {
     public ProjectSummary() {
     }
 
-    public ProjectSummary(String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices) {
+    public ProjectSummary(String contractuuid, String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices) {
+        this.contractuuid = contractuuid;
         this.projectuuid = projectuuid;
         this.projectname = projectname;
         this.clientname = clientname;
@@ -28,6 +30,14 @@ public class ProjectSummary {
         this.registeredamount = registeredamount;
         this.invoicedamount = invoicedamount;
         this.invoices = invoices;
+    }
+
+    public String getContractuuid() {
+        return contractuuid;
+    }
+
+    public void setContractuuid(String contractuuid) {
+        this.contractuuid = contractuuid;
     }
 
     public String getProjectuuid() {

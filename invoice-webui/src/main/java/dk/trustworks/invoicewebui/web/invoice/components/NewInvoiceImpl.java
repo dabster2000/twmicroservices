@@ -64,7 +64,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         btnCreateInvoice.addClickListener(event -> {
             logger.info(gridProjectSummaryList.getSelectedItems().size()+" new invoice created");
             for (ProjectSummary projectSummary : gridProjectSummaryList.getSelectedItems()) {
-                projectSummaryClient.createInvoiceFromProject(projectSummary.getProjectuuid(), cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
+                projectSummaryClient.createInvoiceFromProject(projectSummary, cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
                 reloadData();
             }
             Notification.show("Invoice created",

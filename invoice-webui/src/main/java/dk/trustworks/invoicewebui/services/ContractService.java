@@ -82,8 +82,6 @@ public class ContractService {
 
     @Transactional
     public MainContract addProject(MainContract mainContract, Project project) throws ContractValidationException {
-        System.out.println("ContractService.addProject");
-        System.out.println("mainContract = [" + mainContract + "], project = [" + project + "]");
         // validate
         for (MainContract contract : project.getMainContracts()) {
             Set<Object> userUUIDs = contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
@@ -104,17 +102,15 @@ public class ContractService {
 
     public Double findConsultantRateByWork(Work work) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        Double consultantRateByWork = contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
-        if(consultantRateByWork==null) {
-            System.out.println("work = " + work);
-            System.out.println("work.getTask().getProject() = " + work.getTask().getProject());
-        }
-        return consultantRateByWork;
+        return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+    }
+
+    public MainContract findContractByWork(Work work) {
+        if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
+        return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
     }
 
     public Double findConsultantRate(int year, int month, int day, User user, Task task) {
-        System.out.println("ContractService.findConsultantRate");
-        System.out.println("year = [" + year + "], month = [" + month + "], day = [" + day + "], user = [" + user.getUuid() + "], task = [" + task.getUuid() + "]");
         if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid());
     }
@@ -253,5 +249,9 @@ public class ContractService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public MainContract findOne(String contractuuid) {
+        return mainContractRepository.findOne(contractuuid);
     }
 }

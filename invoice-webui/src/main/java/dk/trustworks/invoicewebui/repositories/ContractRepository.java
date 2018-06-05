@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.MainContract;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +17,7 @@ import javax.transaction.Transactional;
 @RepositoryRestResource(collectionResourceRel = "contracts", path = "contracts")
 public interface ContractRepository extends ContractBaseRepository<Contract> {
 
-    @Cacheable("contract")
+    @Cacheable("rate")
     @Query(value = "select cc.rate as price from usermanager.contracts c" +
             "    right join contract_project pc ON  pc.contractuuid = c.uuid" +
             "    right join project p ON p.uuid = pc.projectuuid" +
@@ -24,6 +25,15 @@ public interface ContractRepository extends ContractBaseRepository<Contract> {
             "    right join contract_consultants cc ON c.uuid = cc.contractuuid" +
             "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid ", nativeQuery = true)
     Double findConsultantRateByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid);
+
+    @Cacheable("contract")
+    @Query(value = "select c.* from usermanager.contracts c" +
+            "    right join contract_project pc ON  pc.contractuuid = c.uuid" +
+            "    right join project p ON p.uuid = pc.projectuuid" +
+            "    right join task t ON t.projectuuid = p.uuid" +
+            "    right join contract_consultants cc ON c.uuid = cc.contractuuid" +
+            "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid ", nativeQuery = true)
+    MainContract findContractByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Contract entity);
