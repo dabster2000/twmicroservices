@@ -17,7 +17,7 @@ public class Consultant {
             CascadeType.MERGE
     }, fetch = FetchType.LAZY)
     @JoinColumn(name = "contractuuid")
-    private MainContract mainContract;
+    private Contract contract;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "useruuid")
@@ -36,9 +36,9 @@ public class Consultant {
         uuid = UUID.randomUUID().toString();
     }
 
-    public Consultant(MainContract mainContract, User user, double rate, double budget, double hours) {
+    public Consultant(Contract contract, User user, double rate, double budget, double hours) {
         this();
-        this.mainContract = mainContract;
+        this.contract = contract;
         this.user = user;
         this.rate = rate;
         this.budget = budget;
@@ -53,12 +53,12 @@ public class Consultant {
         this.uuid = uuid;
     }
 
-    public MainContract getMainContract() {
-        return mainContract;
+    public Contract getContract() {
+        return contract;
     }
 
-    public void setMainContract(MainContract mainContract) {
-        this.mainContract = mainContract;
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
     public User getUser() {

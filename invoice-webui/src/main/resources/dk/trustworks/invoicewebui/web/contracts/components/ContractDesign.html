@@ -7,18 +7,24 @@
  </head>
  <body>
   <vaadin-vertical-layout>
-   <vaadin-css-layout style-name="card-3 card-no-padding" width-full _id="cardHolder" :middle :center>
+   <vaadin-css-layout style-name="card-3 card-no-padding" width-full height="560px" _id="cardHolder" :middle :center>
     <vaadin-vertical-layout spacing="false" margin="false">
      <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px">
       <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e67b" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
       <vaadin-label plain-text _id="lblTitle" :middle :expand>
         Contract 
       </vaadin-label>
+      <vaadin-button description="Extend this contract" style-name="flat icon-only borderless" plain-text _id="btnExtendContract" :middle :right></vaadin-button>
      </vaadin-horizontal-layout>
      <vaadin-vertical-layout spacing="false" size-full _id="container">
       <vaadin-form-layout spacing="false">
+       <vaadin-label caption="Name" plain-text _id="lblContractNumber">
+         Label 
+       </vaadin-label>
        <vaadin-label caption="Contract type" width-full _id="lblType"></vaadin-label>
-       <vaadin-check-box-group caption="Projects" width-full data-item-type="dk.trustworks.invoicewebui.model.Project" data-property-id="name" _id="chkProjects"></vaadin-check-box-group>
+       <vaadin-vertical-layout caption="Projects" style-name="v-scrollable light-grey" spacing="false" height="120px" margin="false">
+        <vaadin-check-box-group width-full data-item-type="dk.trustworks.invoicewebui.model.Project" data-property-id="name" _id="chkProjects"></vaadin-check-box-group>
+       </vaadin-vertical-layout>
        <vaadin-label caption="Period" plain-text _id="lblPeriod">
          Maj 2017 - Apr 2018 
        </vaadin-label>

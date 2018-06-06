@@ -55,7 +55,7 @@ public class ProjectSummaryService {
             Task task = work.getTask();
             Project project = task.getProject();
             Client client = project.getClient();
-            MainContract contract = contractService.findContractByWork(work);
+            Contract contract = contractService.findContractByWork(work);
             String contractuuid = (contract==null)?"":contract.getUuid();
 
             double invoicedamount = 0.0;
@@ -113,7 +113,7 @@ public class ProjectSummaryService {
         Invoice invoice = null;
         Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 
-        MainContract contract = contractService.findOne(projectSummary.getContractuuid());
+        Contract contract = contractService.findOne(projectSummary.getContractuuid());
 
         for (Work workResource : workResources) {
             if(workResource.getWorkduration() == 0) continue;

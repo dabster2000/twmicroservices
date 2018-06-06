@@ -26,7 +26,9 @@ import com.vaadin.ui.HorizontalLayout;
 public class ContractDesign extends VerticalLayout {
     private CssLayout cardHolder;
     private Label lblTitle;
+    private Button btnExtendContract;
     private VerticalLayout container;
+    private Label lblContractNumber;
     private Label lblType;
     @PropertyId("name")
     private CheckBoxGroup<dk.trustworks.invoicewebui.model.Project> chkProjects;
@@ -49,8 +51,16 @@ public class ContractDesign extends VerticalLayout {
         return lblTitle;
     }
 
+    public Button getBtnExtendContract() {
+        return btnExtendContract;
+    }
+
     public VerticalLayout getContainer() {
         return container;
+    }
+
+    public Label getLblContractNumber() {
+        return lblContractNumber;
     }
 
     public Label getLblType() {

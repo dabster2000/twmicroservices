@@ -81,8 +81,8 @@ public class SalesHeatMap {
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.plusMonths(i);
 
-            List<MainContract> contracts = contractService.findActiveMainContractsByDate(currentDate);
-            for (MainContract contract : contracts) {
+            List<Contract> contracts = contractService.findActiveContractsByDate(currentDate);
+            for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (Consultant consultant : contract.getConsultants()) {

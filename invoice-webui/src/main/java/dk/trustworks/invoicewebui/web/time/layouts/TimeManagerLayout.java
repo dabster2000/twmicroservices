@@ -145,7 +145,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
             MLabel spacer = new MLabel("").withWidth(100, PERCENTAGE);
 
-            List<MainContract> activeConsultantContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getSelectedItem().get());
+            List<Contract> activeConsultantContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getSelectedItem().get());
             List<Client> clientResources = getClients(activeConsultantContracts);
 
             ComboBox<Client> clientComboBox = new ComboBox<>();
@@ -199,7 +199,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 taskComboBox.setVisible(false);
                 addTaskButton.setEnabled(false);
 
-                List<MainContract> newActiveConsultantContracts = getMainContracts(contractService, event1.getValue());
+                List<Contract> newActiveConsultantContracts = getMainContracts(contractService, event1.getValue());
                 List<Client> newClientResources = getClients(newActiveConsultantContracts);
 
                 clientComboBox.clear();
@@ -219,9 +219,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 } else {
                     user = userSession.getUser();
                 }
-                List<MainContract> newActiveConsultantContracts = getMainContracts(contractService, user);
+                List<Contract> newActiveConsultantContracts = getMainContracts(contractService, user);
                 List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
-                Set<Project> projects = newActiveConsultantContracts.stream().map(MainContract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
+                Set<Project> projects = newActiveConsultantContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
 
                 projectComboBox.clear();
                 projectComboBox.setItems(projects);
@@ -269,11 +269,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
         });
     }
 
-    private List<Client> getClients(List<MainContract> activeConsultantContracts) {
-        return activeConsultantContracts.stream().map(MainContract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+    private List<Client> getClients(List<Contract> activeConsultantContracts) {
+        return activeConsultantContracts.stream().map(Contract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
     }
 
-    private List<MainContract> getMainContracts(ContractService contractService, User user) {
+    private List<Contract> getMainContracts(ContractService contractService, User user) {
         return contractService.findTimeActiveConsultantContracts(user, java.time.LocalDate.of(currentDate.getYear(), currentDate.getMonthOfYear(), 1));
     }
 

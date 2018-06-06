@@ -2,11 +2,15 @@ package dk.trustworks.invoicewebui.web.client.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Label;
+import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Photo;
@@ -22,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -39,16 +44,19 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
     private final ProjectService projectService;
 
+    private final ChartCacheJob chartCache;
+
     private final MainTemplate mainTemplate;
 
     ResponsiveLayout responsiveLayout;
 
     @Autowired
-    public ClientManagerImpl(ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, ProjectService projectService, MainTemplate mainTemplate) {
+    public ClientManagerImpl(ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, ProjectService projectService, ChartCacheJob chartCache, MainTemplate mainTemplate) {
         this.clientRepository = clientRepository;
         this.clientdataRepository = clientdataRepository;
         this.photoRepository = photoRepository;
         this.projectService = projectService;
+        this.chartCache = chartCache;
         this.mainTemplate = mainTemplate;
     }
 
@@ -61,18 +69,12 @@ public class ClientManagerImpl extends ClientManagerDesign {
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
-/*
-        OnOffSwitch onOffSwitch = new OnOffSwitch(false);
-        onOffSwitch
 
-        responsiveLayout.addRow().addColumn()
-                .withDisplayRules(12, 12, 4, 4)
-                .withOffset(ResponsiveLayout.DisplaySize.XS, 4)
-                .withOffset(ResponsiveLayout.DisplaySize.SM, 4)
-                .withComponent();
-*/
-        int rowItemCount = 1;
-        ResponsiveRow row = responsiveLayout.addRow();
+        ResponsiveRow statsRow = responsiveLayout.addRow();
+        statsRow.addColumn().withDisplayRules(12, 12, 12, 12)
+                .withComponent(createClientRevenueChart());
+
+        ResponsiveRow clientRow = responsiveLayout.addRow();
 
         Iterable<Client> clients = clientRepository.findAllByOrderByActiveDescNameAsc();
         for (Client client : clients) {
@@ -89,15 +91,9 @@ public class ClientManagerImpl extends ClientManagerDesign {
                 if(!client.isActive()) {
                     clientCard.getBtnDelete().setCaption("ACTIVATE");
                     clientCard.getBtnDelete().setStyleName("friendly");
-                    //clientCard.getBtnDelete().setStyleName("flat", true);
                 }
             });
-            row.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(clientCard);
-            rowItemCount++;
-            if(rowItemCount > 4) {
-                rowItemCount = 1;
-                //row = responsiveLayout.addRow();
-            }
+            clientRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(clientCard);
         }
 
         AddClientCardDesign addClientCardDesign = new AddClientCardDesign();
@@ -261,5 +257,42 @@ public class ClientManagerImpl extends ClientManagerDesign {
             UI.getCurrent().addWindow(window2);
         });
     }
+
+    private Chart createClientRevenueChart() {
+        Map<String, Number> revenueMap = chartCache.getRevenuePerClientMap();
+
+        Chart chart = new Chart(ChartType.COLUMN);
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("Total revenue, grouped by client");
+        conf.setSubTitle("Only showing active clients");
+
+        XAxis x = new XAxis();
+        x.setCategories(clientRepository.findByActiveTrueOrderByName().stream().map(Client::getName).toArray(String[]::new));
+        conf.addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setMin(0);
+        y.setTitle("Revenue");
+        conf.addyAxis(y);
+
+        conf.getLegend().setEnabled(false);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.x +': '+ this.y +' kr'");
+        conf.setTooltip(tooltip);
+
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
+
+        conf.addSeries(new ListSeries("Revenue", revenueMap.values()));
+
+        chart.drawChart(conf);
+        return chart;
+    }
+
+
 
 }

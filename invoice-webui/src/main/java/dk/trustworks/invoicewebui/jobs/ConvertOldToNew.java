@@ -1,7 +1,7 @@
 package dk.trustworks.invoicewebui.jobs;
 
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
-import dk.trustworks.invoicewebui.repositories.MainContractRepository;
+import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class ConvertOldToNew {
     private ProjectService projectService;
 
     @Autowired
-    private MainContractRepository mainContractRepository;
+    private ContractRepository contractRepository;
 
     @Autowired
     private ConsultantRepository consultantRepository;
@@ -50,7 +50,7 @@ public class ConvertOldToNew {
                     User user = constraint.getUser();
                     Consultant consultant = new Consultant(mainContract, user, rate, 0.0, 0.0);
                     mainContract.addConsultant(consultant);
-                    consultant.setMainContract(mainContract);
+                    consultant.setContract(mainContract);
                 }
             }
             project.addMainContract(mainContract);
@@ -68,7 +68,7 @@ public class ConvertOldToNew {
             boolean outsidePeriod = false;
             Project project = work.getTask().getProject();
             LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay());
-            for (MainContract mainContract : project.getMainContracts()) {
+            for (MainContract mainContract : project.getContracts()) {
                 if(mainContract.findByUser(work.getUser())!=null) {
                     outsidePeriod = true;
                     if (workDate.isAfter(mainContract.getActiveFrom()) &&

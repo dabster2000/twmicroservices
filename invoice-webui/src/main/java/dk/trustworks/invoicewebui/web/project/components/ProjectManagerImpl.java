@@ -193,7 +193,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsCard);
 
-        if(currentProject.getMainContracts().size()>0) {
+        if(currentProject.getContracts().size()>0) {
             Card contractCard = new Card();
             contractCard.getLblTitle().setValue("Contracts");
             contractLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
@@ -312,7 +312,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         conf.setSubTitle("");
 
         XAxis xAxis = new XAxis();
-        for (MainContract mainContract : currentProject.getMainContracts()) {
+        for (Contract mainContract : currentProject.getContracts()) {
             for (Consultant consultant : mainContract.getConsultants()) {
                 xAxis.addCategory(consultant.getUser().getUsername());
             }
@@ -345,7 +345,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         legend.setEnabled(false);
         conf.setLegend(legend);
 
-        for (MainContract mainContract : currentProject.getMainContracts()) {
+        for (Contract mainContract : currentProject.getContracts()) {
             for (Consultant consultant : mainContract.getConsultants()) {
                 DataSeries ls = new DataSeries(consultant.getUser().getUsername());
                 DataSeriesItem dataSeriesItem = new DataSeriesItem();
@@ -372,7 +372,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         consultantsLayout.addComponent(responsiveLayout);
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
-        for (MainContract mainContract : currentProject.getMainContracts()) {
+        for (Contract mainContract : currentProject.getContracts()) {
             for (Consultant consultant : mainContract.getConsultants()) {
                 ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
                 consultantRowDesign.getLblName().setValue(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
@@ -380,7 +380,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 consultantRowDesign.getTxtRate().setReadOnly(true);
                 consultantRowDesign.getTxtHours().setValue(Math.round(consultant.getHours()) + "");
                 consultantRowDesign.getTxtHours().setReadOnly(true);
-                consultantRowDesign.getVlHours().setVisible(consultant.getMainContract().getContractType().equals(ContractType.PERIOD));
+                consultantRowDesign.getVlHours().setVisible(consultant.getContract().getContractType().equals(ContractType.PERIOD));
                 consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
                 consultantRowDesign.getBtnDelete().setVisible(false);
                 responsiveRow.addColumn()
@@ -398,8 +398,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private Grid createGrid() {
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
-        if(currentProject.getMainContracts().size()==0) return new Grid();
-        LocalDate endDate = currentProject.getMainContracts().stream().max(Comparator.comparing(MainContract::getEndDate)).get().getEndDate();
+        if(currentProject.getContracts().size()==0) return new Grid();
+        LocalDate endDate = currentProject.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
         long monthsBetween = ChronoUnit.MONTHS.between(startDate, endDate);
         System.out.println("period.getMonths() = " + monthsBetween);
 
@@ -412,7 +412,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         List<BudgetRow> budgetRows = new ArrayList<>();
 
-        for (MainContract mainContract : currentProject.getMainContracts()) {
+        for (Contract mainContract : currentProject.getContracts()) {
             if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) continue;
             for (Consultant consultant : mainContract.getConsultants()) {
                 BudgetRow budgetRow = new BudgetRow(consultant, (int)(monthsBetween+1));

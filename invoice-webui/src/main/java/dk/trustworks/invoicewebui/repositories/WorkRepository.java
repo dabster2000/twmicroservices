@@ -46,9 +46,6 @@ public interface WorkRepository extends CrudRepository<Work, String> {
                                   @Param("month") int month,
                                   @Param("projectuuid") String projectuuid);
 
-    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid LIKE :taskuuid", nativeQuery = true)
-    List<Work> findByTask(@Param("taskuuid") String taskuuid);
-
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid", nativeQuery = true)
     List<Work> findByTasks(@Param("taskuuid") List<String> taskuuid);
 
@@ -63,6 +60,14 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and t.projectuuid in :projectuuids " +
             "and w.workduration > 0.0", nativeQuery = true)
     List<Work> findByProjectsAndUsersAndDateRange(@Param("projectuuids") List<String> projectuuids, @Param("useruuids") List<String> useruuids, @Param("fromdate") String fromdate, @Param("todate") String todate);
+
+    @Query(value = "SELECT w.* from work w " +
+            "LEFT JOIN task t ON w.taskuuid = t.uuid " +
+            "LEFT JOIN project p ON t.projectuuid = p.uuid " +
+            "LEFT JOIN client c ON p.clientuuid = c.uuid " +
+            "WHERE w.workduration > 0 AND t.type NOT LIKE 'SO' AND c.active = true " +
+            "ORDER BY c.name;", nativeQuery = true)
+    List<Work> findByActiveClients();
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Work entity);

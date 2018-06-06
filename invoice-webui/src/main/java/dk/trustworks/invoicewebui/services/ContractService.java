@@ -3,11 +3,10 @@ package dk.trustworks.invoicewebui.services;
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
-import dk.trustworks.invoicewebui.repositories.MainContractRepository;
-import dk.trustworks.invoicewebui.repositories.SubContractRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,93 +20,86 @@ public class ContractService {
 
     private final ProjectService projectService;
 
-    private final MainContractRepository mainContractRepository;
-
-    private final SubContractRepository subContractRepository;
+    private final ContractRepository contractRepository;
 
     private final WorkRepository workRepository;
 
-    private final ContractRepository contractRepository;
-
     @Autowired
-    public ContractService(ProjectService projectService, MainContractRepository mainContractRepository, SubContractRepository subContractRepository, WorkRepository workRepository, ContractRepository contractRepository) {
+    public ContractService(ProjectService projectService, ContractRepository contractRepository, WorkRepository workRepository) {
         this.projectService = projectService;
-        this.mainContractRepository = mainContractRepository;
-        this.subContractRepository = subContractRepository;
-        this.workRepository = workRepository;
         this.contractRepository = contractRepository;
+        this.workRepository = workRepository;
     }
 
     @Transactional
-    public MainContract createContract(MainContract mainContract) {
-        return mainContractRepository.save(mainContract);
+    @CacheEvict({"contract", "rate"})
+    public Contract createContract(Contract contract) {
+        return contractRepository.save(contract);
     }
 
     @Transactional
-    public MainContract updateContract(MainContract contract) {
-        return mainContractRepository.save(contract);
+    @CacheEvict({"contract", "rate"})
+    public Contract updateContract(Contract contract) {
+        return contractRepository.save(contract);
     }
 
     @Transactional
-    public MainContract reloadMainContract(MainContract mainContract) {
-        return mainContractRepository.findOne(mainContract.getUuid());
+    public Contract reloadContract(Contract contract) {
+        return contractRepository.findOne(contract.getUuid());
     }
 
     @Transactional
-    public SubContract updateContract(SubContract contract) {
-        return subContractRepository.save(contract);
-    }
-
-    @Transactional
-    public MainContract addProjects(MainContract mainContract, Set<Project> projects) throws ContractValidationException {
+    @CacheEvict({"contract", "rate"})
+    public Contract addProjects(Contract Contract, Set<Project> projects) throws ContractValidationException {
         // validate
         for (Project project : projects) {
-            for (MainContract contract : project.getMainContracts()) {
+            for (Contract contract : project.getContracts()) {
                 Set<Object> userUUIDs = contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
-                if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), mainContract.getActiveFrom(), mainContract.getActiveTo()) &&
-                        userUUIDs.contains(mainContract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
+                if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), Contract.getActiveFrom(), Contract.getActiveTo()) &&
+                        userUUIDs.contains(Contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
                     throw new ContractValidationException("Overlapping another contract with same consultants");
             }
         }
 
         // execute
         for (Project project : projects) {
-            project.addMainContract(mainContract);
+            project.addContract(Contract);
             projectService.save(project);
         }
-        mainContract.addProjects(projects);
-        mainContractRepository.save(mainContract);
-        return mainContract;
+        Contract.addProjects(projects);
+        contractRepository.save(Contract);
+        return Contract;
     }
 
     @Transactional
-    public MainContract addProject(MainContract mainContract, Project project) throws ContractValidationException {
+    @CacheEvict({"contract", "rate"})
+    public Contract addProject(Contract Contract, Project project) throws ContractValidationException {
         // validate
-        for (MainContract contract : project.getMainContracts()) {
+        for (Contract contract : project.getContracts()) {
             Set<Object> userUUIDs = contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
-            if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), mainContract.getActiveFrom(), mainContract.getActiveTo()) &&
-                    userUUIDs.contains(mainContract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
+            if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), Contract.getActiveFrom(), Contract.getActiveTo()) &&
+                    userUUIDs.contains(Contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
                 throw new ContractValidationException("Overlapping another contract with same consultants");
         }
 
         // execute
-        mainContract = mainContractRepository.findOne(mainContract.getUuid());
+        Contract = contractRepository.findOne(Contract.getUuid());
         project = projectService.findOne(project.getUuid());
-        project.addMainContract(mainContract);
+        project.addContract(Contract);
         //project = projectRepository.save(project);
-        mainContract.addProject(project);
-        mainContractRepository.save(mainContract);
-        return mainContract;
+        Contract.addProject(project);
+        contractRepository.save(Contract);
+        return Contract;
     }
 
     public Double findConsultantRateByWork(Work work) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+        return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid());
     }
 
-    public MainContract findContractByWork(Work work) {
+    public Contract findContractByWork(Work work) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
-        return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-" + work.getDay(), work.getUser().getUuid(), work.getTask().getUuid());
+        return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid());
     }
 
     public Double findConsultantRate(int year, int month, int day, User user, Task task) {
@@ -115,12 +107,24 @@ public class ContractService {
         return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid());
     }
 
-    public List<MainContract> findActiveMainContractsByDate(LocalDate activeDate) {
-        return mainContractRepository.findByActiveFromBeforeAndActiveToAfter(activeDate, activeDate);
+    public Optional<Consultant> findConsultant(int year, int month, User user, Task task) {
+        Project project = task.getProject();
+        Consultant consultantResult = null;
+        List<Contract> Contracts = findActiveContractsByDate(LocalDate.of(year, month, 1)).stream().filter(Contract -> Contract.getProjects().contains(project)).collect(Collectors.toList());
+        for (Contract Contract : Contracts) {
+            for (Consultant consultant : Contract.getConsultants()) {
+                if(consultant.getUser().getUuid().equals(user.getUuid())) consultantResult = consultant;
+            }
+        }
+        return Optional.ofNullable(consultantResult);
     }
 
-    public List<MainContract> findActiveMainContractsByPeriod(LocalDate activeFrom, LocalDate activeTo) {
-        return mainContractRepository.findByActiveFromBeforeAndActiveToAfter(activeTo, activeFrom);
+    public List<Contract> findActiveContractsByDate(LocalDate activeDate) {
+        return contractRepository.findByActiveFromBeforeAndActiveToAfter(activeDate, activeDate);
+    }
+
+    public List<Contract> findActiveContractsByPeriod(LocalDate activeFrom, LocalDate activeTo) {
+        return contractRepository.findByActiveFromBeforeAndActiveToAfter(activeTo, activeFrom);
     }
 
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
@@ -128,10 +132,10 @@ public class ContractService {
     }
 
     @Transactional
-    public MainContract removeProject(MainContract mainContract, Project project) {
-        mainContract = mainContractRepository.findOne(mainContract.getUuid());
-        mainContract.getProjects().remove(project);
-        return updateContract(mainContract);
+    public Contract removeProject(Contract contract, Project project) {
+        contract = contractRepository.findOne(contract.getUuid());
+        contract.getProjects().remove(project);
+        return updateContract(contract);
     }
 
     public Map<String, Work> getWorkErrors(LocalDate errorDate, int months) {
@@ -175,7 +179,7 @@ public class ContractService {
     public Set<Project> getClientProjectsNotUnderContract(Client client) {
         Set<Project> projects = new HashSet<>();
         for (Project project : client.getProjects()) {
-            if(project.getMainContracts().size()==0) projects.add(project);
+            if(project.getContracts().size()==0) projects.add(project);
         }
         return projects;
     }
@@ -211,18 +215,18 @@ public class ContractService {
         )).orElse(null);
     }
 
-    public List<Work> getWorkOnContractByUser(MainContract mainContract) {
+    public List<Work> getWorkOnContractByUser(Contract Contract) {
         System.out.println("ContractService.getWorkOnContractByUser");
-        System.out.println("mainContract = [" + mainContract + "]");
+        System.out.println("Contract = [" + Contract + "]");
         return workRepository.findByProjectsAndUsersAndDateRange(
-                mainContract.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
-                mainContract.getConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
-                mainContract.getActiveFrom().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
-                mainContract.getActiveTo().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+                Contract.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
+                Contract.getConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
+                Contract.getActiveFrom().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+                Contract.getActiveTo().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     }
 
-    public List<MainContract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
-        return mainContractRepository.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    public List<Contract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
+        return contractRepository.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
     public Collection<String> createErrorList(Map<String, Work> errors) {
@@ -241,17 +245,33 @@ public class ContractService {
     }
 
     @Transactional
-    public void deleteContract(MainContract mainContract) {
+    public void deleteContract(Contract contract) {
         System.out.println("ContractService.deleteContract");
-        System.out.println("mainContract = [" + mainContract + "]");
-        try {
-            mainContractRepository.delete(mainContract.getUuid());
-        } catch (Exception e) {
-            e.printStackTrace();
+        System.out.println("Contract = [" + contract + "]");
+        //if(contract.getParent()==null) {
+            try {
+                contractRepository.delete(contract.getUuid());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        /*} else {
+            try {
+                contract = contractRepository.findOne(contract.getUuid());
+                Contract parentContract = contractRepository.findOne(contract.getParent().getUuid());
+                parentContract.getChildren().remove(contract);
+                contractRepository.delete(contract.getUuid());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+        */
     }
 
-    public MainContract findOne(String contractuuid) {
-        return mainContractRepository.findOne(contractuuid);
+    public Iterable<Contract> findAll() {
+        return contractRepository.findAll();
+    }
+
+    public Contract findOne(String contractuuid) {
+        return contractRepository.findOne(contractuuid);
     }
 }

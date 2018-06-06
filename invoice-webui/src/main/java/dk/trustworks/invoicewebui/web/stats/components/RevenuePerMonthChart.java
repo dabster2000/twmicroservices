@@ -102,9 +102,9 @@ public class RevenuePerMonthChart {
                 double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
                 if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()-expense));
             }
-            List<MainContract> contracts = contractService.findActiveMainContractsByDate(currentDate);
+            List<Contract> contracts = contractService.findActiveContractsByDate(currentDate);
             double budgetSum = 0.0;
-            for (MainContract contract : contracts) {
+            for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (Consultant consultant : contract.getConsultants()) {

@@ -20,7 +20,10 @@ import dk.trustworks.invoicewebui.web.contracts.components.ContractDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractFormDesign;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractSearchImpl;
 import dk.trustworks.invoicewebui.web.contracts.components.NavigationBar;
+import main.java.com.maximeroussy.invitrode.RandomWord;
+import main.java.com.maximeroussy.invitrode.WordLengthException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
@@ -29,6 +32,9 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
 
 @SpringComponent
 @SpringUI
@@ -127,7 +133,7 @@ public class ContractListLayout extends VerticalLayout {
                 contractFormDesign.getBtnUpdate().setVisible(false);
 
                 contractFormDesign.getBtnCreate().addClickListener(event3 -> {
-                    MainContract mainContract = contractService.createContract(new MainContract(
+                    Contract contract = contractService.createContract(new Contract(
                             contractFormDesign.getCbType().getValue(),
                             contractFormDesign.getCbStatus().getValue(),
                             contractFormDesign.getTxtNote().getValue(),
@@ -138,7 +144,7 @@ public class ContractListLayout extends VerticalLayout {
                     this.removeComponent(contractResponsiveLayout);
                     NavigationBar navigationBar = new NavigationBar();
                     navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
-                    contractResponsiveLayout = contractDetailLayout.loadContractDetails(mainContract, navigationBar);
+                    contractResponsiveLayout = contractDetailLayout.loadContractDetails(contract, navigationBar);
                     this.addComponent(contractResponsiveLayout);
                 });
 
@@ -155,29 +161,49 @@ public class ContractListLayout extends VerticalLayout {
     }
 
     private Client createContractView(Client client) {
-        for (MainContract mainContract : clientRepository.findOne(client.getUuid()).getMainContracts()) {
+        for (Contract contract : clientRepository.findOne(client.getUuid()).getContracts().stream().sorted(comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
             ContractDesign contractDesign = new ContractDesign();
 
-            contractDesign.getLblType().setValue(mainContract.getContractType().name());
+            if(contract.getName()==null || contract.getName().equals("")) {
+                try {
+                    if(contract.getParentuuid()==null || contract.getParentuuid().equals("")) contract.setName(RandomWord.getNewWord(8));
+                    else contract.setName(contractService.findOne(contract.getParentuuid()).getName());
+                    contractService.updateContract(contract);
+                } catch (WordLengthException e) {
+                    e.printStackTrace();
+                }
+            }
 
-            contractDesign.getChkProjects().setItems(mainContract.getProjects());
+            contractDesign.getLblContractNumber().setValue(contract.getName());
+            if(!(contract.getParentuuid()==null || contract.getParentuuid().equals(""))) {
+                contractDesign.getLblTitle().setValue("Extended Contract");
+                contractDesign.getBtnExtendContract().setEnabled(false);
+                contractDesign.getBtnExtendContract().setVisible(false);
+            }
+
+            contractDesign.getLblType().setValue(contract.getContractType().name());
+
+            contractDesign.getChkProjects().setItems(contract.getProjects());
             contractDesign.getChkProjects().setItemCaptionGenerator(Project::getName);
-            contractDesign.getChkProjects().setValue(mainContract.getProjects());
+            contractDesign.getChkProjects().setValue(contract.getProjects());
             contractDesign.getChkProjects().setVisible(true);
             contractDesign.getChkProjects().setEnabled(false);
 
-            contractDesign.getLblPeriod().setValue(
-                    mainContract.getActiveFrom().format(DateTimeFormatter.ofPattern("MMM yyyy")) + " - " +
-                            mainContract.getActiveTo().format(DateTimeFormatter.ofPattern("MMM yyyy"))
-            );
+            String contractPeriodFrom = contract.getActiveFrom().format(DateTimeFormatter.ofPattern("MMM yyyy"));
+            LocalDate activeTo = contract.getActiveTo();
 
-            if(mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) {
-                contractDesign.getLblAmount().setValue(mainContract.getAmount()+" kr.");
+            String contractPeriodTo = activeTo.format(DateTimeFormatter.ofPattern("MMM yyyy"));
+
+            contractDesign.getLblPeriod().setValue(contractPeriodFrom + " - " + contractPeriodTo);
+
+            if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
+                contractDesign.getLblAmount().setValue(contract.getAmount()+" kr.");
             } else {
-                contractDesign.getLblAmount().setVisible(false);
+                contractDesign.getLblAmount().setValue("");
+                contractDesign.getLblAmount().setCaption("");
             }
 
-            for (Consultant consultant : mainContract.getConsultants()) {
+            for (Consultant consultant : contract.getConsultants()) {
                 contractDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
             }
 
@@ -185,17 +211,25 @@ public class ContractListLayout extends VerticalLayout {
                 this.removeComponent(contractResponsiveLayout);
                 NavigationBar navigationBar = new NavigationBar();
                 navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
-                contractResponsiveLayout = contractDetailLayout.loadContractDetails(mainContract, navigationBar);
+                contractResponsiveLayout = contractDetailLayout.loadContractDetails(contract, navigationBar);
                 this.addComponent(contractResponsiveLayout);
             });
 
-            contractDesign.getBtnDelete().addClickListener(event1 -> {
-                ConfirmDialog.show(UI.getCurrent(), "Really delete contract?", dialog -> {
-                    if(dialog.isConfirmed()) {
-                        contractService.deleteContract(mainContract);
-                        reloadContractView(clientRepository.findOne(client.getUuid()));
-                    }
-                });
+            contractDesign.getBtnDelete().addClickListener(event1 -> ConfirmDialog.show(UI.getCurrent(), "Really delete contract?", dialog -> {
+                if(dialog.isConfirmed()) {
+                    contractService.deleteContract(contract);
+                    reloadContractView(clientRepository.findOne(client.getUuid()));
+                }
+            }));
+
+            contractDesign.getBtnExtendContract().setIcon(MaterialIcons.PLAYLIST_ADD);
+            contractDesign.getBtnExtendContract().addClickListener(event1 -> {
+                Contract newContract = contractService.createContract(new Contract(contract));
+                this.removeComponent(contractResponsiveLayout);
+                NavigationBar navigationBar = new NavigationBar();
+                navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
+                contractResponsiveLayout = contractDetailLayout.loadContractDetails(newContract, navigationBar);
+                this.addComponent(contractResponsiveLayout);
             });
 
             contractRow.addColumn()

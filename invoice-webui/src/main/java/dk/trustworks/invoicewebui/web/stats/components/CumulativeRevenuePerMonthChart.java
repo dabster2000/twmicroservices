@@ -109,8 +109,8 @@ public class CumulativeRevenuePerMonthChart {
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
-            List<MainContract> contracts = contractService.findActiveMainContractsByDate(currentDate);
-            for (MainContract contract : contracts) {
+            List<Contract> contracts = contractService.findActiveContractsByDate(currentDate);
+            for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (Consultant consultant : contract.getConsultants()) {

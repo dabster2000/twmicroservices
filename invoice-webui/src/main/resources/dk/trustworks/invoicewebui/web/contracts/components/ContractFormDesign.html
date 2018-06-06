@@ -16,19 +16,19 @@
         Contract 
       </vaadin-label>
      </vaadin-horizontal-layout>
-     <vaadin-vertical-layout spacing="false" margin="false" _id="container">
-      <vaadin-form-layout size-auto :center>
-       <vaadin-combo-box caption="Type" width="185px" data-item-type="dk.trustworks.invoicewebui.model.enums.ContractType" _id="cbType"></vaadin-combo-box>
-       <vaadin-combo-box caption="Status" data-item-type="dk.trustworks.invoicewebui.model.enums.ContractStatus" _id="cbStatus"></vaadin-combo-box>
-       <vaadin-date-field caption="Active from" resolution="month" date-format="MMM yyyy" width="185px" value="2017-09-07" _id="dfFrom"></vaadin-date-field>
-       <vaadin-date-field caption="Active to" resolution="month" date-format="MMM yyyy" width="185px" value="2018-07-06" _id="dfTo"></vaadin-date-field>
-       <vaadin-text-field caption="Amount" value="1.000.000 kr" _id="txtAmount"></vaadin-text-field>
+     <vaadin-vertical-layout spacing="false" margin-top="false" margin-bottom="false" _id="container">
+      <vaadin-form-layout :center>
+       <vaadin-combo-box caption="Type" width-full data-item-type="dk.trustworks.invoicewebui.model.enums.ContractType" _id="cbType"></vaadin-combo-box>
+       <vaadin-combo-box caption="Status" width-full data-item-type="dk.trustworks.invoicewebui.model.enums.ContractStatus" _id="cbStatus"></vaadin-combo-box>
+       <vaadin-date-field caption="Active from" resolution="month" date-format="MMM yyyy" width-full value="2017-09-07" _id="dfFrom"></vaadin-date-field>
+       <vaadin-date-field caption="Active to" resolution="month" date-format="MMM yyyy" width-full value="2018-07-06" _id="dfTo"></vaadin-date-field>
+       <vaadin-text-field caption="Amount" width-full value="1.000.000 kr" _id="txtAmount"></vaadin-text-field>
        <vaadin-text-area caption="Note" width-full _id="txtNote"></vaadin-text-area>
-       <server_droporchoose-upload-component caption="Contract" width-full></server_droporchoose-upload-component>
-       <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
+       <server_droporchoose-upload-component visible="false" caption="Contract" width-full></server_droporchoose-upload-component>
+       <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" width-full plain-text _id="btnUpdate">
          Update 
        </vaadin-button>
-       <vaadin-button visible="false" icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnCreate">
+       <vaadin-button visible="false" icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" width-full plain-text _id="btnCreate">
          Create 
        </vaadin-button>
       </vaadin-form-layout>
