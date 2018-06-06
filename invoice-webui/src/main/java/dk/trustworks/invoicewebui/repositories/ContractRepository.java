@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,8 +25,8 @@ public interface ContractRepository extends ContractBaseRepository<Contract> {
             "    right join project p ON p.uuid = pc.projectuuid" +
             "    right join task t ON t.projectuuid = p.uuid" +
             "    right join contract_consultants cc ON c.uuid = cc.contractuuid" +
-            "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid ", nativeQuery = true)
-    Double findConsultantRateByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid);
+            "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid and c.status in :statusList ", nativeQuery = true)
+    Double findConsultantRateByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid, @Param("statusList") String... statusList);
 
     @Cacheable("contract")
     @Query(value = "select c.* from usermanager.contracts c" +
@@ -33,15 +34,15 @@ public interface ContractRepository extends ContractBaseRepository<Contract> {
             "    right join project p ON p.uuid = pc.projectuuid" +
             "    right join task t ON t.projectuuid = p.uuid" +
             "    right join contract_consultants cc ON c.uuid = cc.contractuuid" +
-            "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid ", nativeQuery = true)
-    Contract findContractByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid);
+            "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid AND c.status IN :statusList ", nativeQuery = true)
+    Contract findContractByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid, @Param("statusList") List<String> statusList);
 
-    List<Contract> findByActiveFromBeforeAndActiveToAfter(LocalDate activeTo, LocalDate activeFrom);
+    List<Contract> findByActiveFromBeforeAndActiveToAfterAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
 
     @Query(value = "select c.* from usermanager.contracts c " +
             "right join usermanager.contract_consultants cc on c.uuid = cc.contractuuid " +
             "where c.activefrom <= :activeon and c.activeto >= :activeon and cc.useruuid like :useruuid " +
-            "and c.status in ('TIME','SIGNED')", nativeQuery = true)
+            "and c.status in ('TIME','SIGNED','CLOSED')", nativeQuery = true)
     List<Contract> findTimeActiveConsultantContracts(@Param("useruuid") String useruuid, @Param("activeon") String activeon);
 
     @Override @RestResource(exported = false) void delete(String id);

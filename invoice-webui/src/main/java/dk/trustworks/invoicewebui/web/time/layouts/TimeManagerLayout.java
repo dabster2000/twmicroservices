@@ -16,6 +16,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -679,9 +680,16 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private void saveWork(WeekItem weekItem, HasValue.ValueChangeEvent<String> event, LocalDate workDate) {
+        System.out.println("TimeManagerLayout.saveWork");
+        System.out.println("weekItem = [" + weekItem + "], event = [" + event + "], workDate = [" + workDate + "]");
         try {
             double newValue = event.getValue().equals("")?0.0:nf.parse(event.getValue()).doubleValue();
-            Work work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask());
+            Work work;
+            if(weekItem.getWorkas()==null) {
+                work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask());
+            } else {
+                work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask(), weekItem.getWorkas());
+            }
             workService.saveWork(work);
             if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));
         } catch (ParseException e) {
@@ -703,7 +711,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private boolean isOnContract(LocalDate localDate, User user, Task task) {
-        return contractService.findConsultantRate(localDate.getYear(), localDate.getMonthOfYear(), localDate.getDayOfMonth(), user, task)!=null;
+        return contractService.findConsultantRate(localDate.getYear(), localDate.getMonthOfYear(), localDate.getDayOfMonth(), user, task, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED)!=null;
     }
 
     private class WeekValues {

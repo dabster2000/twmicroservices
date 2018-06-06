@@ -269,7 +269,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         conf.setSubTitle("Only showing active clients");
 
         XAxis x = new XAxis();
-        x.setCategories(clientRepository.findByActiveTrueOrderByName().stream().map(Client::getName).toArray(String[]::new));
+        x.setCategories(revenueMap.keySet().stream().toArray(String[]::new));
         conf.addxAxis(x);
 
         YAxis y = new YAxis();

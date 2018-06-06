@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.jobs;
 import dk.trustworks.invoicewebui.model.Consultant;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
@@ -38,8 +39,8 @@ public class ChartCacheJob {
         revenueMap.clear();
         for (Work work : workRepository.findByActiveClients()) {
             String clientName = work.getTask().getProject().getClient().getName();
-            Double rate = contractService.findConsultantRateByWork(work);
-            if(rate == null) continue;
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+            if(rate == null || rate == 0.0) continue;
             revenueMap.putIfAbsent(clientName, 0);
             revenueMap.put(clientName, revenueMap.get(clientName).doubleValue()+(work.getWorkduration() * rate));
         }

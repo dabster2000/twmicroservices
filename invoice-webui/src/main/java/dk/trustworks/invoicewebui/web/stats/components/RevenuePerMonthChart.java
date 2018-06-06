@@ -9,6 +9,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
@@ -78,7 +79,7 @@ public class RevenuePerMonthChart {
         }
         for (Work work : workList) {
             if(work.getWorkduration()==0.0) continue;
-            Double rate = contractService.findConsultantRateByWork(work);
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate==null) continue;
             WorkAmount workAmount = new WorkAmount(LocalDate.of(work.getYear(), work.getMonth()+1, 1), work.getWorkduration(), work.getWorkduration() * rate);
             Optional<GraphKeyValue> keyValue = amountPerItemList.stream().filter(graphKeyValue -> graphKeyValue.getDescription().equals(work.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))+"-01")).findFirst();
@@ -102,7 +103,7 @@ public class RevenuePerMonthChart {
                 double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
                 if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()-expense));
             }
-            List<Contract> contracts = contractService.findActiveContractsByDate(currentDate);
+            List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             double budgetSum = 0.0;
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {

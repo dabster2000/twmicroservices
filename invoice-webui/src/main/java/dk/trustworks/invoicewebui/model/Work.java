@@ -41,6 +41,16 @@ public class Work {
         this.task = task;
     }
 
+    public Work(int day, int month, int year, double workduration, User user, Task task, User workas) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.workduration = workduration;
+        this.user = user;
+        this.task = task;
+        this.workas = workas;
+    }
+
     public int getId() {
         return id;
     }

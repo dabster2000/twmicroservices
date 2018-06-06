@@ -2,6 +2,8 @@ package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
@@ -92,39 +94,40 @@ public class ContractService {
         return Contract;
     }
 
-    public Double findConsultantRateByWork(Work work) {
+    public Double findConsultantRateByWork(Work work, ContractStatus... statusList) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid());
-    }
-
-    public Contract findContractByWork(Work work) {
-        if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
-        return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid());
-    }
-
-    public Double findConsultantRate(int year, int month, int day, User user, Task task) {
-        if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
-        return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid());
-    }
-
-    public Optional<Consultant> findConsultant(int year, int month, User user, Task task) {
-        Project project = task.getProject();
-        Consultant consultantResult = null;
-        List<Contract> Contracts = findActiveContractsByDate(LocalDate.of(year, month, 1)).stream().filter(Contract -> Contract.getProjects().contains(project)).collect(Collectors.toList());
-        for (Contract Contract : Contracts) {
-            for (Consultant consultant : Contract.getConsultants()) {
-                if(consultant.getUser().getUuid().equals(user.getUuid())) consultantResult = consultant;
+        if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
+        if(work.getWorkas()==null) {
+            for (ContractStatus contractStatus : statusList) {
+                System.out.println("contractStatus = " + contractStatus);
             }
+            return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+        } else {
+            return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         }
-        return Optional.ofNullable(consultantResult);
     }
 
-    public List<Contract> findActiveContractsByDate(LocalDate activeDate) {
-        return contractRepository.findByActiveFromBeforeAndActiveToAfter(activeDate, activeDate);
+    public Contract findContractByWork(Work work, ContractStatus... statusList) {
+        if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
+        if(work.getWorkas()==null) {
+            return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
+        } else {
+            return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
+        }
     }
 
-    public List<Contract> findActiveContractsByPeriod(LocalDate activeFrom, LocalDate activeTo) {
-        return contractRepository.findByActiveFromBeforeAndActiveToAfter(activeTo, activeFrom);
+    public Double findConsultantRate(int year, int month, int day, User user, Task task, ContractStatus... statusList) {
+        if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
+        if(task.getType().equals(TaskType.SO)) return 0.0;
+        return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+    }
+
+    public List<Contract> findActiveContractsByDate(LocalDate activeDate, ContractStatus... statusList) {
+        return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeDate, activeDate, statusList);
+    }
+
+    public List<Contract> findActiveContractsByPeriod(LocalDate activeFrom, LocalDate activeTo, ContractStatus... statusList) {
+        return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeTo, activeFrom, statusList);
     }
 
     private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
@@ -144,7 +147,8 @@ public class ContractService {
                 errorDate.minusMonths(months).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 errorDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
             if(!(work.getWorkduration()>0)) continue;
-            if(findConsultantRateByWork(work)==null)
+            if(work.getTask().getType().equals(TaskType.SO)) continue;
+            if(findConsultantRateByWork(work, ContractStatus.values())==null)
                 errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
         }
         return errors;
@@ -170,7 +174,7 @@ public class ContractService {
         //System.out.println(String.join(", ", strings));
         for (Work work : workRepository.findByTasks(strings)) {
             if(!(work.getWorkduration()>0)) continue;
-            if(findConsultantRateByWork(work)==null)
+            if(findConsultantRateByWork(work, ContractStatus.values())==null)
                 users.add(work.getUser());
         }
         return users;
@@ -193,7 +197,7 @@ public class ContractService {
             List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
             for (Work work : workList) {
                 if(!(work.getWorkduration()>0)) continue;
-                if(findConsultantRateByWork(work)==null) {
+                if(findConsultantRateByWork(work, ContractStatus.values())==null) {
                     projectsResult.add(work.getTask().getProject());
                 }
             }
@@ -202,8 +206,6 @@ public class ContractService {
     }
 
     public LocalDatePeriod getUsersFirstAndLastWorkOnProject(Project project, User user) {
-        System.out.println("ContractService.getUsersFirstAndLastWorkOnProject");
-        System.out.println("project = [" + project + "], user = [" + user + "]");
         if(project.getTasks().size() == 0) return null;
         List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
         List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
@@ -216,8 +218,6 @@ public class ContractService {
     }
 
     public List<Work> getWorkOnContractByUser(Contract Contract) {
-        System.out.println("ContractService.getWorkOnContractByUser");
-        System.out.println("Contract = [" + Contract + "]");
         return workRepository.findByProjectsAndUsersAndDateRange(
                 Contract.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
                 Contract.getConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
@@ -248,23 +248,12 @@ public class ContractService {
     public void deleteContract(Contract contract) {
         System.out.println("ContractService.deleteContract");
         System.out.println("Contract = [" + contract + "]");
-        //if(contract.getParent()==null) {
-            try {
-                contractRepository.delete(contract.getUuid());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        /*} else {
-            try {
-                contract = contractRepository.findOne(contract.getUuid());
-                Contract parentContract = contractRepository.findOne(contract.getParent().getUuid());
-                parentContract.getChildren().remove(contract);
-                contractRepository.delete(contract.getUuid());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            contractRepository.delete(contract.getUuid());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        */
+
     }
 
     public Iterable<Contract> findAll() {

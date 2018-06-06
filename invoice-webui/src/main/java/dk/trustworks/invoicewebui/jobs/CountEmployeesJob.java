@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.jobs;
 
 
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.IncomeForcastRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -125,7 +126,7 @@ public class CountEmployeesJob {
             if(!workByDate.containsKey(dateString)) {
                 workByDate.put(dateString, 0.0);
             }
-            Double rate = contractService.findConsultantRateByWork(work);
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0.0) {
                 double income = workByDate.get(dateString) + (work.getWorkduration() * rate);
                 workByDate.put(dateString, income);

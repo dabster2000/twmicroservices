@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.ThemeResource;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -54,7 +55,7 @@ public class DashboardBoxCreator {
         Map<String, Project> currentProjectSet = new HashMap<>();
         //Map<String, Project> noProjectSet = new HashMap<>();
         for (Work work : workRepository.findByPeriod(startDate.toString("yyyy-MM-dd"), endDate.toString("yyyy-MM-dd"))) {
-            Double rate = contractService.findConsultantRateByWork(work);
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
             } /*else {
@@ -64,7 +65,7 @@ public class DashboardBoxCreator {
 
         Map<String, Project> lastProjectSet = new HashMap<>();
         for (Work work : workRepository.findByPeriod(lastStartDate.toString("yyyy-MM-dd"), lastEndDate.toString("yyyy-MM-dd"))) {
-            Double rate = contractService.findConsultantRateByWork(work);
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
             }
@@ -88,7 +89,7 @@ public class DashboardBoxCreator {
         //Map<String, Project> noProjectSet = new HashMap<>();
         float billableHoursThisYear = 0f;
         for (Work work : workRepository.findByPeriod(startDate.toString("yyyy-MM-dd"), endDate.toString("yyyy-MM-dd"))) {
-            Double rate = contractService.findConsultantRateByWork(work);
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 billableHoursThisYear += work.getWorkduration();
                 //currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
@@ -100,7 +101,7 @@ public class DashboardBoxCreator {
         //Map<String, Project> lastProjectSet = new HashMap<>();
         float billableHoursLastYear = 0f;
         for (Work work : workRepository.findByPeriod(lastStartDate.toString("yyyy-MM-dd"), lastEndDate.toString("yyyy-MM-dd"))) {
-            Double rate = contractService.findConsultantRateByWork(work);
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 billableHoursLastYear += work.getWorkduration();
                 //lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());

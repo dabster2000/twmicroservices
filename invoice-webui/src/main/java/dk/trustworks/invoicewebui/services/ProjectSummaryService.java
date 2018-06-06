@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.services;
 import com.google.common.collect.Lists;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -55,7 +56,7 @@ public class ProjectSummaryService {
             Task task = work.getTask();
             Project project = task.getProject();
             Client client = project.getClient();
-            Contract contract = contractService.findContractByWork(work);
+            Contract contract = contractService.findContractByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             String contractuuid = (contract==null)?"":contract.getUuid();
 
             double invoicedamount = 0.0;
@@ -92,7 +93,7 @@ public class ProjectSummaryService {
             if(work.getTask()==null) logger.info("work t = " + work);
 
             ProjectSummary projectSummary = projectSummaryMap.get(contractuuid+project.getUuid());
-            Double rate = contractService.findConsultantRateByWork(work);
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null) {
                 projectSummary.addAmount(work.getWorkduration() * (rate));
             } else {
@@ -124,7 +125,7 @@ public class ProjectSummaryService {
             //if(!project.getUuid().equals(projectSummary.getProjectuuid())) continue;
             logger.info("project = " + project);
 
-            if(!contractService.findContractByWork(workResource).getUuid().equals(contract.getUuid())) continue;
+            if(!contractService.findContractByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED).getUuid().equals(contract.getUuid())) continue;
 
             User user = workResource.getUser();
 
@@ -150,7 +151,7 @@ public class ProjectSummaryService {
                 logger.info("Created new invoice: "+invoice);
             }
 
-            Double rate = contractService.findConsultantRateByWork(workResource);
+            Double rate = contractService.findConsultantRateByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
 
             if(rate == null) {
                 logger.error("Taskworkerconstraint could not be found for user (link: "+user.getUuid()+") and task (link: "+task.getUuid()+")");
