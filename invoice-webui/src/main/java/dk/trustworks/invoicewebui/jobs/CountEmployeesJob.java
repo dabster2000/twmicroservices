@@ -95,18 +95,6 @@ public class CountEmployeesJob {
                 tryDate = tryDate.plusMonths(1);
             }
         }
-        for (LocalDate localDate : usersByLocalDate.keySet()) {
-            log.debug("-------------------------");
-            log.debug("localDate = " + localDate);
-            log.debug("users = " + usersByLocalDate.get(localDate).size());
-            if(localDate.getYear() == 2017) {
-                for (User user : usersByLocalDate.get(localDate)) {
-                    log.debug(user.getUsername()+", ");
-                }
-                log.debug("");
-            }
-            log.debug("-------------------------");
-        }
     }
 
     // http://wiki.pentaho.com/display/DATAMINING/Time+Series+Analysis+and+Forecasting+with+Weka

@@ -1,10 +1,7 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Credits;
-import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -71,6 +68,13 @@ public class RevenuePerMonthChart {
         chart.getConfiguration().getxAxis().setTickWidth(0);
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
+        //Labels labels = new Labels();
+        // display y axis value in kilos as there is such a pile of weapons
+        //labels.setFormatter("this.value / 1000 +'kkr'");
+        //chart.getConfiguration().getyAxis().setLabels(labels);
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' kkr");
+        chart.getConfiguration().setTooltip(tooltip);
 
         List<Work> workList = workRepository.findByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         List<GraphKeyValue> amountPerItemList = new ArrayList<>();
