@@ -48,6 +48,7 @@ public interface UserStatusRepository extends CrudRepository<UserStatus, String>
             "                        ) ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid WHERE status LIKE 'ACTIVE'", nativeQuery = true)
     List<UserStatus> findAllActiveByDate(@Param("actualdate") String actualdate);
 
+    List<UserStatus> findAllByOrderByUserAscStatusdateAsc();
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(UserStatus entity);
