@@ -4,6 +4,7 @@ import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Transactional
 @RepositoryRestResource(collectionResourceRel = "contracts", path = "contracts")
-public interface ContractRepository extends ContractBaseRepository<Contract> {
+public interface ContractRepository extends CrudRepository<Contract, String> {
 
     @Cacheable("rate")
     @Query(value = "select cc.rate as price from usermanager.contracts c" +
