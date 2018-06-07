@@ -107,9 +107,6 @@ public class SalesHeatMap {
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
                 List<UserStatus> userStatuses = user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
-                for (UserStatus userStatus : userStatuses) {
-                    System.out.println("userStatus = " + userStatus);
-                }
 
                 UserStatus userStatus = new UserStatus(null, null, null, 0);
                 for (UserStatus userStatusIteration : userStatuses) {

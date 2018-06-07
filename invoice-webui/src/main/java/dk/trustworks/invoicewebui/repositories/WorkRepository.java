@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.repositories;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.WorkWithRate;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +21,19 @@ public interface WorkRepository extends CrudRepository<Work, String> {
 
     Work findByDayAndMonthAndYearAndUserAndTask(int day, int month, int year, User user, Task task);
 
+    @Query(value = "select w.*, cc.rate from " +
+            "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
+            "inner join task t on w.taskuuid = t.uuid " +
+            "inner join project p on t.projectuuid = p.uuid " +
+            "inner join user u on w.useruuid = u.uuid " +
+            "inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "inner join contracts c on cp.contractuuid = c.uuid " +
+            "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
+            "where c.activefrom <= registered and c.activeto >= registered " +
+            "and  w.registered >= :fromdate AND w.registered < :todate " +
+            "and w.workduration > 0 and c.status in :statusList ", nativeQuery = true)
+    List<WorkWithRate> findWorkWithRateByPeriod(@Param("fromdate") LocalDate fromdate, @Param("todate") LocalDate todate, @Param("statusList") String... statusList);
+
     @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate AND k.useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByPeriodAndUserUUID(@Param("fromdate") String fromdate,
                                        @Param("todate") String todate,
@@ -32,9 +46,18 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
     List<Work> findByPeriod(@Param("fromdate") LocalDate fromdate, @Param("todate") LocalDate todate);
 
-    @Query(value = "SELECT w.id, w.day, w.month, w.taskuuid, w.useruuid, w.workas as workas, w.workduration, w.year, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created " +
-            "FROM work w INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = w.useruuid " +
-            "WHERE twc.price > 0.0 AND ((w.year*10000)+((w.month+1)*100)+w.day) between :fromdate and :todate", nativeQuery = true)
+    @Query(value = "select w.* from " +
+            "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
+            "inner join task t on w.taskuuid = t.uuid " +
+            "inner join project p on t.projectuuid = p.uuid " +
+            "inner join user u on w.useruuid = u.uuid " +
+            "inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "inner join contracts c on cp.contractuuid = c.uuid " +
+            "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
+            "where c.activefrom <= registered and c.activeto >= registered " +
+            "and  w.registered >= :fromdate AND w.registered < :todate " +
+            "and w.workduration > 0 and c.status in ('SIGNED') " +
+            "and cc.rate > 0.0;", nativeQuery = true)
     List<Work> findBillableWorkByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
 
     @Query(value = "SELECT id, day, month, year, taskuuid, useruuid, w.workas as workas, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM work w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)

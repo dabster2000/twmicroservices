@@ -98,9 +98,6 @@ public class ContractService {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
         if(work.getWorkas()==null) {
-            for (ContractStatus contractStatus : statusList) {
-                System.out.println("contractStatus = " + contractStatus);
-            }
             return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         } else {
             return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));

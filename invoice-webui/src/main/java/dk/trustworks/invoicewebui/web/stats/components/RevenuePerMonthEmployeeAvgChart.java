@@ -12,6 +12,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
+import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -37,11 +38,14 @@ public class RevenuePerMonthEmployeeAvgChart {
 
     private final ExpenseRepository expenseRepository;
 
+    private final WorkRepository workRepository;
+
     @Autowired
-    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, CountEmployeesJob employeesJob, ExpenseRepository expenseRepository) {
+    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, CountEmployeesJob employeesJob, ExpenseRepository expenseRepository, WorkRepository workRepository) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.employeesJob = employeesJob;
         this.expenseRepository = expenseRepository;
+        this.workRepository = workRepository;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
