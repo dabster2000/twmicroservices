@@ -7,7 +7,6 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.admin.components.AdminManagerImpl;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import dk.trustworks.invoicewebui.web.stats.components.LayoutManager;
@@ -47,7 +46,7 @@ public class StatsManagerView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        mainTemplate.setMainContent(layoutManager.init(), VIEW_ICON, MENU_NAME, "Great statistics!", VIEW_BREADCRUMB);
+        //mainTemplate.setMainContent(layoutManager.init(), VIEW_ICON, MENU_NAME, "Great statistics!", VIEW_BREADCRUMB);
     }
 
     @Override

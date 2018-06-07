@@ -68,8 +68,7 @@ public class DashboardPreloader {
 
     public String[] getTrips() {
         if(trips==null || trips.length==0) {
-            String[] empty = {""};
-            return empty;
+            return new String[]{""};
         }
         return trips;
     }

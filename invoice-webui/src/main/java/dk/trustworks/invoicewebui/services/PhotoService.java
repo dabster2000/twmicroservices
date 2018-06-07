@@ -18,6 +18,10 @@ public class PhotoService {
     private PhotoRepository photoRepository;
 
     public Image getRoundMemberImage(User member, boolean isOwner) {
+        return getRoundMemberImage(member, isOwner, 75);
+    }
+
+    public Image getRoundMemberImage(User member, boolean isOwner, int width) {
         Photo photo = photoRepository.findByRelateduuid(member.getUuid());
 
         Image image = new Image(null,
@@ -26,8 +30,8 @@ public class PhotoService {
                         member.getUsername()+System.currentTimeMillis()+".jpg"));
         if(isOwner) image.setStyleName("img-circle-gold");
         else image.setStyleName("img-circle");
-        image.setWidth(75, Sizeable.Unit.PIXELS);
-        image.setHeight(75, Sizeable.Unit.PIXELS);
+        image.setWidth(width, Sizeable.Unit.PIXELS);
+        image.setHeight(width, Sizeable.Unit.PIXELS);
         return image;
     }
 }

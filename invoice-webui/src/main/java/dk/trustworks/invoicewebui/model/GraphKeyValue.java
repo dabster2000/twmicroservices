@@ -12,9 +12,15 @@ public class GraphKeyValue {
     @Id
     private String uuid;
     private String description;
-    private int value;
+    private double value;
 
     public GraphKeyValue() {
+    }
+
+    public GraphKeyValue(String uuid, String description, int value) {
+        this.uuid = uuid;
+        this.description = description;
+        this.value = value;
     }
 
     public String getUuid() {
@@ -33,19 +39,23 @@ public class GraphKeyValue {
         this.description = description;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
+    }
+
+    public void addValue(int value) {
+        this.value += value;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("GraphKeyValues{");
         sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", key='").append(description).append('\'');
+        sb.append(", description='").append(description).append('\'');
         sb.append(", value=").append(value);
         sb.append('}');
         return sb.toString();

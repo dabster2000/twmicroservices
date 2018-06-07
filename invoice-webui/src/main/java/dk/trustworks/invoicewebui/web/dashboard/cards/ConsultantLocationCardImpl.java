@@ -8,7 +8,7 @@ import com.vaadin.ui.UI;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 import org.vaadin.addon.leaflet.LImageOverlay;
 import org.vaadin.addon.leaflet.LMap;
@@ -39,7 +39,7 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
     //Map<String, Point> addresses;
 
 
-    public ConsultantLocationCardImpl(ProjectRepository projectRepository, PhotoRepository photoRepository, int priority, int boxWidth, String name) {
+    public ConsultantLocationCardImpl(ProjectService projectService, PhotoRepository photoRepository, int priority, int boxWidth, String name) {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
@@ -55,7 +55,7 @@ public class ConsultantLocationCardImpl extends ConsultantLocationCardDesign imp
         //addresses = new HashMap<>();
 
         String clientName = "";
-        for (Project project : projectRepository.findAllByActiveTrueOrderByNameAsc().stream().sorted(Comparator.comparing(o -> o.getClient().getName())).collect(Collectors.toCollection(ArrayList::new))) {
+        for (Project project : projectService.findAllByActiveTrueOrderByNameAsc().stream().sorted(Comparator.comparing(o -> o.getClient().getName())).collect(Collectors.toCollection(ArrayList::new))) {
             if(project.getLatitude() == 0.0) continue;
             double lat = project.getLatitude();//55.707043;
             double lon = project.getLongitude(); //12.589604000000008;

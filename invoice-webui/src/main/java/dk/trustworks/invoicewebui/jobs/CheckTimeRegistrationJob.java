@@ -7,17 +7,21 @@ import dk.trustworks.invoicewebui.model.StatusType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.BudgetRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import org.joda.time.DateTime;
+import dk.trustworks.invoicewebui.services.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Logger;
+
+import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.TUESDAY;
 
 
 @Component
@@ -32,7 +36,7 @@ public class CheckTimeRegistrationJob {
     private UserRepository userRepository;
 
     @Autowired
-    private BudgetRepository budgetRepository;
+    private ContractService contractService;
 
     @Value("${halSlackBotToken}")
     private String slackToken;
@@ -42,10 +46,10 @@ public class CheckTimeRegistrationJob {
     @Scheduled(cron = "0 20 11 * * MON-FRI")
     public void checkDuplicateEntries() {
         System.out.println("CheckTimeRegistrationJob.checkDuplicateEntries");
-        DateTime dateTime = DateTime.now();
+        LocalDate dateTime = LocalDate.now();
         Map<String, Work> uniqueWork = new HashMap<>();
         List<Work> failedWork = new ArrayList<>();
-        for (Work work : workRepository.findByYearAndMonth(dateTime.getYear(), dateTime.getMonthOfYear() - 1)) {
+        for (Work work : workRepository.findByYearAndMonth(dateTime.getYear(), dateTime.getMonthValue() - 1)) {
             String key = work.getUser().getUuid()+""+work.getTask().getUuid()+""+work.getYear()+""+work.getMonth()+""+work.getDay();
             if(uniqueWork.containsKey(key)) {
                 failedWork.add(work);
@@ -70,21 +74,21 @@ public class CheckTimeRegistrationJob {
     public void checkTimeRegistrationJob() {
         halWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
         log.info("CheckTimeRegistrationJob.execute");
-        DateTime dateTime = DateTime.now();
+        LocalDate dateTime = LocalDate.now();
         log.info("dateTime = " + dateTime);
-        if(dateTime.getDayOfWeek() > 5) return; // do not check in weekends
+        if(dateTime.getDayOfWeek().getValue() > 5) return; // do not check in weekends
         log.info("This is not in the weekend");
 
-        if(dateTime.getDayOfWeek() == 1) {
+        if(dateTime.getDayOfWeek() == MONDAY) {
             dateTime = dateTime.minusDays(3);
-        } else if (dateTime.getDayOfWeek() == 2) {
+        } else if (dateTime.getDayOfWeek() == TUESDAY) {
             dateTime = dateTime.minusDays(4);
         } else {
             dateTime = dateTime.minusDays(2);
         }
         log.info("dateTime = " + dateTime);
 
-        List<Work> allWork = workRepository.findByPeriod(dateTime.minusDays(1).toString("yyyy-MM-dd"), dateTime.toString("yyyy-MM-dd"));
+        List<Work> allWork = workRepository.findByPeriod(dateTime.minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         log.info("workByYearMonthDay.size() = " + allWork.size());
 
         for (User user : userRepository.findByActiveTrue()) {
@@ -102,7 +106,9 @@ public class CheckTimeRegistrationJob {
             }
             log.info("hasWork = " + hasWork);
 
-            if(budgetRepository.findByMonthAndYearAndUseruuid(dateTime.getMonthOfYear() - 1, dateTime.getYear(), user.getUuid()).stream().filter(e -> e.getBudget() > 0.0).count() == 0) hasWork = true;
+            // Todo: Only send to people with budgets
+            if(contractService.findTimeActiveConsultantContracts(user, dateTime).size() > 0) hasWork = true;
+            //if(budgetRepository.findByMonthAndYearAndUseruuid(dateTime.getMonthOfYear() - 1, dateTime.getYear(), user.getUuid()).stream().filter(e -> e.getBudget() > 0.0).count() == 0) hasWork = true;
 
             if(!hasWork) {
                 String[] responses = {

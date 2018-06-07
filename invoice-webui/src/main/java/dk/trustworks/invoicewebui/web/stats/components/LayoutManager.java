@@ -1,21 +1,15 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
-import com.jarektoro.responsivelayout.ResponsiveLayout;
-import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.VerticalLayout;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
  * Created by hans on 20/09/2017.
  */
-@SpringComponent
-@SpringUI
+//@SpringComponent
+//@SpringUI
 public class LayoutManager extends VerticalLayout {
-
+/*
     @Autowired
     private TopGrossingProjectsChart topGrossingProjectsChart;
 
@@ -49,5 +43,5 @@ public class LayoutManager extends VerticalLayout {
 
         return this;
     }
-
+*/
 }

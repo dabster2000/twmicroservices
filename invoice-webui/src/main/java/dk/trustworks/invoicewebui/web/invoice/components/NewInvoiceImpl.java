@@ -6,13 +6,16 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,7 @@ import org.vaadin.addons.producttour.shared.step.StepAnchor;
 import org.vaadin.addons.producttour.step.Step;
 import org.vaadin.addons.producttour.step.StepBuilder;
 import org.vaadin.addons.producttour.tour.Tour;
+import org.vaadin.viritin.label.MLabel;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -41,18 +45,26 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
 
     protected static Logger logger = LoggerFactory.getLogger(NewInvoiceImpl.class.getName());
 
-    @Autowired
-    private ProjectSummaryService projectSummaryClient;
+    private final ProjectSummaryService projectSummaryClient;
+
+    private final InvoiceService invoiceService;
+
+    private VerticalLayout errorList;
+
+    private Card errorCard;
 
     @Autowired
-    private InvoiceService invoiceService;
+    public NewInvoiceImpl(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService) {
+        this.projectSummaryClient = projectSummaryClient;
+        this.invoiceService = invoiceService;
+    }
 
     @PostConstruct
     public void postConstruct() {
         btnCreateInvoice.addClickListener(event -> {
             logger.info(gridProjectSummaryList.getSelectedItems().size()+" new invoice created");
             for (ProjectSummary projectSummary : gridProjectSummaryList.getSelectedItems()) {
-                projectSummaryClient.createInvoiceFromProject(projectSummary.getProjectuuid(), cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
+                projectSummaryClient.createInvoiceFromProject(projectSummary, cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue()-1);
                 reloadData();
             }
             Notification.show("Invoice created",
@@ -69,12 +81,23 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                     "A new blank invoice has been created. You can edit in the Drafts section",
                     Notification.Type.TRAY_NOTIFICATION);
         });
+
+        errorCard = new Card();
+        errorCard.getContent().setHeight(250, Unit.PIXELS);
+        errorCard.getContent().addStyleName("v-scrollable");
+        errorCard.getLblTitle().setValue("Invoice errors");
+    }
+
+    private void createErrorList(Card errorCard) {
+        errorCard.getContent().removeAllComponents();
+        errorList = new VerticalLayout();
+        errorList.addComponent(new MLabel("The invoices for this months contain the following errors:").withStyleName("failure"));
+        errorCard.getContent().addComponent(errorList);
+        vlErrorCardContainer.addComponent(errorCard);
     }
 
     public NewInvoiceImpl init() {
         logger.info("NewInvoiceImpl.init");
-        //ResponsiveColumn invoiceMenuItem = leftMenu.getMenuItems().get(MainWindowImpl.VIEW_NAME);
-        //invoiceMenuItem.
 
         List<YearMonthSelect> yearMonthList = createYearMonthSelector();
         cbSelectYearMonth.setItems(yearMonthList);
@@ -83,11 +106,11 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         cbSelectYearMonth.setSelectedItem(yearMonthList.get(1));
         cbSelectYearMonth.addValueChangeListener(event -> reloadData());
 
-        Grid.Column colRegisteredAmount = gridProjectSummaryList.getColumn("registeredamount");
+        Column colRegisteredAmount = gridProjectSummaryList.getColumn("registeredamount");
         colRegisteredAmount.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
         colRegisteredAmount.setStyleGenerator(item -> "v-align-right");
 
-        Grid.Column colInvoicedAmount = gridProjectSummaryList.getColumn("invoicedamount");
+        Column colInvoicedAmount = gridProjectSummaryList.getColumn("invoicedamount");
         colInvoicedAmount.setRenderer(new NumberRenderer(NumberConverter.getCurrencyInstance()));
         colInvoicedAmount.setStyleGenerator(item -> "v-align-right");
 
@@ -122,9 +145,19 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         logger.info("NewInvoiceImpl.reloadData");
         long start = System.currentTimeMillis();
         logger.debug("start = " + start);
+        createErrorList(errorCard);
         List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
         gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
         gridProjectSummaryList.getDataProvider().refreshAll();
+        for (ProjectSummary projectSummary : projectSummaries) {
+            if(projectSummary.getErrors().size()>0) {
+                vlErrorCardContainer.setVisible(true);
+                for (String error : projectSummary.getErrors()) {
+                    errorList.addComponent(new MLabel(error).withWidth(100, Unit.PERCENTAGE));
+                }
+            }
+        }
+
         double end = System.currentTimeMillis() - start;
         logger.debug("end = " + end);
     }

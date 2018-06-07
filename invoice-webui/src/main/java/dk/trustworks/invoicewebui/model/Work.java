@@ -1,8 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDate;
 
 /**
  * Created by hans on 28/06/2017.
@@ -11,14 +10,12 @@ import java.util.UUID;
 @Table(schema = "timemanager")
 public class Work {
 
-    @Id private String uuid;
+    @Id
+    private int id;
     private int day;
     private int month;
     private int year;
     private double workduration;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taskuuid")
@@ -28,26 +25,38 @@ public class Work {
     @JoinColumn(name = "useruuid")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workas")
+    private User workas;
+
     public Work() {
     }
 
     public Work(int day, int month, int year, double workduration, User user, Task task) {
-        this.uuid = UUID.randomUUID().toString();
         this.day = day;
         this.month = month;
         this.year = year;
         this.workduration = workduration;
         this.user = user;
         this.task = task;
-        this.created = new Date();
     }
 
-    public String getUuid() {
-        return uuid;
+    public Work(int day, int month, int year, double workduration, User user, Task task, User workas) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.workduration = workduration;
+        this.user = user;
+        this.task = task;
+        this.workas = workas;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getDay() {
@@ -82,14 +91,6 @@ public class Work {
         this.workduration = workduration;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
     public Task getTask() {
         return task;
     }
@@ -106,16 +107,28 @@ public class Work {
         this.user = user;
     }
 
+    public User getWorkas() {
+        return workas;
+    }
+
+    public void setWorkas(User workas) {
+        this.workas = workas;
+    }
+
+    public LocalDate getDate() {
+        return LocalDate.of(year, month+1, day);
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Work{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", day=").append(day);
-        sb.append(", month=").append(month);
-        sb.append(", year=").append(year);
-        sb.append(", workduration=").append(workduration);
-        sb.append(", created=").append(created);
-        sb.append('}');
-        return sb.toString();
+        return "Work{" +
+                "id='" + id + '\'' +
+                ", date=" + getDate() +
+                ", workduration=" + workduration +
+                ", task=" + task.getUuid() +
+                ", user=" + user.getUuid() +
+                ", workas=" + (workas!=null) +
+                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +
+                '}';
     }
 }

@@ -16,7 +16,15 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "budgetnews", path="budgetnews")
 public interface BudgetNewRepository extends CrudRepository<BudgetNew, String> {
 
-    List<BudgetNew> findByMonthAndYearAndConsultant(@Param("month") int month, @Param("year") int year, @Param("consultant") Consultant consultant);
+    /**
+     * month starts with 0
+     *
+     * @param month starts with 0
+     * @param year
+     * @return
+     */
+    List<BudgetNew> findByMonthAndYear(@Param("month") int month, @Param("year") int year);
+    BudgetNew findByMonthAndYearAndConsultant(@Param("month") int month, @Param("year") int year, @Param("consultant") Consultant consultant);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(BudgetNew entity);

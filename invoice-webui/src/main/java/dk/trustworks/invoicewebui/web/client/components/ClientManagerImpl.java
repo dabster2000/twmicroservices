@@ -2,11 +2,15 @@ package dk.trustworks.invoicewebui.web.client.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Label;
+import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Photo;
@@ -14,6 +18,8 @@ import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
+import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -30,22 +37,29 @@ import java.util.UUID;
 @SpringUI
 public class ClientManagerImpl extends ClientManagerDesign {
 
-    @Autowired
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
-    @Autowired
-    private ClientdataRepository clientdataRepository;
+    private final ClientdataRepository clientdataRepository;
 
-    @Autowired
-    private PhotoRepository photoRepository;
+    private final PhotoRepository photoRepository;
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
-    @Autowired
-    private MainTemplate mainTemplate;
+    private final ChartCacheJob chartCache;
+
+    private final MainTemplate mainTemplate;
 
     ResponsiveLayout responsiveLayout;
+
+    @Autowired
+    public ClientManagerImpl(ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, ProjectService projectService, ChartCacheJob chartCache, MainTemplate mainTemplate) {
+        this.clientRepository = clientRepository;
+        this.clientdataRepository = clientdataRepository;
+        this.photoRepository = photoRepository;
+        this.projectService = projectService;
+        this.chartCache = chartCache;
+        this.mainTemplate = mainTemplate;
+    }
 
     public ClientManagerImpl init() {
         createClientListView();
@@ -56,25 +70,17 @@ public class ClientManagerImpl extends ClientManagerDesign {
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
-/*
-        OnOffSwitch onOffSwitch = new OnOffSwitch(false);
-        onOffSwitch
 
-        responsiveLayout.addRow().addColumn()
-                .withDisplayRules(12, 12, 4, 4)
-                .withOffset(ResponsiveLayout.DisplaySize.XS, 4)
-                .withOffset(ResponsiveLayout.DisplaySize.SM, 4)
-                .withComponent();
-*/
-        int rowItemCount = 1;
-        ResponsiveRow row = responsiveLayout.addRow();
+        ResponsiveRow statsRow = responsiveLayout.addRow();
+        statsRow.addColumn().withDisplayRules(12, 12, 12, 12)
+                .withComponent(createClientRevenueChart());
+
+        ResponsiveRow clientRow = responsiveLayout.addRow();
 
         Iterable<Client> clients = clientRepository.findAllByOrderByActiveDescNameAsc();
         for (Client client : clients) {
             ClientCardImpl clientCard = new ClientCardImpl(client, photoRepository.findByRelateduuid(client.getUuid()));
-            clientCard.getBtnEdit().addClickListener(event -> {
-                createClientDetailsView(client);
-            });
+            clientCard.getBtnEdit().addClickListener(event -> createClientDetailsView(client));
             clientCard.getBtnDelete().addClickListener(event -> {
                 client.setActive(!client.isActive());
                 clientRepository.save(client);
@@ -86,15 +92,9 @@ public class ClientManagerImpl extends ClientManagerDesign {
                 if(!client.isActive()) {
                     clientCard.getBtnDelete().setCaption("ACTIVATE");
                     clientCard.getBtnDelete().setStyleName("friendly");
-                    //clientCard.getBtnDelete().setStyleName("flat", true);
                 }
             });
-            row.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(clientCard);
-            rowItemCount++;
-            if(rowItemCount > 4) {
-                rowItemCount = 1;
-                //row = responsiveLayout.addRow();
-            }
+            clientRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(clientCard);
         }
 
         AddClientCardDesign addClientCardDesign = new AddClientCardDesign();
@@ -165,6 +165,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
                     .addColumn()
                     .withDisplayRules(12, 8, 6, 4)
                     .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectRepository, this));
+                    .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectService));
             clientDataRow
                     .addColumn()
                     .withDisplayRules(0, 2, 3, 0)
@@ -260,6 +261,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         btnAddContactInformation.addClickListener(event -> {
             Clientdata newClientdata = new Clientdata("", "", "", "", "", "", 0L, "", client);
             ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, newClientdata, projectRepository, this);
+            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, new Clientdata("", "", "", "", "", "", 0L, "", client), projectService);
             clientData.getBtnDelete().setVisible(false);
             clientData.getCssHider().setVisible(true);
             clientData.getBtnEdit().setVisible(false);
@@ -272,5 +274,42 @@ public class ClientManagerImpl extends ClientManagerDesign {
             UI.getCurrent().addWindow(window3);
         });
     }
+
+    private Chart createClientRevenueChart() {
+        Map<String, Number> revenueMap = chartCache.getRevenuePerClientMap();
+
+        Chart chart = new Chart(ChartType.COLUMN);
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("Total revenue, grouped by client");
+        conf.setSubTitle("Only showing active clients");
+
+        XAxis x = new XAxis();
+        x.setCategories(revenueMap.keySet().stream().toArray(String[]::new));
+        conf.addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setMin(0);
+        y.setTitle("Revenue");
+        conf.addyAxis(y);
+
+        conf.getLegend().setEnabled(false);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.x +': '+ this.y +' kr'");
+        conf.setTooltip(tooltip);
+
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
+
+        conf.addSeries(new ListSeries("Revenue", revenueMap.values()));
+
+        chart.drawChart(conf);
+        return chart;
+    }
+
+
 
 }

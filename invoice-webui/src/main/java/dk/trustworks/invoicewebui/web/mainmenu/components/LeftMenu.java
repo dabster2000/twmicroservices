@@ -11,6 +11,7 @@ import dk.trustworks.invoicewebui.web.admin.UserManagerView;
 import dk.trustworks.invoicewebui.web.blockchain.BlockchainView;
 import dk.trustworks.invoicewebui.web.bubbles.BubblesView;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
+import dk.trustworks.invoicewebui.web.contracts.views.ContractManagerView;
 import dk.trustworks.invoicewebui.web.dashboard.DashboardView;
 import dk.trustworks.invoicewebui.web.economy.ExpenseView;
 import dk.trustworks.invoicewebui.web.employee.EmployeeView;
@@ -87,8 +88,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(DashboardView.VIEW_NAME, dashboard);
         MenuItemContainer clients = new MenuItemContainer(order++).createItem(ClientManagerView.MENU_NAME, false, ClientManagerView.VIEW_ICON, ClientManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ClientManagerView.VIEW_NAME, clients);
-        //MenuItemContainer contracts = new MenuItemContainer(order++).createItem(ContractManagerView.MENU_NAME, false, ContractManagerView.VIEW_ICON, ContractManagerView.VIEW_NAME, false, RoleType.SALES);
-        //menuItems.put(ContractManagerView.VIEW_NAME, contracts);
+        MenuItemContainer contracts = new MenuItemContainer(order++).createItem(ContractManagerView.MENU_NAME, false, ContractManagerView.VIEW_ICON, ContractManagerView.VIEW_NAME, false, RoleType.SALES);
+        menuItems.put(ContractManagerView.VIEW_NAME, contracts);
         MenuItemContainer projects = new MenuItemContainer(order++).createItem(ProjectManagerView.MENU_NAME, false, ProjectManagerView.VIEW_ICON, ProjectManagerView.VIEW_NAME, false, RoleType.SALES);
         menuItems.put(ProjectManagerView.VIEW_NAME, projects);
 

@@ -22,6 +22,7 @@ import com.vaadin.ui.VerticalLayout;
 public class NewInvoiceDesign extends VerticalLayout {
     protected Button btnTour;
     protected ComboBox<dk.trustworks.invoicewebui.web.model.YearMonthSelect> cbSelectYearMonth;
+    protected VerticalLayout vlErrorCardContainer;
     protected Grid<dk.trustworks.invoicewebui.network.dto.ProjectSummary> gridProjectSummaryList;
     protected Button btnCreateInvoice;
     protected Button btnCreateBlankInvoice;

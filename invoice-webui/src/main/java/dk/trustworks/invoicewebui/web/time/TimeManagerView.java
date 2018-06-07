@@ -39,9 +39,6 @@ public class TimeManagerView extends VerticalLayout implements View {
     @Autowired
     private TimeManagerImpl timeManager;
 
-    //@Autowired
-    //private TimeCardImpl timeCard;
-
     public static final String VIEW_NAME = "timeregistration";
     public static final String MENU_NAME = "Time Sheet";
     public static final String VIEW_BREADCRUMB = "TimeManager / Time Sheet";
@@ -55,7 +52,6 @@ public class TimeManagerView extends VerticalLayout implements View {
         this.addComponent(mainTemplate);
         this.setResponsive(true);
         mainTemplate.setMainContent(timeManager.init(), VIEW_ICON, MENU_NAME, "You are probably doing this late...", VIEW_BREADCRUMB);
-        //mainTemplate.setMainContent(timeCard.init(), VIEW_ICON, MENU_NAME, "You are probably doing this late...", VIEW_BREADCRUMB);
     }
 
     @Override

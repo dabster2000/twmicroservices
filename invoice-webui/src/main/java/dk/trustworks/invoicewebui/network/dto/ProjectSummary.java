@@ -1,10 +1,14 @@
 package dk.trustworks.invoicewebui.network.dto;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 /**
  * Created by hans on 12/07/2017.
  */
 public class ProjectSummary {
 
+    private String contractuuid;
     private String projectuuid;
     private String projectname;
     private String clientname;
@@ -12,11 +16,13 @@ public class ProjectSummary {
     private double registeredamount;
     private double invoicedamount;
     private int invoices;
+    private HashMap<String, String> errors = new HashMap<>();
 
     public ProjectSummary() {
     }
 
-    public ProjectSummary(String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices) {
+    public ProjectSummary(String contractuuid, String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices) {
+        this.contractuuid = contractuuid;
         this.projectuuid = projectuuid;
         this.projectname = projectname;
         this.clientname = clientname;
@@ -24,6 +30,14 @@ public class ProjectSummary {
         this.registeredamount = registeredamount;
         this.invoicedamount = invoicedamount;
         this.invoices = invoices;
+    }
+
+    public String getContractuuid() {
+        return contractuuid;
+    }
+
+    public void setContractuuid(String contractuuid) {
+        this.contractuuid = contractuuid;
     }
 
     public String getProjectuuid() {
@@ -84,6 +98,14 @@ public class ProjectSummary {
 
     public void setInvoicedamount(double invoicedamount) {
         this.invoicedamount = invoicedamount;
+    }
+
+    public Collection<String> getErrors() {
+        return errors.values();
+    }
+
+    public void addError(String key, String error) {
+        this.errors.put(key, error);
     }
 
     @Override

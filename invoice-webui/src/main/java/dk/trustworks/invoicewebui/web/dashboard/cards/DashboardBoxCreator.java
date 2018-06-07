@@ -2,10 +2,11 @@ package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.ThemeResource;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
 import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.ContractService;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,16 +23,16 @@ public class DashboardBoxCreator {
 
     private final WorkRepository workRepository;
 
-    private final TaskworkerconstraintRepository taskworkerconstraintRepository;
-
     private final GraphKeyValueRepository graphKeyValueRepository;
 
+    private final ContractService contractService;
+
     @Autowired
-    public DashboardBoxCreator(UserStatusRepository userStatusRepository, WorkRepository workRepository, TaskworkerconstraintRepository taskworkerconstraintRepository, GraphKeyValueRepository graphKeyValueRepository) {
+    public DashboardBoxCreator(UserStatusRepository userStatusRepository, WorkRepository workRepository, GraphKeyValueRepository graphKeyValueRepository, ContractService contractService) {
         this.userStatusRepository = userStatusRepository;
         this.workRepository = workRepository;
-        this.taskworkerconstraintRepository = taskworkerconstraintRepository;
         this.graphKeyValueRepository = graphKeyValueRepository;
+        this.contractService = contractService;
     }
 
     @Cacheable("goodpeople")
@@ -52,24 +53,20 @@ public class DashboardBoxCreator {
         LocalDate lastStartDate = startDate.minusYears(1);
         LocalDate lastEndDate = endDate.minusYears(1);
         Map<String, Project> currentProjectSet = new HashMap<>();
-        Map<String, Project> noProjectSet = new HashMap<>();
+        //Map<String, Project> noProjectSet = new HashMap<>();
         for (Work work : workRepository.findByPeriod(startDate.toString("yyyy-MM-dd"), endDate.toString("yyyy-MM-dd"))) {
-            Task task = work.getTask();
-            User user = work.getUser();
-            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
-            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+            if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            } else {
+            } /*else {
                 noProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            }
+            }*/
         }
 
         Map<String, Project> lastProjectSet = new HashMap<>();
         for (Work work : workRepository.findByPeriod(lastStartDate.toString("yyyy-MM-dd"), lastEndDate.toString("yyyy-MM-dd"))) {
-            Task task = work.getTask();
-            User user = work.getUser();
-            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
-            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+            if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
             }
         }
@@ -88,30 +85,26 @@ public class DashboardBoxCreator {
         LocalDate endDate = LocalDate.now();
         LocalDate lastStartDate = startDate.minusYears(1);
         LocalDate lastEndDate = endDate.minusYears(1);
-        Map<String, Project> currentProjectSet = new HashMap<>();
-        Map<String, Project> noProjectSet = new HashMap<>();
+        //Map<String, Project> currentProjectSet = new HashMap<>();
+        //Map<String, Project> noProjectSet = new HashMap<>();
         float billableHoursThisYear = 0f;
         for (Work work : workRepository.findByPeriod(startDate.toString("yyyy-MM-dd"), endDate.toString("yyyy-MM-dd"))) {
-            Task task = work.getTask();
-            User user = work.getUser();
-            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
-            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+            if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 billableHoursThisYear += work.getWorkduration();
-                currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            } else {
-                noProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            }
+                //currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
+            } //else {
+                //noProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
+            //}
         }
 
-        Map<String, Project> lastProjectSet = new HashMap<>();
+        //Map<String, Project> lastProjectSet = new HashMap<>();
         float billableHoursLastYear = 0f;
         for (Work work : workRepository.findByPeriod(lastStartDate.toString("yyyy-MM-dd"), lastEndDate.toString("yyyy-MM-dd"))) {
-            Task task = work.getTask();
-            User user = work.getUser();
-            List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTaskAndUser(task, user);
-            if(taskworkerconstraints.size()>0 && taskworkerconstraints.get(0).getPrice() > 0 && work.getWorkduration() > 0) {
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+            if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 billableHoursLastYear += work.getWorkduration();
-                lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
+                //lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
             }
         }
         int percentBillableHours = Math.round((billableHoursThisYear / billableHoursLastYear) * 100) - 100;

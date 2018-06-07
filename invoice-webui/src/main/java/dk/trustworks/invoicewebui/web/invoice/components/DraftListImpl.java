@@ -44,23 +44,22 @@ import static dk.trustworks.invoicewebui.web.invoice.views.DraftListView.VIEW_NA
 public class DraftListImpl extends DraftListDesign
         implements Broadcaster.BroadcastListener {
 
-    @Autowired
-    private InvoiceRepository invoiceRepository;
+    private final InvoiceRepository invoiceRepository;
+
+    private final LeftMenu leftMenu;
+
+    final InvoicePdfGenerator invoicePdfGenerator;
 
     @Autowired
-    private LeftMenu leftMenu;
-
-    @Autowired
-    InvoicePdfGenerator invoicePdfGenerator;
-
-    public DraftListImpl() {
-
+    public DraftListImpl(InvoiceRepository invoiceRepository, LeftMenu leftMenu, InvoicePdfGenerator invoicePdfGenerator) {
+        this.invoiceRepository = invoiceRepository;
+        this.leftMenu = leftMenu;
+        this.invoicePdfGenerator = invoicePdfGenerator;
     }
 
     @PostConstruct
     public void init() {
         System.out.println("DraftListImpl.InvoiceListImpl");
-        this.invoiceRepository = invoiceRepository;
 
         loadInvoicesToGrid();
 

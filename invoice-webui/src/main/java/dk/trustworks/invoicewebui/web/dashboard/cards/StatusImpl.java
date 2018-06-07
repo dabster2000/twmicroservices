@@ -8,7 +8,7 @@ import com.vaadin.ui.UI;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.web.model.StatusItem;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 
@@ -25,7 +25,7 @@ public class StatusImpl extends StatusDesign implements Box {
     private int boxWidth;
     private String name;
 
-    public StatusImpl(ProjectRepository projectRepository, int priority, int boxWidth, String name) {
+    public StatusImpl(ProjectService projectService, int priority, int boxWidth, String name) {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
@@ -33,7 +33,7 @@ public class StatusImpl extends StatusDesign implements Box {
 
         getEventGrid().setColumnExpandRatio(1, 1.0f);
         List<StatusItem> statusItems = new ArrayList<>();
-        for (Project project : projectRepository.findAllByActiveTrueOrderByNameAsc()) {
+        for (Project project : projectService.findAllByActiveTrueOrderByNameAsc()) {
             boolean projectHasWork = false;
             taskLoop:
             for (Task task : project.getTasks()) {

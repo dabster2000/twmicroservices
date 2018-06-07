@@ -15,6 +15,7 @@ public interface ClientRepository extends CrudRepository<Client, String> {
 
     List<Client> findByActiveTrue();
     List<Client> findByActiveTrueOrderByName();
+    List<Client> findByOrderByName();
     List<Client> findAllByOrderByActiveDescNameAsc();
 
     @Override @RestResource(exported = false) void delete(String id);

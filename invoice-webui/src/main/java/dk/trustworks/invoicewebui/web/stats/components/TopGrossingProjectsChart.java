@@ -1,27 +1,13 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Credits;
-import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.GraphKeyValue;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-
 /**
  * Created by hans on 20/09/2017.
  */
 
-@SpringComponent
-@SpringUI
+//@SpringComponent
+//@SpringUI
 public class TopGrossingProjectsChart {
-
+/*
     @Autowired
     private GraphKeyValueRepository graphKeyValueRepository;
 
@@ -70,5 +56,5 @@ public class TopGrossingProjectsChart {
         chart.getConfiguration().setCredits(c);
         return chart;
     }
-
+*/
 }

@@ -1,12 +1,15 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -30,10 +33,6 @@ public class User {
     private List<Salary> salaries;
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<UserStatus> statuses;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Taskworkerconstraint> taskworkerconstraint;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Budget> budget;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Week> weeks;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -146,22 +145,6 @@ public class User {
         this.statuses = statuses;
     }
 
-    public List<Taskworkerconstraint> getTaskworkerconstraint() {
-        return taskworkerconstraint;
-    }
-
-    public void setTaskworkerconstraint(List<Taskworkerconstraint> taskworkerconstraint) {
-        this.taskworkerconstraint = taskworkerconstraint;
-    }
-
-    public List<Budget> getBudget() {
-        return budget;
-    }
-
-    public void setBudget(List<Budget> budget) {
-        this.budget = budget;
-    }
-
     public List<Week> getWeeks() {
         return weeks;
     }
@@ -223,12 +206,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(uuid, user.uuid);
+        return getUuid().equals(user.getUuid());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(uuid);
+        return Objects.hashCode(getUuid());
     }
 }

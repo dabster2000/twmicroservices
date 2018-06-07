@@ -2,10 +2,11 @@ package dk.trustworks.invoicewebui.jobs;
 
 
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.IncomeForcastRepository;
-import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.ContractService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class CountEmployeesJob {
 
     private final WorkRepository workRepository;
 
-    private final TaskworkerconstraintRepository taskworkerconstraintRepository;
+    private final ContractService contractService;
 
     private final UserRepository userRepository;
 
@@ -48,13 +49,11 @@ public class CountEmployeesJob {
 
     private final List <Integer> dailyPeopleForecast;
 
-
-
     @Autowired
-    public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkRepository workRepository, TaskworkerconstraintRepository taskworkerconstraintRepository, UserRepository userRepository) {
+    public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkRepository workRepository, ContractService contractService, UserRepository userRepository) {
         this.incomeForcastRepository = incomeForcastRepository;
         this.workRepository = workRepository;
-        this.taskworkerconstraintRepository = taskworkerconstraintRepository;
+        this.contractService = contractService;
         this.userRepository = userRepository;
         usersByLocalDate = new HashMap<>();
         startDate = LocalDate.of(2014, 2, 1);
@@ -66,8 +65,8 @@ public class CountEmployeesJob {
     public void init() {
         countEmployees();
         try {
-            forecastIncome();
-            forecastPeople();
+            //forecastIncome();
+            //forecastPeople();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,14 +122,13 @@ public class CountEmployeesJob {
         String pattern = "yyyy-MM-dd";
         Map<String, Double> workByDate = new HashMap<>();
         for (Work work : workRepository.findByPeriod(startDate.format(DateTimeFormatter.ofPattern(pattern)), now.format(DateTimeFormatter.ofPattern(pattern)))) {
-            //String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay()).format(DateTimeFormatter.ofPattern(pattern));
             String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, 1).format(DateTimeFormatter.ofPattern(pattern));
             if(!workByDate.containsKey(dateString)) {
-                workByDate.put(dateString, new Double(0.0));
+                workByDate.put(dateString, 0.0);
             }
-            List<Taskworkerconstraint> taskworkerconstraintList = taskworkerconstraintRepository.findByTaskAndUser(work.getTask(), work.getUser());
-            if(taskworkerconstraintList.size() > 0 && taskworkerconstraintList.get(0).getPrice() > 0.0) {
-                double income = workByDate.get(dateString) + (work.getWorkduration() * taskworkerconstraintList.get(0).getPrice());
+            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+            if(rate != null && rate > 0.0) {
+                double income = workByDate.get(dateString) + (work.getWorkduration() * rate);
                 workByDate.put(dateString, income);
             }
         }
@@ -151,11 +149,11 @@ public class CountEmployeesJob {
             }
             String dateString = localDate.format(DateTimeFormatter.ofPattern(pattern));
             if(workByDate.containsKey(dateString)) {
-                sb.append(patternizer(dateString)+","+workByDate.get(dateString)+"\n");
+                sb.append(patternizer(dateString)).append(",").append(workByDate.get(dateString)).append("\n");
                 dailyForecast.add(workByDate.get(dateString));
             } else {
                 dailyForecast.add(0.0);
-                sb.append(patternizer(dateString)+",0.0\n");
+                sb.append(patternizer(dateString)).append(",0.0\n");
             }
             localDate = localDate.plusDays(1);
         }
@@ -222,7 +220,7 @@ public class CountEmployeesJob {
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
             System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
-            Double amount = new Double((predForTarget.predicted() < 0.0) ? 0.0 : predForTarget.predicted());
+            Double amount = (predForTarget.predicted() < 0.0) ? 0.0 : predForTarget.predicted();
             dailyForecast.add(amount);
             incomeForcastRepository.save(new IncomeForecast(i, amount, "INCOME"));
         }
@@ -241,7 +239,6 @@ public class CountEmployeesJob {
         incomeForcastRepository.deleteByCreatedAndItemtype(Date.valueOf(LocalDate.now()), "PEOPLE");
 
         String pattern = "yyyy-MM-dd";
-        Map<String, Double> peopleByDate = new HashMap<>();
 
         log.debug("dailyPeopleForecast.size() = " + dailyPeopleForecast.size());
 
@@ -257,13 +254,13 @@ public class CountEmployeesJob {
             String dateString = localDate.format(DateTimeFormatter.ofPattern(pattern));
             int consultants = 0;
             for (User user : getUsersByLocalDate(localDate)) {
-                if(user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).findFirst().get().getAllocation()>0) {
+                if(user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).get().getAllocation()>0) {
                     consultants++;
                     System.out.print("" + user.getLastname() + " | ");
                 }
             }
             System.out.println();
-            sb.append(patternizer(dateString)+","+consultants+"\n");
+            sb.append(patternizer(dateString)).append(",").append(consultants).append("\n");
             dailyPeopleForecast.add(consultants);
             localDate = localDate.plusMonths(1);
         }

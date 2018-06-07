@@ -21,6 +21,7 @@ import com.vaadin.ui.Button;
 public class ProjectRowDesign extends HorizontalLayout {
     private Button btnIcon;
     private Label lblName;
+    private Button btnDelete;
 
     public ProjectRowDesign() {
         Design.read(this);
@@ -32,6 +33,10 @@ public class ProjectRowDesign extends HorizontalLayout {
 
     public Label getLblName() {
         return lblName;
+    }
+
+    public Button getBtnDelete() {
+        return btnDelete;
     }
 
 }

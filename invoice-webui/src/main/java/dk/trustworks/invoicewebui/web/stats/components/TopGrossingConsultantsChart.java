@@ -7,9 +7,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -20,8 +21,12 @@ import java.util.List;
 @SpringUI
 public class TopGrossingConsultantsChart {
 
+    private final GraphKeyValueRepository graphKeyValueRepository;
+
     @Autowired
-    private GraphKeyValueRepository graphKeyValueRepository;
+    public TopGrossingConsultantsChart(GraphKeyValueRepository graphKeyValueRepository) {
+        this.graphKeyValueRepository = graphKeyValueRepository;
+    }
 
     public Chart createTopGrossingConsultantsChart(LocalDate periodStart, LocalDate periodEnd) {
         Chart chart = new Chart();
@@ -36,7 +41,7 @@ public class TopGrossingConsultantsChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.toString("yyyyMMdd"), periodEnd.toString("yyyyMMdd"));
+        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         double sumRevenue = 0.0;
         for (GraphKeyValue amountPerItem : amountPerItemList) {
             sumRevenue += amountPerItem.getValue();

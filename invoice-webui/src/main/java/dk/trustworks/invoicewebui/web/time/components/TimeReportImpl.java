@@ -10,7 +10,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +25,10 @@ import java.time.LocalDate;
 public class TimeReportImpl extends VerticalLayout {
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private ProjectService projectService;
 
     @Autowired
     private MonthReportImpl monthReport;
-
-    @Autowired
-    private BudgetReportImpl budgetReport;
 
     ResponsiveLayout responsiveLayout;
     ComboBox<Project> projectComboBox;
@@ -54,7 +51,7 @@ public class TimeReportImpl extends VerticalLayout {
         date.setDateFormat("MMMM yyyy");
         date.setWidth("200");
         HorizontalLayout horizontalLayout = new HorizontalLayout(projectComboBox, date);
-        projectComboBox.setItems(projectRepository.findAllByActiveTrueOrderByNameAsc());
+        projectComboBox.setItems(projectService.findAllByActiveTrueOrderByNameAsc());
         projectComboBox.setItemCaptionGenerator(Project::getName);
         responsiveLayout.addRow()
                 .addColumn()
@@ -78,7 +75,7 @@ public class TimeReportImpl extends VerticalLayout {
         if(date.isEmpty()) return;
         if(projectComboBox.isEmpty()) return;
         createMonthReportCard();
-        createBudgetReportCard();
+        //createBudgetReportCard();
     }
 
     private void createMonthReportCard() {
@@ -88,7 +85,7 @@ public class TimeReportImpl extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(monthReport);
     }
-
+/*
     private void createBudgetReportCard() {
         budgetReport.init(projectComboBox.getSelectedItem().get().getUuid());
         contentRow
@@ -96,5 +93,5 @@ public class TimeReportImpl extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(budgetReport);
     }
-
+*/
 }

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+  <meta name="package-mapping" content="com_jarektoro_responsivelayout:com.jarektoro.responsivelayout">
+ </head>
+ <body>
+  <vaadin-horizontal-layout width-full>
+   <vaadin-vertical-layout spacing="false" margin="false" :expand>
+    <vaadin-label style-name="bold" width-full plain-text _id="lblName">
+      Name 
+    </vaadin-label>
+    <vaadin-label style-name="small" plain-text _id="lblContact">
+      Label 
+    </vaadin-label>
+    <vaadin-label style-name="small" plain-text _id="lblCVR">
+      Label 
+    </vaadin-label>
+    <vaadin-label style-name="small" plain-text _id="lblEAN">
+      Label 
+    </vaadin-label>
+    <vaadin-label style-name="small" plain-text _id="lblStreet">
+      Label 
+    </vaadin-label>
+    <vaadin-horizontal-layout>
+     <vaadin-label style-name="small" plain-text _id="lblPostalCode">
+       Label 
+     </vaadin-label>
+     <vaadin-label style-name="small" plain-text _id="lblCity" :expand>
+       Label 
+     </vaadin-label>
+    </vaadin-horizontal-layout>
+    <vaadin-label style-name="small" plain-text _id="lblOther">
+      Label 
+    </vaadin-label>
+   </vaadin-vertical-layout>
+   <vaadin-button icon="fonticon://Vaadin-Icons/e801" style-name="borderless icon-only" plain-text _id="btnAdd" :middle :right></vaadin-button>
+  </vaadin-horizontal-layout>
+ </body>
+</html>

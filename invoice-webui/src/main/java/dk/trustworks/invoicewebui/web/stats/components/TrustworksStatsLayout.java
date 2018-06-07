@@ -8,9 +8,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,10 +51,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
         ResponsiveRow searchRow = responsiveLayout.addRow();
         final ResponsiveRow chartRow = responsiveLayout.addRow();
 
-        LocalDate startFiscalPeriod = new LocalDate(2014, 7, 1);
+        LocalDate startFiscalPeriod = LocalDate.of(2014, 7, 1);
         ComboBox<LocalDate> fiscalPeriodStartComboBox = new ComboBox<>();
         ComboBox<LocalDate> fiscalPeriodEndComboBox = new ComboBox<>();
-        LocalDate currentFiscalYear = (LocalDate.now().getMonthOfYear()>6 && LocalDate.now().getMonthOfYear()<13)?LocalDate.now().withMonthOfYear(7).withDayOfMonth(1):LocalDate.now().minusYears(1).withMonthOfYear(7).withDayOfMonth(1);
+        LocalDate currentFiscalYear = (LocalDate.now().getMonthValue()>6 && LocalDate.now().getMonthValue()<13)?LocalDate.now().withMonth(7).withDayOfMonth(1):LocalDate.now().minusYears(1).withMonth(7).withDayOfMonth(1);
         List<LocalDate> fiscalPeriodList = new ArrayList<>();
         while(startFiscalPeriod.isBefore(currentFiscalYear) || startFiscalPeriod.isEqual(currentFiscalYear)) {
             System.out.println("startFiscalPeriod = " + startFiscalPeriod);
@@ -67,17 +68,17 @@ public class TrustworksStatsLayout extends VerticalLayout {
         searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodEndComboBox);
 
         int adjustStartYear = 0;
-        if(LocalDate.now().getMonthOfYear() >= 1 && LocalDate.now().getMonthOfYear() <=6)  adjustStartYear = 1;
-        LocalDate localDateStart = LocalDate.now().withMonthOfYear(7).withDayOfMonth(1).minusYears(adjustStartYear);
+        if(LocalDate.now().getMonthValue() >= 1 && LocalDate.now().getMonthValue() <=6)  adjustStartYear = 1;
+        LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
 
         //fiscalPeriodStartComboBox.setWidth(100, Unit.PERCENTAGE);
         fiscalPeriodStartComboBox.setItems(fiscalPeriodList);
-        fiscalPeriodStartComboBox.setItemCaptionGenerator(localDate -> localDate.toString("yyyy-MM-dd"));
+        fiscalPeriodStartComboBox.setItemCaptionGenerator(localDate -> localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         //fiscalPeriodStartComboBox.setWidth(100, Unit.PERCENTAGE);
         fiscalPeriodEndComboBox.setItems(fiscalPeriodList);
-        fiscalPeriodEndComboBox.setItemCaptionGenerator(localDate -> localDate.toString("yyyy-MM-dd"));
+        fiscalPeriodEndComboBox.setItemCaptionGenerator(localDate -> localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         fiscalPeriodStartComboBox.setSelectedItem(fiscalPeriodList.get(fiscalPeriodList.size()-2));
         fiscalPeriodEndComboBox.setSelectedItem(fiscalPeriodList.get(fiscalPeriodList.size()-1));

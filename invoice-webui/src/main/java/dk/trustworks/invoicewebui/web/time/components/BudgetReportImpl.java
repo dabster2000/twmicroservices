@@ -1,44 +1,26 @@
 package dk.trustworks.invoicewebui.web.time.components;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Component;
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.BudgetRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.time.model.BudgetRemainingItem;
-import dk.trustworks.invoicewebui.web.time.model.UserHourItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * Created by hans on 09/09/2017.
  */
-@SpringUI
-@SpringComponent
+//@SpringUI
+//@SpringComponent
 public class BudgetReportImpl extends BudgetReportDesign {
+/*
+    private final ProjectRepository projectRepository;
+
+    private final WorkRepository workRepository;
+
+    private final BudgetRepository budgetRepository;
+
+    private final ContractService contractService;
 
     @Autowired
-    private ProjectRepository projectRepository;
-
-    @Autowired
-    private WorkRepository workRepository;
-
-    @Autowired
-    private BudgetRepository budgetRepository;
-
-    public BudgetReportImpl() {
+    public BudgetReportImpl(ProjectRepository projectRepository, WorkRepository workRepository, BudgetRepository budgetRepository, ContractService contractService) {
+        this.projectRepository = projectRepository;
+        this.workRepository = workRepository;
+        this.budgetRepository = budgetRepository;
+        this.contractService = contractService;
     }
 
     @Transactional
@@ -68,12 +50,14 @@ public class BudgetReportImpl extends BudgetReportDesign {
                     budgetRemainingItems.add(budgetRemainingItem);
                 }
 
+
                 Optional<Taskworkerconstraint> taskworkerconstraint = work.getTask().getTaskworkerconstraint().stream().
                         filter(p -> p.getUser().getUuid().equals(work.getUser().getUuid())
                                 && p.getTask().getUuid().equals(work.getTask().getUuid())).
                         findFirst();
 
-                if(taskworkerconstraint.isPresent()) budgetRemainingItem.addUsedBudget(work.getWorkduration()*taskworkerconstraint.get().getPrice());
+                Double rate = contractService.findConsultantRateByWork(work);
+                if(rate!=null) budgetRemainingItem.addUsedBudget(work.getWorkduration()*rate);
             }
 
             List<Budget> budgets = budgetRepository.findByTaskuuid(task.getUuid());//task.getBudget();
@@ -145,4 +129,5 @@ public class BudgetReportImpl extends BudgetReportDesign {
 
         return chart;
     }
+    */
 }

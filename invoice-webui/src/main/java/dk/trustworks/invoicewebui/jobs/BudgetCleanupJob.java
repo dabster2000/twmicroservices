@@ -1,41 +1,22 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import dk.trustworks.invoicewebui.model.Budget;
-import dk.trustworks.invoicewebui.model.Taskworkerconstraint;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.BudgetRepository;
-import dk.trustworks.invoicewebui.repositories.TaskworkerconstraintRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import org.joda.time.LocalDate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-@Component
+//@Component
 public class BudgetCleanupJob {
-
+/*
     private static final Logger log = LoggerFactory.getLogger(BudgetCleanupJob.class);
 
-    @Autowired
-    private WorkRepository workRepository;
+    private final WorkRepository workRepository;
+
+    private final ContractService contractService;
+
+    private final BudgetRepository budgetRepository;
 
     @Autowired
-    private TaskworkerconstraintRepository taskworkerconstraintRepository;
-
-    @Autowired
-    private ContractService contractService;
-
-    @Autowired
-    private BudgetRepository budgetRepository;
+    public BudgetCleanupJob(WorkRepository workRepository, ContractService contractService, BudgetRepository budgetRepository) {
+        this.workRepository = workRepository;
+        this.contractService = contractService;
+        this.budgetRepository = budgetRepository;
+    }
 
     //@PostConstruct
     public void init() {
@@ -50,7 +31,7 @@ public class BudgetCleanupJob {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 4 5 1/1 ?")
+    //@Scheduled(cron = "0 0 4 5 1/1 ?")
     public void job()  {
         int month = LocalDate.now().minusMonths(1).getMonthOfYear();
         int year = LocalDate.now().minusMonths(1).getYear();
@@ -61,18 +42,15 @@ public class BudgetCleanupJob {
         List<Budget> workBudgets = new ArrayList<>();
         Map<String, Budget> workBudgetMap = new HashMap<>();
         for (Work work : workRepository.findByPeriod(year+"-"+month+"-01", year+"-"+month+"-31")) {
-            //System.out.println("work = " + work);
-            List<Taskworkerconstraint> taskworkerconstraintList = taskworkerconstraintRepository.findByTaskAndUser(work.getTask(), work.getUser());
-            if(taskworkerconstraintList.size()==0) continue;
-            Taskworkerconstraint taskworkerconstraint = taskworkerconstraintList.get(0);
-            if (!workBudgetMap.containsKey(taskworkerconstraint.getUuid())) {
+            Double rate = contractService.findConsultantRateByWork(work);
+            if(rate == null) continue;
+            if (!workBudgetMap.containsKey(work.getUser().getUuid()+work.getTask().getUuid())) {
                 Budget budget = new Budget(month - 1, year, 0.0, work.getUser(), work.getTask());
-                workBudgetMap.put(taskworkerconstraint.getUuid(), budget);
+                workBudgetMap.put(work.getUser().getUuid()+work.getTask().getUuid(), budget);
                 log.debug("budget = " + budget);
             }
-            Budget currentBudget = workBudgetMap.get(taskworkerconstraint.getUuid());
-            if (taskworkerconstraint.getUuid() == null) System.err.println("LOG00180: " + taskworkerconstraint);
-            currentBudget.setBudget((currentBudget.getBudget() + (work.getWorkduration() * taskworkerconstraint.getPrice())));
+            Budget currentBudget = workBudgetMap.get(work.getUser().getUuid()+work.getTask().getUuid());
+            currentBudget.setBudget((currentBudget.getBudget() + (work.getWorkduration() * rate)));
         }
         workBudgets.addAll(workBudgetMap.values());
         log.debug("workBudgets.size() = " + workBudgets.size());
@@ -115,5 +93,5 @@ public class BudgetCleanupJob {
         budgetRepository.save(newBudgets);
         log.debug("done");
     }
-
+*/
 }

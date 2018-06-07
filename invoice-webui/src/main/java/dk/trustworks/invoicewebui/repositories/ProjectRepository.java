@@ -19,6 +19,7 @@ public interface ProjectRepository extends CrudRepository<Project, String> {
     List<Project> findAllByOrderByNameAsc();
     List<Project> findAllByActiveTrueOrderByNameAsc();
     List<Project> findByClientAndActiveTrueOrderByNameAsc(Client client);
+    List<Project> findByClientOrderByNameAsc(Client client);
     List<Project> findByClientdata(Clientdata clientdata);
 
     @Override @RestResource(exported = false) void delete(String id);

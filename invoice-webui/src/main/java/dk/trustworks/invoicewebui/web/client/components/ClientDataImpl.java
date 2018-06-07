@@ -9,6 +9,18 @@ import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
+import org.vaadin.addon.vol3.OLMap;
+import org.vaadin.addon.vol3.OLMapOptions;
+import org.vaadin.addon.vol3.OLView;
+import org.vaadin.addon.vol3.OLViewOptions;
+import org.vaadin.addon.vol3.client.Projections;
+import org.vaadin.addon.vol3.layer.OLLayer;
+import org.vaadin.addon.vol3.layer.OLTileLayer;
+import org.vaadin.addon.vol3.source.OLOSMSource;
+import org.vaadin.addon.vol3.source.OLSource;
+import org.vaadin.addon.vol3.source.OLVectorSource;
+import org.vaadin.addon.vol3.source.OLVectorSourceOptions;
 
 import java.util.List;
 
@@ -60,7 +72,7 @@ public class ClientDataImpl extends ClientDataDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            List<Project> projects = projectRepository.findByClientdata(clientdata);
+            List<Project> projects = projectService.findByClientdata(clientdata);
             //Resources<Resource<Project>> projects = projectClient.findByClientdatauuid(clientdata.getUuid());
             if(projects.size() > 0) {
                 String description = "The contact information is in use by the following projects: \n\n";

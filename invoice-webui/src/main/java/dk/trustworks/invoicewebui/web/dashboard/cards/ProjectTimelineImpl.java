@@ -6,7 +6,7 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.TrustworksColor;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -21,20 +21,20 @@ import static java.util.Comparator.comparing;
 
 public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
 
-    private ProjectRepository projectRepository;
+    private ProjectService projectService;
     private int priority;
     private int boxWidth;
     private String name;
 
-    public ProjectTimelineImpl(ProjectRepository projectRepository, int priority, int boxWidth, String name) {
-        this.projectRepository = projectRepository;
+    public ProjectTimelineImpl(ProjectService projectService, int priority, int boxWidth, String name) {
+        this.projectService = projectService;
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
     }
 
     public ProjectTimelineImpl init() {
-        List<Project> projects = projectRepository.findAllByActiveTrueOrderByNameAsc();
+        List<Project> projects = projectService.findAllByActiveTrueOrderByNameAsc();
         Component chart = getChart(projects);
         getContainer().addComponent(chart);
         return this;

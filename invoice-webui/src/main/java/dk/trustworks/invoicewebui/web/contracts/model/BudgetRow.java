@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * Created by hans on 21/08/2017.
  */
-public class ConsultantRow {
+public class BudgetRow {
 
     private Consultant consultant;
     private User user;
@@ -19,11 +19,11 @@ public class ConsultantRow {
 
     private String[] budget;
 
-    public ConsultantRow(int months) {
+    public BudgetRow(int months) {
         budget = new String[months];
     }
 
-    public ConsultantRow(Consultant consultant, int months) {
+    public BudgetRow(Consultant consultant, int months) {
         this(months);
         this.user = consultant.getUser();
         this.consultant = consultant;

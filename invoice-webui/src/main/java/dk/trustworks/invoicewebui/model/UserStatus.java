@@ -78,7 +78,7 @@ public class UserStatus {
     public String toString() {
         final StringBuilder sb = new StringBuilder("UserStatus{");
         sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", user=").append(user);
+        sb.append(", user=").append(user.getUsername());
         sb.append(", status='").append(status).append('\'');
         sb.append(", statusdate=").append(statusdate);
         sb.append(", allocation=").append(allocation);

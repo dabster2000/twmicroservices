@@ -1,6 +1,9 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.model.enums.TaskType;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,26 +11,30 @@ import java.util.UUID;
 public class Task {
     @Id private String uuid;
     private String name;
-    private String type;
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Taskworkerconstraint> taskworkerconstraint;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private TaskType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectuuid")
     private Project project;
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Budget> budget;
-
-    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
-    private List<Work> workList;
+    private List<Work> workList = new ArrayList<>();
 
     public Task() {
     }
 
     public Task(String name, Project project) {
-        type = "CONSULTANT";
+        type = TaskType.CONSULTANT;
+        this.uuid = UUID.randomUUID().toString();
+        this.name = name;
+        this.project = project;
+    }
+
+    public Task(String name, Project project, TaskType taskType) {
+        type = taskType;
         this.uuid = UUID.randomUUID().toString();
         this.name = name;
         this.project = project;
@@ -49,20 +56,12 @@ public class Task {
         this.name = name;
     }
 
-    public String getType() {
+    public TaskType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TaskType type) {
         this.type = type;
-    }
-
-    public List<Taskworkerconstraint> getTaskworkerconstraint() {
-        return taskworkerconstraint;
-    }
-
-    public void setTaskworkerconstraint(List<Taskworkerconstraint> taskworkerconstraint) {
-        this.taskworkerconstraint = taskworkerconstraint;
     }
 
     public Project getProject() {
@@ -73,47 +72,24 @@ public class Task {
         this.project = project;
     }
 
-    public List<Budget> getBudget() {
-        return budget;
-    }
-
-    public void setBudget(List<Budget> budget) {
-        this.budget = budget;
-    }
-
     public List<Work> getWorkList() {
         return workList;
     }
 
-    public void setWorkList(List<Work> workList) {
-        this.workList = workList;
-    }
-
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Task{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", type='").append(type).append('\'');
-        //sb.append(", taskworkerconstraint=").append(taskworkerconstraint);
-        //sb.append(", project=").append(project);
-        //sb.append(", budget=").append(budget);
-        sb.append('}');
-        return sb.toString();
+        String sb = "Task{" + "uuid='" + uuid + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+        return sb;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Task task = (Task) o;
-
         return uuid.equals(task.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid.hashCode();
     }
 }

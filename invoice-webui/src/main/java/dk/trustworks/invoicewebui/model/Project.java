@@ -45,7 +45,7 @@ public class Project {
     private User owner;
 
     @ManyToMany(mappedBy = "projects", fetch = FetchType.LAZY)
-    private Set<MainContract> mainContracts = new HashSet<>();
+    private Set<Contract> contracts = new HashSet<>();
 
     private double longitude;
     private double latitude;
@@ -192,15 +192,15 @@ public class Project {
         this.address = address;
     }
 
-    public Set<MainContract> getMainContracts() {
-        return mainContracts;
+    public Set<Contract> getContracts() {
+        return contracts;
     }
 
-    public void setMainContracts(Set<MainContract> mainContracts) {
-        this.mainContracts = mainContracts;
+    public void setContracts(Set<Contract> contracts) {
+        this.contracts = contracts;
     }
 
-    public void addMainContract(MainContract mainContract) {this.mainContracts.add(mainContract); }
+    public void addContract(Contract Contract) {this.contracts.add(Contract); }
 
     @Override
     public String toString() {

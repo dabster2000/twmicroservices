@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.jobs;
 import com.google.common.hash.Hashing;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,18 +28,22 @@ public class ProjectManagerJob {
 
     private static final Logger log = LoggerFactory.getLogger(ProjectManagerJob.class);
 
-    @Autowired
-    private NewsRepository newsRepository;
+    private final NewsRepository newsRepository;
+
+    private final ProjectService projectService;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    public ProjectManagerJob(NewsRepository newsRepository, ProjectService projectService) {
+        this.newsRepository = newsRepository;
+        this.projectService = projectService;
+    }
 
     @Transactional
     //@Scheduled(cron = "0 30 23 * * MON-FRI")
     @Scheduled(fixedRate = 12000)
     public void reportCurrentTime() {
         LocalDate dateThreeMonthsAgo = LocalDate.now().minusMonths(3);
-        for (Project project : projectRepository.findAllByActiveTrueOrderByNameAsc()) {
+        for (Project project : projectService.findAllByActiveTrueOrderByNameAsc()) {
             String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
             if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
             boolean projectHasWork = false;
@@ -68,17 +72,16 @@ public class ProjectManagerJob {
     @Transactional
     @Scheduled(fixedRate = 100000)
     public void reportEndingProjects() {
-        List<Project> projects = projectRepository.findAllByActiveTrueOrderByNameAsc();
+        List<Project> projects = projectService.findAllByActiveTrueOrderByNameAsc();
         for (Project project : projects) {
             if(project.getStartdate().isAfter(LocalDate.now().minusMonths(1))) {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
                 Set<String> consultants = new TreeSet<>();
-                for (Task task : project.getTasks()) {
-                    for (Taskworkerconstraint taskworkerconstraint : task.getTaskworkerconstraint()) {
-                        if(taskworkerconstraint.getPrice() <= 1.0) continue;
-                        consultants.add(taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname());
-                    }
+                List<Consultant> consultantList = project.getContracts().stream().map(Contract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
+                for (Consultant consultant : consultantList) {
+                    consultants.add(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
+
                 }
                 newsRepository.save(new News(
                         "We have started an exciting new project recently! " +
@@ -93,12 +96,12 @@ public class ProjectManagerJob {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
                 Set<String> consultants = new TreeSet<>();
-                for (Task task : project.getTasks()) {
-                    for (Taskworkerconstraint taskworkerconstraint : task.getTaskworkerconstraint()) {
-                        if(taskworkerconstraint.getPrice() <= 1.0) continue;
-                        consultants.add(taskworkerconstraint.getUser().getFirstname() + " " + taskworkerconstraint.getUser().getLastname());
-                    }
+                List<Consultant> consultantList = project.getContracts().stream().map(Contract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
+                for (Consultant consultant : consultantList) {
+                    consultants.add(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
+
                 }
+
                 newsRepository.save(new News(
                         "The project '"+project.getName()+"' " +
                                 "for our client "+project.getClient().getName()+" is ending soon. " +
