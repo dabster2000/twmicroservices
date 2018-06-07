@@ -17,9 +17,7 @@ import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
-import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +162,6 @@ public class ClientManagerImpl extends ClientManagerDesign {
             clientDataRow
                     .addColumn()
                     .withDisplayRules(12, 8, 6, 4)
-                    .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectRepository, this));
                     .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectService));
             clientDataRow
                     .addColumn()
@@ -260,8 +257,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
         btnAddContactInformation.addClickListener(event -> {
             Clientdata newClientdata = new Clientdata("", "", "", "", "", "", 0L, "", client);
-            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, newClientdata, projectRepository, this);
-            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, new Clientdata("", "", "", "", "", "", 0L, "", client), projectService);
+            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, newClientdata, projectService);
             clientData.getBtnDelete().setVisible(false);
             clientData.getCssHider().setVisible(true);
             clientData.getBtnEdit().setVisible(false);

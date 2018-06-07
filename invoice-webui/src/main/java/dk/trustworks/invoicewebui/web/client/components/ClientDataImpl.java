@@ -8,19 +8,7 @@ import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
-import org.vaadin.addon.vol3.OLMap;
-import org.vaadin.addon.vol3.OLMapOptions;
-import org.vaadin.addon.vol3.OLView;
-import org.vaadin.addon.vol3.OLViewOptions;
-import org.vaadin.addon.vol3.client.Projections;
-import org.vaadin.addon.vol3.layer.OLLayer;
-import org.vaadin.addon.vol3.layer.OLTileLayer;
-import org.vaadin.addon.vol3.source.OLOSMSource;
-import org.vaadin.addon.vol3.source.OLSource;
-import org.vaadin.addon.vol3.source.OLVectorSource;
-import org.vaadin.addon.vol3.source.OLVectorSourceOptions;
 
 import java.util.List;
 
@@ -32,7 +20,7 @@ public class ClientDataImpl extends ClientDataDesign {
 
     private Binder<Clientdata> clientDataBinder;
 
-    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata, ProjectRepository projectRepository, ClientManagerImpl clientManager) {
+    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata, ProjectService projectService) {
         clientDataBinder = new Binder<>();
         clientDataBinder.forField(getTxtCity()).bind(Clientdata::getCity, Clientdata::setCity);
         clientDataBinder.forField(getTxtContactName()).bind(Clientdata::getContactperson, Clientdata::setContactperson);
