@@ -532,6 +532,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     subContent.addComponent(new Label("Add project"));
                     ComboBox<Project> projectComboBox = new ComboBox<>();
                     projectComboBox.setWidth(250, Unit.PIXELS);
+                    projectComboBox.setPopupWidth("");
                     projectComboBox.setItems(projectService.findByClientOrderByNameAsc(Contract.getClient()));
                     projectComboBox.setItemCaptionGenerator(Project::getName);
                     subContent.addComponent(projectComboBox);

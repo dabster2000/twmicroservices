@@ -46,6 +46,7 @@ public class TimeReportImpl extends VerticalLayout {
         responsiveLayout.setScrollable(true);
 
         projectComboBox = new ComboBox<>();
+        projectComboBox.setPopupWidth("");
         date = new DateField(null, LocalDate.now().withDayOfMonth(1));
         date.setResolution(DateResolution.MONTH);
         date.setDateFormat("MMMM yyyy");
