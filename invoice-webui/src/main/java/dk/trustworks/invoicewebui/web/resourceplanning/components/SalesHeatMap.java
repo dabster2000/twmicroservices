@@ -108,13 +108,14 @@ public class SalesHeatMap {
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
                 List<UserStatus> userStatuses = user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
 
-                UserStatus userStatus = new UserStatus(null, null, null, 0);
+                UserStatus userStatus = null;// = new UserStatus(null, null, LocalDate.now(), 0);
                 for (UserStatus userStatusIteration : userStatuses) {
                     if(userStatusIteration.getStatusdate().isAfter(localDate)) break;
                     userStatus = userStatusIteration;
                 }
 
                 int weekDays = countWeekDays(localDate, localDate.plusMonths(1));
+                assert userStatus != null;
                 double budget = Math.round((weekDays * (userStatus.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
                 if(budget < 0.0) budget = 0.0;
                 budget = Math.round(budget / Math.round(weekDays * (userStatus.getAllocation()/5.0)) * 100.0);

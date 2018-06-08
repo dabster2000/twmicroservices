@@ -68,7 +68,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private Card burndownChartCard;
     private Card burnrateChartCard;
 
-    private ContractFormDesign ContractForm;
+    private ContractFormDesign contractForm;
 
     private LocalDatePeriod proposedPeriod;
 
@@ -268,31 +268,32 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private void createContractForm(Contract contract) {
         contractLayout.removeAllComponents();
-        ContractForm = new ContractFormDesign();
-        contractLayout.addComponent(ContractForm);
-        Binder<Contract> ContractBinder = new Binder<>();
-        ContractForm.getContainer().setHeight(350, Unit.PIXELS);
-        ContractForm.getContainer().addStyleName("v-scrollable");
+        contractForm = new ContractFormDesign();
+        contractLayout.addComponent(contractForm);
+        Binder<Contract> contractBinder = new Binder<>();
+        contractForm.getContainer().setHeight(350, Unit.PIXELS);
+        contractForm.getContainer().addStyleName("v-scrollable");
 
-        ContractForm.getBtnCreate().setVisible(false);
-        ContractForm.getTxtAmount().setVisible(
+        contractForm.getBtnCreate().setVisible(false);
+        contractForm.getTxtAmount().setVisible(
                 contract.getContractType().equals(ContractType.AMOUNT) ||
                 contract.getContractType().equals(ContractType.SKI));
-        ContractForm.getTxtAmount().setValue(NumberConverter.formatDouble(contract.getAmount()));
-        ContractBinder.forField(ContractForm.getDfFrom()).bind(Contract::getActiveFrom, Contract::setActiveFrom);
-        ContractBinder.forField(ContractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
-        ContractBinder.forField(ContractForm.getTxtNote()).bind(Contract::getNote, Contract::setNote);
-        ContractForm.getCbStatus().setItems(ContractStatus.values());
-        ContractBinder.forField(ContractForm.getCbStatus()).bind(Contract::getStatus, Contract::setStatus);
-        ContractForm.getCbType().setEnabled(false);
-        ContractBinder.forField(ContractForm.getCbType()).bind(Contract::getContractType, Contract::setContractType);
-        ContractForm.getLblTitle().setValue("Main contract");
-        ContractBinder.readBean(contract);
+        contractForm.getTxtAmount().setValue(NumberConverter.formatDouble(contract.getAmount()));
+        contractBinder.forField(contractForm.getDfFrom()).bind(Contract::getActiveFrom, Contract::setActiveFrom);
+        contractBinder.forField(contractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
+        contractBinder.forField(contractForm.getTxtRefid()).bind(Contract::getRefid, Contract::setRefid);
+        contractBinder.forField(contractForm.getTxtNote()).bind(Contract::getNote, Contract::setNote);
+        contractForm.getCbStatus().setItems(ContractStatus.values());
+        contractBinder.forField(contractForm.getCbStatus()).bind(Contract::getStatus, Contract::setStatus);
+        contractForm.getCbType().setEnabled(false);
+        contractBinder.forField(contractForm.getCbType()).bind(Contract::getContractType, Contract::setContractType);
+        contractForm.getLblTitle().setValue("Main contract");
+        contractBinder.readBean(contract);
 
-        ContractForm.getBtnUpdate().addClickListener(event -> {
+        contractForm.getBtnUpdate().addClickListener(event -> {
             try {
-                ContractBinder.writeBean(contract);
-                contract.setAmount(NumberConverter.parseDouble(ContractForm.getTxtAmount().getValue()));
+                contractBinder.writeBean(contract);
+                contract.setAmount(NumberConverter.parseDouble(contractForm.getTxtAmount().getValue()));
                 contractService.updateContract(contract);
                 updateData(contract);
             } catch (ValidationException e) {
@@ -758,10 +759,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void updateProposedPeriod(Contract contract) {
-        ContractForm.getCssNotification().setVisible(false);
+        contractForm.getCssNotification().setVisible(false);
         if(proposedPeriod.getFrom().isBefore(contract.getActiveFrom()) || proposedPeriod.getTo().isAfter(contract.getActiveTo())) {
-            ContractForm.getLblNotification().setValue("Consider this date range: "+proposedPeriod);
-            ContractForm.getCssNotification().setVisible(true);
+            contractForm.getLblNotification().setValue("Consider this date range: "+proposedPeriod);
+            contractForm.getCssNotification().setVisible(true);
         }
     }
 

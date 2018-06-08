@@ -41,7 +41,6 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
             getLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
 
-        getCbClientdatas().setVisible(false);
         getSelRelationManager().setItems(userRepository.findByOrderByUsername());
         getSelRelationManager().setItemCaptionGenerator(item -> item.getUsername());
 

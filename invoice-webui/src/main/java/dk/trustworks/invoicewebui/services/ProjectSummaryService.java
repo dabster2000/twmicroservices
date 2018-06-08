@@ -147,6 +147,7 @@ public class ProjectSummaryService {
                         clientdata.getContactperson(),
                         LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).lengthOfMonth()),
                         project.getCustomerreference(),
+                        contract.getRefid(),
                         "");
                 logger.info("Created new invoice: "+invoice);
             }

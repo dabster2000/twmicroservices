@@ -66,6 +66,7 @@ public class InvoiceService {
                 "Blank invoice", "", "", "", "", "", "",
                 LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).lengthOfMonth()),
                 "",
+                "",
                 ""
         );
         invoiceClient.save(invoice);

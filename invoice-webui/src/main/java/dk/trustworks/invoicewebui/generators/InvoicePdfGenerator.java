@@ -140,8 +140,9 @@ public class InvoicePdfGenerator {
         canvas.beginText()
                 .setFontAndSize(PdfFontFactory.createFont(FontConstants.HELVETICA), 14)
                 .setLeading(14 * 1.2f)
-                .moveText(135, -288).setLineWidth(345);
-        canvas.showText(invoice.description);
+                .moveText(135, -278).setLineWidth(345);
+        canvas.showText(invoice.contractref);
+        canvas.newlineShowText(invoice.projectref);
         canvas.newlineShowText(invoice.specificdescription);
         canvas.endText();
 

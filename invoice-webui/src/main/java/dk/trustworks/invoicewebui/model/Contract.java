@@ -26,6 +26,8 @@ public class Contract {
     @Enumerated(EnumType.STRING)
     private ContractType contractType;
 
+    private String refid;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private ContractStatus status;
@@ -76,10 +78,11 @@ public class Contract {
         uuid = UUID.randomUUID().toString();
     }
 
-    public Contract(ContractType contractType, ContractStatus contractStatus, String note, LocalDate activeFrom, LocalDate activeTo, double amount, Client client) {
+    public Contract(ContractType contractType, ContractStatus contractStatus, String note, String refid, LocalDate activeFrom, LocalDate activeTo, double amount, Client client) {
         this();
         this.status = contractStatus;
         this.note = note;
+        this.refid = refid;
         this.amount = amount;
         this.contractType = contractType;
         this.activeTo = activeTo;
@@ -97,6 +100,7 @@ public class Contract {
         this.status = ContractStatus.INACTIVE;
         this.note = "";
         this.amount = 0.0;
+        this.refid = contract.getRefid();
         this.activeFrom = contract.getActiveTo().plusMonths(1).withDayOfMonth(1);
         this.activeTo = contract.getActiveTo().plusMonths(3).withDayOfMonth(1);
         this.parentuuid = contract.getUuid();
@@ -164,6 +168,14 @@ public class Contract {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getRefid() {
+        return refid;
+    }
+
+    public void setRefid(String refid) {
+        this.refid = refid;
     }
 
     public Client getClient() {

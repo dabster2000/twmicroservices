@@ -30,6 +30,7 @@ public class ContractFormDesign extends VerticalLayout {
     private VerticalLayout container;
     private ComboBox<dk.trustworks.invoicewebui.model.enums.ContractType> cbType;
     private ComboBox<ContractStatus> cbStatus;
+    private TextField txtRefid;
     private DateField dfFrom;
     private DateField dfTo;
     private TextField txtAmount;
@@ -61,6 +62,10 @@ public class ContractFormDesign extends VerticalLayout {
 
     public ComboBox<ContractStatus> getCbStatus() {
         return cbStatus;
+    }
+
+    public TextField getTxtRefid() {
+        return txtRefid;
     }
 
     public DateField getDfFrom() {

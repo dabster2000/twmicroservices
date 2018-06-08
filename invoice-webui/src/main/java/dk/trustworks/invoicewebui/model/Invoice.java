@@ -36,7 +36,8 @@ public class Invoice {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate invoicedate;
-    public String description;
+    public String projectref;
+    public String contractref;
     public String specificdescription;
     @OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="invoiceuuid")
@@ -57,12 +58,13 @@ public class Invoice {
         this.errors = false;
     }
 
-    public Invoice(InvoiceType type, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String description, String specificdescription) {
+    public Invoice(InvoiceType type, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
         this();
         this.type = type;
         this.otheraddressinfo = otheraddressinfo;
         this.ean = ean;
         this.cvr = cvr;
+        this.contractref = contractref;
         this.status = InvoiceStatus.DRAFT;
         this.projectuuid = projectuuid;
         this.projectname = projectname;
@@ -73,7 +75,7 @@ public class Invoice {
         this.zipcity = zipcity;
         this.attention = attention;
         this.invoicedate = invoicedate;
-        this.description = description;
+        this.projectref = projectref;
         this.specificdescription = specificdescription;
         uuid = UUID.randomUUID().toString();
     }
@@ -190,12 +192,20 @@ public class Invoice {
         this.invoicedate = invoicedate;
     }
 
-    public String getDescription() {
-        return description;
+    public String getProjectref() {
+        return projectref;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setProjectref(String projectref) {
+        this.projectref = projectref;
+    }
+
+    public String getContractref() {
+        return contractref;
+    }
+
+    public void setContractref(String contractref) {
+        this.contractref = contractref;
     }
 
     public String getSpecificdescription() {
@@ -263,7 +273,8 @@ public class Invoice {
         sb.append(", attention='").append(attention).append('\'');
         sb.append(", invoicenumber=").append(invoicenumber);
         sb.append(", invoicedate=").append(invoicedate);
-        sb.append(", description='").append(description).append('\'');
+        sb.append(", contractref='").append(contractref).append('\'');
+        sb.append(", projectref='").append(projectref).append('\'');
         sb.append(", invoiceitems=").append(invoiceitems);
         sb.append(", errors=").append(errors);
         sb.append(", type=").append(type);

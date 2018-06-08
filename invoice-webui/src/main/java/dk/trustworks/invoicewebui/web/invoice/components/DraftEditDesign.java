@@ -32,7 +32,8 @@ public class DraftEditDesign extends VerticalLayout {
     protected TextField txtEan;
     protected TextField txtAttention;
     protected DateField dfInvoiceDate;
-    protected Label lblDescription;
+    protected Label lblContractReference;
+    protected Label lblProjectReference;
     protected TextField txtSpecificDescription;
     protected Button btnCopyDescription;
     protected GridLayout gridInvoiceItems;

@@ -20,8 +20,7 @@
        <vaadin-image width-full _id="logo"></vaadin-image>
        <vaadin-form-layout margin _id="formProjectDetail">
         <vaadin-text-field caption="Name" width-full _id="txtName"></vaadin-text-field>
-        <vaadin-text-field caption="Description" width-full maxlength="75" _id="txtDescription"></vaadin-text-field>
-        <vaadin-combo-box caption="Contact" empty-selection-allowed="false" width-full data-item-type="dk.trustworks.invoicewebui.model.Clientdata" _id="cbClientdatas"></vaadin-combo-box>
+        <vaadin-text-field caption="Customer ref" description="Reference is shown on invoices" width-full maxlength="75" _id="txtDescription"></vaadin-text-field>
         <vaadin-combo-box caption="RM" empty-selection-allowed="false" width-full data-item-type="dk.trustworks.invoicewebui.model.User" data-property-id="username" _id="selRelationManager"></vaadin-combo-box>
         <vaadin-date-field caption="Start" visible="false" date-format="dd MMM yyyy" _id="selStartDate"></vaadin-date-field>
         <vaadin-date-field caption="End" visible="false" date-format="dd MMM yyyy" _id="selEndDate"></vaadin-date-field>
