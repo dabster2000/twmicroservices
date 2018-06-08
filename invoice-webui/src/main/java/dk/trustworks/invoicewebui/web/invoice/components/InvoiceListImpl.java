@@ -34,6 +34,7 @@ import org.vaadin.addons.producttour.step.Step;
 import org.vaadin.addons.producttour.step.StepBuilder;
 import org.vaadin.addons.producttour.tour.Tour;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
+import org.vaadin.viritin.label.MLabel;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -189,6 +190,26 @@ public class InvoiceListImpl extends InvoiceListDesign
         });
         filteringHeader.getCell("status").setComponent(filteringField);
 
+        gridInvoiceList.addComponentColumn(invoice -> {
+            if (invoice.getType().equals(InvoiceType.CREDIT_NOTE)) {
+                return new MLabel("CREDIT NOTE").withStyleName("orange");
+            } else {
+                return new MLabel("INVOICE").withStyleName("");
+            }
+        }).setId("type").setCaption("Invoice Type");
+
+        gridInvoiceList.setColumnOrder("clientname","projectname","invoicenumber","invoicedate","type","status","sumNoTax","sumWithTax");
+        /*
+      <col column-id="clientname" sortable>
+      <col column-id="projectname" sortable>
+      <col column-id="invoicenumber" sortable>
+      <col column-id="invoicedate" sortable>
+      <col column-id="type" sortable>
+      <col column-id="status" sortable>
+      <col column-id="sumNoTax" sortable>
+      <col column-id="sumWithTax" sortable>
+                */
+
         TextField filteringField2 = getColumnFilterField();
         filteringField2.addValueChangeListener(event -> {
             dataProvider.setFilter(Invoice::getType, invoiceType -> {
@@ -201,6 +222,8 @@ public class InvoiceListImpl extends InvoiceListDesign
             });
         });
         filteringHeader.getCell("type").setComponent(filteringField2);
+
+
 
         ComboBox<InvoiceStatus> comboBox = new ComboBox<>("Change status", statuses);
         comboBox.setEmptySelectionAllowed(false);

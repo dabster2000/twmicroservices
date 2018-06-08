@@ -146,7 +146,6 @@ public class InvoicePdfGenerator {
         canvas.newlineShowText(invoice.specificdescription);
         canvas.endText();
 
-
         float[] tableColumns2 = {70.0f};
 
         Table table2 = new Table(tableColumns2, false);
