@@ -11,6 +11,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
+import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.ProjectService;
@@ -219,8 +220,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             TaskRowDesign taskRow = new TaskRowDesign();
             taskRow.getLblName().setValue(task.getName());
             taskRow.getTxtName().setVisible(false);
-            System.out.println("task = " + task.getName() + " : "+task.getWorkList().size());
-            if(task.getWorkList().size()>0)  taskRow.getBtnDelete().setVisible(false);
+            if(task.getWorkList().size()>0 && task.getType()!=TaskType.SO)  taskRow.getBtnDelete().setVisible(false);
             taskRow.getBtnDelete().setIcon(MaterialIcons.DELETE);
             taskRow.getBtnDelete().addClickListener(event -> {
                 taskRepository.delete(task.getUuid());
