@@ -226,6 +226,10 @@ public class ContractService {
         return contractRepository.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
+    public double findAmountUsedOnContract(Contract contract) {
+        return workRepository.findAmountUsedByContract(contract.getUuid());
+    }
+
     public Collection<String> createErrorList(Map<String, Work> errors) {
         SortedMap<String, String> errorList = new TreeMap<>();
         for (Work work : errors.values().stream().filter(work -> work.getWorkduration()>0).sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).reversed()).collect(Collectors.toList())) {

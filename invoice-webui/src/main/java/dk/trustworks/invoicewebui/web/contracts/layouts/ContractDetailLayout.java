@@ -336,13 +336,15 @@ public class ContractDetailLayout extends ResponsiveLayout {
         plotOptions.setDataLabels(labels);
         conf.setPlotOptions(plotOptions);
 
-        double sum = 0.0;
+        double sum = contractService.findAmountUsedOnContract(contract);
+        /*
         for (Work work : contractService.getWorkOnContractByUser(contract)) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
             Optional<Consultant> optionalConsultant = contract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;
             sum += (work.getWorkduration() * optionalConsultant.get().getRate());
         }
+        */
 
         conf.addSeries(new ListSeries("Remaining", (contract.getAmount()-sum)));
         conf.addSeries(new ListSeries("Used", sum));

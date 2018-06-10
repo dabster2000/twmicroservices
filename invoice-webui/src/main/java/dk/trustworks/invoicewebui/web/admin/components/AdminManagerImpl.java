@@ -97,14 +97,16 @@ public class AdminManagerImpl extends VerticalLayout {
             contentRow.removeAllComponents();
             loadData();
         });
+
         contentRow = responsiveLayout.addRow();
-        contentRow.addColumn().withDisplayRules(12, 12, 12, 12)
-                .withComponent(getChart());
 
         Card card = new Card();
         card.getContent().addComponent(getGrid());
         contentRow.addColumn().withDisplayRules(12, 12, 12, 12)
                 .withComponent(card);
+
+        contentRow.addColumn().withDisplayRules(12, 12, 12, 12)
+                .withComponent(getChart());
         addComponent(responsiveLayout);
     }
 
