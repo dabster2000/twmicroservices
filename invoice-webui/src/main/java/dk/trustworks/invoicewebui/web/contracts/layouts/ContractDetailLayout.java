@@ -27,6 +27,7 @@ import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,78 +89,87 @@ public class ContractDetailLayout extends ResponsiveLayout {
         subContractRow = this.addRow();
     }
 
-    public ResponsiveLayout loadContractDetails(Contract Contract, NavigationBar navigationBar) {
-        Contract = contractService.reloadContract(Contract);
+    public ResponsiveLayout loadContractDetails(Contract contract, NavigationBar navigationBar) {
+        contract = contractService.reloadContract(contract);
         contractRow.removeAllComponents();
-        proposedPeriod = new LocalDatePeriod(Contract.getActiveFrom(), Contract.getActiveTo());
+        proposedPeriod = new LocalDatePeriod(contract.getActiveFrom(), contract.getActiveTo());
 
         createNavigationBarCard(navigationBar, 12);
-        createUsedBudgetCard(Contract, 6);
-        createBurndownCard(Contract, 6);
-        createBurnrateCard(Contract, 12);
-        createContractCard(Contract, 4);
-        createProjectsCard(Contract, 4);
-        createContactInformationCard(Contract, 4);
-        createConsultantsCard(Contract, 12);
-        updateProposedPeriod(Contract);
+        createUsedBudgetCard(contract, 6);
+        createBurndownCard(contract, 6);
+        createBurnrateCard(contract, 12);
+        createContractCard(contract, 4);
+        createProjectsCard(contract, 4);
+        createContactInformationCard(contract, 4);
+        createConsultantsCard(contract, 12);
+        updateProposedPeriod(contract);
 
         return this;
     }
 
-    private void createBurndownCard(Contract Contract, int width) {
-        if(Contract.getContractType().equals(ContractType.AMOUNT) || Contract.getContractType().equals(ContractType.SKI)) {
+    private void createBurndownCard(Contract contract, int width) {
+        if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
             burndownChartCard = new Card();
             burndownChartCard.getLblTitle().setValue("Burndown");
             burndownChartCard.getContent().setHeight(350, Unit.PIXELS);
-            if(Contract.getProjects().size()>0 && Contract.getConsultants().size()>0) createBurndownChart(Contract);
+            burndownChartCard.getHlTitleBar().addComponent(
+                    new MButton("refresh", event -> {
+                        chartCache.refreshBurndownRateForSingleContract(contract);
+                        createBurndownChart(contract);
+
+                    })
+                            .withStyleName("flat", "borderless")
+                            .withFullHeight()
+            );
+            if(contract.getProjects().size()>0 && contract.getConsultants().size()>0) createBurndownChart(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(burndownChartCard);
         }
     }
 
-    private void createBurnrateCard(Contract Contract, int width) {
-        if(Contract.getContractType().equals(ContractType.PERIOD)) {
+    private void createBurnrateCard(Contract contract, int width) {
+        if(contract.getContractType().equals(ContractType.PERIOD)) {
             burnrateChartCard = new Card();
             burnrateChartCard.getLblTitle().setValue("Burn Rate");
             burnrateChartCard.getContent().setHeight(350, Unit.PIXELS);
-            if(Contract.getProjects().size()>0 && Contract.getConsultants().size()>0) createBurnrateChart(Contract);
+            if(contract.getProjects().size()>0 && contract.getConsultants().size()>0) createBurnrateChart(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(burnrateChartCard);
         }
     }
 
-    private void createConsultantsCard(Contract Contract, int width) {
+    private void createConsultantsCard(Contract contract, int width) {
         Card consultantsCard = new Card();
         consultantsCard.getLblTitle().setValue("Consultants");
         consultantsLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
         consultantsCard.getContent().addComponent(consultantsLayout);
-        createConsultantList(Contract);
+        createConsultantList(contract);
         contractRow.addColumn()
                 .withDisplayRules(12, 12, width, width)
                 .withComponent(consultantsCard);
     }
 
-    private void createContactInformationCard(Contract Contract, int width) {
+    private void createContactInformationCard(Contract contract, int width) {
         Card contactInformationCard = new Card();
         contactInformationCard.getLblTitle().setValue("Contact Information");
         contactInformationCard.getContent().setHeight(350, Unit.PIXELS);
         contactInformationCard.getContent().addStyleName("v-scrollable");
         contactInformationLayout = new MVerticalLayout().withWidth(100, Unit.PERCENTAGE);
         contactInformationCard.getContent().addComponent(contactInformationLayout);
-        createContactInformation(Contract);
+        createContactInformation(contract);
         contractRow.addColumn()
                 .withDisplayRules(12, 12, width, width)
                 .withComponent(contactInformationCard);
     }
 
-    private void createUsedBudgetCard(Contract Contract, int width) {
-        if(Contract.getContractType().equals(ContractType.AMOUNT) || Contract.getContractType().equals(ContractType.SKI)) {
+    private void createUsedBudgetCard(Contract contract, int width) {
+        if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
             usedBudgetChartCard = new Card();
             usedBudgetChartCard.getLblTitle().setValue("Used Budget");
             usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
-            if(Contract.getProjects().size()>0 && Contract.getConsultants().size()>0) createUsedBudgetChartCard(Contract);
+            if(contract.getProjects().size()>0 && contract.getConsultants().size()>0) createUsedBudgetChartCard(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(usedBudgetChartCard);
@@ -336,14 +346,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
         conf.setPlotOptions(plotOptions);
 
         double sum = contractService.findAmountUsedOnContract(contract);
-        /*
-        for (Work work : contractService.getWorkOnContractByUser(contract)) {
-            if(work.getTask().getType().equals(TaskType.SO)) continue;
-            Optional<Consultant> optionalConsultant = contract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
-            if(!optionalConsultant.isPresent()) continue;
-            sum += (work.getWorkduration() * optionalConsultant.get().getRate());
-        }
-        */
 
         conf.addSeries(new ListSeries("Remaining", (contract.getAmount()-sum)));
         conf.addSeries(new ListSeries("Used", sum));

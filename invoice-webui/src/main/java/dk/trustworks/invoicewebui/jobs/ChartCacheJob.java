@@ -51,6 +51,10 @@ public class ChartCacheJob {
         return revenueMap;
     }
 
+    public void refreshBurndownRateForSingleContract(Contract mainContract) {
+        loadBurndownRateForSingleContract(mainContract);
+    }
+
     @Scheduled(cron = "0 0 4 5 1/1 ?")
     private void loadBurndownDateForAllContract() {
         for (Contract contract : contractService.findAll()) {

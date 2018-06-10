@@ -54,6 +54,7 @@ public class ProjectService {
         projectRepository.delete(entity);
     }
 
+    @Transactional
     public Project save(Project project) {
         return createDefaultTask(project);
     }
@@ -67,6 +68,7 @@ public class ProjectService {
     }
 
     private Project createDefaultTask(Project project) {
+        project = projectRepository.save(project);
         boolean hasSOTypeTask = false;
         for (Task task : project.getTasks()) {
             if(task.getType().equals(TaskType.SO)) hasSOTypeTask = true;
@@ -75,6 +77,6 @@ public class ProjectService {
             Task task = taskRepository.save(new Task("Satans os'e", project, TaskType.SO));
             project.getTasks().add(task);
         }
-        return projectRepository.save(project);
+        return project;
     }
 }

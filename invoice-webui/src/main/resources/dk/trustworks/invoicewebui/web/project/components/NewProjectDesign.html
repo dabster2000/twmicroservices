@@ -2,13 +2,13 @@
 <html>
  <head>
   <meta charset="UTF-8">
-  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
-  <meta name="vaadin-version" content="8.0.5">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
   <vaadin-vertical-layout>
    <vaadin-text-field required-indicator-visible placeholder="project name" width-full _id="txtProjectName"></vaadin-text-field>
-   <vaadin-combo-box required-indicator-visible empty-selection-allowed="false" placeholder="select client" empty-selection-caption="select client" width-full data-item-type="dk.trustworks.invoicewebui.model.Client" data-property-id="name" _id="cbClients"></vaadin-combo-box>
+   <vaadin-combo-box required-indicator-visible empty-selection-allowed="false" placeholder="select client" width-full data-item-type="dk.trustworks.invoicewebui.model.Client" data-property-id="name" _id="cbClients"></vaadin-combo-box>
    <vaadin-combo-box visible="false" required-indicator-visible empty-selection-allowed="false" placeholder="select contact info" empty-selection-caption="select contact info" width-full data-item-type="dk.trustworks.invoicewebui.model.Clientdata" _id="cbClientdatas"></vaadin-combo-box>
    <vaadin-horizontal-layout spacing="false" width-full>
     <vaadin-button enabled="false" style-name="flat friendly" width-full plain-text _id="btnCreate">

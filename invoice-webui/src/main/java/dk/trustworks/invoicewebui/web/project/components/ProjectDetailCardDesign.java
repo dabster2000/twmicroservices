@@ -41,6 +41,7 @@ public class ProjectDetailCardDesign extends VerticalLayout {
     private TextField txtBudget;
     private CheckBox chkActive;
     private Button btnUpdate;
+    private Button btnDelete;
 
     public ProjectDetailCardDesign() {
         Design.read(this);
@@ -96,6 +97,10 @@ public class ProjectDetailCardDesign extends VerticalLayout {
 
     public Button getBtnUpdate() {
         return btnUpdate;
+    }
+
+    public Button getBtnDelete() {
+        return btnDelete;
     }
 
 }

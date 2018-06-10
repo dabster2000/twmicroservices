@@ -26,9 +26,14 @@
         <vaadin-date-field caption="End" visible="false" date-format="dd MMM yyyy" _id="selEndDate"></vaadin-date-field>
         <vaadin-text-field visible="false" caption="Budget" _id="txtBudget"></vaadin-text-field>
         <vaadin-check-box caption="Active" _id="chkActive"></vaadin-check-box>
-        <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
-          Update 
-        </vaadin-button>
+        <vaadin-horizontal-layout>
+         <vaadin-button icon="fonticon://Vaadin-Icons/e701" style-name="primary flat" plain-text _id="btnUpdate">
+           Update 
+         </vaadin-button>
+         <vaadin-button visible="false" icon="fonticon://Vaadin-Icons/e6ee" style-name="danger" plain-text _id="btnDelete">
+           Delete 
+         </vaadin-button>
+        </vaadin-horizontal-layout>
        </vaadin-form-layout>
       </vaadin-vertical-layout>
      </vaadin-vertical-layout>

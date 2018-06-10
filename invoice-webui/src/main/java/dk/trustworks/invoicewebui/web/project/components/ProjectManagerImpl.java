@@ -18,7 +18,7 @@ import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
-import dk.trustworks.invoicewebui.web.contracts.components.Card;
+import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
 import dk.trustworks.invoicewebui.web.contracts.model.BudgetRow;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +58,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final ClientRepository clientRepository;
 
-    private final ClientdataRepository clientdataRepository;
-
     private final BudgetNewRepository budgetNewRepository;
 
     private final PhotoRepository photoRepository;
@@ -82,33 +80,16 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserRepository userRepository, ProjectService projectService, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, WorkRepository workRepository, ContractService contractService) {
+    public ProjectManagerImpl(UserRepository userRepository, ProjectService projectService, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService) {
         this.userRepository = userRepository;
         this.projectService = projectService;
         this.taskRepository = taskRepository;
         this.clientRepository = clientRepository;
-        this.clientdataRepository = clientdataRepository;
         this.budgetNewRepository = budgetNewRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.newsRepository = newsRepository;
         this.contractService = contractService;
-    }
-
-
-    @Transactional
-    public ProjectManagerImpl init() {
-        getOnOffSwitch().setValue(false);
-        getOnOffSwitch().addValueChangeListener(event -> changeOptions());
-        getSelProject().setItemCaptionGenerator(Project::getName);
-        List<Project> projects = newArrayList(((getOnOffSwitch().getValue()) ? projectService.findAllByOrderByNameAsc() : projectService.findAllByActiveTrueOrderByNameAsc()));
-
-        getSelProject().setItems(projects);
-        getSelProject().addValueChangeListener(event -> reloadGrid());
-
-        getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
-        getSelClient().setItemCaptionGenerator(Client::getName);
-        getSelClient().addValueChangeListener(event -> changeOptions());
 
         getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Create Project");
@@ -118,7 +99,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             NewProjectDesign newProject = new NewProjectDesign();
             window.setContent(newProject);
             UI.getCurrent().addWindow(window);
-            newProject.getCbClients().setItems(clientRepository.findByActiveTrue());
+            newProject.getCbClients().setItems(clientRepository.findByActiveTrueOrderByName());
             newProject.getCbClients().addValueChangeListener(event1 -> {
                 List<Clientdata> clientdataList = clientdataRepository.findByClient(event1.getValue());
                 newProject.getCbClientdatas().setVisible(true);
@@ -131,18 +112,36 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             });
             newProject.getCbClients().setItemCaptionGenerator(Client::getName);
             newProject.getBtnCreate().addClickListener(event1 -> {
-                Clientdata clientdata = newProject.getCbClientdatas().getValue();
-                Project project = projectService.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue(), clientdata));
-                List<Project> reloadedProjects = newArrayList(projectService.findAll());
-                getSelProject().setItems(reloadedProjects);
-                getSelProject().setSelectedItem(project);
-                getSelProject().setValue(project);
                 window.close();
                 UI.getCurrent().removeWindow(window);
-                reloadGrid();
+                Clientdata clientdata = newProject.getCbClientdatas().getValue();
+                Project project = projectService.save(new Project(newProject.getTxtProjectName().getValue(), newProject.getCbClients().getValue(), clientdata));
+                getOnOffSwitch().setValue(false);
+                getSelClient().clear();
+                List<Project> reloadedProjects = newArrayList(projectService.findAllByActiveTrueOrderByNameAsc());
+                getSelProject().setItems(reloadedProjects);
+                setCurrentProject(project.getUuid());
             });
             newProject.getBtnCancel().addClickListener(event1 -> window.close());
         });
+
+        getSelProject().addValueChangeListener(event -> reloadGrid());
+        getOnOffSwitch().addValueChangeListener(event -> changeOptions());
+        getSelClient().addValueChangeListener(event -> changeOptions());
+    }
+
+
+    @Transactional
+    public ProjectManagerImpl init() {
+        getOnOffSwitch().setValue(false);
+        getSelProject().setItemCaptionGenerator(Project::getName);
+        List<Project> projects = newArrayList(((getOnOffSwitch().getValue()) ? projectService.findAllByOrderByNameAsc() : projectService.findAllByActiveTrueOrderByNameAsc()));
+
+        getSelProject().setItems(projects);
+
+        getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
+        getSelClient().setItemCaptionGenerator(Client::getName);
+
         return this;
     }
 
@@ -157,14 +156,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 getSelProject().setItems(getSelClient().getSelectedItem().get().getProjects().stream().filter(Project::isActive).sorted(comparing(Project::getName)));
             }
         }
-        reloadGrid();
+        //reloadGrid();
     }
 
     public void setCurrentProject(String projectUUID) {
         currentProject = projectService.findOne(projectUUID);
         getSelProject().setSelectedItem(currentProject);
         getSelProject().setValue(currentProject);
-        reloadGrid();
+        //reloadGrid();
     }
 
     private void createDetailLayout() {
@@ -177,6 +176,16 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             projectDetailCard.save();
             updateTreeGrid();
         });
+        projectDetailCard.getBtnDelete().addClickListener(event -> {
+            projectService.delete(currentProject);
+            getSelClient().clear();
+            getSelProject().clear();
+            getOnOffSwitch().setValue(false);
+            getSelProject().setItems(projectService.findAllByActiveTrueOrderByNameAsc());
+            reloadGrid();
+        });
+        if(currentProject.getTasks().stream().anyMatch(task -> !task.getType().equals(TaskType.SO))) projectDetailCard.getBtnDelete().setVisible(false);
+        else projectDetailCard.getBtnDelete().setVisible(true);
         ResponsiveRow clientDetailsRow = responsiveLayout.addRow();
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -212,7 +221,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         }
 
         budgetCard = new BudgetCardDesign();
-        // TODO: Create budget used
         updateTreeGrid();
 
         ResponsiveRow budgetRow = responsiveLayout.addRow();
@@ -227,12 +235,12 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             TaskRowDesign taskRow = new TaskRowDesign();
             taskRow.getLblName().setValue(task.getName());
             taskRow.getTxtName().setVisible(false);
-            if(task.getWorkList().size()>0 && task.getType()!=TaskType.SO)  taskRow.getBtnDelete().setVisible(false);
+            if(task.getWorkList().size()>0 || task.getType()==TaskType.SO)  taskRow.getBtnDelete().setVisible(false);
             taskRow.getBtnDelete().setIcon(MaterialIcons.DELETE);
             taskRow.getBtnDelete().addClickListener(event -> {
                 taskRepository.delete(task.getUuid());
                 currentProject.getTasks().remove(task);
-                createTasksList();
+                reloadGrid();
             });
             taskRow.getCssTaskName().addLayoutClickListener(event -> {
                 taskRow.getHlChart().removeAllComponents();
@@ -252,7 +260,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         newTaskRow.getBtnDelete().addClickListener(event -> {
             Task task = taskRepository.save(new Task(newTaskRow.getTxtName().getValue(), currentProject));
             currentProject.getTasks().add(task);
-            createTasksList();
+            reloadGrid();
         });
         tasksLayout.add(newTaskRow);
     }
@@ -533,24 +541,20 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         int month = 0;
         int year = startDate.getYear();
-        //List<String> yearColumns = new ArrayList<>();
         LocalDate budgetDate = startDate;
         while(budgetDate.isBefore(endDate)) {
             final LocalDate filterDate = budgetDate;
             final int actualMonth = month;
-            Grid.Column<BudgetRow, ?> budgetColumn = grid.addColumn(
+            grid.addColumn(
                     taskRow -> taskRow.getMonth(actualMonth))
                     .setStyleGenerator(budgetHistory -> "align-right")
                     .setWidth(100)
                     .setId(Month.of(filterDate.getMonthValue()).name()+filterDate.getYear())
                     .setCaption(Month.of(filterDate.getMonthValue()).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)+" "+filterDate.format(DateTimeFormatter.ofPattern("yy")))
                     .setEditorComponent(new TextField(), (Setter<BudgetRow, String>) (taskRow, budgetValue) -> taskRow.setMonth(actualMonth, budgetValue));
-            //yearColumns.add(budgetColumn.getId());
             budgetDate = budgetDate.plusMonths(1);
             month++;
             if(year < budgetDate.getYear()) {
-                //topHeader.join(yearColumns.toArray(new String[0])).setText(year + "");
-                //yearColumns = new ArrayList<>();
                 year++;
             }
         }
