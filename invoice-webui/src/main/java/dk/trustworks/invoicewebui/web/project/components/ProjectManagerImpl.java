@@ -171,7 +171,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         addComponent(responsiveLayout);
 
         Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
-        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userRepository.findAll(), photoResource, projectService, newsRepository, userRepository);
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userRepository.findByOrderByUsername(), photoResource, projectService, newsRepository, userRepository);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.save();
             updateTreeGrid();
