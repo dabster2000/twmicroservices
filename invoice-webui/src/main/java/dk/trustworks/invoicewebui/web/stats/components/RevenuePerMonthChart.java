@@ -73,11 +73,14 @@ public class RevenuePerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' kkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        List<Work> workList = workRepository.findByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        List<GraphKeyValue> amountPerItemList = new ArrayList<>();
+        //List<Work> workList = workRepository.findByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        /*
         for (int i = 0; i < months; i++) {
             amountPerItemList.add(new GraphKeyValue(i+"", periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), 0));
         }
+        */
+        /*
         for (Work work : workList) {
             if(work.getWorkduration()==0.0) continue;
             Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
@@ -90,19 +93,20 @@ public class RevenuePerMonthChart {
             }
             keyValue.get().addValue((int)Math.round(workAmount.amount));
         }
+        */
 
         String[] categories = new String[months];
         DataSeries revenueSeries = new DataSeries("Revenue");
         DataSeries earningsSeries = new DataSeries("Earnings");
         DataSeries budgetSeries = new DataSeries("Budget");
-        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))).collect(Collectors.toList());
+        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             if(amountPerItemList.size() > i) {
                 GraphKeyValue amountPerItem = amountPerItemList.get(i);
-                revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
+                revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
                 double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
-                if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()-expense));
+                if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()-expense));
             }
             List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             double budgetSum = 0.0;

@@ -39,8 +39,9 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
             "where c.activefrom <= registered and c.activeto >= registered " +
             "and w.registered >= :periodStart AND w.registered <= :periodEnd " +
-            "and w.workduration > 0 and c.status in ('SIGNED') " +
-            "GROUP BY w.month, w.year ", nativeQuery = true)
+            "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
+            "GROUP BY w.month, w.year " +
+            "ORDER BY w.year, w.month ", nativeQuery = true)
     List<GraphKeyValue> findRevenueByMonthByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
     @Cacheable("findBudgetByMonthByPeriod")
@@ -77,7 +78,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
             "where c.activefrom <= registered and c.activeto >= registered " +
             "and w.registered >= :periodStart AND w.registered <= :periodEnd " +
-            "and w.workduration > 0 and c.status in ('SIGNED') " +
+            "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
             "GROUP BY w.useruuid ORDER BY value DESC;", nativeQuery = true)
     List<GraphKeyValue> findConsultantRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 

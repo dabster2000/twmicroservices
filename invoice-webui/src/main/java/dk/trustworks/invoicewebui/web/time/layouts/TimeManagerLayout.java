@@ -158,6 +158,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             clientComboBox.setEmptySelectionCaption("Select client...");
             List<Client> clients = new ArrayList<>(clientResources);
             clientComboBox.setItems(clients);
+            if(clients.size()==0) clientComboBox.setEmptySelectionCaption("No active contracts...");
 
             ComboBox<Project> projectComboBox = new ComboBox<>();
             projectComboBox.setItemCaptionGenerator(Project::getName);
@@ -184,6 +185,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     userComboBox.setVisible(true);
                     userComboBox.setSelectedItem(null);
                     clientComboBox.setVisible(false);
+                    projectComboBox.setVisible(false);
+                    taskComboBox.setVisible(false);
                 } else {
                     userComboBox.setVisible(false);
                     for (User user : users) {

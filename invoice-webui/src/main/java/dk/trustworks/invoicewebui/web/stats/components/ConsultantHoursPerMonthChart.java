@@ -63,7 +63,6 @@ public class ConsultantHoursPerMonthChart {
             iteratorDate = iteratorDate.plusMonths(1);
         }
 
-
         PlotOptionsSeries plot = new PlotOptionsSeries();
         plot.setStacking(Stacking.NORMAL);
         chart.getConfiguration().setPlotOptions(plot);

@@ -19,6 +19,6 @@ public class ContractSearchImpl extends ContractSearchDesign {
 
     @PostConstruct
     public void init() {
-        getSelClient().setItems(clientRepository.findByOrderByName());
+        getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
     }
 }

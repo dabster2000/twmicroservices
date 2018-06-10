@@ -4,6 +4,7 @@ import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
@@ -24,23 +25,30 @@ public class ContractService {
 
     private final ContractRepository contractRepository;
 
+    private final ClientRepository clientRepository;
+
     private final WorkRepository workRepository;
 
     @Autowired
-    public ContractService(ProjectService projectService, ContractRepository contractRepository, WorkRepository workRepository) {
+    public ContractService(ProjectService projectService, ContractRepository contractRepository, ClientRepository clientRepository, WorkRepository workRepository) {
         this.projectService = projectService;
         this.contractRepository = contractRepository;
+        this.clientRepository = clientRepository;
         this.workRepository = workRepository;
     }
 
     @Transactional
-    @CacheEvict({"contract", "rate"})
+    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract createContract(Contract contract) {
-        return contractRepository.save(contract);
+        Contract savedContract = contractRepository.save(contract);
+        Client client = savedContract.getClient();
+        client.setActive(true);
+        clientRepository.save(client);
+        return contract;
     }
 
     @Transactional
-    @CacheEvict({"contract", "rate"})
+    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract updateContract(Contract contract) {
         return contractRepository.save(contract);
     }
@@ -51,7 +59,7 @@ public class ContractService {
     }
 
     @Transactional
-    @CacheEvict({"contract", "rate"})
+    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract addProjects(Contract Contract, Set<Project> projects) throws ContractValidationException {
         // validate
         for (Project project : projects) {
@@ -74,7 +82,7 @@ public class ContractService {
     }
 
     @Transactional
-    @CacheEvict({"contract", "rate"})
+    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract addProject(Contract Contract, Project project) throws ContractValidationException {
         // validate
         for (Contract contract : project.getContracts()) {
@@ -132,6 +140,7 @@ public class ContractService {
     }
 
     @Transactional
+    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract removeProject(Contract contract, Project project) {
         contract = contractRepository.findOne(contract.getUuid());
         contract.getProjects().remove(project);
@@ -246,9 +255,8 @@ public class ContractService {
     }
 
     @Transactional
+    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public void deleteContract(Contract contract) {
-        System.out.println("ContractService.deleteContract");
-        System.out.println("Contract = [" + contract + "]");
         try {
             contractRepository.delete(contract.getUuid());
         } catch (Exception e) {

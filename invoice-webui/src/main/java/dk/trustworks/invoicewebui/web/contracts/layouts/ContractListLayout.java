@@ -2,12 +2,10 @@ package dk.trustworks.invoicewebui.web.contracts.layouts;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
@@ -87,22 +85,29 @@ public class ContractListLayout extends VerticalLayout {
         errorCard.getContent().setHeight(450, Unit.PIXELS);
         errorCard.getContent().addStyleName("v-scrollable");
         errorCard.getLblTitle().setValue("Work registration errors");
-        errorCard.getHlTitleBar().addComponent(new MButton("load all", event -> {
-            createErrorContent(100);
-        }));
+        errorCard.getHlTitleBar().addComponent(new MButton("load all", event -> createErrorContent(100)));
 
         createErrorContent(2);
     }
 
     private void createSearchBar() {
+        OnOffSwitch withInactiveClientsSwitch = new OnOffSwitch(false);
         contractResponsiveLayout.addRow().addColumn()
                 .withOffset(ResponsiveLayout.DisplaySize.MD, 4)
                 .withOffset(ResponsiveLayout.DisplaySize.LG, 4)
                 .withDisplayRules(12, 12, 4, 4)
-                .withComponent(contractSearch);
+                .withComponent(new HorizontalLayout(contractSearch, withInactiveClientsSwitch));
         contractSearch.getSelClient().setItemCaptionGenerator(Client::getName);
 
         contractSearch.getSelClient().addValueChangeListener(event -> reloadContractView(event.getValue()));
+
+        withInactiveClientsSwitch.addValueChangeListener(event -> {
+            if(event.getValue()) {
+                contractSearch.getSelClient().setItems(clientRepository.findByOrderByName());
+            } else {
+                contractSearch.getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
+            }
+        });
     }
 
     private void reloadContractView(Client client) {
