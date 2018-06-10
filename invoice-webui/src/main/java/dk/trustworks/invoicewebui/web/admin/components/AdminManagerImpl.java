@@ -113,7 +113,7 @@ public class AdminManagerImpl extends VerticalLayout {
     protected Component getChart() {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        LocalDate periodStart = LocalDate.of(2014, 02, 01);
+        LocalDate periodStart = LocalDate.of(2014, 2, 1);
         LocalDate periodEnd = LocalDate.now();
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
 

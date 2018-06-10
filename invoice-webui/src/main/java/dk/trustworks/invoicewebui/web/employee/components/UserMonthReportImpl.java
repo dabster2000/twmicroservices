@@ -40,9 +40,7 @@ public class UserMonthReportImpl extends UserMonthReportDesign {
         getLblTitle().setValue(user.getFirstname() + " " + user.getLastname());
         getDate().setValue(LocalDate.now().withDayOfMonth(1));
         getDate().setResolution(DateResolution.MONTH);
-        getDate().addValueChangeListener(event -> {
-            loadProjectReport(getDate().getValue());
-        });
+        getDate().addValueChangeListener(event -> loadProjectReport(getDate().getValue()));
         loadProjectReport(getDate().getValue());
     }
 

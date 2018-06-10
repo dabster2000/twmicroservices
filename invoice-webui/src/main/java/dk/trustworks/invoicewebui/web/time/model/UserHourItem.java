@@ -1,8 +1,5 @@
 package dk.trustworks.invoicewebui.web.time.model;
 
-import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.model.User;
-
 /**
  * Created by hans on 10/09/2017.
  */
@@ -71,13 +68,11 @@ public class UserHourItem {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("UserHourItem{");
-        sb.append("userUUID='").append(userUUID).append('\'');
-        sb.append(", taskUUID='").append(taskUUID).append('\'');
-        sb.append(", projectTaskName='").append(projectTaskName).append('\'');
-        sb.append(", username='").append(username).append('\'');
-        sb.append(", hours=").append(hours);
-        sb.append('}');
-        return sb.toString();
+        return "UserHourItem{" + "userUUID='" + userUUID + '\'' +
+                ", taskUUID='" + taskUUID + '\'' +
+                ", projectTaskName='" + projectTaskName + '\'' +
+                ", username='" + username + '\'' +
+                ", hours=" + hours +
+                '}';
     }
 }

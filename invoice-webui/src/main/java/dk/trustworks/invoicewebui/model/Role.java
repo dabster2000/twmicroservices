@@ -2,7 +2,6 @@ package dk.trustworks.invoicewebui.model;
 
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.UUID;
 
 /**
@@ -56,11 +55,9 @@ public class Role {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Role{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", user=").append(user);
-        sb.append(", role=").append(role);
-        sb.append('}');
-        return sb.toString();
+        return "Role{" + "uuid='" + uuid + '\'' +
+                ", user=" + user +
+                ", role=" + role +
+                '}';
     }
 }

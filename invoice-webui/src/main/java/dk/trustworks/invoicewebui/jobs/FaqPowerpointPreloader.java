@@ -10,13 +10,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,26 +42,6 @@ public class FaqPowerpointPreloader {
         //loadSlidephotos();
     }
 
-    private Map<String, List<String>> imageSlideShows = new HashMap<>();
-
-    //@Scheduled(cron = "0 1 1 * * ?")
-    public void loadSlidephotos() {
-        List<String> powerpointPaths = dropboxAPI.getFilesInFolder("/Shared/Administration/Intra/faq/img");
-        for (String powerpointPath : powerpointPaths) {
-            String[] filenameParts = powerpointPath.split("/");
-            String filename = filenameParts[filenameParts.length-1].split("\\.")[0];
-            imageSlideShows.put(filename, new ArrayList<>());
-            for (String imagePath : dropboxAPI.getFilesInFolder(powerpointPath)) {
-                imageSlideShows.get(filename).add(imagePath);
-                log.debug("imagePath = " + imagePath);
-            }
-        }
-    }
-
-    public Map<String, List<String>> getImageSlideShows() {
-        return imageSlideShows;
-    }
-
     private Map<String, List<byte[]>> slidesShows = new HashMap<>();
 
     @Scheduled(cron = "0 1 1 * * ?")
@@ -85,14 +65,14 @@ public class FaqPowerpointPreloader {
 
                 slidesShows.put(filename, new ArrayList<>());
 
-                for (int i = 0; i < slide.size(); i++) {
+                for (XSLFSlide aSlide : slide) {
                     BufferedImage img = new BufferedImage((int) Math.ceil(pgsize.width * zoom), (int) Math.ceil(pgsize.height * zoom), BufferedImage.TYPE_INT_RGB);
                     Graphics2D graphics = img.createGraphics();
                     graphics.setPaint(Color.white);
                     graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height));
-                    slide.get(i).draw(graphics);
+                    aSlide.draw(graphics);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    javax.imageio.ImageIO.write(img, "png", out);
+                    ImageIO.write(img, "png", out);
                     ppt.write(out);
 
                     byte[] bytes = out.toByteArray();
@@ -102,20 +82,14 @@ public class FaqPowerpointPreloader {
                     log.debug("Image successfully created");
                     out.close();
                 }
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
         }
     }
 
-    public Map<String, List<byte[]>> getSlidesShows() {
-        return slidesShows;
-    }
-
-    private Map<String, String> pdfs = new HashMap<>();
-
+    //private Map<String, String> pdfs = new HashMap<>();
+/*
     @Scheduled(cron = "0 1 1 * * ?")
     public void loadFaqPDFs() {
         List<String> powerpointPaths = dropboxAPI.getFilesInFolder("/Shared/Administration/Intra/faq/pdf");
@@ -123,11 +97,8 @@ public class FaqPowerpointPreloader {
             String[] filenameParts = powerpointPath.split("/");
             String filename = filenameParts[filenameParts.length-1].split("\\.")[0];
             //byte[] specificFile = dropboxAPI.getSpecificBinaryFile(powerpointPath);
-            pdfs.put(filename, powerpointPath);
+            //pdfs.put(filename, powerpointPath);
         }
     }
-
-    public Map<String, String> getPdfs() {
-        return pdfs;
-    }
+    */
 }

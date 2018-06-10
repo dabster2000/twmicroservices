@@ -22,12 +22,10 @@ public class UserBudget {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("UserBudget{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", date=").append(date);
-        sb.append(", budget=").append(budget);
-        sb.append('}');
-        return sb.toString();
+        return "UserBudget{" + "uuid='" + uuid + '\'' +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", budget=" + budget +
+                '}';
     }
 }

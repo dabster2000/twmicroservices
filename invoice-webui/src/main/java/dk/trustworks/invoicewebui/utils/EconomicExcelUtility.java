@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 @Component
 public class EconomicExcelUtility {
@@ -23,7 +23,7 @@ public class EconomicExcelUtility {
 
     public Table<LocalDate, ExcelExpenseType, Double> getExpenses(byte[] excelFile) {
         log.info("EconomicExcelUtility.getExpenses");
-        log.info("excelFile = [" + excelFile + "]");
+        log.info("excelFile = [" + Arrays.toString(excelFile) + "]");
         try {
             //InputStream excelFile = EconomicExcelUtility.class.getResourceAsStream(filename);
             Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(excelFile));
@@ -60,8 +60,6 @@ public class EconomicExcelUtility {
             for (Table.Cell<LocalDate, ExcelExpenseType, Double> localDateExcelExpenseTypeDoubleCell : weightedGraph.cellSet()) {
                 log.debug(localDateExcelExpenseTypeDoubleCell.getColumnKey()+": "+localDateExcelExpenseTypeDoubleCell.getValue());
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

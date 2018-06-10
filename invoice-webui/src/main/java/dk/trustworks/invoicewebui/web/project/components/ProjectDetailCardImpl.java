@@ -42,7 +42,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
         }
 
         getSelRelationManager().setItems(userRepository.findByOrderByUsername());
-        getSelRelationManager().setItemCaptionGenerator(item -> item.getUsername());
+        getSelRelationManager().setItemCaptionGenerator(User::getUsername);
 
         getSelStartDate().setDateFormat("yyyy-MM");
         getSelStartDate().setSizeFull();
@@ -95,12 +95,9 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
                 // ok is a static helper method that creates a Result
                 NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
                 return Result.ok(formatter.parse(fieldValue).doubleValue());
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | ParseException e) {
                 e.printStackTrace();
                 // error is a static helper method that creates a Result
-                return Result.error("Please enter a number");
-            } catch (ParseException e) {
-                e.printStackTrace();
                 return Result.error("Please enter a number");
             }
         }

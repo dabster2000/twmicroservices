@@ -69,7 +69,7 @@ public class MotherSlackBot extends Bot {
         return this;
     }
 
-    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern = "")
+    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE})
     public void onReceiveDM(WebSocketSession session, Event event) {
         log.info("MotherSlackBot.onReceiveDM");
         log.info("event.getText() = " + event.getText());
@@ -78,7 +78,7 @@ public class MotherSlackBot extends Bot {
                 conversationMap.entrySet()
                         .stream()
                         .filter(p -> p.getValue().isValid())
-                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         AIRequest request = new AIRequest(event.getText());
         log.debug("event.getUser().getId() = " + event.getUserId());

@@ -78,11 +78,10 @@ public class Task {
 
     @Override
     public String toString() {
-        String sb = "Task{" + "uuid='" + uuid + '\'' +
+        return "Task{" + "uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 '}';
-        return sb;
     }
 
     @Override

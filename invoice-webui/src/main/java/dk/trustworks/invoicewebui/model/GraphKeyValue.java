@@ -53,11 +53,9 @@ public class GraphKeyValue {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("GraphKeyValues{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", value=").append(value);
-        sb.append('}');
-        return sb.toString();
+        return "GraphKeyValues{" + "uuid='" + uuid + '\'' +
+                ", description='" + description + '\'' +
+                ", value=" + value +
+                '}';
     }
 }

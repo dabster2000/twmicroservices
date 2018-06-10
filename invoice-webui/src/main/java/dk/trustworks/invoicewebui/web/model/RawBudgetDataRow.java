@@ -182,24 +182,22 @@ public class RawBudgetDataRow {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("RawBudgetDataRow{");
-        sb.append("username='").append(username).append('\'');
-        sb.append(", clientname='").append(clientname).append('\'');
-        sb.append(", projectname='").append(projectname).append('\'');
-        sb.append(", taskname='").append(taskname).append('\'');
-        sb.append(", m1=").append(m1);
-        sb.append(", m2=").append(m2);
-        sb.append(", m3=").append(m3);
-        sb.append(", m4=").append(m4);
-        sb.append(", m5=").append(m5);
-        sb.append(", m6=").append(m6);
-        sb.append(", m7=").append(m7);
-        sb.append(", m8=").append(m8);
-        sb.append(", m9=").append(m9);
-        sb.append(", m10=").append(m10);
-        sb.append(", m11=").append(m11);
-        sb.append(", m12=").append(m12);
-        sb.append('}');
-        return sb.toString();
+        return "RawBudgetDataRow{" + "username='" + username + '\'' +
+                ", clientname='" + clientname + '\'' +
+                ", projectname='" + projectname + '\'' +
+                ", taskname='" + taskname + '\'' +
+                ", m1=" + m1 +
+                ", m2=" + m2 +
+                ", m3=" + m3 +
+                ", m4=" + m4 +
+                ", m5=" + m5 +
+                ", m6=" + m6 +
+                ", m7=" + m7 +
+                ", m8=" + m8 +
+                ", m9=" + m9 +
+                ", m10=" + m10 +
+                ", m11=" + m11 +
+                ", m12=" + m12 +
+                '}';
     }
 }

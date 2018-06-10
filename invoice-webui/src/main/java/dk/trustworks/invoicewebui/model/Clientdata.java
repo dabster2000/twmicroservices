@@ -129,18 +129,16 @@ public class Clientdata {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Clientdata{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", city='").append(city).append('\'');
-        sb.append(", clientname='").append(clientname).append('\'');
-        sb.append(", contactperson='").append(contactperson).append('\'');
-        sb.append(", cvr='").append(cvr).append('\'');
-        sb.append(", ean='").append(ean).append('\'');
-        sb.append(", otheraddressinfo='").append(otheraddressinfo).append('\'');
-        sb.append(", postalcode=").append(postalcode);
-        sb.append(", streetnamenumber='").append(streetnamenumber).append('\'');
-        sb.append(", client=").append(client);
-        sb.append('}');
-        return sb.toString();
+        return "Clientdata{" + "uuid='" + uuid + '\'' +
+                ", city='" + city + '\'' +
+                ", clientname='" + clientname + '\'' +
+                ", contactperson='" + contactperson + '\'' +
+                ", cvr='" + cvr + '\'' +
+                ", ean='" + ean + '\'' +
+                ", otheraddressinfo='" + otheraddressinfo + '\'' +
+                ", postalcode=" + postalcode +
+                ", streetnamenumber='" + streetnamenumber + '\'' +
+                ", client=" + client +
+                '}';
     }
 }

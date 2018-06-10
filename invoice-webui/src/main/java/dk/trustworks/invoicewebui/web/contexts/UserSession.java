@@ -38,8 +38,7 @@ public class UserSession {
     }
 
     public boolean hasRole(RoleType roleType) {
-        boolean present = roles.stream().map(Role::getRole).filter(roleType::equals).findFirst().isPresent();
-        return present;
+        return roles.stream().map(Role::getRole).filter(roleType::equals).findFirst().isPresent();
     }
 
     @Override

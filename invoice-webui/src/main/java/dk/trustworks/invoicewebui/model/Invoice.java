@@ -258,29 +258,27 @@ public class Invoice {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Invoice{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", projectuuid='").append(projectuuid).append('\'');
-        sb.append(", projectname='").append(projectname).append('\'');
-        sb.append(", year=").append(year);
-        sb.append(", month=").append(month);
-        sb.append(", clientname='").append(clientname).append('\'');
-        sb.append(", clientaddresse='").append(clientaddresse).append('\'');
-        sb.append(", otheraddressinfo='").append(otheraddressinfo).append('\'');
-        sb.append(", zipcity='").append(zipcity).append('\'');
-        sb.append(", cvr='").append(cvr).append('\'');
-        sb.append(", ean='").append(ean).append('\'');
-        sb.append(", attention='").append(attention).append('\'');
-        sb.append(", invoicenumber=").append(invoicenumber);
-        sb.append(", invoicedate=").append(invoicedate);
-        sb.append(", contractref='").append(contractref).append('\'');
-        sb.append(", projectref='").append(projectref).append('\'');
-        sb.append(", invoiceitems=").append(invoiceitems);
-        sb.append(", errors=").append(errors);
-        sb.append(", type=").append(type);
-        sb.append(", status=").append(status);
-        sb.append('}');
-        return sb.toString();
+        return "Invoice{" + "uuid='" + uuid + '\'' +
+                ", projectuuid='" + projectuuid + '\'' +
+                ", projectname='" + projectname + '\'' +
+                ", year=" + year +
+                ", month=" + month +
+                ", clientname='" + clientname + '\'' +
+                ", clientaddresse='" + clientaddresse + '\'' +
+                ", otheraddressinfo='" + otheraddressinfo + '\'' +
+                ", zipcity='" + zipcity + '\'' +
+                ", cvr='" + cvr + '\'' +
+                ", ean='" + ean + '\'' +
+                ", attention='" + attention + '\'' +
+                ", invoicenumber=" + invoicenumber +
+                ", invoicedate=" + invoicedate +
+                ", contractref='" + contractref + '\'' +
+                ", projectref='" + projectref + '\'' +
+                ", invoiceitems=" + invoiceitems +
+                ", errors=" + errors +
+                ", type=" + type +
+                ", status=" + status +
+                '}';
     }
 
     public double getSumNoTax() {

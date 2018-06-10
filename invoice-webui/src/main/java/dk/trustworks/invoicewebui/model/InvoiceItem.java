@@ -73,14 +73,12 @@ public class InvoiceItem {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("InvoiceItem{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", itemname='").append(itemname).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", rate=").append(rate);
-        sb.append(", hours=").append(hours);
         //sb.append(", invoiceuuid='").append(invoiceuuid).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "InvoiceItem{" + "uuid='" + uuid + '\'' +
+                ", itemname='" + itemname + '\'' +
+                ", description='" + description + '\'' +
+                ", rate=" + rate +
+                ", hours=" + hours +
+                '}';
     }
 }

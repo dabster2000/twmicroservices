@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
+import java.util.Arrays;
 
 /**
  * Created by hans on 18/08/2017.
@@ -27,33 +28,32 @@ public class Authorizer {
 
     private static final Logger log = LoggerFactory.getLogger(Authorizer.class);
 
-    private static String NAME_COOKIE = "trustworks_login";
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public Authorizer(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public void authorize(Component component, RoleType roleType) {
         log.info("Authorizer.authorize");
         log.info("component = [" + component + "], roleType = [" + roleType + "]");
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         if(userSession == null) return;
-        if(userSession == null) component.getUI().getNavigator().navigateTo("login");
-        if(userSession != null && !userSession.hasRole(roleType)) component.getUI().getNavigator().navigateTo("login");
+        if(!userSession.hasRole(roleType)) component.getUI().getNavigator().navigateTo("login");
     }
 
     public boolean hasAccess(RoleType... roleTypes) {
         log.info("Authorizer.hasAccess");
-        log.info("roleTypes = [" + roleTypes + "]");
+        log.info("roleTypes = [" + Arrays.toString(roleTypes) + "]");
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         if(roleTypes == null) return true;
         if(roleTypes.length == 0) return true;
         if(userSession == null) return false;
-        if(userSession != null) {
-            for (RoleType roleType : roleTypes) {
-                log.debug("roleType = " + roleType);
-                log.debug("userSession.hasRole(roleType) = " + userSession.hasRole(roleType));
-                if (userSession.hasRole(roleType)) return true;
-            }
+        for (RoleType roleType : roleTypes) {
+            log.debug("roleType = " + roleType);
+            log.debug("userSession.hasRole(roleType) = " + userSession.hasRole(roleType));
+            if (userSession.hasRole(roleType)) return true;
         }
         return false;
     }
@@ -68,10 +68,8 @@ public class Authorizer {
         if(roleTypes == null) return true;
         if(roleTypes.length == 0) return true;
         if(userSession == null) return false;
-        if(userSession != null) {
-            for (RoleType roleType : roleTypes) {
-                if (userSession.hasRole(roleType)) return true;
-            }
+        for (RoleType roleType : roleTypes) {
+            if (userSession.hasRole(roleType)) return true;
         }
         return false;
     }
@@ -85,15 +83,14 @@ public class Authorizer {
         if(roleTypes == null) return joinPoint.proceed();
         if(roleTypes.length == 0) return joinPoint.proceed();
         if(userSession == null) return false;
-        if(userSession != null) {
-            for (RoleType roleType : roleTypes) {
-                if (userSession.hasRole(roleType)) return joinPoint.proceed();
-            }
+        for (RoleType roleType : roleTypes) {
+            if (userSession.hasRole(roleType)) return joinPoint.proceed();
         }
         return null;
     }
 
     private boolean isCookieAuthorized() {
+        String NAME_COOKIE = "trustworks_login";
         Cookie cookie = getCookieByName(NAME_COOKIE);
         if (cookie != null) {
             User user = userRepository.findByUuid(cookie.getValue());

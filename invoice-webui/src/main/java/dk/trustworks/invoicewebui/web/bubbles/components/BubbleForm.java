@@ -39,7 +39,6 @@ public class BubbleForm {
 
     private final ResponsiveLayout newBubbleResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
 
-    private ResponsiveRow formRow;
     private ResponsiveRow uploadRow;
     private ResponsiveRow membersRow;
 
@@ -166,7 +165,7 @@ public class BubbleForm {
         newBubbleResponsiveLayout.removeAllComponents();
         final Bubble bubble = (prevBubble != null)?prevBubble:new Bubble();
 
-        formRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
+        ResponsiveRow formRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
         TextField bubbleName = new TextField("Bubble name");
         bubbleName.setWidth(100, Sizeable.Unit.PERCENTAGE);

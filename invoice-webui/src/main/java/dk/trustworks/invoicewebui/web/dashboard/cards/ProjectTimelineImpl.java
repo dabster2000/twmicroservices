@@ -16,7 +16,6 @@ import java.util.Locale;
 
 import static com.vaadin.addon.charts.model.ChartType.COLUMNRANGE;
 import static java.time.LocalDate.now;
-import static java.util.Collections.sort;
 import static java.util.Comparator.comparing;
 
 public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
@@ -42,7 +41,7 @@ public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
 
     private Component getChart(List<Project> projects) {
         Chart chart = new Chart(COLUMNRANGE);
-        sort(projects, comparing(o -> o.getClient().getName()));
+        projects.sort(comparing(o -> o.getClient().getName()));
 
         Configuration conf = chart.getConfiguration();
         conf.getChart().setInverted(true);

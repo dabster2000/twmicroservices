@@ -95,7 +95,6 @@ public class AnniversaryManagerJob {
                         "anniversary", null,
                         sha512hex
                 ));
-                continue;
             }
         }
     }

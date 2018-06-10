@@ -28,7 +28,6 @@ public class UserRow extends TaskRow {
 
     @Override
     public void setTaskName(String taskName) {
-        return;
     }
 
     @Override
@@ -76,11 +75,9 @@ public class UserRow extends TaskRow {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("UserRow{");
-        sb.append(super.toString());
-        sb.append(", username='").append(username).append('\'');
-        sb.append(", rate=").append(rate);
-        sb.append('}');
-        return sb.toString();
+        return "UserRow{" + super.toString() +
+                ", username='" + username + '\'' +
+                ", rate=" + rate +
+                '}';
     }
 }

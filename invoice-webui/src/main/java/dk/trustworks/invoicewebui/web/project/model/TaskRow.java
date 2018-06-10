@@ -64,19 +64,16 @@ public class TaskRow {
     }
 
     public void setMonth(int month, String value) {
-        return;
         //budget[month] = value;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("TaskRow{");
-        sb.append("task=").append(task);
-        sb.append(", taskName='").append(taskName).append('\'');
-        sb.append(", userRows=").append(userRows);
-        sb.append(", budget=").append(Arrays.toString(budget));
-        sb.append('}');
-        return sb.toString();
+        return "TaskRow{" + "task=" + task +
+                ", taskName='" + taskName + '\'' +
+                ", userRows=" + userRows +
+                ", budget=" + Arrays.toString(budget) +
+                '}';
     }
 
     public String getUsername() {

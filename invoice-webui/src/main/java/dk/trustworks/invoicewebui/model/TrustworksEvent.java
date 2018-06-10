@@ -73,13 +73,11 @@ public class TrustworksEvent {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Event{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", eventdate=").append(eventdate);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", location='").append(location).append('\'');
-        sb.append(", eventtype=").append(eventtype);
-        sb.append('}');
-        return sb.toString();
+        return "Event{" + "uuid='" + uuid + '\'' +
+                ", eventdate=" + eventdate +
+                ", name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", eventtype=" + eventtype +
+                '}';
     }
 }

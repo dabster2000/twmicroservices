@@ -43,9 +43,7 @@ public class UserStatusCardImpl extends UserStatusCardDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            for (UserStatus userStatus : getGridSalaries().getSelectedItems()) {
-                userStatusRepository.delete(userStatus);
-            }
+            userStatusRepository.delete(getGridSalaries().getSelectedItems());
             getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getStatuses());
         });
         getBtnCreate().addClickListener(event -> {

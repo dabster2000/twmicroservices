@@ -35,7 +35,7 @@ public class UserStatus {
                 statusdate.atStartOfDay(
                         ZoneId.of( "Europe/Paris" )
                 ).toInstant()
-        );;
+        );
         this.allocation = allocation;
     }
 
@@ -81,13 +81,11 @@ public class UserStatus {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("UserStatus{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", user=").append(user.getUsername());
-        sb.append(", status='").append(status).append('\'');
-        sb.append(", statusdate=").append(statusdate);
-        sb.append(", allocation=").append(allocation);
-        sb.append('}');
-        return sb.toString();
+        return "UserStatus{" + "uuid='" + uuid + '\'' +
+                ", user=" + user.getUsername() +
+                ", status='" + status + '\'' +
+                ", statusdate=" + statusdate +
+                ", allocation=" + allocation +
+                '}';
     }
 }

@@ -177,29 +177,26 @@ public class SubTotal {
 
     @Override
     public int hashCode() {
-        int result = year;
-        return result;
+        return year;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SubTotal{");
-        sb.append("year=").append(year);
-        sb.append(", jan=").append(jan);
-        sb.append(", feb=").append(feb);
-        sb.append(", mar=").append(mar);
-        sb.append(", apr=").append(apr);
-        sb.append(", may=").append(may);
-        sb.append(", jun=").append(jun);
-        sb.append(", jul=").append(jul);
-        sb.append(", aug=").append(aug);
-        sb.append(", sep=").append(sep);
-        sb.append(", oct=").append(oct);
-        sb.append(", nov=").append(nov);
-        sb.append(", dec=").append(dec);
-        sb.append(", sumnotax=").append(sumnotax);
-        sb.append(", sumwithtax=").append(sumwithtax);
-        sb.append('}');
-        return sb.toString();
+        return "SubTotal{" + "year=" + year +
+                ", jan=" + jan +
+                ", feb=" + feb +
+                ", mar=" + mar +
+                ", apr=" + apr +
+                ", may=" + may +
+                ", jun=" + jun +
+                ", jul=" + jul +
+                ", aug=" + aug +
+                ", sep=" + sep +
+                ", oct=" + oct +
+                ", nov=" + nov +
+                ", dec=" + dec +
+                ", sumnotax=" + sumnotax +
+                ", sumwithtax=" + sumwithtax +
+                '}';
     }
 }

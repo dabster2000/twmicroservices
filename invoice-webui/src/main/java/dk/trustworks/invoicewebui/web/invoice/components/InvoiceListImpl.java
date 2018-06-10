@@ -178,16 +178,14 @@ public class InvoiceListImpl extends InvoiceListDesign
 
         HeaderRow filteringHeader = gridInvoiceList.appendHeaderRow();
         TextField filteringField = getColumnFilterField();
-        filteringField.addValueChangeListener(event -> {
-            dataProvider.setFilter(Invoice::getStatus, invoiceStatus -> {
-                if (invoiceStatus == null) {
-                    return false;
-                }
-                String companyLower = invoiceStatus.name().toLowerCase(Locale.ENGLISH);
-                String filterLower = event.getValue().toLowerCase(Locale.ENGLISH);
-                return companyLower.contains(filterLower);
-            });
-        });
+        filteringField.addValueChangeListener(event -> dataProvider.setFilter(Invoice::getStatus, invoiceStatus -> {
+            if (invoiceStatus == null) {
+                return false;
+            }
+            String companyLower = invoiceStatus.name().toLowerCase(Locale.ENGLISH);
+            String filterLower = event.getValue().toLowerCase(Locale.ENGLISH);
+            return companyLower.contains(filterLower);
+        }));
         filteringHeader.getCell("status").setComponent(filteringField);
 
         gridInvoiceList.addComponentColumn(invoice -> {

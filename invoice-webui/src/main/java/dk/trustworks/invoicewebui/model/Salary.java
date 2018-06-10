@@ -72,12 +72,10 @@ public class Salary {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Salary{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", user=").append(user);
-        sb.append(", salary=").append(salary);
-        sb.append(", activefrom=").append(activefrom);
-        sb.append('}');
-        return sb.toString();
+        return "Salary{" + "uuid='" + uuid + '\'' +
+                ", user=" + user +
+                ", salary=" + salary +
+                ", activefrom=" + activefrom +
+                '}';
     }
 }

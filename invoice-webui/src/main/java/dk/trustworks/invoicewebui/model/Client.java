@@ -127,16 +127,14 @@ public class Client {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Client{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", active=").append(active);
-        sb.append(", contactname='").append(contactname).append('\'');
-        sb.append(", created=").append(created);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", latitude=").append(latitude);
-        sb.append(", longitude=").append(longitude);
-        sb.append('}');
-        return sb.toString();
+        return "Client{" + "uuid='" + uuid + '\'' +
+                ", active=" + active +
+                ", contactname='" + contactname + '\'' +
+                ", created=" + created +
+                ", name='" + name + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
     }
 
     @Override

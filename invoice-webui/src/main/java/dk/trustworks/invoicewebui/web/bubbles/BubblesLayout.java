@@ -76,7 +76,6 @@ public class BubblesLayout extends VerticalLayout {
 
     @Transactional
     public BubblesLayout init() {
-        System.out.println("BubblesLayout.init");
         bubbleWebApiClient = SlackClientFactory.createWebApiClient(bubbleSlackToken);
         bubbleUserBotClient = SlackClientFactory.createWebApiClient(bubbleBotUserSlackToken);
         bubbleForm = new BubbleForm(userRepository, bubbleRepository, bubbleMemberRepository, photoRepository, bubbleWebApiClient);
@@ -181,11 +180,9 @@ public class BubblesLayout extends VerticalLayout {
             }
 
             for (Message message : bubbleWebApiClient.getGroupHistory(bubble.getSlackchannel(), 100).getMessages()) {
-                System.out.println("message = " + message);
                 if(message.getSubtype()!=null) continue;
                 Instant epochMilli = Instant.ofEpochMilli(Long.parseLong(message.getTs().split("\\.")[0])*1000L);
                 LocalDate date = LocalDateTime.ofInstant(epochMilli, ZoneOffset.UTC).toLocalDate();
-                System.out.println("DAYS.between(date, LocalDate.now()) = " + DAYS.between(date, LocalDate.now()));
                 if(DAYS.between(date, LocalDate.now())>59) continue;
                 activity[(int)DAYS.between(date, LocalDate.now())] = (activity[(int)DAYS.between(date, LocalDate.now())].intValue() + 1);
             }

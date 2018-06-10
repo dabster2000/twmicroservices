@@ -110,15 +110,13 @@ public class ProjectSummary {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("ProjectSummary{");
-        sb.append("projectuuid='").append(projectuuid).append('\'');
-        sb.append(", projectname='").append(projectname).append('\'');
-        sb.append(", clientname='").append(clientname).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", registeredamount=").append(registeredamount);
-        sb.append(", invoicedamount=").append(invoicedamount);
-        sb.append(", invoices=").append(invoices);
-        sb.append('}');
-        return sb.toString();
+        return "ProjectSummary{" + "projectuuid='" + projectuuid + '\'' +
+                ", projectname='" + projectname + '\'' +
+                ", clientname='" + clientname + '\'' +
+                ", description='" + description + '\'' +
+                ", registeredamount=" + registeredamount +
+                ", invoicedamount=" + invoicedamount +
+                ", invoices=" + invoices +
+                '}';
     }
 }

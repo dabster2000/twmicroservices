@@ -94,7 +94,7 @@ public class CheckTimeRegistrationJob {
         for (User user : userRepository.findByActiveTrue()) {
             log.info("checking user = " + user);
             //if(!user.getUsername().equals("hans.lassen")) continue;
-            Optional<UserStatus> userStatus = user.getStatuses().stream().sorted((o1, o2) -> o1.getStatusdate().compareTo(o1.getStatusdate())).findFirst();
+            Optional<UserStatus> userStatus = user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate));
             if(!userStatus.isPresent()) continue;
             if(!userStatus.get().getStatus().equals(StatusType.ACTIVE)) continue;
             if(userStatus.get().getAllocation()==0) continue;

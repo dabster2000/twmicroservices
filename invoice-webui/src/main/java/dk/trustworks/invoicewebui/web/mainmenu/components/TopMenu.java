@@ -148,9 +148,7 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
         notifications.setCloseTimeout(10000);
         notifications.setClickClose(true);
         notifications.setTransitionEnabled(FancyTransition.SLIDE, true);
-        notifications.addListener((NotificationsListener) id -> {
-            UI.getCurrent().getNavigator().navigateTo(((Notification)id).getLink());
-        });
+        notifications.addListener((NotificationsListener) id -> UI.getCurrent().getNavigator().navigateTo(((Notification)id).getLink()));
     }
 
     @Override

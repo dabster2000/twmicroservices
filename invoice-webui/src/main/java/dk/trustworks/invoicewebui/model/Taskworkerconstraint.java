@@ -60,10 +60,8 @@ public class Taskworkerconstraint {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Taskworkerconstraint{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", price=").append(price);
-        sb.append('}');
-        return sb.toString();
+        return "Taskworkerconstraint{" + "uuid='" + uuid + '\'' +
+                ", price=" + price +
+                '}';
     }
 }

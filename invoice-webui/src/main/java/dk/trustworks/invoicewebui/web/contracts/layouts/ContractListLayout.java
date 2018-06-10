@@ -53,7 +53,6 @@ public class ContractListLayout extends VerticalLayout {
     private ResponsiveRow contractRow;
     private ResponsiveRow errorRow;
     private Card errorCard;
-    private VerticalLayout errorList;
 
     @Autowired
     public ContractListLayout(ClientRepository clientRepository, ContractService contractService, ContractSearchImpl contractSearch, ContractDetailLayout contractDetailLayout, PhotoService photoService) {
@@ -113,7 +112,7 @@ public class ContractListLayout extends VerticalLayout {
     private void reloadContractView(Client client) {
         errorRow.setVisible(false);
         contractRow.removeAllComponents();
-        createContractView(client);
+        client = createContractView(client);
         createNewContractButton(client);
     }
 
@@ -247,7 +246,7 @@ public class ContractListLayout extends VerticalLayout {
 
     private void createErrorContent(int months) {
         errorCard.getContent().removeAllComponents();
-        errorList = new VerticalLayout();
+        VerticalLayout errorList = new VerticalLayout();
         errorList.addComponent(new MLabel("Work registrations have the following errors:").withStyleName("failure"));
         errorCard.getContent().addComponent(errorList);
         errorRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(errorCard);

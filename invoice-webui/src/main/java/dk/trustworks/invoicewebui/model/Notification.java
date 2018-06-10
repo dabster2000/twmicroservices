@@ -84,14 +84,12 @@ public class Notification {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Notification{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", receiver=").append(receiver);
-        sb.append(", expirationdate=").append(expirationdate);
-        sb.append(", titel='").append(titel).append('\'');
-        sb.append(", notification='").append(content).append('\'');
-        sb.append(", link='").append(link).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Notification{" + "uuid='" + uuid + '\'' +
+                ", receiver=" + receiver +
+                ", expirationdate=" + expirationdate +
+                ", titel='" + titel + '\'' +
+                ", notification='" + content + '\'' +
+                ", link='" + link + '\'' +
+                '}';
     }
 }

@@ -10,10 +10,12 @@ import java.text.SimpleDateFormat;
 @Service
 public class BlockchainPrediction {
 
-    @Autowired
-    private CurrencyRepository currencyRepository;
+    private final CurrencyRepository currencyRepository;
 
-    private final int forecastPeriod = 500;
+    @Autowired
+    public BlockchainPrediction(CurrencyRepository currencyRepository) {
+        this.currencyRepository = currencyRepository;
+    }
 
     public Currency[] forecast(String currencyType) {
         System.out.println("BlockchainPrediction.forecast");
@@ -27,7 +29,7 @@ public class BlockchainPrediction {
         sb.append("@DATA\n");
 
         for (Currency currency : currencyRepository.findByCurrencytypeOrderByCollectedAsc(currencyType)) {
-            sb.append("\""+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currency.getCollected())+"\","+currency.getPrice()+"\n");
+            sb.append("\"").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currency.getCollected())).append("\",").append(currency.getPrice()).append("\n");
         }
 
         System.out.println("ARFF created = " + (begin - System.currentTimeMillis()));
@@ -56,7 +58,7 @@ public class BlockchainPrediction {
         LocalDateTime now = LocalDateTime.now();
         System.out.println("now = " + now);
         */
-        Currency[] currencies = new Currency[forecastPeriod];
+        int forecastPeriod = 500;
         /*
         for (int i = 0; i < forecastPeriod; i++) {
             List<NumericPrediction> predsAtStep = forecast.get(i);
@@ -69,6 +71,6 @@ public class BlockchainPrediction {
         }
         System.out.println("Array created = " + (begin - System.currentTimeMillis()));
         */
-        return currencies;
+        return new Currency[forecastPeriod];
     }
 }

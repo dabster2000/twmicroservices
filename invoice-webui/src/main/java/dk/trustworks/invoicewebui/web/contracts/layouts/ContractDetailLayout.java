@@ -235,14 +235,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
             contactInformationRow.getLblPostalCode().setValue(currentClientdata.getPostalcode()+"");
             contactInformationRow.getLblCity().setValue(currentClientdata.getCity());
             contactInformationRow.getLblOther().setValue(currentClientdata.getOtheraddressinfo());
-            contactInformationRow.getBtnChange().addClickListener(event1 -> {
-                createContactInformationSelector(Contract);
-            });
+            contactInformationRow.getBtnChange().addClickListener(event1 -> createContactInformationSelector(Contract));
             contactInformationLayout.add(contactInformationRow);
         } else {
-            contactInformationLayout.add(new MButton(MaterialIcons.ADD, event -> {
-                createContactInformationSelector(Contract);
-            }).withStyleName("friendly").withWidth(100, Unit.PERCENTAGE));
+            contactInformationLayout.add(new MButton(MaterialIcons.ADD, event -> createContactInformationSelector(Contract)).withStyleName("friendly").withWidth(100, Unit.PERCENTAGE));
         }
     }
 
@@ -779,64 +775,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contract.addConsultant(consultant);
         consultantRepository.save(consultant);
         updateData(contract);
-    }
-
-    private ContractFormDesign getSubContractComponent(Contract contract, boolean newContract) {
-        /*
-        Contract parentContract = (newContract)?contract:contract.getParent();
-        Contract subContract = (newContract)?new Contract(ContractStatus.INACTIVE, "", 0.0, contract.getActiveTo().plusMonths(2), parentContract):contract;
-        Binder<Contract> contractBinder = new Binder<>();
-        ContractFormDesign contractFormDesign = new ContractFormDesign();
-        contractFormDesign.getTxtAmount().setVisible(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI));
-        contractFormDesign.getDfFrom().setVisible(false);
-        contractFormDesign.getCbType().setVisible(false);
-        contractFormDesign.getLblTitle().setValue(newContract?"Add sub contract":"Sub Contract");
-        contractFormDesign.getCbStatus().setItems(ContractStatus.values());
-        contractBinder.forField(contractFormDesign.getCbStatus()).bind(Contract::getStatus, Contract::setStatus);
-        contractBinder.forField(contractFormDesign.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
-        contractBinder.forField(contractFormDesign.getTxtNote()).bind(Contract::getNote, Contract::setNote);
-        contractBinder.readBean(subContract);
-
-        if(newContract) {
-            contractFormDesign.getBtnUpdate().setVisible(false);
-            contractFormDesign.getBtnCreate().setVisible(true);
-            contractFormDesign.getBtnCreate().addClickListener(event -> {
-                try {
-                    contractBinder.writeBean(subContract);
-                    contract.getChildren().add(subContract);
-                    contract.setAmount(NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()));
-                    contractService.createContract(subContract);
-                    updateData(contractService.updateContract(contract));
-                } catch (ValidationException e) {
-                    e.printStackTrace();
-                    Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-                }
-            });
-        } else {
-            contractFormDesign.getBtnUpdate().setVisible(true);
-            contractFormDesign.getBtnCreate().setVisible(true);
-            contractFormDesign.getBtnCreate().setCaption("Delete");
-            contractFormDesign.getBtnCreate().addStyleName("danger");
-
-            contractFormDesign.getBtnUpdate().addClickListener(event -> {
-                try {
-                    contractBinder.writeBean(subContract);
-                    contract.setAmount(NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()));
-                    contractService.updateContract(subContract);
-                    updateData(contractService.reloadContract(contract));
-                } catch (ValidationException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            contractFormDesign.getBtnCreate().addClickListener(event -> {
-                contractService.deleteContract(subContract);
-                updateData(contractService.reloadContract(contract));
-            });
-        }
-        return contractFormDesign;
-        */
-        return null;
     }
 }
 

@@ -36,10 +36,8 @@ public class NewsItem {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("NewsItem{");
-        sb.append("newsDate=").append(newsDate);
-        sb.append(", newsText='").append(newsText).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "NewsItem{" + "newsDate=" + newsDate +
+                ", newsText='" + newsText + '\'' +
+                '}';
     }
 }

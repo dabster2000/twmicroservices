@@ -105,10 +105,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
             clientComboBox.setWidth("100%");
             clientComboBox.setEmptySelectionAllowed(false);
             clientComboBox.setEmptySelectionCaption("select client");
-            List<Client> clients = new ArrayList<>();
-            for (Client clientResource : clientResources) {
-                clients.add(clientResource);
-            }
+            List<Client> clients = new ArrayList<>(clientResources);
             clientComboBox.setItems(clients);
 
             ComboBox<Project> projectComboBox = new ComboBox<>();
@@ -144,9 +141,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 List<Task> tasks = new ArrayList<>();
                 taskComboBox.clear();
                 if(event1.getValue()==null) return;
-                for (Task task : projectService.findOne(event1.getValue().getUuid()).getTasks()) {
-                    tasks.add(task);
-                }
+                tasks.addAll(projectService.findOne(event1.getValue().getUuid()).getTasks());
                 taskComboBox.setItems(tasks);
                 taskComboBox.setVisible(true);
             });

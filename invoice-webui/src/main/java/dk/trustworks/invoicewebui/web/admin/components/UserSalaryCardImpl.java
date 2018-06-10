@@ -44,9 +44,7 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            for (Salary salary : getGridSalaries().getSelectedItems()) {
-                salaryRepository.delete(salary);
-            }
+            salaryRepository.delete(getGridSalaries().getSelectedItems());
             getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getSalaries());
         });
         getBtnAddSalary().addClickListener(event -> {

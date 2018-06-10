@@ -82,14 +82,12 @@ public class BudgetRemainingItem {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("BudgetRemainingItem{");
-        sb.append("userUUID='").append(userUUID).append('\'');
-        sb.append(", taskUUID='").append(taskUUID).append('\'');
-        sb.append(", projectTaskName='").append(projectTaskName).append('\'');
-        sb.append(", username='").append(username).append('\'');
-        sb.append(", usedBudget=").append(usedBudget);
-        sb.append(", totalBudget=").append(totalBudget);
-        sb.append('}');
-        return sb.toString();
+        return "BudgetRemainingItem{" + "userUUID='" + userUUID + '\'' +
+                ", taskUUID='" + taskUUID + '\'' +
+                ", projectTaskName='" + projectTaskName + '\'' +
+                ", username='" + username + '\'' +
+                ", usedBudget=" + usedBudget +
+                ", totalBudget=" + totalBudget +
+                '}';
     }
 }

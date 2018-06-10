@@ -128,7 +128,7 @@ public class DropboxAPI {
             log.warn("'"+filePath+"' not found!");
         }
         log.debug("no text file will be shown");
-        return new String();
+        return "";
     }
 
     public String getFileURL(String filePath) {

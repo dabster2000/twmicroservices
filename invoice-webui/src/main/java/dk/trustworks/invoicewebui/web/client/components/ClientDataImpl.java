@@ -63,11 +63,11 @@ public class ClientDataImpl extends ClientDataDesign {
             List<Project> projects = projectService.findByClientdata(clientdata);
             //Resources<Resource<Project>> projects = projectClient.findByClientdatauuid(clientdata.getUuid());
             if(projects.size() > 0) {
-                String description = "The contact information is in use by the following projects: \n\n";
+                StringBuilder description = new StringBuilder("The contact information is in use by the following projects: \n\n");
                 for (Project projectResource : projects) {
-                    description += projectResource.getName()+", \n";
+                    description.append(projectResource.getName()).append(", \n");
                 }
-                Notification sample = new Notification("Can't delete contact information", description);
+                Notification sample = new Notification("Can't delete contact information", description.toString());
                 sample.show(Page.getCurrent());
             } else {
 

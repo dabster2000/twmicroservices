@@ -204,18 +204,16 @@ public class Project {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Project{");
-        sb.append("uuid='").append(uuid).append('\'');
-        sb.append(", active=").append(active);
-        sb.append(", created=").append(created);
-        sb.append(", customerreference='").append(customerreference).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", startdate=").append(startdate);
-        sb.append(", enddate=").append(enddate);
-        sb.append(", longitude=").append(longitude);
-        sb.append(", latitude=").append(latitude);
-        sb.append('}');
-        return sb.toString();
+        return "Project{" + "uuid='" + uuid + '\'' +
+                ", active=" + active +
+                ", created=" + created +
+                ", customerreference='" + customerreference + '\'' +
+                ", name='" + name + '\'' +
+                ", startdate=" + startdate +
+                ", enddate=" + enddate +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                '}';
     }
 
     @Override
