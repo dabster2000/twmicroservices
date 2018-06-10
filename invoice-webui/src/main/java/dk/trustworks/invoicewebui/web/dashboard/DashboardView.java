@@ -15,11 +15,13 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.EmailSender;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
@@ -69,9 +71,13 @@ public class DashboardView extends VerticalLayout implements View {
 
     private final BubbleRepository bubbleRepository;
 
+    private final BubbleMemberRepository bubbleMemberRepository;
+
     private final NewsRepository newsRepository;
 
     private final UserRepository userRepository;
+
+    private final PhotoService photoService;
 
     private final DashboardPreloader dashboardPreloader;
 
@@ -82,12 +88,14 @@ public class DashboardView extends VerticalLayout implements View {
     private final RevenuePerMonthChart revenuePerMonthChart;
 
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BubbleRepository bubbleRepository, NewsRepository newsRepository, UserRepository userRepository, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.bubbleRepository = bubbleRepository;
+        this.bubbleMemberRepository = bubbleMemberRepository;
         this.newsRepository = newsRepository;
         this.userRepository = userRepository;
+        this.photoService = photoService;
         this.dashboardPreloader = dashboardPreloader;
         this.dashboardBoxCreator = dashboardBoxCreator;
         this.emailSender = emailSender;
@@ -114,7 +122,7 @@ public class DashboardView extends VerticalLayout implements View {
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
-        BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, 1, 6, "bubblesCard");
+        BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, 1, 6, "bubblesCard");
         VacationCard vacationCard = new VacationCard();
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 

@@ -7,7 +7,7 @@ import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.Page;
-import com.vaadin.server.StreamResource;
+import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -16,7 +16,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
-import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
@@ -31,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -169,12 +167,10 @@ public class BubblesLayout extends VerticalLayout {
                 Image image = photoService.getRoundMemberImage(member.getMember(), false);
                 bubblesDesign.getPhotoContainer().addComponent(image);
             }
+            String relatedUUID = bubble.getUuid();
+            Resource resource = photoService.getRelatedPhoto(relatedUUID);
 
-            Photo bubblephoto = photoRepository.findByRelateduuid(bubble.getUuid());
-            bubblesDesign.getImgTop().setSource(
-                    new StreamResource((StreamResource.StreamSource) () ->
-                    new ByteArrayInputStream(bubblephoto.getPhoto()),
-                    bubble.getName()+System.currentTimeMillis()+".jpg"));
+            bubblesDesign.getImgTop().setSource(resource);
             if(bubble.getUser().getUuid().equals(user.getUuid())) {
                 bubblesDesign.getImgTop().addClickListener(event -> bubbleForm.editPhotoAction(bubble));
             }

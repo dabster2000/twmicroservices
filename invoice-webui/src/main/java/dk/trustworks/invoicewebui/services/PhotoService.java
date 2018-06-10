@@ -1,7 +1,9 @@
 package dk.trustworks.invoicewebui.services;
 
+import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
@@ -33,5 +35,15 @@ public class PhotoService {
         image.setWidth(width, Sizeable.Unit.PIXELS);
         image.setHeight(width, Sizeable.Unit.PIXELS);
         return image;
+    }
+
+    public Resource getRelatedPhoto(String relatedUUID) {
+        Photo photo = photoRepository.findByRelateduuid(relatedUUID);
+        if(photo!=null && photo.getPhoto().length > 0) {
+            return new StreamResource((StreamResource.StreamSource) () ->
+                    new ByteArrayInputStream(photo.getPhoto()), System.currentTimeMillis() + ".jpg");
+        } else {
+            return new ThemeResource("images/clients/missing-logo.jpg");
+        }
     }
 }
