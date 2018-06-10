@@ -379,7 +379,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         consultantsLayout.addComponent(responsiveLayout);
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
-        for (Contract mainContract : currentProject.getContracts()) {
+        for (Contract mainContract : currentProject.getContracts().stream().sorted(Comparator.comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
             for (Consultant consultant : mainContract.getConsultants()) {
                 ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
                 consultantRowDesign.getLblName().setValue(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
@@ -390,6 +390,11 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 consultantRowDesign.getVlHours().setVisible(consultant.getContract().getContractType().equals(ContractType.PERIOD));
                 consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
                 consultantRowDesign.getBtnDelete().setVisible(false);
+                if(mainContract.getActiveTo().isBefore(LocalDate.now().withDayOfMonth(1))) {
+                    consultantRowDesign.getHlBackground().setStyleName("bg-grey");
+                    consultantRowDesign.getHlNameBackground().setStyleName("dark-grey");
+                }
+
                 responsiveRow.addColumn()
                         .withComponent(consultantRowDesign)
                         .withDisplayRules(12, 12, 12, 12);

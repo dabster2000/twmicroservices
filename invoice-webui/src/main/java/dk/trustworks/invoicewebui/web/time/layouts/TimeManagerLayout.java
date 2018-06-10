@@ -10,6 +10,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -336,7 +337,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             Hibernate.initialize(task);
 
             boolean onContract = isOnContract(week);
-            if(task.getProject().isActive() && task.getProject().getClient().isActive()) onContract = true;
+            if(!task.getProject().isActive() && !task.getProject().getClient().isActive()) onContract = false;
             WeekItem weekItem = new WeekItem(week, task, user, week.getWorkas(), !onContract);
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
@@ -576,7 +577,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         new MTextField(null, weekItem.getMon(), event -> {
                             weekDaySums.mon += updateTimefield(weekItem, 0, event);
                             updateSums();
-                        })
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
                                 .withWidth(100, PERCENTAGE)
                                 .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                                 .withStyleName("floating")));
@@ -587,7 +588,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         new MTextField(null, weekItem.getTue(), event -> {
                     weekDaySums.tue += updateTimefield(weekItem, 1, event);
                     updateSums();
-                })
+                }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating")));
@@ -597,7 +598,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         new MTextField(null, weekItem.getWed(), event -> {
                     weekDaySums.wed += updateTimefield(weekItem, 2, event);
                     updateSums();
-                })
+                }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating")));
@@ -607,7 +608,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         new MTextField(null, weekItem.getThu(), event -> {
                     weekDaySums.thu += updateTimefield(weekItem, 3, event);
                     updateSums();
-                })
+                }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating")));
@@ -617,7 +618,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         new MTextField(null, weekItem.getFri(), event -> {
                     weekDaySums.fri += updateTimefield(weekItem, 4, event);
                     updateSums();
-                })
+                }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating")));
@@ -627,7 +628,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         new MTextField(null, weekItem.getSat(), event -> {
                     weekDaySums.sat += updateTimefield(weekItem, 5, event);
                     updateSums();
-                })
+                }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating")));
@@ -637,7 +638,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         new MTextField(null, weekItem.getSun(), event -> {
                     weekDaySums.sun += updateTimefield(weekItem, 6, event);
                     updateSums();
-                })
+                }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating")));
@@ -680,8 +681,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private void saveWork(WeekItem weekItem, HasValue.ValueChangeEvent<String> event, LocalDate workDate) {
-        System.out.println("TimeManagerLayout.saveWork");
-        System.out.println("weekItem = [" + weekItem + "], event = [" + event + "], workDate = [" + workDate + "]");
+        //System.out.println("TimeManagerLayout.saveWork");
+        //System.out.println("weekItem = [" + weekItem + "], event = [" + event + "], workDate = [" + workDate + "]");
         try {
             double newValue = event.getValue().equals("")?0.0:nf.parse(event.getValue()).doubleValue();
             Work work;
@@ -702,11 +703,17 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private boolean isOnContract(Week week) {
+        //System.out.println("TimeManagerLayout.isOnContract");
+        //System.out.println("week = [" + week + "]");
         boolean result = false;
         LocalDate localDateStart = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(1);
+        //System.out.println("localDateStart = " + localDateStart);
         LocalDate localDateEnd = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(7);
+        //System.out.println("localDateEnd = " + localDateEnd);
         if(isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
+        //System.out.println("result = " + result);
         if(isOnContract(localDateEnd, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
+        //System.out.println("result = " + result);
         return result;
     }
 

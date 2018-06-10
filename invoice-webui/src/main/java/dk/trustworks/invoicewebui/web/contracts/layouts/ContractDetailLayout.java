@@ -101,7 +101,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createProjectsCard(Contract, 4);
         createContactInformationCard(Contract, 4);
         createConsultantsCard(Contract, 12);
-        createSubContractCard(Contract, 4);
         updateProposedPeriod(Contract);
 
         return this;
