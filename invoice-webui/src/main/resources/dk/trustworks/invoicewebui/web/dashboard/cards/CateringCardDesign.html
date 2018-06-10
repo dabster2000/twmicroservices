@@ -9,11 +9,11 @@
   <vaadin-vertical-layout>
    <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
     <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
-    <vaadin-vertical-layout spacing="false" size-full :expand>
+    <vaadin-vertical-layout spacing="false" :expand>
      <vaadin-label style-name="h5 bold" plain-text _id="lblHeading" :center>
        Order refreshments for meetings 
      </vaadin-label>
-     <vaadin-form-layout style-name="v-scrollable" height="300px">
+     <vaadin-form-layout style-name="v-scrollable" height="250px">
       <vaadin-text-field caption="Title" placeholder="Meeting name" width-full _id="meetingName"></vaadin-text-field>
       <vaadin-combo-box caption="Contact" placeholder="" width-full data-item-type="dk.trustworks.invoicewebui.model.User" _id="contact"></vaadin-combo-box>
       <vaadin-date-time-field caption="Start" placeholder="Meeting start" width-full _id="start"></vaadin-date-time-field>

@@ -115,6 +115,7 @@ public class DashboardView extends VerticalLayout implements View {
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, 1, 6, "bubblesCard");
+        VacationCard vacationCard = new VacationCard();
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 
         //projectTimeline.init();
@@ -161,6 +162,7 @@ public class DashboardView extends VerticalLayout implements View {
         boxes.add(monthNewsCardDesign);
         boxes.add(tripVideosCardDesign);
         boxes.add(dnaCard);
+
         //boxes.add(revenuePerMonthCard);
         //boxes.add(projectTimeline);
         //boxes.add(statusCard);
@@ -177,23 +179,24 @@ public class DashboardView extends VerticalLayout implements View {
         image.setStyleName("img-circle");
         board.addRow().addColumn().withComponent(image);
 
-        ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         mainComponentColumn.withComponent(mainLayout);
-        ResponsiveRow row1 = mainLayout.addRow().withGrow(true);
+        ResponsiveRow row1 = mainLayout.addRow();
         //ResponsiveRow row1 = board.addRow().withGrow(true);
         //row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(newsCard);
         row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(photoCard);
         row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(bubblesCardDesign);
 
-        ResponsiveRow row2 = mainLayout.addRow().withGrow(true);
+        ResponsiveRow row2 = mainLayout.addRow();
         row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthNewsCardDesign);
         row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(tripVideosCardDesign);
 
-        ResponsiveRow row3 = mainLayout.addRow().withGrow(true);
+        ResponsiveRow row3 = mainLayout.addRow();
         row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
         row3.addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(revenuePerMonthCard);
 
-        ResponsiveRow row4 = mainLayout.addRow().withGrow(true);
+        ResponsiveRow row4 = mainLayout.addRow();
+        row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(vacationCard);
         row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);

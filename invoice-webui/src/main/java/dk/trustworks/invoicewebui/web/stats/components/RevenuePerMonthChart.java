@@ -73,27 +73,7 @@ public class RevenuePerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' kkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        //List<Work> workList = workRepository.findByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        /*
-        for (int i = 0; i < months; i++) {
-            amountPerItemList.add(new GraphKeyValue(i+"", periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), 0));
-        }
-        */
-        /*
-        for (Work work : workList) {
-            if(work.getWorkduration()==0.0) continue;
-            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
-            if(rate==null) continue;
-            WorkAmount workAmount = new WorkAmount(LocalDate.of(work.getYear(), work.getMonth()+1, 1), work.getWorkduration(), work.getWorkduration() * rate);
-            Optional<GraphKeyValue> keyValue = amountPerItemList.stream().filter(graphKeyValue -> graphKeyValue.getDescription().equals(work.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))+"-01")).findFirst();
-            if(!keyValue.isPresent()) {
-                System.out.println("work = " + work);
-                continue;
-            }
-            keyValue.get().addValue((int)Math.round(workAmount.amount));
-        }
-        */
 
         String[] categories = new String[months];
         DataSeries revenueSeries = new DataSeries("Revenue");

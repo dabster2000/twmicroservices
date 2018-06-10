@@ -32,7 +32,7 @@ public class CateringCardImpl extends CateringCardDesign implements Box {
         getImgTop().setSizeFull();
 
         getContact().setItems(users);
-        getContact().setItemCaptionGenerator(item -> item.getUsername());
+        getContact().setItemCaptionGenerator(User::getUsername);
 
         binder.bind(getMeetingName(), CateringEntry::getName, CateringEntry::setName);
         binder.bind(getContact(), CateringEntry::getContact, CateringEntry::setContact);
