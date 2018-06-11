@@ -24,6 +24,7 @@ public class BubblesCardImpl extends BubblesCardDesign implements Box {
 
         for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreatedDesc()) {
             BubbleRowDesign bubbleRow = new BubbleRowDesign();
+            bubbleRow.setWidth(100, Unit.PERCENTAGE);
             bubbleRow.getLblName().setValue(bubble.getName());
             bubbleRow.getTxtMembers().setValue(bubbleMemberRepository.findByBubble(bubble).size()+"");
             bubbleRow.getImgBubblePhoto().setSource(photoService.getRelatedPhoto(bubble.getUuid()));
