@@ -15,11 +15,9 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.RoleType;
-import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
-import dk.trustworks.invoicewebui.repositories.BubbleRepository;
-import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
@@ -69,6 +67,10 @@ public class DashboardView extends VerticalLayout implements View {
 
     private final MainTemplate mainTemplate;
 
+    private final BudgetNewRepository budgetNewRepository;
+
+    private final ContractService contractService;
+
     private final BubbleRepository bubbleRepository;
 
     private final BubbleMemberRepository bubbleMemberRepository;
@@ -88,9 +90,11 @@ public class DashboardView extends VerticalLayout implements View {
     private final RevenuePerMonthChart revenuePerMonthChart;
 
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
+        this.budgetNewRepository = budgetNewRepository;
+        this.contractService = contractService;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.newsRepository = newsRepository;
@@ -124,6 +128,7 @@ public class DashboardView extends VerticalLayout implements View {
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, 1, 6, "bubblesCard");
         VacationCard vacationCard = new VacationCard();
+        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(userRepository, contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 
         //projectTimeline.init();
@@ -170,6 +175,7 @@ public class DashboardView extends VerticalLayout implements View {
         boxes.add(monthNewsCardDesign);
         boxes.add(tripVideosCardDesign);
         boxes.add(dnaCard);
+        boxes.add(consultantAllocationCard);
 
         //boxes.add(revenuePerMonthCard);
         //boxes.add(projectTimeline);
@@ -182,13 +188,16 @@ public class DashboardView extends VerticalLayout implements View {
         leftColumn.withComponent(newsCard);
         Resource res = new ThemeResource("images/hans.png");
 
-// Display the image without caption
+        // Display the image without caption
         Image image = new Image(null, res);
         image.setStyleName("img-circle");
         board.addRow().addColumn().withComponent(image);
 
         ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         mainComponentColumn.withComponent(mainLayout);
+        ResponsiveRow row0 = mainLayout.addRow();
+        row0.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantAllocationCard);
+
         ResponsiveRow row1 = mainLayout.addRow();
         //ResponsiveRow row1 = board.addRow().withGrow(true);
         //row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(newsCard);

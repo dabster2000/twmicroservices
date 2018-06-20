@@ -10,10 +10,10 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import java.util.Arrays;
  */
 
 @Aspect
-@Service
+@org.springframework.stereotype.Component
 public class Authorizer {
 
     private static final Logger log = LoggerFactory.getLogger(Authorizer.class);
@@ -74,7 +74,15 @@ public class Authorizer {
         return false;
     }
 
-    @Around("execution(@dk.trustworks.invoicewebui.security.AccessRules * *(..)) && @annotation(accessRules)")
+    @Pointcut(" execution(* dk.trustworks.invoicewebui.web.dashboard.DashboardView.init(..))")
+    public void publicMethod() {
+        System.out.println("Authorizer.publicMethod");
+    }
+
+    //@Around("execution(@dk.trustworks.invoicewebui.security.AccessRules * *(..)) && @annotation(accessRules)")
+    //@Around("execution(public * *(..)) && @annotation(accessRules)")
+    //@Around("@annotation(accessRules) && execution(* *(..))")
+    @Around("publicMethod() && @annotation(accessRules) ")
     public Object hasAccess(ProceedingJoinPoint joinPoint, AccessRules accessRules) throws Throwable {
         log.info("Authorizer.hasAccess");
         log.info("joinPoint = [" + joinPoint + "], accessRules = [" + accessRules + "]");

@@ -16,11 +16,13 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
+import dk.trustworks.invoicewebui.model.RoleType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.bubbles.components.ActivityGauge;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
@@ -75,6 +77,7 @@ public class BubblesLayout extends VerticalLayout {
     }
 
     @Transactional
+    @AccessRules(roleTypes = {RoleType.USER})
     public BubblesLayout init() {
         bubbleWebApiClient = SlackClientFactory.createWebApiClient(bubbleSlackToken);
         bubbleUserBotClient = SlackClientFactory.createWebApiClient(bubbleBotUserSlackToken);

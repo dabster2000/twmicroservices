@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+  <meta name="package-mapping" content="com_jarektoro_responsivelayout:com.jarektoro.responsivelayout">
+ </head>
+ <body>
+  <vaadin-vertical-layout spacing="false" height="66px" margin="false">
+   <vaadin-horizontal-layout spacing="false" width-full :expand>
+    <vaadin-horizontal-layout style-name="light-blue" width-full _id="hlBackground" :expand>
+     <vaadin-horizontal-layout style-name="dark-blue" width-full _id="hlNameBackground" :middle :expand>
+      <vaadin-css-layout width="130px" height="65px" _id="cssBubblePhotoContainer">
+       <vaadin-image size-full _id="imgBubblePhoto"></vaadin-image>
+      </vaadin-css-layout>
+      <vaadin-label style-name="white-font" width-full plain-text _id="lblName" :middle :expand>
+        Hans Ernst Lassen 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-vertical-layout spacing="false" width="65px" margin="false" :middle :center>
+      <vaadin-label plain-text _id="txtMembers" :center>
+        Label 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout spacing="false" width="60px" margin="false" _id="vlOwner" :middle :center>
+      <vaadin-css-layout width="35px" height="35px" _id="cssOwnerPhotoContainer" :middle :center></vaadin-css-layout>
+     </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
+   </vaadin-horizontal-layout>
+   <vaadin-image width-full height="1px"></vaadin-image>
+  </vaadin-vertical-layout>
+ </body>
+</html>

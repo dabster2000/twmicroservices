@@ -14,6 +14,7 @@ import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.NotificationRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
     @Autowired
     private PhotoRepository photoRepository;
 
+    @Autowired
+    private Authorizer authorizer;
+
     private FancyNotifications notifications;
 
     private UserSession userSession;
@@ -49,14 +53,11 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
     @Autowired
     private LeftMenu leftMenu;
 
-    @Autowired
-    private NotificationContainerImpl notificationContainer;
-
     private TopMenuUserDesign topMenuUserDesign;
 
     @PostConstruct
     public void init() {
-        if((userSession = VaadinSession.getCurrent().getAttribute(UserSession.class)) == null) return;
+        if((userSession = VaadinSession.getCurrent().getAttribute(UserSession.class)) == null) UI.getCurrent().getNavigator().navigateTo("login");;
         User user = userSession.getUser();
 
         Broadcaster.register(this);

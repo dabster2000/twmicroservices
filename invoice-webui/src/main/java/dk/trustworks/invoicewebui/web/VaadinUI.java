@@ -112,6 +112,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
 
     @Override
     public void showView(View view) {
+        if(!authorizer.hasAccess(view)) this.getNavigator().navigateTo("login");
         springViewDisplay.setContent((Component) view);
     }
 

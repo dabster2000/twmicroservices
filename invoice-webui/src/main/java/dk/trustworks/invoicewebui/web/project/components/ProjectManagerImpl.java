@@ -68,7 +68,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private ResponsiveLayout responsiveLayout;
 
-    private Project currentProject;
+    //private Project currentProject;
 
     private BudgetCardDesign budgetCard;
 
@@ -125,7 +125,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             newProject.getBtnCancel().addClickListener(event1 -> window.close());
         });
 
-        getSelProject().addValueChangeListener(event -> reloadGrid());
+        getSelProject().addValueChangeListener(event -> reloadGrid(Optional.ofNullable(getSelProject().getValue())));
         getOnOffSwitch().addValueChangeListener(event -> changeOptions());
         getSelClient().addValueChangeListener(event -> changeOptions());
     }
@@ -160,13 +160,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     }
 
     public void setCurrentProject(String projectUUID) {
-        currentProject = projectService.findOne(projectUUID);
+        Project currentProject = projectService.findOne(projectUUID);
         getSelProject().setSelectedItem(currentProject);
         getSelProject().setValue(currentProject);
         //reloadGrid();
     }
 
-    private void createDetailLayout() {
+    private void createDetailLayout(Project currentProject) {
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
@@ -174,7 +174,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userRepository.findByOrderByUsername(), photoResource, projectService, newsRepository, userRepository);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.save();
-            updateTreeGrid();
+            updateTreeGrid(currentProject);
         });
         projectDetailCard.getBtnDelete().addClickListener(event -> {
             projectService.delete(currentProject);
@@ -182,7 +182,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             getSelProject().clear();
             getOnOffSwitch().setValue(false);
             getSelProject().setItems(projectService.findAllByActiveTrueOrderByNameAsc());
-            reloadGrid();
+            reloadGrid(Optional.empty());
         });
         if(currentProject.getTasks().stream().anyMatch(task -> !task.getType().equals(TaskType.SO))) projectDetailCard.getBtnDelete().setVisible(false);
         else projectDetailCard.getBtnDelete().setVisible(true);
@@ -195,7 +195,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         tasksCard.getLblTitle().setValue("Tasks");
         tasksLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
         tasksCard.getContent().addComponent(tasksLayout);
-        createTasksList();
+        createTasksList(currentProject);
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(tasksCard);
@@ -204,7 +204,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         consultantsCard.getLblTitle().setValue("Consultants");
         consultantsLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
         consultantsCard.getContent().addComponent(consultantsLayout);
-        createConsultantList();
+        createConsultantList(currentProject);
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsCard);
@@ -214,14 +214,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             contractCard.getLblTitle().setValue("Contracts");
             contractLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
             contractCard.getContent().addComponent(contractLayout);
-            createContractChart();
+            createContractChart(currentProject);
             clientDetailsRow.addColumn()
                     .withDisplayRules(12, 12, 6, 6)
                     .withComponent(contractCard);
         }
 
         budgetCard = new BudgetCardDesign();
-        updateTreeGrid();
+        updateTreeGrid(currentProject);
 
         ResponsiveRow budgetRow = responsiveLayout.addRow();
         budgetRow.addColumn()
@@ -229,7 +229,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 .withComponent(budgetCard);
     }
 
-    private void createTasksList() {
+    private void createTasksList(final Project currentProject) {
         tasksLayout.removeAllComponents();
         for (Task task : currentProject.getTasks()) {
             TaskRowDesign taskRow = new TaskRowDesign();
@@ -240,7 +240,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             taskRow.getBtnDelete().addClickListener(event -> {
                 taskRepository.delete(task.getUuid());
                 currentProject.getTasks().remove(task);
-                reloadGrid();
+                reloadGrid(Optional.ofNullable(projectService.findOne(currentProject.getUuid())));
             });
             taskRow.getCssTaskName().addLayoutClickListener(event -> {
                 taskRow.getHlChart().removeAllComponents();
@@ -260,15 +260,12 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         newTaskRow.getBtnDelete().addClickListener(event -> {
             Task task = taskRepository.save(new Task(newTaskRow.getTxtName().getValue(), currentProject));
             currentProject.getTasks().add(task);
-            reloadGrid();
+            reloadGrid(Optional.of(projectService.save(currentProject)));
         });
         tasksLayout.add(newTaskRow);
     }
 
     private Chart createTopGrossingConsultantsChart(Task task) {
-        System.out.println("ConsultantHoursPerMonthChart.createTopGrossingConsultantsChart");
-        //System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "]");
-        //Period period = new Period(periodStart, periodEnd, PeriodType.months());
         Chart chart = new Chart();
         chart.setWidth(100, PERCENTAGE);
         chart.setHeight(100, PIXELS);
@@ -314,7 +311,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         return chart;
     }
 
-    private void createContractChart() {
+    private void createContractChart(Project currentProject) {
         contractLayout.removeAllComponents();
         Chart chart = new Chart(ChartType.COLUMNRANGE);
         contractLayout.addComponent(chart);
@@ -381,7 +378,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         chart.drawChart(conf);
     }
 
-    private void createConsultantList() {
+    private void createConsultantList(Project currentProject) {
         consultantsLayout.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         consultantsLayout.addComponent(responsiveLayout);
@@ -410,19 +407,19 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         }
     }
 
-    private void updateTreeGrid() {
+    private void updateTreeGrid(Project currentProject) {
         budgetCard.getContainer().removeAllComponents();
         if(currentProject.getContracts().stream().anyMatch(contract -> contract.getContractType().equals(ContractType.AMOUNT))) {
-            grid = createGrid();
+            grid = createGrid(currentProject);
             ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
             ResponsiveRow row = responsiveLayout.addRow();
             row.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(grid).setGrow(true);
-            row.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(createUsedBudgetChart());
+            row.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(createUsedBudgetChart(currentProject));
             budgetCard.getContainer().addComponent(responsiveLayout);
         }
     }
 
-    private Chart createUsedBudgetChart() {
+    private Chart createUsedBudgetChart(Project currentProject) {
         Chart chart = new Chart(ChartType.COLUMN);
 
         Configuration conf = chart.getConfiguration();
@@ -489,7 +486,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         return chart;
     }
 
-    private Grid createGrid() {
+    private Grid createGrid(Project currentProject) {
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
         if(currentProject.getContracts().size()==0) return new Grid();
         LocalDate endDate = currentProject.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
@@ -575,7 +572,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 budgetNewRepository.save(budget);
                 budgetCountDate = budgetCountDate.plusMonths(1);
             }
-            updateTreeGrid();
+            updateTreeGrid(currentProject);
         });
         grid.setItems(budgetRows);
         if(budgetRows.size() == 0) budgetCard.setVisible(false);
@@ -583,203 +580,10 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         return grid;
     }
 
-
-    /*
-    private TreeGrid createTreeGrid() {
-        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
-        LocalDate endDate = new LocalDate(currentProject.getEnddate().getYear(),
-                currentProject.getEnddate().getMonthValue(),
-                currentProject.getEnddate().getDayOfMonth());
-        Months monthsBetween = Months.monthsBetween(startDate, endDate);
-        System.out.println("period.getMonths() = " + monthsBetween.getMonths());
-
-        List<TaskRow> taskRows = new ArrayList<>();
-
-        Map<String, User> usersMap = userRepository.findAll().stream().collect(Collectors.toMap(User::getUuid, user -> user));
-
-        for (Task task : currentProject.getTasks()) {
-            List<Budget> budgets = budgetRepository.findByTaskuuid(task.getUuid());
-            TaskRow taskRow = new TaskRow(task, monthsBetween.getMonths()+1);
-            taskRows.add(taskRow);
-            for (User user : usersMap.values()) {
-                LocalDate budgetDate = startDate;
-                List<Taskworkerconstraint> taskworkerconstraints = taskworkerconstraintRepository.findByTask(task);
-                Optional<Taskworkerconstraint> taskworkerconstraint = taskworkerconstraints.stream()
-                        .filter(p ->
-                                p.getTask()!=null &&
-                                p.getUser()!=null &&
-                                p.getTask().getUuid().equals(task.getUuid()) &&
-                                p.getUser().getUuid().equals(user.getUuid()))
-                        .findFirst();
-                //if(user.getUsername().equals("hans.lassen")) System.out.println("taskworkerconstraint = " + taskworkerconstraint);
-
-                if(!taskworkerconstraint.isPresent()) continue;
-
-                UserRow userRow = new UserRow(task, taskworkerconstraint.get(), monthsBetween.getMonths()+1, user);
-
-                //if(user.getUsername().equals("hans.lassen")) System.out.println("budgets = " + budgets.size());
-
-                int month = 0;
-                while(budgetDate.isBefore(endDate)) {
-                    final LocalDate filterDate = budgetDate;
-
-                    Optional<Budget> budget = budgets.stream()
-                            .filter(p -> p.getYear()==filterDate.getYear() &&
-                                    p.getMonth()==filterDate.getMonthOfYear()-1 &&
-                                    p.getTask()!=null &&
-                                    p.getUser()!=null &&
-                                    p.getTask().getUuid().equals(task.getUuid()) &&
-                                    p.getUser().getUuid().equals(user.getUuid()))
-                            .findFirst();
-
-                    if(budget.isPresent()) {
-                        if(user.getUsername().equals("hans.lassen")) System.out.println("budget.get() = " + budget);
-                        userRow.setMonth(month, (budget.get().getBudget() / taskworkerconstraint.get().getPrice())+"");
-                    } else {
-                        userRow.setMonth(month, "0.0");
-                    }
-                    month++;
-                    budgetDate = budgetDate.plusMonths(1);
-                }
-                taskRow.addUserRow(userRow);
-                System.out.println("userRow = " + userRow);
-            }
-            System.out.println("taskRow = " + taskRow);
-        }
-
-
-        treeGrid = new TreeGrid<>();
-        treeGrid.addColumn(TaskRow::getTaskName).setWidth(200).setCaption("Task Name").setId("name-column").setEditorComponent(new TextField(), TaskRow::setTaskName);
-        treeGrid.addColumn(TaskRow::getUsername).setWidth(200).setCaption("Consultant");
-        treeGrid.addColumn(TaskRow::getRate).setWidth(100).setCaption("Rate").setEditorComponent(new TextField(), TaskRow::setRate);
-        treeGrid.setFrozenColumnCount(3);
-
-        GridContextMenu<TaskRow> gridMenu = new GridContextMenu<>(treeGrid);
-        gridMenu.addGridBodyContextMenuListener(this::updateGridBodyMenu);
-        gridMenu.addGridHeaderContextMenuListener(this::updateGridHeaderMenu);
-
-        int month = 0;
-        int year = startDate.getYear();
-        List<String> yearColumns = new ArrayList<>();
-        LocalDate budgetDate = startDate;
-        while(budgetDate.isBefore(endDate)) {
-            final LocalDate filterDate = budgetDate;
-            final int actualMonth = month;
-            Grid.Column<TaskRow, ?> budgetColumn = treeGrid.addColumn(
-                    taskRow -> taskRow.getMonth(actualMonth))
-                    .setStyleGenerator(budgetHistory -> "align-right")
-                    .setWidth(100)
-                    .setId(Month.of(filterDate.getMonthOfYear()).name()+filterDate.getYear())
-                    .setCaption(Month.of(filterDate.getMonthOfYear()).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)+" "+filterDate.year().getAsShortText())
-                    .setEditorComponent(new TextField(), (Setter<TaskRow, String>) (taskRow, budgetValue) -> taskRow.setMonth(actualMonth, budgetValue));
-            yearColumns.add(budgetColumn.getId());
-            budgetDate = budgetDate.plusMonths(1);
-            month++;
-            if(year < budgetDate.getYear()) {
-                //topHeader.join(yearColumns.toArray(new String[0])).setText(year + "");
-                yearColumns = new ArrayList<>();
-                year++;
-            }
-        }
-
-        treeGrid.setWidth("100%");
-        treeGrid.getEditor().setEnabled(true);
-        treeGrid.getEditor().addSaveListener(event -> {
-            TaskRow taskRow = event.getBean();
-            if(taskRow.getClass().equals(UserRow.class)) {
-                UserRow userRow = (UserRow) taskRow;
-                Taskworkerconstraint taskworkerconstraint = userRow.getTaskworkerconstraint();
-                System.out.println("taskworkerconstraint = " + taskworkerconstraint);
-                taskworkerconstraint.setPrice(Double.parseDouble(userRow.getRate()));
-                taskworkerconstraintRepository.save(taskworkerconstraint);
-                LocalDate budgetCountDate = startDate;
-                List<Budget> budgetList = new ArrayList<>();
-                for (String budgetString : userRow.getBudget()) {
-                    if(budgetString==null) budgetString = "0.0";
-                    Budget budget = new Budget(
-                            budgetCountDate.getMonthOfYear()-1,
-                            budgetCountDate.getYear(),
-                            Double.parseDouble(budgetString) * taskworkerconstraint.getPrice(),
-                            userRow.getUser(),
-                            userRow.getTask()
-                    );
-                    budgetList.add(budget);
-                    budgetCountDate = budgetCountDate.plusMonths(1);
-                }
-
-                budgetRepository.save(budgetList);
-                //updateTreeGrid();
-            } else {
-                taskRow.getTask().setName(taskRow.getTaskName());
-                taskRepository.save(taskRow.getTask());
-                //updateTreeGrid();
-            }
-        });
-        treeGrid.setItems(taskRows, TaskRow::getUserRows);
-        return treeGrid;
-    }
-    */
-
-    private void reloadGrid() {
+    private void reloadGrid(Optional<Project> currentProject) {
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
-        currentProject = getSelProject().getValue();
-        if(getSelProject().getSelectedItem().isPresent()) createDetailLayout();
+        //currentProject = getSelProject().getValue();
+        currentProject.ifPresent(this::createDetailLayout);
+        //if(getSelProject().getSelectedItem().isPresent()) createDetailLayout(currentProject);
     }
-/*
-    private void updateGridBodyMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<TaskRow> event) {
-        event.getContextMenu().removeItems();
-        if (event.getItem() != null) {
-            if(event.getItem().getClass().equals(TaskRow.class)) {
-                event.getContextMenu().addItem("Add Consultant to "+((TaskRow)event.getItem()).getTaskName(), VaadinIcons.PLUS, selectedItem -> {
-                    Window subWindow = new Window("");
-                    VerticalLayout subContent = new VerticalLayout();
-                    subWindow.setContent(subContent);
-
-                    // Put some components in it
-                    subContent.addComponent(new Label("Add consultant"));
-                    ComboBox<User> userComboBox = new ComboBox<>();
-                    userComboBox.setItems(userRepository.findAll());
-                    userComboBox.setItemCaptionGenerator(User::getUsername);
-                    subContent.addComponent(userComboBox);
-                    Button addButton = new Button("Add");
-                    addButton.addClickListener(event1 -> {
-                        Taskworkerconstraint taskworkerconstraint = new Taskworkerconstraint(0.0, userComboBox.getSelectedItem().get(), ((TaskRow) event.getItem()).getTask());
-                        taskworkerconstraintRepository.save(taskworkerconstraint);
-                        subWindow.close();
-                        updateTreeGrid();
-                    });
-                    subContent.addComponent(addButton);
-
-                    // Center it in the browser window
-                    subWindow.center();
-
-                    // Open it in the UI
-                    UI.getCurrent().addWindow(subWindow);
-                });
-            } else {
-                event.getContextMenu().addItem("Remove "+((UserRow)event.getItem()).getUsername(), VaadinIcons.CLOSE,
-                        selectedItem -> Notification.show("Not possible at this time!"));
-            }
-        } else {
-            event.getContextMenu().addItem("Add Task", VaadinIcons.PLUS, selectedItem -> {
-                Task task = new Task("new task", currentProject);
-                currentProject.getTasks().add(task);
-                taskRepository.save(task);
-                updateTreeGrid();
-            });
-        }
-    }
-
-    private void updateGridHeaderMenu(GridContextMenu.GridContextMenuOpenListener.GridContextMenuOpenEvent<TaskRow> event) {
-        event.getContextMenu().removeItems();
-        if (event.getColumn() != null) {
-            event.getContextMenu().addItem("Sort Ascending", selectedItem ->
-                    treeGrid.sort((Grid.Column<TaskRow, ?>) event.getColumn(), SortDirection.ASCENDING));
-            event.getContextMenu().addItem("Sort Descending", selectedItem ->
-                    treeGrid.sort((Grid.Column<TaskRow, ?>) event.getColumn(), SortDirection.DESCENDING));
-        } else {
-            event.getContextMenu().addItem("menu is empty", null);
-        }
-    }
-    */
 }

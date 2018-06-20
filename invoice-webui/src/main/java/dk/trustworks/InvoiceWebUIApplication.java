@@ -27,7 +27,8 @@ import java.util.concurrent.Executor;
 @EnableAsync
 @EnableCaching
 @EnableVaadin
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+//@ComponentScan("dk.trustworks.invoicewebui")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class InvoiceWebUIApplication {
 
