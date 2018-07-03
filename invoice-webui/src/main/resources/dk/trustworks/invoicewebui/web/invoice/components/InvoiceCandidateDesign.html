@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding ripple card-hoverable" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
+    <vaadin-vertical-layout spacing="false" size-full _id="container" :expand>
+     <vaadin-horizontal-layout spacing="false" :middle :right>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e929" description="Create new invoice" style-name="flat tiny" plain-text _id="btnEdit"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e672" description="Create and split into several invoices" style-name="flat tiny" plain-text _id="btnJoin"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e60c" description="Create invoice and merge with other contracts" style-name="flat tiny" plain-text _id="btnLeave"></vaadin-button>
+     </vaadin-horizontal-layout>
+     <vaadin-panel style-name="v-scrollable" height="125px" _id="textContentHolder" :expand>
+      <vaadin-vertical-layout margin="false">
+       <vaadin-grid-layout style-name="light-grey" spacing width-full>
+        <row>
+         <column>
+          <vaadin-label style-name="bold tiny" plain-text :bottom :center>
+            Invoiced 
+          </vaadin-label>
+         </column>
+         <column>
+          <vaadin-label style-name="bold tiny" plain-text :bottom :center>
+            Not invoiced 
+          </vaadin-label>
+         </column>
+         <column>
+          <vaadin-label style-name="bold tiny" plain-text :bottom :center>
+            SO 
+          </vaadin-label>
+         </column>
+        </row>
+        <row>
+         <column>
+          <vaadin-label style-name="tiny" plain-text :center>
+            215.000 
+          </vaadin-label>
+         </column>
+         <column>
+          <vaadin-label style-name="tiny" plain-text :center>
+            15.000 
+          </vaadin-label>
+         </column>
+         <column>
+          <vaadin-label style-name="tiny" plain-text :center>
+            15 
+          </vaadin-label>
+         </column>
+        </row>
+       </vaadin-grid-layout>
+       <vaadin-grid-layout spacing width-full>
+        <row>
+         <column>
+          <vaadin-label style-name="bold small" plain-text :center>
+            Date 
+          </vaadin-label>
+         </column>
+         <column expand="1.0">
+          <vaadin-label style-name="bold small" width-full plain-text>
+            Type 
+          </vaadin-label>
+         </column>
+         <column>
+          <vaadin-label style-name="bold small align-right" width-full plain-text>
+            Amount 
+          </vaadin-label>
+         </column>
+        </row>
+        <row>
+         <column>
+          <vaadin-label style-name="small" plain-text>
+            3. july 2018 
+          </vaadin-label>
+         </column>
+         <column>
+          <vaadin-label style-name="small" plain-text>
+            Invoice 
+          </vaadin-label>
+         </column>
+         <column>
+          <vaadin-label style-name="align-right" plain-text>
+            325.225 kr 
+          </vaadin-label>
+         </column>
+        </row>
+       </vaadin-grid-layout>
+      </vaadin-vertical-layout>
+     </vaadin-panel>
+     <vaadin-horizontal-layout width-full>
+      <vaadin-panel style-name="v-scrollable" _id="photosContentHolder" :expand>
+       <vaadin-horizontal-layout _id="photoContainer"></vaadin-horizontal-layout>
+      </vaadin-panel>
+     </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

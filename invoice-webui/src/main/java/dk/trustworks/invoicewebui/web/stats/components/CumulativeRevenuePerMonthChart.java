@@ -80,14 +80,14 @@ public class CumulativeRevenuePerMonthChart {
         double sum = 0.0;
         for (int j = 0; j < Period.between(periodStart, LocalDate.now()).getMonths(); j++) {
             if(amountPerItemList.size()>j) {
-                System.out.println("did j = " + j);
+                //System.out.println("did j = " + j);
                 sum += amountPerItemList.get(j).getValue();
                 y[j] = sum;
                 x[j] = j;
             }
-            System.out.println("j = " + j);
+            //System.out.println("j = " + j);
         }
-        t.setValues(y, x);
+        if(amountPerItemList.size()>0) t.setValues(y, x);
 
         DataSeries avgRevenueList = new DataSeries("Projected Revenue");
         PlotOptionsLine options2 = new PlotOptionsLine();

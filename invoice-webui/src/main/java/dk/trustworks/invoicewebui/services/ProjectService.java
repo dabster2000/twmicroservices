@@ -1,12 +1,12 @@
 package dk.trustworks.invoicewebui.services;
 
-import dk.trustworks.invoicewebui.model.Client;
-import dk.trustworks.invoicewebui.model.Clientdata;
-import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.model.Task;
+import com.vaadin.server.VaadinSession;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ProjectRepository;
 import dk.trustworks.invoicewebui.repositories.TaskRepository;
+import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +19,13 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository) {
+    public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, UserRepository userRepository) {
         this.projectRepository = projectRepository;
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Project> findAllByOrderByNameAsc() {
@@ -56,6 +58,8 @@ public class ProjectService {
 
     @Transactional
     public Project save(Project project) {
+        project = projectRepository.save(project);
+        project.setOwner(userRepository.findByUuid(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser().getUuid()));
         return createDefaultTask(project);
     }
 
@@ -68,7 +72,6 @@ public class ProjectService {
     }
 
     private Project createDefaultTask(Project project) {
-        project = projectRepository.save(project);
         boolean hasSOTypeTask = false;
         for (Task task : project.getTasks()) {
             if(task.getType().equals(TaskType.SO)) hasSOTypeTask = true;
