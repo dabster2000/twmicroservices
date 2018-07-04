@@ -163,6 +163,10 @@ public class WeekItem {
         this.budgetleft = budgetleft;
     }
 
+    public void addBudget(double budget) {
+        budgetleft += budget;
+    }
+
     public LocalDate getDate() {
         return date;
     }

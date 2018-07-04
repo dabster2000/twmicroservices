@@ -77,7 +77,7 @@ public class ProjectService {
             if(task.getType().equals(TaskType.SO)) hasSOTypeTask = true;
         }
         if(!hasSOTypeTask) {
-            Task task = taskRepository.save(new Task("Satans os'e", project, TaskType.SO));
+            Task task = taskRepository.save(new Task("Ikke fakturerbar", project, TaskType.SO));
             project.getTasks().add(task);
         }
         return project;

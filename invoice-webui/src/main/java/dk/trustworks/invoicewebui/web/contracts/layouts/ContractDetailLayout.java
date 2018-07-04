@@ -9,6 +9,7 @@ import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -614,6 +615,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 consultantRepository.save(consultant);
                 updateData(contract);
             });
+            consultantRowDesign.getTxtRate().setValueChangeMode(ValueChangeMode.BLUR);
+            consultantRowDesign.getTxtHours().setValueChangeMode(ValueChangeMode.BLUR);
             consultantRowDesign.getTxtHours().setValue(Math.round(consultant.getHours())+"");
             consultantRowDesign.getTxtHours().addValueChangeListener(event -> {
                 consultant.setHours(NumberConverter.parseDouble(event.getValue()));

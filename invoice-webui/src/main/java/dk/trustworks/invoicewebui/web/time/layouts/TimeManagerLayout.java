@@ -345,6 +345,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
+            /*
             Double budgetLeftByTaskuuidAndUseruuid = 0.0;
             try {
                 budgetLeftByTaskuuidAndUseruuid = 0.0; //budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());
@@ -353,12 +354,18 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 e.printStackTrace();
             }
             if(budgetLeftByTaskuuidAndUseruuid!=null) weekItem.setBudgetleft(budgetLeftByTaskuuidAndUseruuid<0?0:Math.round(budgetLeftByTaskuuidAndUseruuid));
+            */
+            double sumTask = 0.0;
             for (Work work : workResources) {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
                 sumHours += work.getWorkduration();
+                sumTask += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
                 setWeekItemAmounts(weekItem, work, workDate);
             }
+            weekItem.setBudgetleft(sumTask);
+
+
         }
         log.info("sumHours = " + sumHours);
 
@@ -443,7 +450,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         headingRow.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel("BUDGET").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+                .withComponent(new MLabel("SUM").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
     }
 
     private MVerticalLayout getDayNameTitle(int weekDay) {
@@ -571,6 +578,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
         User workingAs = (weekItem.getWorkas()!=null)?weekItem.getWorkas():weekItem.getUser();
         Task task = weekItem.getTask();
 
+        final MLabel lblWeekItemSum = new MLabel(weekItem.getBudgetleft() + "").withStyleName("h5");
+
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(taskTitle, ResponsiveColumn.ColumnComponentAlignment.LEFT);
@@ -578,7 +587,10 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(disableIfNoContract(1, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getMon(), event -> {
-                            weekDaySums.mon += updateTimefield(weekItem, 0, event);
+                            double delta = updateTimefield(weekItem, 0, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                             updateSums();
                         }).withValueChangeMode(ValueChangeMode.BLUR)
                                 .withWidth(100, PERCENTAGE)
@@ -589,7 +601,10 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(disableIfNoContract(2, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getTue(), event -> {
-                    weekDaySums.tue += updateTimefield(weekItem, 1, event);
+                            double delta = updateTimefield(weekItem, 1, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                     updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
@@ -599,7 +614,10 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(disableIfNoContract(3, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getWed(), event -> {
-                    weekDaySums.wed += updateTimefield(weekItem, 2, event);
+                            double delta = updateTimefield(weekItem, 2, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                     updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
@@ -609,8 +627,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(disableIfNoContract(4, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getThu(), event -> {
-                    weekDaySums.thu += updateTimefield(weekItem, 3, event);
-                    updateSums();
+                            double delta = updateTimefield(weekItem, 3, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
@@ -619,8 +640,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(disableIfNoContract(5, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getFri(), event -> {
-                    weekDaySums.fri += updateTimefield(weekItem, 4, event);
-                    updateSums();
+                            double delta = updateTimefield(weekItem, 4, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
@@ -629,8 +653,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(disableIfNoContract(6, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getSat(), event -> {
-                    weekDaySums.sat += updateTimefield(weekItem, 5, event);
-                    updateSums();
+                            double delta = updateTimefield(weekItem, 5, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
@@ -639,16 +666,20 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 1,1)
                 .withComponent(disableIfNoContract(7, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getSun(), event -> {
-                    weekDaySums.sun += updateTimefield(weekItem, 6, event);
-                    updateSums();
+                            double delta = updateTimefield(weekItem, 6, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
                         .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
                         .withStyleName("floating")));
+
         time1Row.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
-                .withComponent(new MLabel(weekItem.getBudgetleft()+"").withStyleName("h5"), ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+                .withComponent(lblWeekItemSum, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
     }
 
     private MTextField disableIfNoContract(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {

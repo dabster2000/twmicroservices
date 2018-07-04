@@ -6,6 +6,8 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.model.style.Style;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Setter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -211,7 +213,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         if(currentProject.getContracts().size()>0) {
             Card contractCard = new Card();
-            contractCard.getLblTitle().setValue("Contracts");
+            contractCard.getLblTitle().setValue("Contract Periods");
             contractLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
             contractCard.getContent().addComponent(contractLayout);
             createContractChart(currentProject);
@@ -257,6 +259,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         newTaskRow.getLblName().setVisible(false);
         newTaskRow.getCssTaskName().setVisible(false);
         newTaskRow.getBtnDelete().setIcon(MaterialIcons.ADD);
+        newTaskRow.getTxtName().addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                Task task = taskRepository.save(new Task(newTaskRow.getTxtName().getValue(), currentProject));
+                currentProject.getTasks().add(task);
+                reloadGrid(Optional.of(projectService.save(currentProject)));
+            }
+        });
         newTaskRow.getBtnDelete().addClickListener(event -> {
             Task task = taskRepository.save(new Task(newTaskRow.getTxtName().getValue(), currentProject));
             currentProject.getTasks().add(task);
