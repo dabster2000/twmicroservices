@@ -39,6 +39,7 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
     Contract findContractByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid, @Param("statusList") List<String> statusList);
 
     List<Contract> findByActiveFromBeforeAndActiveToAfterAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
+    List<Contract> findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
 
     @Query(value = "select c.* from usermanager.contracts c " +
             "right join usermanager.contract_consultants cc on c.uuid = cc.contractuuid " +

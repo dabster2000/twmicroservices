@@ -9,7 +9,6 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
@@ -30,7 +29,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
     private int boxWidth;
     private String name;
 
-    public ConsultantAllocationCardImpl(UserRepository userRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, int priority, int boxWidth, String name) {
+    public ConsultantAllocationCardImpl(ContractService contractService, BudgetNewRepository budgetNewRepository, int priority, int boxWidth, String name) {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
@@ -74,7 +73,6 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
         int userNumber = 0;
 
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
-        //User user = userRepository.findByUsername("elvi.nissen");
 
         Map<String, double[]> budgetRowList = new HashMap<>();
         for (int i = 0; i < 12; i++) {

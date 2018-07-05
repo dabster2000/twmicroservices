@@ -128,7 +128,7 @@ public class DashboardView extends VerticalLayout implements View {
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, 1, 6, "bubblesCard");
         VacationCard vacationCard = new VacationCard();
-        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(userRepository, contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
+        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 
         //projectTimeline.init();

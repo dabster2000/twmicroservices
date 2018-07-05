@@ -130,7 +130,8 @@ public class ContractService {
 
     @Cacheable("contract")
     public List<Contract> findActiveContractsByDate(LocalDate activeDate, ContractStatus... statusList) {
-        return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeDate, activeDate, statusList);
+        return contractRepository.findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(activeDate, activeDate, statusList);
+        //return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeDate, activeDate, statusList);
     }
 
     public List<Contract> findActiveContractsByPeriod(LocalDate activeFrom, LocalDate activeTo, ContractStatus... statusList) {
