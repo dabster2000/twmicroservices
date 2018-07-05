@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class ConvertOldToNew {
@@ -28,7 +27,7 @@ public class ConvertOldToNew {
     @Autowired
     private ConsultantRepository consultantRepository;
 
-    @Transactional
+    //@Transactional
     //@Scheduled(fixedDelay = 1000000, initialDelay = 1000)
     public void job() {
         log.info("running work job...");

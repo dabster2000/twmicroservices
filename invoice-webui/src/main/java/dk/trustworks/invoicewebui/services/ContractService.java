@@ -238,7 +238,8 @@ public class ContractService {
     }
 
     public double findAmountUsedOnContract(Contract contract) {
-        return workRepository.findAmountUsedByContract(contract.getUuid());
+        Double result = workRepository.findAmountUsedByContract(contract.getUuid());
+        return result==null?0.0:result;
     }
 
     public Collection<String> createErrorList(Map<String, Work> errors) {

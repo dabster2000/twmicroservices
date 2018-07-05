@@ -86,7 +86,7 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and c.uuid like :contractuuid " +
             "and w.workduration > 0 " +
             "and cc.rate > 0.0 ", nativeQuery = true)
-    double findAmountUsedByContract(@Param("contractuuid") String contractuuid);
+    Double findAmountUsedByContract(@Param("contractuuid") String contractuuid);
 
     @Query(value = "SELECT id, day, month, year, taskuuid, useruuid, w.workas as workas, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM work w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
     List<Work> findByYearAndMonth(@Param("year") int year,

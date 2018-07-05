@@ -115,6 +115,12 @@ $v-focus-color: #00BCD4;
     //font-size: 20px;
   }
 
+  .cut_text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
   .dark-green-font .v-icon {
     color: #007163;
     //font-size: 20px;
