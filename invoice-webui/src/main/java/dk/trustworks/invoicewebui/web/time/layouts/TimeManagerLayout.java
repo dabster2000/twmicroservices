@@ -588,7 +588,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(disableIfNoContract(1, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getMon(), event -> {
                             double delta = updateTimefield(weekItem, 0, event);
-                            weekDaySums.wed += delta;
+                            weekDaySums.mon += delta;
                             weekItem.addBudget(delta);
                             lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                             updateSums();
@@ -602,7 +602,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(disableIfNoContract(2, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getTue(), event -> {
                             double delta = updateTimefield(weekItem, 1, event);
-                            weekDaySums.wed += delta;
+                            weekDaySums.tue += delta;
                             weekItem.addBudget(delta);
                             lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                     updateSums();
@@ -628,7 +628,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(disableIfNoContract(4, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getThu(), event -> {
                             double delta = updateTimefield(weekItem, 3, event);
-                            weekDaySums.wed += delta;
+                            weekDaySums.thu += delta;
                             weekItem.addBudget(delta);
                             lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                             updateSums();
@@ -641,7 +641,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(disableIfNoContract(5, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getFri(), event -> {
                             double delta = updateTimefield(weekItem, 4, event);
-                            weekDaySums.wed += delta;
+                            weekDaySums.fri += delta;
                             weekItem.addBudget(delta);
                             lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                             updateSums();
@@ -654,7 +654,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(disableIfNoContract(6, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getSat(), event -> {
                             double delta = updateTimefield(weekItem, 5, event);
-                            weekDaySums.wed += delta;
+                            weekDaySums.sat += delta;
                             weekItem.addBudget(delta);
                             lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                             updateSums();
@@ -667,7 +667,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(disableIfNoContract(7, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getSun(), event -> {
                             double delta = updateTimefield(weekItem, 6, event);
-                            weekDaySums.wed += delta;
+                            weekDaySums.sun += delta;
                             weekItem.addBudget(delta);
                             lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
                             updateSums();
