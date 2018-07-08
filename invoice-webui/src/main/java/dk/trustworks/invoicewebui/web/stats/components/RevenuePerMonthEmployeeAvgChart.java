@@ -78,7 +78,7 @@ public class RevenuePerMonthEmployeeAvgChart {
         double avg = 0.0;
         int count = 0;
         for (int i = 0; i < period; i++) {
-            if(amountPerItemList.size() > i) {
+            if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
                 GraphKeyValue amountPerItem = amountPerItemList.get(i);
                 LocalDate javaDate = LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd"));
                 if(javaDate.isAfter(LocalDate.now())) continue;

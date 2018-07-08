@@ -101,12 +101,12 @@ public class CumulativeRevenuePerMonthChart {
         for (int i = 0; i < period; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             double expense = 0.0;
-            if(amountPerItemList.size() > i) {
+            if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
                 cumulativeRevenuePerMonth += amountPerItemList.get(i).getValue();
                 expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             }
-            avgRevenueList.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), t.predict(i)));
+            if(amountPerItemList.size()>1) avgRevenueList.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), t.predict(i)));
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
