@@ -34,6 +34,13 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and w.workduration > 0 and c.status in :statusList ", nativeQuery = true)
     List<WorkWithRate> findWorkWithRateByPeriod(@Param("fromdate") LocalDate fromdate, @Param("todate") LocalDate todate, @Param("statusList") String... statusList);
 
+    /**
+     *
+     * @param fromdate including date
+     * @param todate including date
+     * @param useruuid actual user
+     * @return
+     */
     @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate AND k.useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByPeriodAndUserUUID(@Param("fromdate") String fromdate,
                                        @Param("todate") String todate,

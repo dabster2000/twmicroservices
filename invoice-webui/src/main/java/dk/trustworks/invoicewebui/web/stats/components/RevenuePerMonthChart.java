@@ -86,7 +86,7 @@ public class RevenuePerMonthChart {
                 GraphKeyValue amountPerItem = amountPerItemList.get(i);
                 if(amountPerItem!=null) revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
                 double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
-                if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()-expense));
+                if(amountPerItem!=null) if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()-expense));
             }
             List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             double budgetSum = 0.0;
@@ -94,7 +94,16 @@ public class RevenuePerMonthChart {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (Consultant consultant : contract.getConsultants()) {
-                        budgetSum += (consultant.getHours() * weeks) * consultant.getRate();
+                        List<Work> workList = workRepository.findByPeriodAndUserUUID(
+                                currentDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                                currentDate.withDayOfMonth(currentDate.lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                                consultant.getUser().getUuid());
+                        double notWork = 0.0;
+                        for (Work work : workList) {
+                            if(work.getTask().getUuid().equals("02bf71c5-f588-46cf-9695-5864020eb1c4") ||
+                                    work.getTask().getUuid().equals("f585f46f-19c1-4a3a-9ebd-1a4f21007282")) notWork += work.getWorkduration();
+                        }
+                        budgetSum += ((consultant.getHours() * weeks) - notWork) * consultant.getRate();
                     }
                 }
             }
