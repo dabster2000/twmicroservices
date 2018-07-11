@@ -54,6 +54,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final UserRepository userRepository;
 
+    private final ClientRepository clientRepository;
+
     private final WeekRepository weekRepository;
 
     private final WorkService workService;
@@ -81,8 +83,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserRepository userRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
+    public TimeManagerLayout(ProjectService projectService, UserRepository userRepository, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
         this.userRepository = userRepository;
+        this.clientRepository = clientRepository;
         this.weekRepository = weekRepository;
         this.workService = workService;
         this.workRepository = workRepository;
@@ -226,7 +229,12 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 }
                 List<Contract> newActiveConsultantContracts = getMainContracts(contractService, user);
                 List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
-                Set<Project> projects = newActiveConsultantContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
+                Set<Project> projects = new TreeSet<>();
+                if(event1.getValue().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) {
+                    projects.addAll(allProjects);
+                } else {
+                    projects = newActiveConsultantContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
+                }
 
                 projectComboBox.clear();
                 projectComboBox.setItems(projects);
@@ -275,7 +283,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private List<Client> getClients(List<Contract> activeConsultantContracts) {
-        return activeConsultantContracts.stream().map(Contract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+        List<Client> clientList = activeConsultantContracts.stream().map(Contract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+        clientList.add(clientRepository.findOne("40c93307-1dfa-405a-8211-37cbda75318b"));
+        return clientList;
     }
 
     private List<Contract> getMainContracts(ContractService contractService, User user) {
