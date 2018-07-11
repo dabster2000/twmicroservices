@@ -229,10 +229,12 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 }
                 List<Contract> newActiveConsultantContracts = getMainContracts(contractService, user);
                 List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
-                Set<Project> projects = new TreeSet<>();
+                Set<Project> projects = new HashSet<>();
                 if(event1.getValue().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) {
+                    System.out.println("TW");
                     projects.addAll(allProjects);
                 } else {
+                    System.out.println("OTHER");
                     projects = newActiveConsultantContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
                 }
 
