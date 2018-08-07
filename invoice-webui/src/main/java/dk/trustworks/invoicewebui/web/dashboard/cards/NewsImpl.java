@@ -101,6 +101,7 @@ public class NewsImpl extends NewsDesign implements Box {
             Label lblDate;
             if(newsItem.getNewstype().equalsIgnoreCase("project")) {
                 lblDate = new Label("");
+                /*
                 if(!projectHeaderVisible) {
                     MHorizontalLayout textLayout = new MHorizontalLayout().add(new MLabel("Project Info").withStyleName("h5 bold").withWidth("100%")).withWidth("100%");
                     textLayout.addLayoutClickListener(e -> UI.getCurrent().getNavigator().navigateTo(newsItem.getLink()));
@@ -110,14 +111,15 @@ public class NewsImpl extends NewsDesign implements Box {
                     projectHeaderVisible = true;
                     i++;
                 }
+                */
             } else {
                 lblDate = new Label(newsItem.getNewsdate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             }
             MHorizontalLayout textLayout = new MHorizontalLayout().add(new MLabel(newsItem.getDescription()).withWidth("100%")).withWidth("100%");
             textLayout.addLayoutClickListener(e -> UI.getCurrent().getNavigator().navigateTo(newsItem.getLink()));
-            if(newsItem.getNewstype().equalsIgnoreCase("project"))
-                getEventGrid().addComponent(textLayout, 0, i, 1, i);
-            else {
+            if(newsItem.getNewstype().equalsIgnoreCase("project")) {
+                //getEventGrid().addComponent(textLayout, 0, i, 1, i);
+            } else {
                 getEventGrid().addComponent(lblDate, 0, i);
                 getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
                 getEventGrid().addComponent(textLayout, 1, i);

@@ -7,6 +7,8 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.ValidationException;
+import com.vaadin.data.converter.StringToFloatConverter;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -22,10 +24,7 @@ import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import dk.trustworks.invoicewebui.web.time.components.DateButtons;
-import dk.trustworks.invoicewebui.web.time.components.FooterButtons;
-import dk.trustworks.invoicewebui.web.time.components.TaskTitle;
-import dk.trustworks.invoicewebui.web.time.components.TimeManagerImpl;
+import dk.trustworks.invoicewebui.web.time.components.*;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
 import org.joda.time.LocalDate;
@@ -33,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
+import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -40,11 +40,14 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static dk.trustworks.invoicewebui.utils.DateUtils.convertJodaToJavaDate;
+import static dk.trustworks.invoicewebui.utils.DateUtils.lastDayOfMonth;
 
 @SpringComponent
 @SpringUI
@@ -52,6 +55,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private static final Logger log = LoggerFactory.getLogger(TimeManagerImpl.class);
 
+    private final ProjectService projectService;
     private final UserRepository userRepository;
 
     private final ClientRepository clientRepository;
@@ -68,22 +72,27 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final ContractService contractService;
 
+    private final ReceiptsRepository receiptsRepository;
+
     private ResponsiveLayout responsiveLayout;
 
     private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);
 
     private final FooterButtons footerButtons;
     private final DateButtons dateButtons;
+    private final CustomerExpenses customerExpenses;
 
     private NumberFormat nf = NumberFormat.getInstance();
     private Binder<WeekValues> weekValuesBinder = new Binder<>();
+    private Binder<Receipt> receiptBinder = new Binder<>();
     private WeekValues weekDaySums;
     private double sumHours = 0.0;
 
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserRepository userRepository, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ContractService contractService1) {
+    public TimeManagerLayout(ProjectService projectService, UserRepository userRepository, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
+        this.projectService = projectService;
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.weekRepository = weekRepository;
@@ -91,10 +100,12 @@ public class TimeManagerLayout extends ResponsiveLayout {
         this.workRepository = workRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
-        this.contractService = contractService1;
+        this.contractService = contractService;
+        this.receiptsRepository = receiptsRepository;
 
         footerButtons = new FooterButtons();
         dateButtons = new DateButtons();
+        customerExpenses = new CustomerExpenses();
         responsiveLayout = new ResponsiveLayout(ContainerType.FLUID);
 
         dateButtons.getBtnWeekNumberDecr().addClickListener(event -> {
@@ -229,10 +240,10 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 }
                 List<Contract> newActiveConsultantContracts = getMainContracts(contractService, user);
                 List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
-                Set<Project> projects = new HashSet<>();
+                Set<Project> projects;
                 if(event1.getValue().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) {
                     System.out.println("TW");
-                    projects.addAll(allProjects);
+                    projects = new HashSet<>(allProjects);
                 } else {
                     System.out.println("OTHER");
                     projects = newActiveConsultantContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
@@ -324,6 +335,92 @@ public class TimeManagerLayout extends ResponsiveLayout {
         createHeadlineRow();
         createTimesheet(user);
         createFooterRow();
+        createReceiptRow();
+    }
+
+    private void createReceiptRow() {
+        ResponsiveRow receiptRow = responsiveLayout.addRow().withAlignment(Alignment.MIDDLE_CENTER);
+        receiptRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withVisibilityRules(false, false, true, true)
+                .withComponent(customerExpenses);
+
+        loadExistingReceipts();
+
+    }
+
+    private void loadExistingReceipts() {
+        CustomerExpensesGrid customerExpensesGrid = new CustomerExpensesGrid();
+        GridLayout gridExistingReceipts = customerExpensesGrid.getGridExistingReceipts();
+
+        for (int i = 0; i < gridExistingReceipts.getColumns(); i++) {
+            gridExistingReceipts.setColumnExpandRatio(i, 0);
+        }
+        gridExistingReceipts.setColumnExpandRatio(2, 1.0f);
+
+        List<Contract> mainContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getValue());
+        List<Project> allProjects = projectService.findAllByActiveTrueOrderByNameAsc();
+
+        Set<Project> projectSet = mainContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
+
+        customerExpensesGrid.getCbProject().setItems(projectSet);
+        customerExpensesGrid.getCbProject().setItemCaptionGenerator(item -> item.getClient().getName()+" - "+item.getName());
+
+        customerExpensesGrid.getDfReceiptDate().setRangeStart(convertJodaToJavaDate(currentDate.withDayOfMonth(1)));
+        customerExpensesGrid.getDfReceiptDate().setRangeEnd(lastDayOfMonth(convertJodaToJavaDate(currentDate)));
+
+        receiptBinder.forField(customerExpensesGrid.getDfReceiptDate())
+                //.asRequired("You must enter a date")
+                .bind(Receipt::getReceiptdate, Receipt::setReceiptdate);
+        receiptBinder.forField(customerExpensesGrid.getCbProject())
+                //.asRequired("You must select a project")
+                .bind(Receipt::getProject, Receipt::setProject);
+        receiptBinder.forField(customerExpensesGrid.getTxtDescription())
+                .bind(Receipt::getDescription, Receipt::setDescription);
+        receiptBinder.forField(customerExpensesGrid.getTxtAmount())
+                .withConverter(new StringToFloatConverter("Not a valid amount"))
+                //.asRequired("Missing amount")
+                .bind(Receipt::getAmount, Receipt::setAmount);
+
+        receiptBinder.readBean(new Receipt());
+
+        customerExpensesGrid.getBtnAddReceipt().addClickListener(event -> {
+            Receipt receipt = new Receipt();
+            try {
+                receiptBinder.writeBean(receipt);
+                receipt.setUser(dateButtons.getSelActiveUser().getValue());
+                receiptsRepository.save(receipt);
+                loadExistingReceipts();
+            } catch (ValidationException e) {
+                e.printStackTrace();
+                Notification.show("Receipt could not be saved, " +
+                        "please check error messages for each field.");
+            }
+        });
+
+        customerExpenses.getExpensesGridContainer().removeAllComponents();
+        customerExpenses.getExpensesGridContainer().addComponent(customerExpensesGrid);
+
+        int rows = 1;
+        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfMonth(30)));
+
+        gridExistingReceipts.setRows(receipts.size()+2);
+        for (Receipt receipt : receipts) {
+            System.out.println("rows = " + rows);
+            gridExistingReceipts.addComponent(new MLabel(receipt.getReceiptdate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))), 0, rows);
+            gridExistingReceipts.addComponent(new MLabel(receipt.getProject().getName()), 1, rows);
+            gridExistingReceipts.addComponent(new MLabel(receipt.getDescription()), 2, rows);
+            gridExistingReceipts.addComponent(new MLabel(NumberConverter.formatCurrency(receipt.getAmount())), 3, rows);
+            gridExistingReceipts.addComponent(new MButton("")
+                    .withIcon(MaterialIcons.DELETE)
+                    .withStyleName("borderless flat")
+                    .withListener(event -> {
+                        receiptsRepository.delete(receipt.getId());
+                        loadExistingReceipts();
+                    }), 4, rows);
+            rows++;
+        }
+
     }
 
     private void createTimesheet(User user) {

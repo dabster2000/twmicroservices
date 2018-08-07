@@ -9,6 +9,14 @@ import java.util.Locale;
 
 public class DateUtils {
 
+    public static LocalDate convertJodaToJavaDate(org.joda.time.LocalDate jodaDate) {
+        return LocalDate.of(jodaDate.getYear(), jodaDate.getMonthOfYear(), jodaDate.getDayOfMonth());
+    }
+
+    public static LocalDate lastDayOfMonth(LocalDate localDate) {
+        return localDate.withDayOfMonth(localDate.lengthOfMonth());
+    }
+
     public static String[] getMonthNames(LocalDate localDateStart, LocalDate localDateEnd) {
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         String[] monthNames = new String[monthPeriod];
