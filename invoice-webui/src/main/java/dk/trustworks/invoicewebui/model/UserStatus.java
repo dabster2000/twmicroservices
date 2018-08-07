@@ -3,7 +3,6 @@ package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.UUID;
 
 /**
@@ -31,11 +30,14 @@ public class UserStatus {
         uuid = UUID.randomUUID().toString();
         this.user = user;
         this.status = status;
+        this.statusdate = statusdate;
+        /*
         this.statusdate = LocalDate.from(
                 statusdate.atStartOfDay(
                         ZoneId.of( "Europe/Paris" )
                 ).toInstant()
         );
+        */
         this.allocation = allocation;
     }
 

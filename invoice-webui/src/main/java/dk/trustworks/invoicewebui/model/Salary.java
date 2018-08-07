@@ -5,7 +5,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.UUID;
 
 /**
@@ -30,11 +29,14 @@ public class Salary {
     public Salary(LocalDate activeFrom, int salary, User user) {
         uuid = UUID.randomUUID().toString();
         this.user = user;
+        this.activefrom = activeFrom;
+        /*
         this.activefrom = LocalDate.from(
                 activeFrom.atStartOfDay(
                         ZoneId.of( "Europe/Paris" )
                 ).toInstant()
         );
+        */
         this.salary = salary;
     }
 

@@ -335,7 +335,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         createHeadlineRow();
         createTimesheet(user);
         createFooterRow();
-        createReceiptRow();
+        //createReceiptRow();
     }
 
     private void createReceiptRow() {

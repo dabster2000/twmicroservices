@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
-  <meta name="vaadin-version" content="8.0.5">
+  <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
   <vaadin-vertical-layout size-full>
@@ -34,7 +34,7 @@
        </table>
       </vaadin-grid>
       <vaadin-horizontal-layout width-full _id="hlAddBar">
-       <vaadin-date-field placeholder="date" width="125px" _id="dfDate"></vaadin-date-field>
+       <vaadin-date-field required-indicator-visible placeholder="date" date-format="yyyy-MM-dd" width="125px" _id="dfDate"></vaadin-date-field>
        <vaadin-combo-box empty-selection-caption="select status" width-full data-item-type="dk.trustworks.invoicewebui.model.StatusType" _id="cbStatus" :expand="0.4"></vaadin-combo-box>
        <vaadin-text-field description="Allocation" placeholder="allocation" width-full _id="txtAllocation" :expand="0.6"></vaadin-text-field>
        <vaadin-button style-name="flat friendly" plain-text _id="btnCreate">

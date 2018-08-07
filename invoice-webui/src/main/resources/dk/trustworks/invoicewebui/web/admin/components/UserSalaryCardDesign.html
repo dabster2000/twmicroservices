@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
-  <meta name="vaadin-version" content="8.0.5">
+  <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
   <vaadin-vertical-layout size-full>
@@ -32,7 +32,7 @@
        </table>
       </vaadin-grid>
       <vaadin-horizontal-layout width-full _id="hlAddBar">
-       <vaadin-date-field placeholder="date" width="125px" _id="dfDate"></vaadin-date-field>
+       <vaadin-date-field required-indicator-visible placeholder="date" date-format="yyyy-MM-dd" width="125px" _id="dfDate"></vaadin-date-field>
        <vaadin-text-field description="salary" placeholder="salary" width-full _id="txtSalary" :expand></vaadin-text-field>
        <vaadin-button style-name="flat friendly" plain-text _id="btnAddSalary">
          CREATE 
