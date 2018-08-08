@@ -335,7 +335,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         createHeadlineRow();
         createTimesheet(user);
         createFooterRow();
-        //createReceiptRow();
+        createReceiptRow();
     }
 
     private void createReceiptRow() {
@@ -366,8 +366,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         customerExpensesGrid.getCbProject().setItems(projectSet);
         customerExpensesGrid.getCbProject().setItemCaptionGenerator(item -> item.getClient().getName()+" - "+item.getName());
 
-        customerExpensesGrid.getDfReceiptDate().setRangeStart(convertJodaToJavaDate(currentDate.withDayOfMonth(1)));
         customerExpensesGrid.getDfReceiptDate().setRangeEnd(lastDayOfMonth(convertJodaToJavaDate(currentDate)));
+        customerExpensesGrid.getDfReceiptDate().setRangeStart(convertJodaToJavaDate(currentDate.withDayOfMonth(1)));
+
 
         receiptBinder.forField(customerExpensesGrid.getDfReceiptDate())
                 //.asRequired("You must enter a date")
@@ -402,7 +403,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         customerExpenses.getExpensesGridContainer().addComponent(customerExpensesGrid);
 
         int rows = 1;
-        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfMonth(30)));
+        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(30)));
+        if(currentDate.withDayOfWeek(1).getMonthOfYear()!=currentDate.withDayOfWeek(7).getMonthOfYear())
+            receipts.addAll(receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(30))));
 
         gridExistingReceipts.setRows(receipts.size()+2);
         for (Receipt receipt : receipts) {

@@ -7,12 +7,19 @@
  </head>
  <body>
   <vaadin-horizontal-layout size-full>
-   <vaadin-form-layout size-auto>
-    <vaadin-date-field range-start="2018-07-01" required-indicator-visible show-iso-week-numbers placeholder="receipt date" range-end="2018-07-31" date-format="yyyy-MM-dd" width="200px" _id="dfReceiptDate"></vaadin-date-field>
-    <vaadin-combo-box popup-width="" required-indicator-visible empty-selection-allowed="false" placeholder="project" width="200px" data-item-type="dk.trustworks.invoicewebui.model.Project" _id="cbProject"></vaadin-combo-box>
-    <vaadin-text-area placeholder="description" width="200px" maxlength="150" _id="txtDescription"></vaadin-text-area>
-    <vaadin-text-field required-indicator-visible description="amount with no tax" style-name="align-right" placeholder="amount /w no tax" width="200px" _id="txtAmount"></vaadin-text-field>
-    <vaadin-button icon="fonticon://Vaadin-Icons/e801" style-name="icon-only" width-full plain-text _id="btnAddReceipt"></vaadin-button>
+   <vaadin-form-layout style-name="very-light-grey" width="240px" height-full margin-right>
+    <vaadin-date-field show-iso-week-numbers placeholder="receipt date" date-format="yyyy-MM-dd" width-full _id="dfReceiptDate"></vaadin-date-field>
+    <vaadin-combo-box popup-width="" empty-selection-allowed="false" placeholder="project" width-full data-item-type="dk.trustworks.invoicewebui.model.Project" _id="cbProject"></vaadin-combo-box>
+    <vaadin-text-area placeholder="description" width-full maxlength="150" _id="txtDescription"></vaadin-text-area>
+    <vaadin-vertical-layout spacing="false" size-auto margin="false">
+     <vaadin-label style-name="tiny" plain-text>
+       amount w/o tax 
+     </vaadin-label>
+     <vaadin-text-field icon="fonticon://Vaadin-Icons/e913" description="amount with no tax" style-name="align-right inline-icon" placeholder="w/o tax" width-full _id="txtAmount"></vaadin-text-field>
+    </vaadin-vertical-layout>
+    <vaadin-button width-full plain-text _id="btnAddReceipt">
+      ADD EXPENSE 
+    </vaadin-button>
    </vaadin-form-layout>
    <vaadin-grid-layout spacing width-full _id="gridExistingReceipts" :expand>
     <row>
