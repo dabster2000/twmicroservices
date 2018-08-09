@@ -1,9 +1,11 @@
 package dk.trustworks.invoicewebui.services;
 
+import dk.trustworks.invoicewebui.generators.InvoicePdfGenerator;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.InvoiceStatus;
 import dk.trustworks.invoicewebui.model.InvoiceType;
+import dk.trustworks.invoicewebui.network.clients.InvoiceAPI;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -28,6 +31,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class InvoiceService {
 
     private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
+
+    @Autowired
+    private InvoicePdfGenerator invoicePdfGenerator;
+
+    @Autowired
+    private InvoiceAPI invoiceAPI;
 
     @Autowired
     private InvoiceRepository invoiceClient;
@@ -56,11 +65,18 @@ public class InvoiceService {
         return invoiceClient.findByLatestInvoiceByProjectuuid(projectuuid);
     }
 
+    public byte[] createInvoicePdf(Invoice invoice) throws IOException {
+        return invoicePdfGenerator.createInvoice(invoice);
+        //return invoiceAPI.createInvoicePDF(invoice);
+    }
+
     @Transactional
     public void createBlankInvoice(int year, int month) {
         Invoice invoice = new Invoice(
                 InvoiceType.INVOICE,
-                "", "Blank invoice",
+                "",
+                "",
+                "Blank invoice",
                 year,
                 month,
                 "Blank invoice", "", "", "", "", "", "",

@@ -47,7 +47,7 @@ public class ProjectSummaryService {
         List<Work> workResources = workClient.findByYearAndMonth(year, month);
         logger.info("workResources.size() = " + workResources.size());
 
-        //Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
+        Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
 
         Map<String, ProjectSummary> projectSummaryMap = new HashMap<>();
 
@@ -63,9 +63,10 @@ public class ProjectSummaryService {
 
             if(!projectSummaryMap.containsKey(contractuuid+project.getUuid())) {
                 int numberOfInvoicesRelatedToProject = 0;
-                /*
+
                 for (Invoice invoice : invoices) {
-                    if(invoice.projectuuid.equals(project.getUuid()) && (
+                    if(invoice.projectuuid.equals(project.getUuid()) &&
+                            invoice.getContractuuid().equals(contract.getUuid()) && (
                             invoice.status.equals(InvoiceStatus.CREATED)
                             || invoice.status.equals(InvoiceStatus.SUBMITTED)
                             || invoice.status.equals(InvoiceStatus.PAID)
@@ -78,7 +79,7 @@ public class ProjectSummaryService {
                         }
                     }
                 }
-                */
+
                 ProjectSummary projectSummary = new ProjectSummary(
                         contractuuid, project.getUuid(),
                         project.getName(),
@@ -134,6 +135,7 @@ public class ProjectSummaryService {
 
             if(invoice == null) {
                 invoice = new Invoice(InvoiceType.INVOICE,
+                        contract.getUuid(),
                         project.getUuid(),
                         project.getName(),
                         year,

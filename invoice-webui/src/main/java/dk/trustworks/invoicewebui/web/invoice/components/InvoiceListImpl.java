@@ -18,7 +18,6 @@ import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.generators.InvoicePdfGenerator;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.security.Authorizer;
@@ -64,7 +63,7 @@ public class InvoiceListImpl extends InvoiceListDesign
     private List<Invoice> invoices;
 
     @Autowired
-    public InvoiceListImpl(InvoiceRepository invoiceRepository, InvoiceService invoiceService, Authorizer authorizer, InvoicePdfGenerator invoicePdfGenerator) {
+    public InvoiceListImpl(InvoiceRepository invoiceRepository, InvoiceService invoiceService, Authorizer authorizer) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceService = invoiceService;
 
@@ -73,7 +72,7 @@ public class InvoiceListImpl extends InvoiceListDesign
         btnRecreateInvoice.addClickListener(event -> {
             Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
             try {
-                invoice.pdf = invoicePdfGenerator.createInvoice(invoice);
+                invoice.pdf = invoiceService.createInvoicePdf(invoice);
             } catch (IOException e) {
                 e.printStackTrace();
             }

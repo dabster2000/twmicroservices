@@ -21,6 +21,7 @@ public class Invoice {
 
     @Id
     public String uuid;
+    public String contractuuid;
     public String projectuuid;
     public String projectname;
     public int year;
@@ -58,9 +59,10 @@ public class Invoice {
         this.errors = false;
     }
 
-    public Invoice(InvoiceType type, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
+    public Invoice(InvoiceType type, String contractuuid, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
         this();
         this.type = type;
+        this.contractuuid = contractuuid;
         this.otheraddressinfo = otheraddressinfo;
         this.ean = ean;
         this.cvr = cvr;
@@ -86,6 +88,14 @@ public class Invoice {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getContractuuid() {
+        return contractuuid;
+    }
+
+    public void setContractuuid(String contractuuid) {
+        this.contractuuid = contractuuid;
     }
 
     public String getProjectuuid() {

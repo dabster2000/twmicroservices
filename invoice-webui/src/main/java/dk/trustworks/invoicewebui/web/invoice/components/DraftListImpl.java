@@ -5,14 +5,17 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.LocalDateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.generators.InvoicePdfGenerator;
+import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.InvoiceStatus;
-import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
+import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.mainmenu.components.LeftMenu;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MenuItemImpl;
@@ -48,13 +51,13 @@ public class DraftListImpl extends DraftListDesign
 
     private final LeftMenu leftMenu;
 
-    final InvoicePdfGenerator invoicePdfGenerator;
+    final InvoiceService invoiceService;
 
     @Autowired
-    public DraftListImpl(InvoiceRepository invoiceRepository, LeftMenu leftMenu, InvoicePdfGenerator invoicePdfGenerator) {
+    public DraftListImpl(InvoiceRepository invoiceRepository, LeftMenu leftMenu, InvoiceService invoiceService) {
         this.invoiceRepository = invoiceRepository;
         this.leftMenu = leftMenu;
-        this.invoicePdfGenerator = invoicePdfGenerator;
+        this.invoiceService = invoiceService;
     }
 
     @PostConstruct
@@ -92,7 +95,7 @@ public class DraftListImpl extends DraftListDesign
                         invoice.setStatus(InvoiceStatus.CREATED);
                         invoice.invoicenumber = invoiceRepository.getMaxInvoiceNumber() + 1;
                         try {
-                            invoice.pdf = invoicePdfGenerator.createInvoice(invoice);
+                            invoice.pdf = invoiceService.createInvoicePdf(invoice);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
