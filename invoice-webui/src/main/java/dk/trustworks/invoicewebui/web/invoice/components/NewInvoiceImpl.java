@@ -157,6 +157,27 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                 }
             }
         }
+/*
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        this.cardContainer.addComponent(responsiveLayout);
+
+        ResponsiveRow responsiveRow = responsiveLayout.addRow();
+        for (ProjectSummary projectSummary : projectSummaries) {
+            InvoiceCandidateDesign invoiceCandidateDesign = new InvoiceCandidateDesign();
+            invoiceCandidateDesign.getLblTotalInvoiced().setValue(NumberConverter.formatCurrency(projectSummary.getRegisteredamount()));
+            invoiceCandidateDesign.getLblTotalNotInvoiced().setValue(NumberConverter.formatCurrency(projectSummary.getRegisteredamount()-projectSummary.getInvoicedamount()));
+            invoiceCandidateDesign.getLblSOHours().setValue("15");
+
+            GridLayout gridInvoices = invoiceCandidateDesign.getGridInvoices();
+            gridInvoices.setRows(1+projectSummary.getInvoiceList().size());
+            for (Invoice invoice : projectSummary.getInvoiceList()) {
+                gridInvoices.addComponent(new MLabel(invoice.getInvoicedate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                gridInvoices.addComponent(new MLabel(invoice.getType().name()));
+                gridInvoices.addComponent(new MLabel(NumberConverter.formatCurrency(invoice.getSumWithTax())));
+            }
+            responsiveRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(invoiceCandidateDesign);
+        }
+*/
 
         double end = System.currentTimeMillis() - start;
         logger.debug("end = " + end);

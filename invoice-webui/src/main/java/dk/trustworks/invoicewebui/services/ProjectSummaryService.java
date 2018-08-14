@@ -64,6 +64,7 @@ public class ProjectSummaryService {
             if(!projectSummaryMap.containsKey(contractuuid+project.getUuid())) {
                 int numberOfInvoicesRelatedToProject = 0;
 
+                List<Invoice> relatedInvoices = new ArrayList<>();
                 for (Invoice invoice : invoices) {
                     if(invoice.projectuuid.equals(project.getUuid()) &&
                             invoice.getContractuuid().equals(contract.getUuid()) && (
@@ -72,6 +73,7 @@ public class ProjectSummaryService {
                             || invoice.status.equals(InvoiceStatus.PAID)
                             || invoice.status.equals(InvoiceStatus.CREDIT_NOTE))) {
                         numberOfInvoicesRelatedToProject++;
+                        relatedInvoices.add(invoice);
                         for (InvoiceItem invoiceitem : invoice.invoiceitems) {
                             invoicedamount += (invoice.type.equals(InvoiceType.INVOICE)?
                                     (invoiceitem.hours*invoiceitem.rate):
@@ -87,6 +89,7 @@ public class ProjectSummaryService {
                         project.getCustomerreference(),
                         0,
                         invoicedamount, numberOfInvoicesRelatedToProject);
+                projectSummary.setInvoiceList(relatedInvoices);
                 projectSummaryMap.put(contractuuid+project.getUuid(), projectSummary);
                 logger.info("Created new projectSummary: " + projectSummary);
             }

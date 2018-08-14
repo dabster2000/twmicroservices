@@ -480,7 +480,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 LocalDate budgetDate = startDate;
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultant(filterDate.getMonthValue() - 1, filterDate.getYear(), consultant);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue() - 1, filterDate.getYear(), consultant, currentProject);
                     if(budget!=null) budgetSum += budget.getBudget();
                     budgetDate = budgetDate.plusMonths(1);
                 }
@@ -524,12 +524,12 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
 
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultant(filterDate.getMonthValue()-1, filterDate.getYear(), consultant);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue()-1, filterDate.getYear(), consultant, currentProject);
 
                     if(budget != null) {
                         budgetRow.setMonth(month, (budget.getBudget() / consultant.getRate())+"");
                     } else {
-                        budgetNewRepository.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, consultant));
+                        budgetNewRepository.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, consultant, currentProject));
                         budgetRow.setMonth(month, "0.0");
                     }
                     month++;
@@ -575,10 +575,12 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 if(budgetCountDate.isAfter(budgetRow.getConsultant().getContract().getActiveTo())) continue;
                 if(budgetCountDate.isBefore(budgetRow.getConsultant().getContract().getActiveFrom())) continue;
                 if(budgetString==null) budgetString = "0.0";
-                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultant(
+                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
-                        budgetRow.getConsultant());
+                        budgetRow.getConsultant(),
+                        currentProject);
+                //if(budget.getProject()==null) budget.setProject(currentProject);
                 budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
                 budgetNewRepository.save(budget);
                 budgetCountDate = budgetCountDate.plusMonths(1);

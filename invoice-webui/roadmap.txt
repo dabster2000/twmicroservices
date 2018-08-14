@@ -1,1 +1,13 @@
-- Man skal kunne slette tasks fra timesheet
+Profilside
+ - billede
+ - fødselsdag
+ - løn / allokering
+ - bobler
+ - projekter / kontrakter
+ - touchbase oversigt
+ - speed dates
+ - kontrakter / dokumenter
+ - udstyr / it budget
+ - kontakt info
+ - cko budget
+ - konferencer / undervisning

@@ -16,16 +16,21 @@ public class BudgetNew {
     @JoinColumn(name = "consultantuuid")
     private Consultant consultant;
 
+    @ManyToOne()
+    @JoinColumn(name = "projectuuid")
+    private Project project;
+
     public BudgetNew() {
         uuid = UUID.randomUUID().toString();
     }
 
-    public BudgetNew(int month, int year, Double budget, Consultant consultant) {
+    public BudgetNew(int month, int year, Double budget, Consultant consultant, Project project) {
         this();
         this.month = month;
         this.year = year;
         this.budget = budget;
         this.consultant = consultant;
+        this.project = project;
     }
 
     public String getUuid() {
@@ -66,6 +71,14 @@ public class BudgetNew {
 
     public void setConsultant(Consultant consultant) {
         this.consultant = consultant;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     @Override

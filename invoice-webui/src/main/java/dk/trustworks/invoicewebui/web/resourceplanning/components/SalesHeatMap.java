@@ -5,20 +5,24 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Label;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.NumberConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.label.MLabel;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,15 +38,18 @@ public class SalesHeatMap {
 
     private final UserRepository userRepository;
 
+    private final ClientRepository clientRepository;
+
     private final ContractService contractService;
 
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, UserRepository userRepository, ContractService contractService) {
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, UserRepository userRepository, ClientRepository clientRepository, ContractService contractService) {
         this.budgetNewRepository = budgetNewRepository;
         this.userRepository = userRepository;
+        this.clientRepository = clientRepository;
         this.contractService = contractService;
     }
 
@@ -79,16 +86,26 @@ public class SalesHeatMap {
         int userNumber = 0;
 
         Map<String, double[]> budgetRowList = new HashMap<>();
+        Map<String, Map<String, double[]>> userAllocationPerAssignmentMap = new HashMap<>();
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.plusMonths(i);
+            System.out.println("currentDate = " + currentDate);
 
             List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (Consultant consultant : contract.getConsultants()) {
+                        if(consultant.getUser().getUsername().equals("elvi.nissen")) {
+                            System.out.print("Client(" + consultant.getContract().getClient().getName()+"): ");
+                            System.out.println("hours = " + (consultant.getHours() * weeks));
+                        }
                         budgetRowList.putIfAbsent(consultant.getUser().getUuid(), new double[12]);
                         budgetRowList.get(consultant.getUser().getUuid())[i] = (consultant.getHours() * weeks) + budgetRowList.get(consultant.getUser().getUuid())[i];
+
+                        userAllocationPerAssignmentMap.putIfAbsent(consultant.getUser().getUuid(), new HashMap<>());
+                        userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).putIfAbsent(contract.getClient().getUuid(), new double[12]);
+                        userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).get(contract.getClient().getUuid())[i] +=  (consultant.getHours() * weeks);
                     }
                 }
             }
@@ -97,10 +114,19 @@ public class SalesHeatMap {
                 Consultant consultant = budget.getConsultant();
                 budgetRowList.putIfAbsent(consultant.getUser().getUuid(), new double[12]);
                 budgetRowList.get(consultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getConsultant().getRate()) + budgetRowList.get(consultant.getUser().getUuid())[i];
+                if(consultant.getUser().getUsername().equals("elvi.nissen")) {
+                    System.out.print("Project (" + budget.getProject().getName()+"): ");
+                    System.out.println("hours = " + (budget.getBudget() / budget.getConsultant().getRate()));
+                }
+
+                userAllocationPerAssignmentMap.putIfAbsent(consultant.getUser().getUuid(), new HashMap<>());
+                userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).putIfAbsent(budget.getProject().getClient().getUuid(), new double[12]);
+                userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).get(budget.getProject().getClient().getUuid())[i] += (budget.getBudget() / budget.getConsultant().getRate());
             }
         }
 
         for (User user : users) {
+            System.out.println("user.getUsername() = " + user.getUsername());
             budgetRowList.putIfAbsent(user.getUuid(), new double[12]);
 
             LocalDate localDate = localDateStart;
@@ -114,11 +140,17 @@ public class SalesHeatMap {
                     userStatus = userStatusIteration;
                 }
 
-                int weekDays = countWeekDays(localDate, localDate.plusMonths(1));
+                int weekDays = DateUtils.countWeekDaysV2(localDate, localDate.plusMonths(1));
+                System.out.println("localDate = " + localDate);
+                System.out.println("weekDays = " + weekDays);
                 assert userStatus != null;
+                System.out.println("userStatus.getAllocation() = " + userStatus.getAllocation());
+                System.out.println("budgetRowList.get(user.getUuid())["+m+"] = " + budgetRowList.get(user.getUuid())[m]);
                 double budget = Math.round((weekDays * (userStatus.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
+                System.out.println("budget = " + budget);
                 if(budget < 0.0) budget = 0.0;
                 budget = Math.round(budget / Math.round(weekDays * (userStatus.getAllocation()/5.0)) * 100.0);
+                System.out.println("budget = " + budget);
 
                 monthAvailabilites[m] += Math.round(budget);
                 monthTotalAvailabilites[m] += 100;
@@ -132,7 +164,47 @@ public class SalesHeatMap {
         }
 
         config.getxAxis().setCategories(monthNames);
-        config.getyAxis().setCategories(users.stream().map(User::getUsername).toArray(String[]::new));
+
+        String[] consultants = users.stream().map(User::getUsername).toArray(String[]::new);
+        config.getyAxis().setCategories(consultants);
+
+        chart.addPointClickListener(event -> {
+            int intValue = new Double(Math.floor(event.getPointIndex() / 12)).intValue();
+            User user = users.get(intValue);
+
+
+            final Window window = new Window("Window");
+            //window.setWidth(300.0f, Sizeable.Unit.PIXELS);
+            window.setModal(true);
+            window.setCaption("Detailed allocation");
+            final GridLayout grid = new GridLayout();
+
+            window.setContent(grid);
+
+            Map<String, double[]> assignmentsMap = userAllocationPerAssignmentMap.get(user.getUuid());
+            grid.setRows(assignmentsMap.size()+1);
+            grid.setColumns(13);
+            grid.setMargin(true);
+            grid.setSpacing(true);
+            grid.addStyleName("outlined");
+
+            LocalDate localDate = localDateStart;
+            grid.addComponent(new Label());
+            for (int i = 1; i < 13; i++) {
+                grid.addComponent(new MLabel(localDate.format(DateTimeFormatter.ofPattern("MMM"))));
+                localDate = localDate.plusMonths(1);
+            }
+
+            for (String s : assignmentsMap.keySet()) {
+                grid.addComponent(new MLabel(clientRepository.findOne(s).getName()).withStyleName("bold"));
+                for (double v : assignmentsMap.get(s)) {
+                    grid.addComponent(new MLabel(NumberConverter.convertDoubleToInt(v)+""));
+                }
+            }
+
+            UI.getCurrent().addWindow(window);
+        });
+
 
         PlotOptionsHeatmap plotOptionsHeatmap = new PlotOptionsHeatmap();
         plotOptionsHeatmap.setDataLabels(new DataLabels());
@@ -213,24 +285,5 @@ public class SalesHeatMap {
             monthNames[i] = localDateStart.plusMonths(i).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         }
         return monthNames;
-    }
-
-    public int countWeekDays(LocalDate periodStart, LocalDate periodEnd) {
-        LocalDate weekday = periodStart;
-
-        if (periodStart.getDayOfWeek() == DayOfWeek.SATURDAY ||
-                periodStart.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            weekday = weekday.plusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-        }
-
-        int count = 0;
-        while (weekday.isBefore(periodEnd)) {
-            count++;
-            if (weekday.getDayOfWeek() == DayOfWeek.FRIDAY)
-                weekday = weekday.plusDays(3);
-            else
-                weekday = weekday.plusDays(1);
-        }
-        return count;
     }
 }

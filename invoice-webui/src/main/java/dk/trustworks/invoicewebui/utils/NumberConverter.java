@@ -2,7 +2,6 @@ package dk.trustworks.invoicewebui.utils;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Locale;
 
 /**
  * Created by hans on 10/08/2017.
@@ -32,6 +31,10 @@ public class NumberConverter {
         numberInstance.setMinimumFractionDigits(2);
         numberInstance.setMaximumFractionDigits(2);
         return numberInstance.format(d);
+    }
+
+    public static int convertDoubleToInt(double d) {
+        return new Double(d).intValue();
     }
 
     public static NumberFormat getDoubleInstance() {

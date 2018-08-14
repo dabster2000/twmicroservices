@@ -11,9 +11,9 @@
     <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
     <vaadin-vertical-layout spacing="false" size-full _id="container" :expand>
      <vaadin-horizontal-layout spacing="false" :middle :right>
-      <vaadin-button icon="fonticon://Vaadin-Icons/e929" description="Create new invoice" style-name="flat tiny" plain-text _id="btnEdit"></vaadin-button>
-      <vaadin-button icon="fonticon://Vaadin-Icons/e672" description="Create and split into several invoices" style-name="flat tiny" plain-text _id="btnJoin"></vaadin-button>
-      <vaadin-button icon="fonticon://Vaadin-Icons/e60c" description="Create invoice and merge with other contracts" style-name="flat tiny" plain-text _id="btnLeave"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e929" description="Create new invoice" style-name="flat tiny" plain-text _id="btnCreate"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e672" description="Create and split into several invoices" style-name="flat tiny" plain-text _id="btnSplit"></vaadin-button>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e60c" description="Create invoice and merge with other contracts" style-name="flat tiny" plain-text _id="btnMerge"></vaadin-button>
      </vaadin-horizontal-layout>
      <vaadin-panel style-name="v-scrollable" height="125px" _id="textContentHolder" :expand>
       <vaadin-vertical-layout margin="false">
@@ -37,23 +37,23 @@
         </row>
         <row>
          <column>
-          <vaadin-label style-name="tiny" plain-text :center>
+          <vaadin-label style-name="tiny" plain-text _id="lblTotalInvoiced" :center>
             215.000 
           </vaadin-label>
          </column>
          <column>
-          <vaadin-label style-name="tiny" plain-text :center>
+          <vaadin-label style-name="tiny" plain-text _id="lblTotalNotInvoiced" :center>
             15.000 
           </vaadin-label>
          </column>
          <column>
-          <vaadin-label style-name="tiny" plain-text :center>
+          <vaadin-label style-name="tiny" plain-text _id="lblSOHours" :center>
             15 
           </vaadin-label>
          </column>
         </row>
        </vaadin-grid-layout>
-       <vaadin-grid-layout spacing width-full>
+       <vaadin-grid-layout spacing width-full _id="gridInvoices">
         <row>
          <column>
           <vaadin-label style-name="bold small" plain-text :center>
@@ -61,30 +61,13 @@
           </vaadin-label>
          </column>
          <column expand="1.0">
-          <vaadin-label style-name="bold small" width-full plain-text>
+          <vaadin-label style-name="bold small" plain-text>
             Type 
           </vaadin-label>
          </column>
          <column>
-          <vaadin-label style-name="bold small align-right" width-full plain-text>
+          <vaadin-label style-name="bold small align-right" plain-text>
             Amount 
-          </vaadin-label>
-         </column>
-        </row>
-        <row>
-         <column>
-          <vaadin-label style-name="small" plain-text>
-            3. july 2018 
-          </vaadin-label>
-         </column>
-         <column>
-          <vaadin-label style-name="small" plain-text>
-            Invoice 
-          </vaadin-label>
-         </column>
-         <column>
-          <vaadin-label style-name="align-right" plain-text>
-            325.225 kr 
           </vaadin-label>
          </column>
         </row>

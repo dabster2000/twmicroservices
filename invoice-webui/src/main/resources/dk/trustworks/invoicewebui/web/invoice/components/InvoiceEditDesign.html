@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin7-horizontal-layout width-full>
+    <vaadin-image></vaadin-image>
+    <vaadin-label plain-text :expand></vaadin-label>
+    <vaadin-vertical-layout size-auto margin="false">
+     <vaadin-label style-name="huge" plain-text :right>
+       INVOICE 
+     </vaadin-label>
+     <vaadin-text-field icon="fonticon://Vaadin-Icons/e6a9" style-name="inline-icon"></vaadin-text-field>
+    </vaadin-vertical-layout>
+   </vaadin7-horizontal-layout>
+   <vaadin-horizontal-layout width-full>
+    <vaadin-vertical-layout size-auto margin="false">
+     <vaadin-text-area width="250px" height="79px"></vaadin-text-area>
+     <vaadin-label plain-text>
+       Bill To 
+     </vaadin-label>
+     <vaadin-text-area width="250px" height="80px"></vaadin-text-area>
+    </vaadin-vertical-layout>
+    <vaadin-vertical-layout margin="false" :bottom :right>
+     <vaadin-text-field caption="Date" :right></vaadin-text-field>
+     <vaadin-text-field caption="Due Date" :right></vaadin-text-field>
+     <vaadin-label style-name="light_grey align-center bold" width-full height="40px" plain-text>
+       Label 
+     </vaadin-label>
+    </vaadin-vertical-layout>
+   </vaadin-horizontal-layout>
+   <vaadin-horizontal-layout style-name="black_bg" width-full>
+    <vaadin-label plain-text :expand>
+      Item 
+    </vaadin-label>
+    <vaadin-label width="65px" plain-text>
+      Quantity 
+    </vaadin-label>
+    <vaadin-label width="100px" plain-text>
+      Rate 
+    </vaadin-label>
+    <vaadin-label style-name="align-right" width="130px" plain-text>
+      Amount 
+    </vaadin-label>
+   </vaadin-horizontal-layout>
+   <vaadin-grid-layout spacing width-full>
+    <row>
+     <column expand="1.0">
+      <vaadin-text-field placeholder="description of service or product..." width-full></vaadin-text-field>
+     </column>
+     <column>
+      <vaadin-text-field placeholder="quantity" width="65px" value="1"></vaadin-text-field>
+     </column>
+     <column>
+      <vaadin-text-field icon="fonticon://Vaadin-Icons/e60a" style-name="inline-icon" width="100px" value="1500"></vaadin-text-field>
+     </column>
+     <column>
+      <vaadin-label style-name="align-right" width="130px" plain-text :middle :right>
+        kr. 765.000,00 
+      </vaadin-label>
+     </column>
+    </row>
+    <row>
+     <column>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e801" style-name="friendly" plain-text>
+        Line Item 
+      </vaadin-button>
+     </column>
+    </row>
+   </vaadin-grid-layout>
+   <vaadin-grid-layout spacing :right>
+    <row>
+     <column>
+      <vaadin-label plain-text>
+        Subtotal 
+      </vaadin-label>
+     </column>
+     <column>
+      <vaadin-label plain-text>
+        kr. 765.000,00 
+      </vaadin-label>
+     </column>
+    </row>
+    <row>
+     <column>
+      <vaadin-label plain-text>
+        Tax 
+      </vaadin-label>
+     </column>
+     <column>
+      <vaadin-label plain-text>
+        25% 
+      </vaadin-label>
+     </column>
+    </row>
+    <row>
+     <column>
+      <vaadin-label plain-text>
+        Total 
+      </vaadin-label>
+     </column>
+     <column>
+      <vaadin-label plain-text>
+        kr. 967.000,00 
+      </vaadin-label>
+     </column>
+    </row>
+   </vaadin-grid-layout>
+   <vaadin-vertical-layout margin="false">
+    <vaadin-label plain-text>
+      Notes 
+    </vaadin-label>
+    <vaadin-text-area width-full height="70px"></vaadin-text-area>
+    <vaadin-label plain-text>
+      Terms 
+    </vaadin-label>
+    <vaadin-text-area width-full height="70px"></vaadin-text-area>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

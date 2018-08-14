@@ -1,7 +1,11 @@
 package dk.trustworks.invoicewebui.network.dto;
 
+import dk.trustworks.invoicewebui.model.Invoice;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by hans on 12/07/2017.
@@ -16,6 +20,7 @@ public class ProjectSummary {
     private double registeredamount;
     private double invoicedamount;
     private int invoices;
+    private List<Invoice> invoiceList = new ArrayList<>();
     private HashMap<String, String> errors = new HashMap<>();
 
     public ProjectSummary() {
@@ -106,6 +111,14 @@ public class ProjectSummary {
 
     public void addError(String key, String error) {
         this.errors.put(key, error);
+    }
+
+    public List<Invoice> getInvoiceList() {
+        return invoiceList;
+    }
+
+    public void setInvoiceList(List<Invoice> invoiceList) {
+        this.invoiceList = invoiceList;
     }
 
     @Override
