@@ -12,13 +12,10 @@ import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.utils.PolyTrendLine;
-import dk.trustworks.invoicewebui.utils.TrendLine;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -73,6 +70,7 @@ public class CumulativeRevenuePerMonthChart {
         DataSeries earningsSeries = new DataSeries("Earnings");
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
 
+        /*
         TrendLine t = new PolyTrendLine(2);
         if(amountPerItemList.size()>2) {
             double[] x = new double[amountPerItemList.size()];
@@ -88,6 +86,7 @@ public class CumulativeRevenuePerMonthChart {
             }
             t.setValues(y, x);
         }
+        */
 
         DataSeries avgRevenueList = new DataSeries("Projected Revenue");
         PlotOptionsLine options2 = new PlotOptionsLine();
@@ -106,11 +105,11 @@ public class CumulativeRevenuePerMonthChart {
                 expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             }
-            System.out.println("periodStart.plusMonths(i) = " + periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
-            System.out.println("amountPerItemList = " + amountPerItemList.size());
+            //System.out.println("periodStart.plusMonths(i) = " + periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
+            //System.out.println("amountPerItemList = " + amountPerItemList.size());
             //System.out.println("t = " + t.predict(i));
-            System.out.println("avgRevenueList = " + avgRevenueList.size());
-            if(amountPerItemList.size()>2) avgRevenueList.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), t.predict(i)));
+            //System.out.println("avgRevenueList = " + avgRevenueList.size());
+            //if(amountPerItemList.size()>2) avgRevenueList.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), t.predict(i)));
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
