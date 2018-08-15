@@ -1,11 +1,9 @@
 package dk.trustworks.invoicewebui.utils;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -33,26 +31,7 @@ public class DateUtils {
         return monthNames;
     }
 
-    public static int countWeekDays(LocalDate periodStart, LocalDate periodEnd) {
-        LocalDate weekday = periodStart;
-
-        if (periodStart.getDayOfWeek() == DayOfWeek.SATURDAY ||
-                periodStart.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            weekday = weekday.plusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-        }
-
-        int count = 0;
-        while (weekday.isBefore(periodEnd)) {
-            count++;
-            if (weekday.getDayOfWeek() == DayOfWeek.FRIDAY)
-                weekday = weekday.plusDays(3);
-            else
-                weekday = weekday.plusDays(1);
-        }
-        return count;
-    }
-
-    public static int countWeekDaysV2(LocalDate startDate, LocalDate endDate) {
+    public static int countWeekDays(LocalDate startDate, LocalDate endDate) {
         Calendar startCal = Calendar.getInstance();
         startCal.setTime(convertLocalDateToDate(startDate));
 

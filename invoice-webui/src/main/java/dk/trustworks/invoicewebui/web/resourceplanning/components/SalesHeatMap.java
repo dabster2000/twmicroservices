@@ -140,7 +140,7 @@ public class SalesHeatMap {
                     userStatus = userStatusIteration;
                 }
 
-                int weekDays = DateUtils.countWeekDaysV2(localDate, localDate.plusMonths(1));
+                int weekDays = DateUtils.countWeekDays(localDate, localDate.plusMonths(1));
                 System.out.println("localDate = " + localDate);
                 System.out.println("weekDays = " + weekDays);
                 assert userStatus != null;
