@@ -74,7 +74,7 @@ public class CumulativeRevenuePerMonthChart {
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
 
         TrendLine t = new PolyTrendLine(2);
-        if(amountPerItemList.size()>1) {
+        if(amountPerItemList.size()>2) {
             double[] x = new double[amountPerItemList.size()];
             double[] y = new double[amountPerItemList.size()];
 
@@ -106,7 +106,11 @@ public class CumulativeRevenuePerMonthChart {
                 expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             }
-            if(amountPerItemList.size()>1) avgRevenueList.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), t.predict(i)));
+            System.out.println("periodStart.plusMonths(i) = " + periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
+            System.out.println("amountPerItemList = " + amountPerItemList.size());
+            //System.out.println("t = " + t.predict(i));
+            System.out.println("avgRevenueList = " + avgRevenueList.size());
+            if(amountPerItemList.size()>2) avgRevenueList.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), t.predict(i)));
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
