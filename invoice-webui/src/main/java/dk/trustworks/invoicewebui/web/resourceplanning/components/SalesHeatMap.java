@@ -75,6 +75,7 @@ public class SalesHeatMap {
         config.getColorAxis().setMinColor(SolidColor.WHITE);
         config.getColorAxis().setMaxColor(new SolidColor("#3B8937"));
 
+
         config.getLegend().setLayout(LayoutDirection.VERTICAL);
         config.getLegend().setAlign(HorizontalAlign.RIGHT);
         config.getLegend().setMargin(0);
@@ -215,6 +216,13 @@ public class SalesHeatMap {
         tooltip.setHeaderFormat("{series.name}<br/>");
         tooltip.setPointFormat("Amount: <b>{point.value}</b> ");
         plotOptionsHeatmap.setTooltip(tooltip);
+
+        Hover hover = new Hover();
+        hover.setFillColor(new SolidColor("#0A2A3C"));
+        States states = new States();
+        states.setHover(hover);
+        plotOptionsHeatmap.setStates(states);
+
         config.setPlotOptions(plotOptionsHeatmap);
 
         config.setSeries(rs);
