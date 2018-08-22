@@ -124,15 +124,3 @@ public class RevenuePerMonthChart {
         return chart;
     }
 }
-
-class WorkAmount {
-    LocalDate date;
-    double duration;
-    double amount;
-
-    public WorkAmount(LocalDate date, double duration, double amount) {
-        this.date = date;
-        this.duration = duration;
-        this.amount = amount;
-    }
-}
