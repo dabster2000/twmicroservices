@@ -2,8 +2,8 @@
 <html>
  <head>
   <meta charset="UTF-8">
-  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
-  <meta name="vaadin-version" content="8.0.5">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
   <vaadin-vertical-layout>
@@ -16,16 +16,22 @@
       </vaadin-label>
      </vaadin-horizontal-layout>
      <vaadin-vertical-layout spacing="false" _id="container" :expand>
-      <vaadin-form-layout margin _id="formLayout">
-       <vaadin-text-field placeholder="full name" width-full _id="txtName"></vaadin-text-field>
-       <vaadin-combo-box placeholder="Knowledge Group" empty-selection-caption="Knowledge Group" data-item-type="java.lang.String">
-        <option item="Option1">Projectmanagers</option>
-        <option item="Option2">LAFAUX</option>
+      <vaadin-vertical-layout _id="formLayout">
+       <vaadin-text-field caption="Full name" placeholder="full name" width-full _id="txtName"></vaadin-text-field>
+       <vaadin-date-field caption="Birthday" placeholder="birthday &amp; year" width-full _id="dfBirthday"></vaadin-date-field>
+       <vaadin-text-field caption="Street" width-full></vaadin-text-field>
+       <vaadin-text-field caption="Postal code" width-full></vaadin-text-field>
+       <vaadin-text-field caption="City" width-full></vaadin-text-field>
+       <vaadin-combo-box caption="Educational Level" style-name="borderless" width-full data-item-type="java.lang.String">
+        <option item="SomeHighschool">Some Highschool</option>
+        <option item="Option2">Highschool Diploma</option>
+        <option item="Option3">Some College</option>
+        <option item="Option4">Doctorate Degree</option>
+        <option item="Option5">Doctorate Degree</option>
+        <option item="Option6">Doctorate Degree</option>
+        <option item="Option7">Doctorate Degree</option>
        </vaadin-combo-box>
-       <vaadin-date-field placeholder="birthday &amp; year" _id="dfBirthday"></vaadin-date-field>
-       <vaadin-password-field placeholder="password" width-full _id="txtPassword"></vaadin-password-field>
-       <vaadin-password-field placeholder="repeat password" width-full _id="txtPasswordRepeat"></vaadin-password-field>
-      </vaadin-form-layout>
+      </vaadin-vertical-layout>
      </vaadin-vertical-layout>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>

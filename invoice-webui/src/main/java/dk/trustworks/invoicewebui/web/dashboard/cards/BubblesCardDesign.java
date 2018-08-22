@@ -20,6 +20,7 @@ import com.vaadin.ui.Image;
 public class BubblesCardDesign extends VerticalLayout {
     private VerticalLayout cardHolder;
     private Image imgTop;
+    private VerticalLayout contentHolder;
     private VerticalLayout vlBubbles;
 
     public BubblesCardDesign() {
@@ -32,6 +33,10 @@ public class BubblesCardDesign extends VerticalLayout {
 
     public Image getImgTop() {
         return imgTop;
+    }
+
+    public VerticalLayout getContentHolder() {
+        return contentHolder;
     }
 
     public VerticalLayout getVlBubbles() {

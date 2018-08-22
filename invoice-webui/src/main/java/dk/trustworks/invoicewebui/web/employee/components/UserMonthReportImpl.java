@@ -4,7 +4,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -27,6 +27,7 @@ import java.util.Map;
 public class UserMonthReportImpl extends UserMonthReportDesign {
 
     private final User user;
+
     @Autowired
     private WorkRepository workRepository;
 

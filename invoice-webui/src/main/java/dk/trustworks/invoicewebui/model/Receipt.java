@@ -95,8 +95,8 @@ public class Receipt {
         return "Receipt{" +
                 "id=" + id +
                 ", receiptdate=" + receiptdate +
-                ", user=" + user +
-                ", project=" + project +
+                ", user=" + user.getUsername() +
+                ", project=" + project.getName() +
                 ", description='" + description + '\'' +
                 ", amount=" + amount +
                 '}';

@@ -1,6 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
 
+import dk.trustworks.invoicewebui.model.enums.RoleType;
+
 import javax.persistence.*;
 import java.util.UUID;
 

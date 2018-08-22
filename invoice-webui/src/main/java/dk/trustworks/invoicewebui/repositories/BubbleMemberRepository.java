@@ -18,6 +18,7 @@ import java.util.List;
 public interface BubbleMemberRepository extends CrudRepository<BubbleMember, String> {
 
     List<BubbleMember> findByBubble(@Param("bubble") Bubble bubble);
+    List<BubbleMember> findByMember(@Param("member") User user);
     BubbleMember findByBubbleAndMember(@Param("bubble") Bubble bubble, @Param("member") User user);
 
     @Override @RestResource(exported = false) void delete(String id);

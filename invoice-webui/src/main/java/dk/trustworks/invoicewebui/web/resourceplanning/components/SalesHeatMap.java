@@ -73,7 +73,7 @@ public class SalesHeatMap {
         config.getColorAxis().setMin(0);
         config.getColorAxis().setMax(100);
         config.getColorAxis().setMinColor(SolidColor.WHITE);
-        config.getColorAxis().setMaxColor(SolidColor.GREEN);
+        config.getColorAxis().setMaxColor(new SolidColor("#3B8937"));
 
         config.getLegend().setLayout(LayoutDirection.VERTICAL);
         config.getLegend().setAlign(HorizontalAlign.RIGHT);
@@ -246,7 +246,7 @@ public class SalesHeatMap {
 
         XAxis xAxis = new XAxis();
         xAxis.setCategories(monthNames);
-        xAxis.setLineColor(SolidColor.GREEN);
+        xAxis.setLineColor(new SolidColor("#3B8937"));
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();

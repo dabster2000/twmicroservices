@@ -5,7 +5,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import dk.trustworks.invoicewebui.model.EventType;
+import dk.trustworks.invoicewebui.model.enums.EventType;
 import dk.trustworks.invoicewebui.model.News;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;

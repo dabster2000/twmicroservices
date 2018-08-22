@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <!--<vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout spacing="false" margin="false" :expand>
+     <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width="99.89%" height="45px">
+      <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e6a8" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
+      <vaadin-label plain-text _id="lblTitle" :middle :expand>
+        Compentence Table 
+      </vaadin-label>
+     </vaadin-horizontal-layout>-->
+     <vaadin-vertical-layout spacing="false" margin="false" _id="container" :expand>
+      <vaadin-grid-layout visible="false" style-name="light-blue" spacing width-full margin>
+       <row>
+        <column>
+         <vaadin-label style-name="tiny bold" plain-text>
+           improve 
+         </vaadin-label>
+        </column>
+        <column expand="1.0">
+         <vaadin-label style-name="tiny" width-full plain-text>
+           Øge mine kompetencer (jeg kan det allerede) / Lære det (jeg kan det ikke pt. Punkt til min næste MUS). 
+         </vaadin-label>
+        </column>
+       </row>
+       <row>
+        <column>
+         <vaadin-label style-name="tiny bold" plain-text>
+           status quo 
+         </vaadin-label>
+        </column>
+        <column>
+         <vaadin-label style-name="tiny" width-full plain-text>
+           Holde mine kompetencer ved lige. 
+         </vaadin-label>
+        </column>
+       </row>
+       <row>
+        <column>
+         <vaadin-label style-name="tiny bold" plain-text>
+           diminish 
+         </vaadin-label>
+        </column>
+        <column>
+         <vaadin-label style-name="tiny" width-full plain-text>
+           Område hvor jeg ikke ønsker at holde mine kompetencer ved lige. 
+         </vaadin-label>
+        </column>
+       </row>
+      </vaadin-grid-layout>
+      <vaadin-vertical-layout style-name="v-scrollable" height="300px">
+       <vaadin-vertical-layout _id="contentLayout"></vaadin-vertical-layout>
+      </vaadin-vertical-layout>
+     </vaadin-vertical-layout>
+    <!--</vaadin-vertical-layout>
+   </vaadin-vertical-layout>-->
+  </vaadin-vertical-layout>
+ </body>
+</html>

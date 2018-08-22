@@ -4,7 +4,7 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.vaadin.server.FontIcon;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
-import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.label.MLabel;

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout spacing="false" size-full margin="false" :expand>
+     <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px">
+      <vaadin-button disable-on-click icon="fonticon://Vaadin-Icons/e913" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
+      <vaadin-label plain-text _id="lblTitle" :middle :expand>
+        CKO Budget/Expenses 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-vertical-layout spacing="false" size-full _id="container">
+      <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.model.CKOExpense" selection-mode="multi" _id="gridCKOExpenses">
+       <table>
+        <colgroup>
+         <col column-id="eventdate" sortable>
+         <col column-id="description" sortable>
+         <col column-id="price" sortable>
+         <col column-id="type" sortable>
+        </colgroup>
+        <thead>
+         <tr default>
+          <th plain-text column-ids="eventdate">Eventdate</th>
+          <th plain-text column-ids="description">Description</th>
+          <th plain-text column-ids="price">Price</th>
+          <th plain-text column-ids="type">Type</th>
+         </tr>
+        </thead>
+        <tbody></tbody>
+       </table>
+      </vaadin-grid>
+      <vaadin-horizontal-layout width-full _id="hlAddBar">
+       <vaadin-date-field required-indicator-visible placeholder="date" date-format="yyyy-MM-dd" width="125px" _id="dfDate"></vaadin-date-field>
+       <vaadin-text-field placeholder="description" width-full _id="txtDescription" :expand></vaadin-text-field>
+       <vaadin-combo-box placeholder="select type..." width="162px" data-item-type="java.lang.String" _id="cbType">
+        <option item="CONFERENCE">Conference</option>
+        <option item="COURSE">Course</option>
+       </vaadin-combo-box>
+       <vaadin-text-field placeholder="price w. no tax" width="130px" _id="txtPrice"></vaadin-text-field>
+       <vaadin-button style-name="flat friendly" plain-text _id="btnAddSalary">
+         CREATE 
+       </vaadin-button>
+      </vaadin-horizontal-layout>
+      <vaadin-button visible="false" style-name="flat danger" width-full plain-text _id="btnDelete">
+        Delete 
+      </vaadin-button>
+     </vaadin-vertical-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.model.enums.EventType;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;

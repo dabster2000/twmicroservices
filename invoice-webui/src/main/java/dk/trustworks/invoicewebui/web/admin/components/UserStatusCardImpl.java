@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.web.admin.components;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.SalaryRepository;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;

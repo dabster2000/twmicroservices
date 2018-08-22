@@ -5,10 +5,9 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.web.admin.UserManagerView;
-import dk.trustworks.invoicewebui.web.blockchain.BlockchainView;
 import dk.trustworks.invoicewebui.web.bubbles.BubblesView;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.contracts.views.ContractManagerView;
@@ -152,10 +151,12 @@ public class LeftMenu extends ResponsiveRow {
         MenuItemContainer employeeManager = new MenuItemContainer(order++).createItem(UserManagerView.MENU_NAME, false, UserManagerView.VIEW_ICON, UserManagerView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO);
         menuItems.put(UserManagerView.VIEW_NAME, employeeManager);
 
+        /*
         MenuItemContainer fun = new MenuItemContainer(order++).createItem("Fun ---", true, null, null, false, RoleType.USER);
         menuItems.put("fun", fun);
         MenuItemContainer blockchain = new MenuItemContainer(order++).createItem(BlockchainView.MENU_NAME, false, BlockchainView.VIEW_ICON, BlockchainView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(BlockchainView.VIEW_NAME, blockchain);
+        */
     }
 
     public Map<String, MenuItemContainer> getMenuItems() {

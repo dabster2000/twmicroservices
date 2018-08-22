@@ -178,6 +178,11 @@
         </dependency>
         <dependency>
             <groupId>org.vaadin.addons</groupId>
+            <artifactId>ratingstars</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
             <artifactId>product-tour</artifactId>
             <version>0.5</version>
         </dependency>

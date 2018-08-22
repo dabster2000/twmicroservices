@@ -4,7 +4,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.EventType;
+import dk.trustworks.invoicewebui.model.enums.EventType;
 import dk.trustworks.invoicewebui.model.TrustworksEvent;
 import dk.trustworks.invoicewebui.repositories.TrustworksEventRepository;
 import org.joda.time.DateTime;

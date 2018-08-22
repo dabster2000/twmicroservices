@@ -1,7 +1,7 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.model.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

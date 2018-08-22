@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.model;
+package dk.trustworks.invoicewebui.model.enums;
 
 /**
  * Created by hans on 08/09/2017.

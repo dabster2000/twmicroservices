@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.network.dto;
 
 import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.network.dto.enums.ProjectSummaryType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.List;
  */
 public class ProjectSummary {
 
+    private ProjectSummaryType projectSummaryType;
     private String contractuuid;
     private String projectuuid;
     private String projectname;
@@ -26,7 +28,7 @@ public class ProjectSummary {
     public ProjectSummary() {
     }
 
-    public ProjectSummary(String contractuuid, String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices) {
+    public ProjectSummary(String contractuuid, String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices, ProjectSummaryType projectSummaryType) {
         this.contractuuid = contractuuid;
         this.projectuuid = projectuuid;
         this.projectname = projectname;
@@ -35,6 +37,7 @@ public class ProjectSummary {
         this.registeredamount = registeredamount;
         this.invoicedamount = invoicedamount;
         this.invoices = invoices;
+        this.projectSummaryType = projectSummaryType;
     }
 
     public String getContractuuid() {
@@ -121,9 +124,20 @@ public class ProjectSummary {
         this.invoiceList = invoiceList;
     }
 
+    public ProjectSummaryType getProjectSummaryType() {
+        return projectSummaryType;
+    }
+
+    public void setProjectSummaryType(ProjectSummaryType projectSummaryType) {
+        this.projectSummaryType = projectSummaryType;
+    }
+
     @Override
     public String toString() {
-        return "ProjectSummary{" + "projectuuid='" + projectuuid + '\'' +
+        return "ProjectSummary{" +
+                "projectSummaryType=" + projectSummaryType +
+                ", contractuuid='" + contractuuid + '\'' +
+                ", projectuuid='" + projectuuid + '\'' +
                 ", projectname='" + projectname + '\'' +
                 ", clientname='" + clientname + '\'' +
                 ", description='" + description + '\'' +

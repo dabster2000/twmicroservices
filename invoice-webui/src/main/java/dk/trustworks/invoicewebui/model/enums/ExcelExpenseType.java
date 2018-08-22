@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.model;
+package dk.trustworks.invoicewebui.model.enums;
 
 public enum ExcelExpenseType {
 

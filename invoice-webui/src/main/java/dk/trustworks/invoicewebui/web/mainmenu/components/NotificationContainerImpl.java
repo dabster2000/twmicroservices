@@ -4,19 +4,11 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.model.RoleType;
-import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.NotificationRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import dk.trustworks.invoicewebui.web.time.components.MonthReportDesign;
-import dk.trustworks.invoicewebui.web.time.model.UserHourItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

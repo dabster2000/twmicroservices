@@ -65,8 +65,8 @@ public class CountEmployeesJob {
     public void init() {
         countEmployees();
         try {
-            forecastIncome();
-            forecastPeople();
+            //forecastIncome();
+            //forecastPeople();
         } catch (Exception e) {
             e.printStackTrace();
         }

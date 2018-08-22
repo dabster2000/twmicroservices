@@ -4,8 +4,12 @@ import com.google.common.collect.Lists;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.enums.InvoiceType;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
+import dk.trustworks.invoicewebui.network.dto.enums.ProjectSummaryType;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
+import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -25,16 +30,21 @@ public class ProjectSummaryService {
 
     protected static Logger logger = LoggerFactory.getLogger(ProjectSummaryService.class.getName());
 
+    private final ReceiptsRepository receiptsRepository;
 
     private final ContractService contractService;
+
+    private final ProjectService projectService;
 
     private final WorkRepository workClient;
 
     private final InvoiceRepository invoiceClient;
 
     @Autowired
-    public ProjectSummaryService(ContractService contractService, WorkRepository workClient, InvoiceRepository invoiceClient) {
+    public ProjectSummaryService(ReceiptsRepository receiptsRepository, ContractService contractService, ProjectService projectService, WorkRepository workClient, InvoiceRepository invoiceClient) {
+        this.receiptsRepository = receiptsRepository;
         this.contractService = contractService;
+        this.projectService = projectService;
         this.workClient = workClient;
         this.invoiceClient = invoiceClient;
     }
@@ -44,12 +54,65 @@ public class ProjectSummaryService {
         logger.info("InvoiceController.loadProjectSummaryByYearAndMonth");
         logger.info("year = [" + year + "], month = [" + month + "]");
         logger.info("LOAD findByYearAndMonth");
+        LocalDate periodFrom = LocalDate.of(year, month + 1, 1);
+        System.out.println("periodFrom = " + periodFrom);
+        LocalDate periodTo = periodFrom.withDayOfMonth(periodFrom.lengthOfMonth());
+        System.out.println("periodTo = " + periodTo);
         List<Work> workResources = workClient.findByYearAndMonth(year, month);
         logger.info("workResources.size() = " + workResources.size());
 
         Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
 
         Map<String, ProjectSummary> projectSummaryMap = new HashMap<>();
+
+        List<Receipt> receiptList = receiptsRepository.findByReceiptdateIsBetween(periodFrom, periodTo);
+        logger.info("receiptList.size() = " + receiptList.size());
+        for (Receipt receipt : receiptList) {
+            logger.info("receipt = " + receipt);
+            Project project = receipt.getProject();
+            Client client = project.getClient();
+
+            double invoicedamount = 0.0;
+
+            if(!projectSummaryMap.containsKey(project.getUuid()+"_receipt")) {
+                logger.info("new summary");
+                int numberOfInvoicesRelatedToProject = 0;
+
+                List<Invoice> relatedInvoices = new ArrayList<>();
+                for (Invoice invoice : invoices) {
+                    if(invoice.projectuuid.equals(project.getUuid()) &&
+                            invoice.getContractuuid().equals("receipt") && (
+                            invoice.status.equals(InvoiceStatus.CREATED)
+                                    || invoice.status.equals(InvoiceStatus.SUBMITTED)
+                                    || invoice.status.equals(InvoiceStatus.PAID)
+                                    || invoice.status.equals(InvoiceStatus.CREDIT_NOTE))) {
+                        numberOfInvoicesRelatedToProject++;
+                        relatedInvoices.add(invoice);
+                        for (InvoiceItem invoiceitem : invoice.invoiceitems) {
+                            invoicedamount += (invoice.type.equals(InvoiceType.INVOICE)?
+                                    (invoiceitem.hours*invoiceitem.rate):
+                                    -(invoiceitem.hours*invoiceitem.rate));
+                        }
+                    }
+                }
+
+
+                ProjectSummary projectSummary = new ProjectSummary(
+                        "receipt", project.getUuid(),
+                        project.getName(),
+                        client.getName(),
+                        project.getCustomerreference(),
+                        0,
+                        invoicedamount, numberOfInvoicesRelatedToProject, ProjectSummaryType.RECEIPT);
+                projectSummary.setInvoiceList(relatedInvoices);
+                projectSummaryMap.put(project.getUuid()+"_receipt", projectSummary);
+                logger.info("Created new projectSummary: " + projectSummary);
+            }
+
+            ProjectSummary projectSummary = projectSummaryMap.get(project.getUuid()+"_receipt");
+            projectSummary.addAmount(receipt.getAmount());
+        }
+
 
         for (Work work : workResources) {
             if(!(work.getWorkduration()>0)) continue;
@@ -88,7 +151,7 @@ public class ProjectSummaryService {
                         client.getName(),
                         project.getCustomerreference(),
                         0,
-                        invoicedamount, numberOfInvoicesRelatedToProject);
+                        invoicedamount, numberOfInvoicesRelatedToProject, ProjectSummaryType.CONTRACT);
                 projectSummary.setInvoiceList(relatedInvoices);
                 projectSummaryMap.put(contractuuid+project.getUuid(), projectSummary);
                 logger.info("Created new projectSummary: " + projectSummary);
@@ -113,73 +176,117 @@ public class ProjectSummaryService {
     public void createInvoiceFromProject(ProjectSummary projectSummary, int year, int month) {
         logger.info("InvoiceController.createInvoiceFromProject");
         logger.info("projectuuid = [" + projectSummary.getProjectuuid() + "], year = [" + year + "], month = [" + month + "]");
-        //List<Work> workResources = workClient.findByYearAndMonth(year, month);
-        List<Work> workResources = workClient.findByYearAndMonthAndProject(year, month, projectSummary.getProjectuuid());
+        logger.info("type = "+projectSummary.getProjectSummaryType().name());
+
         Invoice invoice = null;
-        Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 
-        Contract contract = contractService.findOne(projectSummary.getContractuuid());
+        if(projectSummary.getProjectSummaryType().equals(ProjectSummaryType.RECEIPT)) {
+            LocalDate periodFrom = LocalDate.of(year, month + 1, 1);
+            LocalDate periodTo = periodFrom.withDayOfMonth(periodFrom.lengthOfMonth());
 
-        for (Work workResource : workResources) {
-            if(workResource.getWorkduration() == 0) continue;
-            Task task = workResource.getTask();
-            logger.info("task = " + task);
+            Project project = projectService.findOne(projectSummary.getProjectuuid());
 
-            Project project = task.getProject();
-            //if(!project.getUuid().equals(projectSummary.getProjectuuid())) continue;
-            logger.info("project = " + project);
+            List < Receipt > receiptList = receiptsRepository.findByProjectAndReceiptdateIsBetween(project, periodFrom, periodTo);
+            logger.info("receiptList.size() = " + receiptList.size());
 
-            if(!contractService.findContractByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED).getUuid().equals(contract.getUuid())) continue;
+            for (Receipt receipt : receiptList) {
+                if(invoice == null) {
+                    invoice = new Invoice(InvoiceType.INVOICE,
+                            "receipt",
+                            project.getUuid(),
+                            project.getName(),
+                            year,
+                            month,
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).lengthOfMonth()),
+                            project.getCustomerreference(),
+                            "",
+                            "");
+                    logger.info("Created new invoice: "+invoice);
+                }
 
-            User user = workResource.getUser();
-
-            if(contract.getClientdata()==null) logger.info("clientdata null: "+contract);
-            Clientdata clientdata = (contract.getClientdata()!=null)?contract.getClientdata():new Clientdata();
-
-            if(invoice == null) {
-                invoice = new Invoice(InvoiceType.INVOICE,
-                        contract.getUuid(),
-                        project.getUuid(),
-                        project.getName(),
-                        year,
-                        month,
-                        clientdata.getClientname(),
-                        clientdata.getStreetnamenumber(),
-                        clientdata.getOtheraddressinfo(),
-                        clientdata.getPostalcode()+" "+ clientdata.getCity(),
-                        clientdata.getEan(),
-                        clientdata.getCvr(),
-                        clientdata.getContactperson(),
-                        LocalDate.now().withYear(year).withMonth(month+1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month+1).lengthOfMonth()),
-                        project.getCustomerreference(),
-                        contract.getRefid(),
-                        "");
-                logger.info("Created new invoice: "+invoice);
-            }
-
-            Double rate = contractService.findConsultantRateByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
-
-            if(rate == null) {
-                logger.error("Taskworkerconstraint could not be found for user (link: "+user.getUuid()+") and task (link: "+task.getUuid()+")");
-                invoice.errors = true;
-                Notification.show("User not assigned",
-                        user.getUsername()+ " is not assigned to task \""+ task.getName()+"\" " +
-                                "on the project \""+project.getName()+"\". " +
-                                "Please fix this on project page.",
-                        Notification.Type.ERROR_MESSAGE);
-                return;
-            }
-            if(!invoiceItemMap.containsKey(contract.getUuid()+project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid())) {
-                InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
-                        task.getName(),
-                        rate,
-                        0.0);
+                InvoiceItem invoiceItem = new InvoiceItem(receipt.getDescription(), "udlæg d. "+receipt.getReceiptdate().format(DateTimeFormatter.ofPattern("d. MMM yyyy")), receipt.getAmount(), 1.0);
                 invoiceItem.uuid = UUID.randomUUID().toString();
-                invoiceItemMap.put(contract.getUuid()+project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid(), invoiceItem);
                 invoice.invoiceitems.add(invoiceItem);
                 logger.info("Created new invoice item: "+invoiceItem);
             }
-            invoiceItemMap.get(contract.getUuid()+project.getUuid()+workResource.getUser().getUuid()+workResource.getTask().getUuid()).hours += workResource.getWorkduration();
+        } else if (projectSummary.getProjectSummaryType().equals(ProjectSummaryType.CONTRACT)) {
+
+            //List<Work> workResources = workClient.findByYearAndMonth(year, month);
+            List<Work> workResources = workClient.findByYearAndMonthAndProject(year, month, projectSummary.getProjectuuid());
+
+            Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
+
+            Contract contract = contractService.findOne(projectSummary.getContractuuid());
+
+            for (Work workResource : workResources) {
+                if (workResource.getWorkduration() == 0) continue;
+                Task task = workResource.getTask();
+                logger.info("task = " + task);
+
+                Project project = task.getProject();
+                //if(!project.getUuid().equals(projectSummary.getProjectuuid())) continue;
+                logger.info("project = " + project);
+
+                if (!contractService.findContractByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED).getUuid().equals(contract.getUuid()))
+                    continue;
+
+                User user = workResource.getUser();
+
+                if (contract.getClientdata() == null) logger.info("clientdata null: " + contract);
+                Clientdata clientdata = (contract.getClientdata() != null) ? contract.getClientdata() : new Clientdata();
+
+                if (invoice == null) {
+                    invoice = new Invoice(InvoiceType.INVOICE,
+                            contract.getUuid(),
+                            project.getUuid(),
+                            project.getName(),
+                            year,
+                            month,
+                            clientdata.getClientname(),
+                            clientdata.getStreetnamenumber(),
+                            clientdata.getOtheraddressinfo(),
+                            clientdata.getPostalcode() + " " + clientdata.getCity(),
+                            clientdata.getEan(),
+                            clientdata.getCvr(),
+                            clientdata.getContactperson(),
+                            LocalDate.now().withYear(year).withMonth(month + 1).withDayOfMonth(LocalDate.now().withYear(year).withMonth(month + 1).lengthOfMonth()),
+                            project.getCustomerreference(),
+                            contract.getRefid(),
+                            "");
+                    logger.info("Created new invoice: " + invoice);
+                }
+
+                Double rate = contractService.findConsultantRateByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+
+                if (rate == null) {
+                    logger.error("Taskworkerconstraint could not be found for user (link: " + user.getUuid() + ") and task (link: " + task.getUuid() + ")");
+                    invoice.errors = true;
+                    Notification.show("User not assigned",
+                            user.getUsername() + " is not assigned to task \"" + task.getName() + "\" " +
+                                    "on the project \"" + project.getName() + "\". " +
+                                    "Please fix this on project page.",
+                            Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (!invoiceItemMap.containsKey(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid())) {
+                    InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
+                            task.getName(),
+                            rate,
+                            0.0);
+                    invoiceItem.uuid = UUID.randomUUID().toString();
+                    invoiceItemMap.put(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid(), invoiceItem);
+                    invoice.invoiceitems.add(invoiceItem);
+                    logger.info("Created new invoice item: " + invoiceItem);
+                }
+                invoiceItemMap.get(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid()).hours += workResource.getWorkduration();
+            }
         }
 
         invoiceClient.save(invoice);

@@ -19,6 +19,9 @@ import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.enums.InvoiceType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.services.InvoiceService;
@@ -42,7 +45,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static dk.trustworks.invoicewebui.model.InvoiceStatus.*;
+import static dk.trustworks.invoicewebui.model.enums.InvoiceStatus.*;
 
 /**
  * Created by hans on 13/07/2017.

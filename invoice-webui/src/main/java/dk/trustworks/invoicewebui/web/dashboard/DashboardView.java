@@ -14,7 +14,7 @@ import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
-import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.ContractService;
@@ -126,7 +126,7 @@ public class DashboardView extends VerticalLayout implements View {
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
-        BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, 1, 6, "bubblesCard");
+        BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
         VacationCard vacationCard = new VacationCard();
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
@@ -164,7 +164,7 @@ public class DashboardView extends VerticalLayout implements View {
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
-
+        /*
         List<Box> boxes = new ArrayList<>();
         //boxes.add(birthdayCard);
         boxes.add(newsCard);
@@ -180,7 +180,7 @@ public class DashboardView extends VerticalLayout implements View {
         //boxes.add(revenuePerMonthCard);
         //boxes.add(projectTimeline);
         //boxes.add(statusCard);
-
+*/
         //createRows(board, boxes);
         ResponsiveRow mainRow = board.addRow().withGrow(true);
         ResponsiveColumn mainComponentColumn = mainRow.addColumn().withDisplayRules(12, 12, 9, 9);

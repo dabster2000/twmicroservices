@@ -8,7 +8,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.ExcelExpenseType;
+import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.model.Expense;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.utils.EconomicExcelUtility;

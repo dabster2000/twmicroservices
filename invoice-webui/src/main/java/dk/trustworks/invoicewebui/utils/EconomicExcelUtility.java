@@ -2,7 +2,7 @@ package dk.trustworks.invoicewebui.utils;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import dk.trustworks.invoicewebui.model.ExcelExpenseType;
+import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;

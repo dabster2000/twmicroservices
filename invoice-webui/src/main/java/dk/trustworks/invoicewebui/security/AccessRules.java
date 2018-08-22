@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.security;
 
-import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

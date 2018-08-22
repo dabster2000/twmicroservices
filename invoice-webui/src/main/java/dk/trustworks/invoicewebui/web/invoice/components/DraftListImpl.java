@@ -13,7 +13,7 @@ import com.vaadin.ui.renderers.LocalDateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
-import dk.trustworks.invoicewebui.model.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.web.Broadcaster;
@@ -33,7 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 
-import static dk.trustworks.invoicewebui.model.InvoiceStatus.DRAFT;
+import static dk.trustworks.invoicewebui.model.enums.InvoiceStatus.DRAFT;
 import static dk.trustworks.invoicewebui.web.invoice.views.DraftListView.MENU_NAME;
 import static dk.trustworks.invoicewebui.web.invoice.views.DraftListView.VIEW_NAME;
 

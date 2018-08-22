@@ -1,18 +1,19 @@
 package dk.trustworks.invoicewebui.web.invoice.components;
 
+import com.jarektoro.responsivelayout.ResponsiveLayout;
+import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.annotations.Push;
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Grid;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Grid.Column;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
+import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
@@ -49,14 +50,20 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
 
     private final InvoiceService invoiceService;
 
+    private final PhotoService photoService;
+
+    private final ProjectService projectService;
+
     private VerticalLayout errorList;
 
     private Card errorCard;
 
     @Autowired
-    public NewInvoiceImpl(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService) {
+    public NewInvoiceImpl(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService, PhotoService photoService, ProjectService projectService) {
         this.projectSummaryClient = projectSummaryClient;
         this.invoiceService = invoiceService;
+        this.photoService = photoService;
+        this.projectService = projectService;
     }
 
     @PostConstruct
@@ -147,6 +154,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         logger.debug("start = " + start);
         createErrorList(errorCard);
         List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
+/*
         gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
         gridProjectSummaryList.getDataProvider().refreshAll();
         for (ProjectSummary projectSummary : projectSummaries) {
@@ -157,8 +165,9 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                 }
             }
         }
-/*
+*/
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        this.cardContainer.removeAllComponents();
         this.cardContainer.addComponent(responsiveLayout);
 
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
@@ -167,6 +176,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
             invoiceCandidateDesign.getLblTotalInvoiced().setValue(NumberConverter.formatCurrency(projectSummary.getRegisteredamount()));
             invoiceCandidateDesign.getLblTotalNotInvoiced().setValue(NumberConverter.formatCurrency(projectSummary.getRegisteredamount()-projectSummary.getInvoicedamount()));
             invoiceCandidateDesign.getLblSOHours().setValue("15");
+            invoiceCandidateDesign.getImgTop().setSource(photoService.getRelatedPhoto(projectService.findOne(projectSummary.getProjectuuid()).getClient().getUuid()));
 
             GridLayout gridInvoices = invoiceCandidateDesign.getGridInvoices();
             gridInvoices.setRows(1+projectSummary.getInvoiceList().size());
@@ -175,9 +185,9 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                 gridInvoices.addComponent(new MLabel(invoice.getType().name()));
                 gridInvoices.addComponent(new MLabel(NumberConverter.formatCurrency(invoice.getSumWithTax())));
             }
-            responsiveRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(invoiceCandidateDesign);
+            responsiveRow.addColumn().withDisplayRules(12, 12, 4, 3).withComponent(invoiceCandidateDesign);
         }
-*/
+
 
         double end = System.currentTimeMillis() - start;
         logger.debug("end = " + end);

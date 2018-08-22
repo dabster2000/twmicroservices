@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static dk.trustworks.invoicewebui.model.RoleType.EDITOR;
+import static dk.trustworks.invoicewebui.model.enums.RoleType.EDITOR;
 import static java.util.Base64.getDecoder;
 import static java.util.Base64.getEncoder;
 

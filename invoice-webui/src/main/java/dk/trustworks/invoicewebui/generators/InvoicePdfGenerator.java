@@ -19,7 +19,7 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.renderer.IRenderer;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
-import dk.trustworks.invoicewebui.model.InvoiceType;
+import dk.trustworks.invoicewebui.model.enums.InvoiceType;
 import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.springframework.stereotype.Component;
 

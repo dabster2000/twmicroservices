@@ -6,8 +6,6 @@ import com.vaadin.ui.declarative.Design;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.DateField;
 
 /**
@@ -25,11 +23,9 @@ public class UserDetailsCardDesign extends VerticalLayout {
     private VerticalLayout cardHolder;
     private Label lblTitle;
     private VerticalLayout container;
-    private FormLayout formLayout;
+    private VerticalLayout formLayout;
     private TextField txtName;
     private DateField dfBirthday;
-    private PasswordField txtPassword;
-    private PasswordField txtPasswordRepeat;
 
     public UserDetailsCardDesign() {
         Design.read(this);
@@ -47,7 +43,7 @@ public class UserDetailsCardDesign extends VerticalLayout {
         return container;
     }
 
-    public FormLayout getFormLayout() {
+    public VerticalLayout getFormLayout() {
         return formLayout;
     }
 
@@ -57,14 +53,6 @@ public class UserDetailsCardDesign extends VerticalLayout {
 
     public DateField getDfBirthday() {
         return dfBirthday;
-    }
-
-    public PasswordField getTxtPassword() {
-        return txtPassword;
-    }
-
-    public PasswordField getTxtPasswordRepeat() {
-        return txtPasswordRepeat;
     }
 
 }

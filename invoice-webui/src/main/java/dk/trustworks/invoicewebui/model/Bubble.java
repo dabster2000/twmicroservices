@@ -29,6 +29,9 @@ public class Bubble {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate created;
 
+    //@OneToMany(mappedBy = "bubble", fetch = FetchType.LAZY)
+    //private List<BubbleMember> bubbleMembers;
+
     public Bubble() {
         this.uuid = UUID.randomUUID().toString();
         this.created = LocalDate.now();
@@ -101,7 +104,15 @@ public class Bubble {
     public void setSlackchannel(String slackchannel) {
         this.slackchannel = slackchannel;
     }
+/*
+    public List<BubbleMember> getBubbleMembers() {
+        return bubbleMembers;
+    }
 
+    public void setBubbleMembers(List<BubbleMember> bubbleMembers) {
+        this.bubbleMembers = bubbleMembers;
+    }
+*/
     @Override
     public String toString() {
         return "Bubble{" +

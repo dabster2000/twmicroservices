@@ -3,22 +3,17 @@ package dk.trustworks.invoicewebui.web.client.views;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontIcon;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.model.RoleType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.client.components.ClientManagerImpl;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.alump.fancylayouts.FancyNotifications;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
 
 /**
  * Created by hans on 16/08/2017.

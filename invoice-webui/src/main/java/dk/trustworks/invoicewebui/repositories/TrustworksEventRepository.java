@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.repositories;
 
-import dk.trustworks.invoicewebui.model.EventType;
+import dk.trustworks.invoicewebui.model.enums.EventType;
 import dk.trustworks.invoicewebui.model.TrustworksEvent;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
