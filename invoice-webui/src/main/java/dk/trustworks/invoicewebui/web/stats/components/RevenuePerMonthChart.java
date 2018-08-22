@@ -92,7 +92,7 @@ public class RevenuePerMonthChart {
             double budgetSum = 0.0;
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
-                    double weeks = currentDate.getMonth().length(true) / 7.0;
+                    double weeks = currentDate.getMonth().maxLength() / 7.0;
                     for (Consultant consultant : contract.getConsultants()) {
                         List<Work> workList = workRepository.findByPeriodAndUserUUID(
                                 currentDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
