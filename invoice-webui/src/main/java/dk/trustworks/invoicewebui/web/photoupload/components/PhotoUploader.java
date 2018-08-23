@@ -63,7 +63,7 @@ public class PhotoUploader {
 
     public VerticalLayout getUploader() {
         VerticalLayout vlContainer = new VerticalLayout();
-        vlContainer.setWidth(400, Sizeable.Unit.PIXELS);
+        vlContainer.setWidth(width, Sizeable.Unit.PIXELS);
         uploadComponent.setReceivedCallback(this::uploadReceived);
         uploadComponent.setStartedCallback(this::uploadStarted);
         uploadComponent.setProgressCallback(this::uploadProgress);
