@@ -5,7 +5,9 @@ package dk.trustworks.invoicewebui.repositories;
  */
 
 import dk.trustworks.invoicewebui.model.Ambition;
+import dk.trustworks.invoicewebui.model.enums.AmbitionCategory;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
@@ -14,5 +16,6 @@ import java.util.List;
 public interface AmbitionRepository extends CrudRepository<Ambition, Integer> {
 
     List<Ambition> findAmbitionByActiveIsTrue();
+    List<Ambition> findAmbitionByActiveIsTrueAndCategory(@Param("category") AmbitionCategory category);
 
 }
