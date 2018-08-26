@@ -6,11 +6,11 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import dk.trustworks.invoicewebui.model.Ambition;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserAmbition;
-import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
-import dk.trustworks.invoicewebui.repositories.UserAmbitionRepository;
+import dk.trustworks.invoicewebui.model.dto.UserAmbitionDTO;
+import dk.trustworks.invoicewebui.model.enums.AmbitionCategory;
+import dk.trustworks.invoicewebui.model.enums.AmbitionType;
+import dk.trustworks.invoicewebui.repositories.UserAmbitionDTORepository;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.profile.components.UserAmbitionTableImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,23 +19,51 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 
 import java.util.List;
 
+import static dk.trustworks.invoicewebui.model.enums.AmbitionType.IMPROVE;
+import static dk.trustworks.invoicewebui.model.enums.AmbitionType.SLACK;
+import static dk.trustworks.invoicewebui.model.enums.AmbitionType.STATUS_QUO;
+
 @Service
 public class AmbitionSpiderChart {
 
     private final UserAmbitionTableImpl userAmbitionTableImpl;
 
-    private final AmbitionRepository ambitionRepository;
-
-    private final UserAmbitionRepository userAmbitionRepository;
+    private final UserAmbitionDTORepository userAmbitionDTORepository;
 
     @Autowired
-    public AmbitionSpiderChart(UserAmbitionTableImpl userAmbitionTableImpl, AmbitionRepository ambitionRepository, UserAmbitionRepository userAmbitionRepository) {
+    public AmbitionSpiderChart(UserAmbitionTableImpl userAmbitionTableImpl, UserAmbitionDTORepository userAmbitionDTORepository) {
         this.userAmbitionTableImpl = userAmbitionTableImpl;
-        this.ambitionRepository = ambitionRepository;
-        this.userAmbitionRepository = userAmbitionRepository;
+        this.userAmbitionDTORepository = userAmbitionDTORepository;
     }
 
-    public Component getOrganisationChart(User user) {
+    public Component getOrganisationChart(final User user, final AmbitionCategory ambitionCategory) {
+        final Card card = new Card();
+        card.getContent().addComponent(createChart(user, ambitionCategory));
+        card.getBtnAlt1().setVisible(true);
+        card.getLblTitle().setValue("Competence Chart");
+        card.getBtnAlt1().setCaption("");
+        card.getBtnAlt1().setIcon(MaterialIcons.EDIT);
+        card.getBtnAlt1().addClickListener(event -> {
+            final Window window = new Window("Window");
+            window.setWidth(600.0f, Sizeable.Unit.PIXELS);
+            window.setModal(true);
+            window.setCaption("Competence Table");
+            //window.setHeight(300, Sizeable.Unit.PIXELS);
+            window.setClosable(true);
+            window.addCloseListener(e -> {
+                card.getContent().removeAllComponents();
+                card.getContent().addComponent(createChart(user, ambitionCategory));
+            });
+
+            window.setContent(userAmbitionTableImpl.getUserAmbitionTable(user, ambitionCategory));
+
+            UI.getCurrent().addWindow(window);
+        });
+
+        return card;
+    }
+
+    private Chart createChart(User user, AmbitionCategory ambitionCategory) {
         Chart chart = new Chart(ChartType.LINE);
 
         Configuration conf = chart.getConfiguration();
@@ -48,8 +76,9 @@ public class AmbitionSpiderChart {
 
         XAxis axis = new XAxis();
 
-        List<Ambition> ambitionList = ambitionRepository.findAmbitionByActiveIsTrue();
-        for (Ambition ambition : ambitionList) {
+        //List<Ambition> ambitionList = ambitionRepository.findAmbitionByActiveIsTrue();
+        List<UserAmbitionDTO> userAmbitionList = userAmbitionDTORepository.findUserAmbitionByUseruuidAndCategoryAndActiveTrue(user.getUuid(), ambitionCategory.name());
+        for (UserAmbitionDTO ambition : userAmbitionList) {
             axis.addCategory(ambition.getName());
         }
 
@@ -59,62 +88,56 @@ public class AmbitionSpiderChart {
         YAxis yaxs = new YAxis();
         yaxs.setGridLineInterpolation("polygon");
         yaxs.setMin(0);
+        yaxs.setMax(4);
         yaxs.setLineWidth(0);
         conf.addxAxis(axis);
         conf.addyAxis(yaxs);
 
         conf.getTooltip().setShared(true);
-        conf.getTooltip().setValuePrefix("$");
+        conf.getTooltip().setValuePrefix("");
 
-        conf.getLegend().setAlign(HorizontalAlign.RIGHT);
+        conf.getLegend().setEnabled(false);//.setAlign(HorizontalAlign.RIGHT);
         conf.getLegend().setVerticalAlign(VerticalAlign.TOP);
         conf.getLegend().setY(100);
         conf.getLegend().setLayout(LayoutDirection.VERTICAL);
 
-        List<UserAmbition> userAmbitionList = userAmbitionRepository.findByUser(user);
+        //List<UserAmbition> userAmbitionList = userAmbitionRepository.findByUser(user);
 
         ListSeries line1 = new ListSeries();
+        ListSeries line2 = new ListSeries();
 
-        for (UserAmbition userAmbition : userAmbitionList) {
+        for (UserAmbitionDTO userAmbition : userAmbitionList) {
             // TODO: Filtrér dem der er ikke er aktive
             line1.addData(userAmbition.getScore());
+            AmbitionType ambition = AmbitionType.values()[userAmbition.getAmbition()];
+            if(ambition == IMPROVE && userAmbition.getScore()==4) {
+                line2.addData(userAmbition.getScore());
+            } else if (ambition == IMPROVE && userAmbition.getScore()<4) {
+                line2.addData(userAmbition.getScore()+1);
+            } else if (ambition == STATUS_QUO) {
+                line2.addData(userAmbition.getScore());
+            } else if (ambition == SLACK && userAmbition.getScore() > 1) {
+                line2.addData(userAmbition.getScore()-1);
+            } else {
+                line2.addData(userAmbition.getScore());
+            }
         }
-
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setPointPlacement(PointPlacement.ON);
         line1.setPlotOptions(plotOptions);
-        line1.setName("Allocated Budget");
+        line1.setName("Current Knowledge Level");
 
         plotOptions = new PlotOptionsLine();
         plotOptions.setPointPlacement(PointPlacement.ON);
-        //line2.setPlotOptions(plotOptions);
-        //line2.setName("Actual Spending");
+        line2.setPlotOptions(plotOptions);
+        line2.setName("Target Knowledge Level");
 
-        //conf.setSeries(line1, line2);
+        conf.setSeries(line1, line2);
 
         chart.drawChart(conf);
 
-        Card card = new Card();
-        card.getContent().addComponent(chart);
-        card.getBtnAlt1().setVisible(true);
-        card.getLblTitle().setValue("Competence Chart");
-        card.getBtnAlt1().setCaption("");
-        card.getBtnAlt1().setIcon(MaterialIcons.EDIT);
-        card.getBtnAlt1().addClickListener(event -> {
-            final Window window = new Window("Window");
-            window.setWidth(600.0f, Sizeable.Unit.PIXELS);
-            window.setModal(true);
-            window.setCaption("Competence Table");
-            //window.setHeight(300, Sizeable.Unit.PIXELS);
-            window.setClosable(true);
-
-            window.setContent(userAmbitionTableImpl.getUserAmbitionTable(user));
-
-            UI.getCurrent().addWindow(window);
-        });
-
-        return card;
+        return chart;
     }
 
 }

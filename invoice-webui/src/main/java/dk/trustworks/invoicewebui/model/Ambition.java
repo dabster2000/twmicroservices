@@ -1,8 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import dk.trustworks.invoicewebui.model.enums.AmbitionCategory;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "ambition")
@@ -15,13 +15,17 @@ public class Ambition {
 
     private boolean active;
 
+    @Enumerated(EnumType.STRING)
+    private AmbitionCategory category;
+
 
     public Ambition() {
     }
 
-    public Ambition(String name, boolean active) {
+    public Ambition(String name, boolean active, AmbitionCategory category) {
         this.name = name;
         this.active = active;
+        this.category = category;
     }
 
     public int getId() {
@@ -44,12 +48,21 @@ public class Ambition {
         this.active = active;
     }
 
+    public AmbitionCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(AmbitionCategory category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "Ambition{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", active=" + active +
+                ", category=" + category +
                 '}';
     }
 }
