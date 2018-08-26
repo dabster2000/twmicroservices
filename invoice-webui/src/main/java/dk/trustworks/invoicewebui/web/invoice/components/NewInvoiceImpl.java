@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.web.invoice.components;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.annotations.Push;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
@@ -154,7 +155,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         logger.debug("start = " + start);
         createErrorList(errorCard);
         List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
-/*
+
         gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
         gridProjectSummaryList.getDataProvider().refreshAll();
         for (ProjectSummary projectSummary : projectSummaries) {
@@ -165,7 +166,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                 }
             }
         }
-*/
+
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         this.cardContainer.removeAllComponents();
         this.cardContainer.addComponent(responsiveLayout);
