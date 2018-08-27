@@ -29,7 +29,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
     List<GraphKeyValue> findProjectRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 */
     @Cacheable("findRevenueByMonthByPeriod")
-    @Query(value = "select w.id, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.workduration*cc.rate)) value from " +
+    @Query(value = "select w.id as uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.workduration*cc.rate)) value from " +
             "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
             "inner join task t on w.taskuuid = t.uuid " +
             "inner join project p on t.projectuuid = p.uuid " +
