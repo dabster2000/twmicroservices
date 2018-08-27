@@ -44,6 +44,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     @Autowired
     private CumulativePredictiveRevenuePerYearChart cumulativePredictiveRevenuePerYearChart;
 
+    @Autowired
+    private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
+
 
     public TrustworksStatsLayout init() {
         this.removeAllComponents();
@@ -116,44 +119,50 @@ public class TrustworksStatsLayout extends VerticalLayout {
         Card revenuePerMonthCard = new Card();
         revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
-        notification.setDescription("1 out of 7 charts created!");
+        notification.setDescription("1 out of 8 charts created!");
         System.out.println("timeMillis 1 = " + (System.currentTimeMillis() - timeMillis));
 
         Card cumulativeRevenuePerMonthCard = new Card();
         cumulativeRevenuePerMonthCard.getLblTitle().setValue("Cumulative Revenue Per Month");
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
-        notification.setDescription("2 out of 7 charts created!");
+        notification.setDescription("2 out of 8 charts created!");
         System.out.println("timeMillis 2 = " + (System.currentTimeMillis() - timeMillis));
 
         Card consultantGrossingCard = new Card();
         consultantGrossingCard.getLblTitle().setValue("Top Grossing Consultants");
         consultantGrossingCard.getContent().addComponent(topGrossingConsultantsChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
-        notification.setDescription("3 out of 7 charts created!");
+        notification.setDescription("3 out of 8 charts created!");
         System.out.println("timeMillis 3 = " + (System.currentTimeMillis() - timeMillis));
 
         Card consultantHoursPerMonth = new Card();
         consultantHoursPerMonth.getLblTitle().setValue("Consultant Hours Per Month");
         consultantHoursPerMonth.getContent().addComponent(consultantHoursPerMonthChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
-        notification.setDescription("4 out of 7 charts created!");
+        notification.setDescription("4 out of 8 charts created!");
         System.out.println("timeMillis 4 = " + (System.currentTimeMillis() - timeMillis));
 
         Card cumulativePredictiveRevenuePerMonthCard = new Card();
         cumulativePredictiveRevenuePerMonthCard.getLblTitle().setValue("Cumulative Predicted Revenue");
         cumulativePredictiveRevenuePerMonthCard.getContent().addComponent(cumulativePredictiveRevenuePerMonthChart.createCumulativePredictiveRevenuePerMonthChart());
-        notification.setDescription("5 out of 7 charts created!");
+        notification.setDescription("5 out of 8 charts created!");
         System.out.println("timeMillis 5 = " + (System.currentTimeMillis() - timeMillis));
 
         Card cumulativePredictiveRevenuePerYearCard = new Card();
         cumulativePredictiveRevenuePerYearCard.getLblTitle().setValue("Cumulative Predicted Revenue");
         cumulativePredictiveRevenuePerYearCard.getContent().addComponent(cumulativePredictiveRevenuePerYearChart.createCumulativePredictiveRevenuePerYearChart());
-        notification.setDescription("6 out of 7 charts created!");
+        notification.setDescription("6 out of 8 charts created!");
         System.out.println("timeMillis 6 = " + (System.currentTimeMillis() - timeMillis));
 
         Card revenuePerMonthEmployeeAvgCard = new Card();
         revenuePerMonthEmployeeAvgCard.getLblTitle().setValue("Average Revenue per Consultant");
         revenuePerMonthEmployeeAvgCard.getContent().addComponent(revenuePerMonthEmployeeAvgChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
-        notification.setDescription("7 out of 7 charts created!");
+        notification.setDescription("7 out of 8 charts created!");
         System.out.println("timeMillis 7 = " + (System.currentTimeMillis() - timeMillis));
+
+        Card consultantsBudgetRealizationCard = new Card();
+        consultantsBudgetRealizationCard.getLblTitle().setValue("Consultant Budget Realization");
+        consultantsBudgetRealizationCard.getContent().addComponent(consultantsBudgetRealizationChart.createConsultantsBudgetRealizationChart(localDateStart, localDateEnd));
+        notification.setDescription("8 out of 8 charts created!");
+        System.out.println("timeMillis 8 = " + (System.currentTimeMillis() - timeMillis));
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -170,6 +179,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(cumulativePredictiveRevenuePerYearCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(consultantsBudgetRealizationCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(cumulativePredictiveRevenuePerMonthCard);
