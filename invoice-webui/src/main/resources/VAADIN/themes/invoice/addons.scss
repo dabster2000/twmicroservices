@@ -5,6 +5,10 @@
 @import "../../../VAADIN/addons/font-awesome-label/font-awesome.scss";
 
 
+/* Provided by labelbutton-addon-0.2.0.jar */
+@import "../../../VAADIN/addons/labelbutton/labelbutton.scss";
+
+
 /* Provided by product-tour-0.5.jar */
 @import "../../../VAADIN/addons/producttour/scss/product-tour.scss";
 
@@ -24,6 +28,7 @@
 /* Import and include this mixin into your project theme to include the addon themes */
 @mixin addons {
 	@include font-awesome;
+	@include labelbutton;
 	@include product-tour;
 	@include fancylayouts;
 	@include materialicons;

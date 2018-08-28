@@ -8,7 +8,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.faq.components.FaqCanvas;
+import dk.trustworks.invoicewebui.web.faq.components.FaqBoard;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class FaqView extends VerticalLayout implements View {
     private MainTemplate mainTemplate;
 
     @Autowired
-    private FaqCanvas faqCanvas;
+    private FaqBoard faqBoard;
 
     public static final String VIEW_NAME = "faq";
     public static final String MENU_NAME = "FAQ";
@@ -47,7 +47,7 @@ public class FaqView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        mainTemplate.setMainContent(faqCanvas.init(), VIEW_ICON, MENU_NAME, "Trustworks Knowledge", VIEW_BREADCRUMB);
+        mainTemplate.setMainContent(faqBoard.init(), VIEW_ICON, MENU_NAME, "Trustworks Knowledge", VIEW_BREADCRUMB);
     }
 
     @Override
