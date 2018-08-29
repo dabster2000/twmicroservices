@@ -269,10 +269,9 @@ public class InvoiceListImpl extends InvoiceListDesign
             final StreamResource resource = new StreamResource(() ->
                     new ByteArrayInputStream(invoice.getPdf()),
                     invoice.invoicenumber +
-                            " " + invoice.type +
-                            " - " + invoice.clientname +
-                            " - " + invoice.projectname +
-                            " - " + dateTimeFormatter.format(invoice.invoicedate) +
+                            "_" + invoice.type +
+                            "-" + invoice.clientname +
+                            "-" + dateTimeFormatter.format(invoice.invoicedate) +
                             ".pdf"
             );
 
