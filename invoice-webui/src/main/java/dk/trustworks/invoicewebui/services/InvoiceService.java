@@ -66,8 +66,8 @@ public class InvoiceService {
     }
 
     public byte[] createInvoicePdf(Invoice invoice) throws IOException {
-        return invoicePdfGenerator.createInvoice(invoice);
-        //return invoiceAPI.createInvoicePDF(invoice);
+        //return invoicePdfGenerator.createInvoice(invoice);
+        return invoiceAPI.createInvoicePDF(invoice);
     }
 
     @Transactional

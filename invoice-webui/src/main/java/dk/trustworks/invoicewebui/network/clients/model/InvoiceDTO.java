@@ -56,7 +56,7 @@ public class InvoiceDTO {
         logo = "";
         due_date = dueDate;
         currency = "DKK";
-        terms = "Please direct deposit using the following bank details - Danske Bank: reg.nr. 3409, account number 11397603\nPayment due in 1 month";
+        terms = "Payment via bank transfer to the following account: Danske Bank, reg.nr. 3409, account number 11397603\nPayment due in 1 month";
         this.from = from;
         this.to = to;
         this.date = date;
