@@ -57,7 +57,9 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
 
     @PostConstruct
     public void init() {
-        if((userSession = VaadinSession.getCurrent().getAttribute(UserSession.class)) == null) UI.getCurrent().getNavigator().navigateTo("login");;
+        if((userSession = VaadinSession.getCurrent().getAttribute(UserSession.class)) == null) {
+            UI.getCurrent().getNavigator().navigateTo("login");
+        }
         User user = userSession.getUser();
 
         Broadcaster.register(this);
