@@ -18,10 +18,11 @@ public class Faq {
     private String content;
 
     public Faq() {
+        this.uuid = UUID.randomUUID().toString();
     }
 
     public Faq(String faqgroup, String title, String content) {
-        this.uuid = UUID.randomUUID().toString();
+        this();
         this.faqgroup = faqgroup;
         this.title = title;
         this.content = content;
