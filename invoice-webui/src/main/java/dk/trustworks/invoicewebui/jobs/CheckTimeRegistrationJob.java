@@ -70,7 +70,7 @@ public class CheckTimeRegistrationJob {
     }
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
-    @Scheduled(cron = "0 30 11 * * MON-FRI")
+    //@Scheduled(cron = "0 30 11 * * MON-FRI")
     public void checkTimeRegistrationJob() {
         halWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
         log.info("CheckTimeRegistrationJob.execute");
