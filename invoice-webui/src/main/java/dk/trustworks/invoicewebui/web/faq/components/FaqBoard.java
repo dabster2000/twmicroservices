@@ -81,6 +81,7 @@ public class FaqBoard extends VerticalLayout {
                 cbGroup.setSelectedItem(faq.getFaqgroup());
                 cbGroup.setEmptySelectionAllowed(false);
                 cbGroup.setWidth(100, Unit.PERCENTAGE);
+                cbGroup.setVisible(false);
                 TextField txtTitle = new MTextField("Title:").withFullWidth().withVisible(false).withValue(faq.getTitle());
                 Label lblDescription = new MLabel(new String(getDecoder().decode(faq.getContent()), "utf-8")).withFullWidth().withContentMode(ContentMode.HTML);
                 RichTextArea txtDescription = new RichTextArea();
@@ -103,6 +104,7 @@ public class FaqBoard extends VerticalLayout {
                 final Button btnEdit = new MButton("Edit").withListener(event -> {
                     lblDescription.setVisible(false);
                     event.getButton().setVisible(false);
+                    cbGroup.setVisible(true);
                     txtTitle.setVisible(true);
                     txtDescription.setVisible(true);
                     btnSave.setVisible(true);
@@ -113,7 +115,7 @@ public class FaqBoard extends VerticalLayout {
                     init();
                 });
 
-                window.setContent(new MVerticalLayout(txtTitle, txtDescription, lblDescription, btnSave, btnEdit, btnDelete).withFullWidth());
+                window.setContent(new MVerticalLayout(cbGroup, txtTitle, txtDescription, lblDescription, btnSave, btnEdit, btnDelete).withFullWidth());
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
