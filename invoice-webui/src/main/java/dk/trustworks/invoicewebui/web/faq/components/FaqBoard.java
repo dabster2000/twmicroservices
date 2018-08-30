@@ -20,6 +20,8 @@ import org.vaadin.viritin.layouts.MFormLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Base64.getDecoder;
 import static java.util.Base64.getEncoder;
@@ -50,17 +52,17 @@ public class FaqBoard extends VerticalLayout {
         boolean firstGroup = true;
         for (Faq faq : faqRepository.findByOrderByFaqgroup()) {
             if(!faq.getFaqgroup().equals(group)) {
-                group = faq.getFaqgroup();
                 if(!firstGroup) {
                     createAddQuestionButton(vl, group);
                 }
+                group = faq.getFaqgroup();
                 firstGroup = false;
                 column = row.addColumn().withDisplayRules(12, 6, 4, 4);
                 vl = new MVerticalLayout();
                 column.withComponent(new MVerticalLayout().withHeight(300, Unit.PIXELS).withStyleName("v-scrollable").withComponent(vl));
                 vl.addComponent(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth());
             }
-            vl.addComponent(createLabelButton(faq));
+            vl.addComponent(createLabelButton(faq, faqRepository.findByOrderByFaqgroup().stream().map(Faq::getFaqgroup).distinct().collect(Collectors.toList())));
         }
         createAddQuestionButton(vl, group);
 
@@ -69,13 +71,17 @@ public class FaqBoard extends VerticalLayout {
 
     }
 
-    private LabelButton createLabelButton(Faq faq) {
+    private LabelButton createLabelButton(Faq faq, List<String> groups) {
         return new LabelButton(faq.getTitle(), labelClickEvent -> {
             Window window = new Window(faq.getTitle());
             window.setModal(true);
             window.setWidth(600, Unit.PIXELS);
             try {
-                TextField txtTitle = new MTextField().withFullWidth().withVisible(false).withValue(faq.getTitle());
+                ComboBox<String> cbGroup = new ComboBox<>("Group: ", groups);
+                cbGroup.setSelectedItem(faq.getFaqgroup());
+                cbGroup.setEmptySelectionAllowed(false);
+                cbGroup.setWidth(100, Unit.PERCENTAGE);
+                TextField txtTitle = new MTextField("Title:").withFullWidth().withVisible(false).withValue(faq.getTitle());
                 Label lblDescription = new MLabel(new String(getDecoder().decode(faq.getContent()), "utf-8")).withFullWidth().withContentMode(ContentMode.HTML);
                 RichTextArea txtDescription = new RichTextArea();
                 txtDescription.setValue(new String(getDecoder().decode(faq.getContent()), "utf-8"));
@@ -84,6 +90,7 @@ public class FaqBoard extends VerticalLayout {
                 txtDescription.setHeight(500, Unit.PIXELS);
                 final Button btnSave = new MButton("Save", event -> {
                     faq.setTitle(txtTitle.getValue());
+                    faq.setFaqgroup(cbGroup.getValue());
                     try {
                         faq.setContent(getEncoder().encodeToString(txtDescription.getValue().getBytes("utf-8")));
                     } catch (UnsupportedEncodingException e) {
