@@ -82,7 +82,7 @@ public class FaqBoard extends VerticalLayout {
                 txtDescription.setVisible(false);
                 txtDescription.setWidth(100, Unit.PERCENTAGE);
                 txtDescription.setHeight(500, Unit.PIXELS);
-                Button btnSave = new MButton("Save", event -> {
+                final Button btnSave = new MButton("Save", event -> {
                     faq.setTitle(txtTitle.getValue());
                     try {
                         faq.setContent(getEncoder().encodeToString(txtDescription.getValue().getBytes("utf-8")));
@@ -100,8 +100,13 @@ public class FaqBoard extends VerticalLayout {
                     txtDescription.setVisible(true);
                     btnSave.setVisible(true);
                 });
+                final Button btnDelete = new MButton("Delete").withListener(event -> {
+                    faqRepository.delete(faq.getUuid());
+                    window.close();
+                    init();
+                });
 
-                window.setContent(new MVerticalLayout(txtTitle, txtDescription, lblDescription, btnSave, btnEdit).withFullWidth());
+                window.setContent(new MVerticalLayout(txtTitle, txtDescription, lblDescription, btnSave, btnEdit, btnDelete).withFullWidth());
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
