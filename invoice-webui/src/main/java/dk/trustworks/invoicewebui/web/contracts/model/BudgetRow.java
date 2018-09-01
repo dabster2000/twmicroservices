@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.web.contracts.model;
 
-import dk.trustworks.invoicewebui.model.Consultant;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 
@@ -11,7 +11,7 @@ import java.util.Arrays;
  */
 public class BudgetRow {
 
-    private Consultant consultant;
+    private ContractConsultant contractConsultant;
     private User user;
     private String username;
     private String rate;
@@ -23,13 +23,13 @@ public class BudgetRow {
         budget = new String[months];
     }
 
-    public BudgetRow(Consultant consultant, int months) {
+    public BudgetRow(ContractConsultant contractConsultant, int months) {
         this(months);
-        this.user = consultant.getUser();
-        this.consultant = consultant;
+        this.user = contractConsultant.getUser();
+        this.contractConsultant = contractConsultant;
         this.username = user.getUsername();
-        this.rate = NumberConverter.formatDouble(consultant.getRate());
-        this.amount = NumberConverter.formatDouble(consultant.getBudget());
+        this.rate = NumberConverter.formatDouble(contractConsultant.getRate());
+        this.amount = NumberConverter.formatDouble(contractConsultant.getBudget());
     }
 
     public String[] getBudget() {
@@ -48,12 +48,12 @@ public class BudgetRow {
         return (budget[actualMonth]!=null)?budget[actualMonth]:"0.0";
     }
 
-    public Consultant getConsultant() {
-        return consultant;
+    public ContractConsultant getContractConsultant() {
+        return contractConsultant;
     }
 
-    public void setConsultant(Consultant consultant) {
-        this.consultant = consultant;
+    public void setContractConsultant(ContractConsultant contractConsultant) {
+        this.contractConsultant = contractConsultant;
     }
 
     public User getUser() {

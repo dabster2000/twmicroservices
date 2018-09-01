@@ -176,7 +176,7 @@ public class ContractListLayout extends VerticalLayout {
         if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
         if(contract.getActiveTo().isAfter(endDate)) endDate = contract.getActiveTo();
 
-        String consultantNames = String.join(",", contract.getConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
+        String consultantNames = String.join(",", contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
         Step contractStep = new Step(contract.getContractType().name() + "(" + consultantNames + ")");
         contractStep.setStartDate(Date.from(contract.getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         contractStep.setEndDate(Date.from(contract.getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
@@ -337,8 +337,8 @@ public class ContractListLayout extends VerticalLayout {
                 contractDesign.getLblAmount().setCaption("");
             }
 
-            for (Consultant consultant : contract.getConsultants()) {
-                contractDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
+            for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                contractDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(contractConsultant.getUser(), false));
             }
 
             contractDesign.getBtnEdit().addClickListener(event3 -> {

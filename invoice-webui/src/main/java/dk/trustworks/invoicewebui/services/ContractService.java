@@ -65,9 +65,9 @@ public class ContractService {
         // validate
         for (Project project : projects) {
             for (Contract contract : project.getContracts()) {
-                Set<Object> userUUIDs = contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
+                Set<Object> userUUIDs = contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
                 if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), Contract.getActiveFrom(), Contract.getActiveTo()) &&
-                        userUUIDs.contains(Contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
+                        userUUIDs.contains(Contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
                     throw new ContractValidationException("Overlapping another contract with same consultants");
             }
         }
@@ -87,9 +87,9 @@ public class ContractService {
     public Contract addProject(Contract Contract, Project project) throws ContractValidationException {
         // validate
         for (Contract contract : project.getContracts()) {
-            Set<Object> userUUIDs = contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
+            Set<Object> userUUIDs = contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
             if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), Contract.getActiveFrom(), Contract.getActiveTo()) &&
-                    userUUIDs.contains(Contract.getConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
+                    userUUIDs.contains(Contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
                 throw new ContractValidationException("Overlapping another contract with same consultants");
         }
 
@@ -229,7 +229,7 @@ public class ContractService {
     public List<Work> getWorkOnContractByUser(Contract Contract) {
         return workRepository.findByProjectsAndUsersAndDateRange(
                 Contract.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
-                Contract.getConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
+                Contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
                 Contract.getActiveFrom().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
                 Contract.getActiveTo().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     }

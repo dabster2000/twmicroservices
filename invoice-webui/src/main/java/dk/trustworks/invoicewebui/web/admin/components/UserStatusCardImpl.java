@@ -47,7 +47,7 @@ public class UserStatusCardImpl extends UserStatusCardDesign {
             getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getStatuses());
         });
         getBtnCreate().addClickListener(event -> {
-            userStatusRepository.save(new UserStatus(user, getCbStatus().getValue(), getDfDate().getValue(), Integer.parseInt(getTxtAllocation().getValue())));
+            userStatusRepository.save(new UserStatus(user, type, getCbStatus().getValue(), getDfDate().getValue(), Integer.parseInt(getTxtAllocation().getValue())));
             user = userRepository.findOne(user.getUuid());
             userStatusList = user.getStatuses();
             getGridSalaries().setItems(userStatusList);

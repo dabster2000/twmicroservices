@@ -35,7 +35,7 @@ public class Contract {
     @OneToMany(mappedBy = "contract", cascade = {
             CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE
     }, fetch = FetchType.EAGER)
-    private Set<Consultant> consultants = new HashSet<>();
+    private Set<ContractConsultant> contractConsultants = new HashSet<>();
 
     @ManyToMany(cascade = {
             CascadeType.MERGE, CascadeType.PERSIST
@@ -106,8 +106,8 @@ public class Contract {
         this.parentuuid = contract.getUuid();
         this.contractType = contract.getContractType();
         this.client = contract.getClient();
-        for (Consultant consultant : contract.getConsultants()) {
-            this.consultants.add(new Consultant(this, consultant.getUser(), consultant.getRate(), consultant.getBudget(), consultant.getHours()));
+        for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+            this.contractConsultants.add(new ContractConsultant(this, contractConsultant.getUser(), contractConsultant.getRate(), contractConsultant.getBudget(), contractConsultant.getHours()));
         }
         this.projects.addAll(contract.getProjects());
         this.clientdata = contract.getClientdata();
@@ -194,12 +194,12 @@ public class Contract {
 
     public void addProjects(Set<Project> projects) {this.projects.addAll(projects); }
 
-    public Set<Consultant> getConsultants() {
-        return consultants;
+    public Set<ContractConsultant> getContractConsultants() {
+        return contractConsultants;
     }
 
-    public Consultant findByUser(User user) {
-        Optional<Consultant> first = consultants.stream().filter(consultant -> consultant.getUser().getUuid().equals(user.getUuid())).findFirst();
+    public ContractConsultant findByUser(User user) {
+        Optional<ContractConsultant> first = contractConsultants.stream().filter(consultant -> consultant.getUser().getUuid().equals(user.getUuid())).findFirst();
         return first.orElse(null);
     }
 
@@ -211,22 +211,22 @@ public class Contract {
         this.activeFrom = activeFrom.withDayOfMonth(1);
     }
 
-    public void addConsultants(List<Consultant> consultants) {
-        for (Consultant newConsultant : consultants) {
+    public void addConsultants(List<ContractConsultant> contractConsultants) {
+        for (ContractConsultant newContractConsultant : contractConsultants) {
             boolean consultantExists = false;
-            for (Consultant consultant : this.consultants) {
-                if(consultant.getUser().getUuid().equals(newConsultant.getUser().getUuid())) consultantExists = true;
+            for (ContractConsultant contractConsultant : this.contractConsultants) {
+                if(contractConsultant.getUser().getUuid().equals(newContractConsultant.getUser().getUuid())) consultantExists = true;
             }
-            if(!consultantExists) this.consultants.add(newConsultant);
+            if(!consultantExists) this.contractConsultants.add(newContractConsultant);
         }
     }
 
-    public void addConsultant(Consultant newConsultant) {
+    public void addConsultant(ContractConsultant newContractConsultant) {
         boolean consultantExists = false;
-        for (Consultant consultant : this.consultants) {
-            if(consultant.getUser().getUuid().equals(newConsultant.getUser().getUuid())) consultantExists = true;
+        for (ContractConsultant contractConsultant : this.contractConsultants) {
+            if(contractConsultant.getUser().getUuid().equals(newContractConsultant.getUser().getUuid())) consultantExists = true;
         }
-        if(!consultantExists) this.consultants.add(newConsultant);
+        if(!consultantExists) this.contractConsultants.add(newContractConsultant);
     }
 
     public Clientdata getClientdata() {

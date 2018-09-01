@@ -14,7 +14,7 @@ public class BudgetNew {
 
     @ManyToOne()
     @JoinColumn(name = "consultantuuid")
-    private Consultant consultant;
+    private ContractConsultant contractConsultant;
 
     @ManyToOne()
     @JoinColumn(name = "projectuuid")
@@ -24,12 +24,12 @@ public class BudgetNew {
         uuid = UUID.randomUUID().toString();
     }
 
-    public BudgetNew(int month, int year, Double budget, Consultant consultant, Project project) {
+    public BudgetNew(int month, int year, Double budget, ContractConsultant contractConsultant, Project project) {
         this();
         this.month = month;
         this.year = year;
         this.budget = budget;
-        this.consultant = consultant;
+        this.contractConsultant = contractConsultant;
         this.project = project;
     }
 
@@ -65,12 +65,12 @@ public class BudgetNew {
         this.budget = budget;
     }
 
-    public Consultant getConsultant() {
-        return consultant;
+    public ContractConsultant getContractConsultant() {
+        return contractConsultant;
     }
 
-    public void setConsultant(Consultant consultant) {
-        this.consultant = consultant;
+    public void setContractConsultant(ContractConsultant contractConsultant) {
+        this.contractConsultant = contractConsultant;
     }
 
     public Project getProject() {

@@ -16,19 +16,19 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "statuses", path = "statuses")
 public interface UserStatusRepository extends CrudRepository<UserStatus, String> {
 
-    @Query(value = "SELECT\n" +
-            "  yt.uuid,\n" +
-            "  yt.useruuid,\n" +
+    @Query(value = "SELECT " +
+            "  yt.uuid, " +
+            "  yt.useruuid, " +
             "  yt.status,\n" +
-            "  yt.statusdate,\n" +
-            "  yt.allocation\n" +
-            "FROM userstatus yt INNER JOIN (\n" +
-            "                          SELECT\n" +
-            "                            uuid,\n" +
-            "                            useruuid,\n" +
-            "                            max(statusdate) created\n" +
-            "                          FROM userstatus\n" +
-            "                          GROUP BY useruuid\n" +
+            "  yt.statusdate," +
+            "  yt.allocation " +
+            "FROM userstatus yt INNER JOIN (" +
+            "                          SELECT" +
+            "                            uuid," +
+            "                            useruuid," +
+            "                            max(statusdate) created" +
+            "                          FROM userstatus" +
+            "                          GROUP BY useruuid" +
             "                        ) ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid WHERE status LIKE 'ACTIVE'", nativeQuery = true)
     List<UserStatus> findAllActive();
 

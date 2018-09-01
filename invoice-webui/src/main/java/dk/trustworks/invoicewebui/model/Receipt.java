@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class Receipt {
 
     @Id
+    @GeneratedValue
     private int id;
 
     @JsonSerialize(using = LocalDateSerializer.class)

@@ -336,8 +336,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         XAxis xAxis = new XAxis();
         for (Contract mainContract : currentProject.getContracts()) {
-            for (Consultant consultant : mainContract.getConsultants()) {
-                xAxis.addCategory(consultant.getUser().getUsername());
+            for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
+                xAxis.addCategory(contractConsultant.getUser().getUsername());
             }
         }
         xAxis.setVisible(false);
@@ -369,10 +369,10 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         conf.setLegend(legend);
 
         for (Contract mainContract : currentProject.getContracts()) {
-            for (Consultant consultant : mainContract.getConsultants()) {
-                DataSeries ls = new DataSeries(consultant.getUser().getUsername());
+            for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
+                DataSeries ls = new DataSeries(contractConsultant.getUser().getUsername());
                 DataSeriesItem dataSeriesItem = new DataSeriesItem();
-                dataSeriesItem.setName(consultant.getUser().getUsername());
+                dataSeriesItem.setName(contractConsultant.getUser().getUsername());
                 dataSeriesItem.setLow(mainContract.getActiveFrom().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
                 dataSeriesItem.setHigh(mainContract.getActiveTo().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
                 ls.add(dataSeriesItem);
@@ -396,15 +396,15 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
         for (Contract mainContract : currentProject.getContracts().stream().sorted(Comparator.comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
-            for (Consultant consultant : mainContract.getConsultants()) {
+            for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
                 ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
-                consultantRowDesign.getLblName().setValue(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
-                consultantRowDesign.getTxtRate().setValue(Math.round(consultant.getRate()) + "");
+                consultantRowDesign.getLblName().setValue(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
+                consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate()) + "");
                 consultantRowDesign.getTxtRate().setReadOnly(true);
-                consultantRowDesign.getTxtHours().setValue(Math.round(consultant.getHours()) + "");
+                consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours()) + "");
                 consultantRowDesign.getTxtHours().setReadOnly(true);
-                consultantRowDesign.getVlHours().setVisible(consultant.getContract().getContractType().equals(ContractType.PERIOD));
-                consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(consultant.getUser(), false));
+                consultantRowDesign.getVlHours().setVisible(contractConsultant.getContract().getContractType().equals(ContractType.PERIOD));
+                consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUser(), false));
                 consultantRowDesign.getBtnDelete().setVisible(false);
                 if(mainContract.getActiveTo().isBefore(LocalDate.now().withDayOfMonth(1))) {
                     consultantRowDesign.getHlBackground().setStyleName("bg-grey");
@@ -476,11 +476,11 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             LocalDate endDate = currentProject.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
 
             double budgetSum = 0.0;
-            for (Consultant consultant : contract.getConsultants()) {
+            for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
                 LocalDate budgetDate = startDate;
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue() - 1, filterDate.getYear(), consultant, currentProject);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject);
                     if(budget!=null) budgetSum += budget.getBudget();
                     budgetDate = budgetDate.plusMonths(1);
                 }
@@ -506,7 +506,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         grid = new Grid<>();
 
         grid.addColumn(BudgetRow::getUsername).setWidth(150).setCaption("Consultant").setId("name-column");
-        grid.addColumn(budgetRow -> budgetRow.getConsultant().getContract().getName()).setWidth(100).setCaption("Contract").setId("contract-column");
+        grid.addColumn(budgetRow -> budgetRow.getContractConsultant().getContract().getName()).setWidth(100).setCaption("Contract").setId("contract-column");
         grid.setFrozenColumnCount(2);
         grid.setWidth("100%");
         grid.getEditor().setEnabled(true);
@@ -516,20 +516,20 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         for (Contract mainContract : currentProject.getContracts()) {
             if(mainContract.getActiveTo().isBefore(startDate)) continue;
             if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) continue;
-            for (Consultant consultant : mainContract.getConsultants()) {
-                BudgetRow budgetRow = new BudgetRow(consultant, (int)(monthsBetween+1));
+            for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
+                BudgetRow budgetRow = new BudgetRow(contractConsultant, (int)(monthsBetween+1));
                 LocalDate budgetDate = startDate;
 
                 int month = 0;
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
 
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue()-1, filterDate.getYear(), consultant, currentProject);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject);
 
                     if(budget != null) {
-                        budgetRow.setMonth(month, (budget.getBudget() / consultant.getRate())+"");
+                        budgetRow.setMonth(month, (budget.getBudget() / contractConsultant.getRate())+"");
                     } else {
-                        budgetNewRepository.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, consultant, currentProject));
+                        budgetNewRepository.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, contractConsultant, currentProject));
                         budgetRow.setMonth(month, "0.0");
                     }
                     month++;
@@ -572,13 +572,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             BudgetRow budgetRow = event.getBean();
             LocalDate budgetCountDate = startDate;
             for (String budgetString : budgetRow.getBudget()) {
-                if(budgetCountDate.isAfter(budgetRow.getConsultant().getContract().getActiveTo())) continue;
-                if(budgetCountDate.isBefore(budgetRow.getConsultant().getContract().getActiveFrom())) continue;
+                if(budgetCountDate.isAfter(budgetRow.getContractConsultant().getContract().getActiveTo())) continue;
+                if(budgetCountDate.isBefore(budgetRow.getContractConsultant().getContract().getActiveFrom())) continue;
                 if(budgetString==null) budgetString = "0.0";
                 BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
-                        budgetRow.getConsultant(),
+                        budgetRow.getContractConsultant(),
                         currentProject);
                 //if(budget.getProject()==null) budget.setProject(currentProject);
                 budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
