@@ -117,8 +117,8 @@ public class CumulativeRevenuePerMonthChart {
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
-                    for (Consultant consultant : contract.getConsultants()) {
-                        cumulativeBudgetPerMonth += (consultant.getHours() * weeks) * consultant.getRate();
+                    for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                        cumulativeBudgetPerMonth += (contractConsultant.getHours() * weeks) * contractConsultant.getRate();
                     }
                 }
             }

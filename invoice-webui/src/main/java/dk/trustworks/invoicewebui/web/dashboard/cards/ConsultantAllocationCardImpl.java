@@ -82,19 +82,19 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
-                    for (Consultant consultant : contract.getConsultants()) {
-                        if(!consultant.getUser().getUuid().equals(user.getUuid())) continue;
+                    for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                        if(!contractConsultant.getUser().getUuid().equals(user.getUuid())) continue;
                         budgetRowList.putIfAbsent(contract.getClient().getName(), new double[12]);
-                        budgetRowList.get(contract.getClient().getName())[i] = (consultant.getHours() * weeks) + budgetRowList.get(contract.getClient().getName())[i];
+                        budgetRowList.get(contract.getClient().getName())[i] = (contractConsultant.getHours() * weeks) + budgetRowList.get(contract.getClient().getName())[i];
                     }
                 }
             }
             List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
             for (BudgetNew budget : budgets) {
-                Consultant consultant = budget.getConsultant();
-                if(!consultant.getUser().getUuid().equals(user.getUuid())) continue;
-                budgetRowList.putIfAbsent(consultant.getContract().getClient().getName(), new double[12]);
-                budgetRowList.get(consultant.getContract().getClient().getName())[i] = (budget.getBudget() / budget.getConsultant().getRate()) + budgetRowList.get(consultant.getContract().getClient().getName())[i];
+                ContractConsultant contractConsultant = budget.getContractConsultant();
+                if(!contractConsultant.getUser().getUuid().equals(user.getUuid())) continue;
+                budgetRowList.putIfAbsent(contractConsultant.getContract().getClient().getName(), new double[12]);
+                budgetRowList.get(contractConsultant.getContract().getClient().getName())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getContract().getClient().getName())[i];
             }
         }
 

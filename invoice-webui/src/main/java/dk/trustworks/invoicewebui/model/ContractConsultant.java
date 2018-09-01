@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "contract_consultants")
-public class Consultant {
+public class ContractConsultant {
 
     @Id
     private String uuid;
@@ -32,11 +32,11 @@ public class Consultant {
     @OneToMany(mappedBy = "consultant", fetch = FetchType.LAZY)
     private List<BudgetNew> budgets;
 
-    public Consultant() {
+    public ContractConsultant() {
         uuid = UUID.randomUUID().toString();
     }
 
-    public Consultant(Contract contract, User user, double rate, double budget, double hours) {
+    public ContractConsultant(Contract contract, User user, double rate, double budget, double hours) {
         this();
         this.contract = contract;
         this.user = user;
@@ -115,7 +115,7 @@ public class Consultant {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Consultant that = (Consultant) o;
+        ContractConsultant that = (ContractConsultant) o;
         return Objects.equals(uuid, that.uuid);
     }
 

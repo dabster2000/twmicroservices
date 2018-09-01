@@ -93,17 +93,17 @@ public class RevenuePerMonthChart {
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().maxLength() / 7.0;
-                    for (Consultant consultant : contract.getConsultants()) {
+                    for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
                         List<Work> workList = workRepository.findByPeriodAndUserUUID(
                                 currentDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                                 currentDate.withDayOfMonth(currentDate.lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                                consultant.getUser().getUuid());
+                                contractConsultant.getUser().getUuid());
                         double notWork = 0.0;
                         for (Work work : workList) {
                             if(work.getTask().getUuid().equals("02bf71c5-f588-46cf-9695-5864020eb1c4") ||
                                     work.getTask().getUuid().equals("f585f46f-19c1-4a3a-9ebd-1a4f21007282")) notWork += work.getWorkduration();
                         }
-                        budgetSum += ((consultant.getHours() * weeks) - notWork) * consultant.getRate();
+                        budgetSum += ((contractConsultant.getHours() * weeks) - notWork) * contractConsultant.getRate();
                     }
                 }
             }

@@ -5,7 +5,7 @@ package dk.trustworks.invoicewebui.repositories;
  */
 
 import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.Consultant;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.Project;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +25,7 @@ public interface BudgetNewRepository extends CrudRepository<BudgetNew, String> {
      * @return
      */
     List<BudgetNew> findByMonthAndYear(@Param("month") int month, @Param("year") int year);
-    BudgetNew findByMonthAndYearAndConsultantAndProject(@Param("month") int month, @Param("year") int year, @Param("consultant") Consultant consultant, @Param("project") Project project);
+    BudgetNew findByMonthAndYearAndConsultantAndProject(@Param("month") int month, @Param("year") int year, @Param("consultant") ContractConsultant contractConsultant, @Param("project") Project project);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(BudgetNew entity);

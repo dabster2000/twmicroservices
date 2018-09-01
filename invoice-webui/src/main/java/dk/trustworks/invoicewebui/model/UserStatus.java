@@ -1,6 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
 
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -19,6 +21,9 @@ public class UserStatus {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    private ConsultantType type;
+
+    @Enumerated(EnumType.STRING)
     private StatusType status;
     private LocalDate statusdate;
     private int allocation;
@@ -26,8 +31,9 @@ public class UserStatus {
     public UserStatus() {
     }
 
-    public UserStatus(User user, StatusType status, LocalDate statusdate, int allocation) {
+    public UserStatus(User user, ConsultantType type, StatusType status, LocalDate statusdate, int allocation) {
         uuid = UUID.randomUUID().toString();
+        this.type = type;
         this.user = user;
         this.status = status;
         this.statusdate = statusdate;
@@ -81,11 +87,21 @@ public class UserStatus {
         this.allocation = allocation;
     }
 
+    public ConsultantType getType() {
+        return type;
+    }
+
+    public void setType(ConsultantType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
-        return "UserStatus{" + "uuid='" + uuid + '\'' +
-                ", user=" + user.getUsername() +
-                ", status='" + status + '\'' +
+        return "UserStatus{" +
+                "uuid='" + uuid + '\'' +
+                ", user=" + user +
+                ", type=" + type +
+                ", status=" + status +
                 ", statusdate=" + statusdate +
                 ", allocation=" + allocation +
                 '}';

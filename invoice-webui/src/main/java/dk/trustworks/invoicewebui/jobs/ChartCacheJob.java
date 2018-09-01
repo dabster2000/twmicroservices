@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import dk.trustworks.invoicewebui.model.Consultant;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
@@ -67,7 +67,7 @@ public class ChartCacheJob {
         double budget = mainContract.getAmount();
         for (Work work : contractService.getWorkOnContractByUser(mainContract).stream().sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).thenComparing(Work::getDay)).collect(Collectors.toList())) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
-            Optional<Consultant> optionalConsultant = mainContract.getConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
+            Optional<ContractConsultant> optionalConsultant = mainContract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;
             budget -= (work.getWorkduration() * optionalConsultant.get().getRate());
             LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay());

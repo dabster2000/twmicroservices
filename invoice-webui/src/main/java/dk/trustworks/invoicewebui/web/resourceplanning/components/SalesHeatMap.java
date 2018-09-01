@@ -58,6 +58,7 @@ public class SalesHeatMap {
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
         List<User> users = userRepository.findByActiveTrue();
+
         String[] monthNames = getMonthNames(localDateStart, localDateEnd);
 
         Chart chart = new Chart();
@@ -95,33 +96,33 @@ public class SalesHeatMap {
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().length(true) / 7.0;
-                    for (Consultant consultant : contract.getConsultants()) {
-                        if(consultant.getUser().getUsername().equals("elvi.nissen")) {
-                            System.out.print("Client(" + consultant.getContract().getClient().getName()+"): ");
-                            System.out.println("hours = " + (consultant.getHours() * weeks));
+                    for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                        if(contractConsultant.getUser().getUsername().equals("elvi.nissen")) {
+                            System.out.print("Client(" + contractConsultant.getContract().getClient().getName()+"): ");
+                            System.out.println("hours = " + (contractConsultant.getHours() * weeks));
                         }
-                        budgetRowList.putIfAbsent(consultant.getUser().getUuid(), new double[12]);
-                        budgetRowList.get(consultant.getUser().getUuid())[i] = (consultant.getHours() * weeks) + budgetRowList.get(consultant.getUser().getUuid())[i];
+                        budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
+                        budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (contractConsultant.getHours() * weeks) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
 
-                        userAllocationPerAssignmentMap.putIfAbsent(consultant.getUser().getUuid(), new HashMap<>());
-                        userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).putIfAbsent(contract.getClient().getUuid(), new double[12]);
-                        userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).get(contract.getClient().getUuid())[i] +=  (consultant.getHours() * weeks);
+                        userAllocationPerAssignmentMap.putIfAbsent(contractConsultant.getUser().getUuid(), new HashMap<>());
+                        userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).putIfAbsent(contract.getClient().getUuid(), new double[12]);
+                        userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).get(contract.getClient().getUuid())[i] +=  (contractConsultant.getHours() * weeks);
                     }
                 }
             }
             List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
             for (BudgetNew budget : budgets) {
-                Consultant consultant = budget.getConsultant();
-                budgetRowList.putIfAbsent(consultant.getUser().getUuid(), new double[12]);
-                budgetRowList.get(consultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getConsultant().getRate()) + budgetRowList.get(consultant.getUser().getUuid())[i];
-                if(consultant.getUser().getUsername().equals("elvi.nissen")) {
+                ContractConsultant contractConsultant = budget.getContractConsultant();
+                budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
+                budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
+                if(contractConsultant.getUser().getUsername().equals("elvi.nissen")) {
                     System.out.print("Project (" + budget.getProject().getName()+"): ");
-                    System.out.println("hours = " + (budget.getBudget() / budget.getConsultant().getRate()));
+                    System.out.println("hours = " + (budget.getBudget() / budget.getContractConsultant().getRate()));
                 }
 
-                userAllocationPerAssignmentMap.putIfAbsent(consultant.getUser().getUuid(), new HashMap<>());
-                userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).putIfAbsent(budget.getProject().getClient().getUuid(), new double[12]);
-                userAllocationPerAssignmentMap.get(consultant.getUser().getUuid()).get(budget.getProject().getClient().getUuid())[i] += (budget.getBudget() / budget.getConsultant().getRate());
+                userAllocationPerAssignmentMap.putIfAbsent(contractConsultant.getUser().getUuid(), new HashMap<>());
+                userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).putIfAbsent(budget.getProject().getClient().getUuid(), new double[12]);
+                userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).get(budget.getProject().getClient().getUuid())[i] += (budget.getBudget() / budget.getContractConsultant().getRate());
             }
         }
 

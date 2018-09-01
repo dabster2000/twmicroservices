@@ -78,9 +78,9 @@ public class ProjectManagerJob {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
                 Set<String> consultants = new TreeSet<>();
-                List<Consultant> consultantList = project.getContracts().stream().map(Contract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
-                for (Consultant consultant : consultantList) {
-                    consultants.add(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
+                List<ContractConsultant> contractConsultantList = project.getContracts().stream().map(Contract::getContractConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
+                for (ContractConsultant contractConsultant : contractConsultantList) {
+                    consultants.add(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
 
                 }
                 newsRepository.save(new News(
@@ -96,9 +96,9 @@ public class ProjectManagerJob {
                 String sha512hex = Hashing.sha512().hashString(project.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
                 if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
                 Set<String> consultants = new TreeSet<>();
-                List<Consultant> consultantList = project.getContracts().stream().map(Contract::getConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
-                for (Consultant consultant : consultantList) {
-                    consultants.add(consultant.getUser().getFirstname() + " " + consultant.getUser().getLastname());
+                List<ContractConsultant> contractConsultantList = project.getContracts().stream().map(Contract::getContractConsultants).distinct().collect(Collectors.toList()).stream().flatMap(Set::stream).distinct().collect(Collectors.toList());
+                for (ContractConsultant contractConsultant : contractConsultantList) {
+                    consultants.add(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
 
                 }
 
