@@ -13,6 +13,7 @@ import dk.trustworks.invoicewebui.model.enums.AmbitionCategory;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.BubblesCardImpl;
 import dk.trustworks.invoicewebui.web.dashboard.cards.ConsultantAllocationCardImpl;
@@ -29,19 +30,27 @@ import java.util.Optional;
 @SpringUI
 public class EmployeeLayout extends VerticalLayout {
 
-    private final User user;
+    private User user;
 
     private final ContractService contractService;
 
     private final BudgetNewRepository budgetNewRepository;
 
-    private final AmbitionRepository ambitionRepository;
+    private final ConsultantRepository consultantRepository;
+
+    private final KeyPurposeRepository keyPurposeRepository;
 
     private final CKOExpenseRepository ckoExpenseRepository;
+
+    private final NotesRepository notesRepository;
 
     private final BubbleRepository bubbleRepository;
 
     private final BubbleMemberRepository bubbleMemberRepository;
+
+    private final ReminderHistoryRepository reminderHistoryRepository;
+
+    private final ReminderRepository reminderRepository;
 
     private final AmbitionSpiderChart ambitionSpiderChart;
 
@@ -62,18 +71,21 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, AmbitionRepository ambitionRepository, CKOExpenseRepository ckoExpenseRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, AmbitionSpiderChart ambitionSpiderChart, PhotoRepository photoRepository, PhotoService photoService, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeRepository keyPurposeRepository, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, PhotoRepository photoRepository, PhotoService photoService, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
-        this.ambitionRepository = ambitionRepository;
+        this.consultantRepository = consultantRepository;
+        this.keyPurposeRepository = keyPurposeRepository;
         this.ckoExpenseRepository = ckoExpenseRepository;
+        this.notesRepository = notesRepository;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
+        this.reminderHistoryRepository = reminderHistoryRepository;
+        this.reminderRepository = reminderRepository;
         this.ambitionSpiderChart = ambitionSpiderChart;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.monthReport = monthReport;
-        user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         responsiveLayout.setSizeFull();
         responsiveLayout.setScrollable(true);
@@ -102,6 +114,7 @@ public class EmployeeLayout extends VerticalLayout {
     }
 
     private void createMonthReportCard() {
+        user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
 
         //Box box = new Box();
         //CssLayout cssLayout = new CssLayout();
@@ -109,9 +122,9 @@ public class EmployeeLayout extends VerticalLayout {
         //cssLayout.addComponent(new UserDetailsCardDesign());
         //box.getContent().addComponent(cssLayout);
 
-        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new PhotoUploader(user.getUuid(), 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader());
+        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(new PhotoUploader(user.getUuid(), 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader()));
         baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new UserDetailsCardDesign());
-        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new KeyPurposeDesign());
+        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new KeyPurposeImpl(user, keyPurposeRepository));
 
         final Button btnWork = new MButton(MaterialIcons.WORK, "work", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top").withEnabled(false);
         final Button btnKnowledge = new MButton(VaadinIcons.ACADEMY_CAP, "knowledge", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
@@ -119,31 +132,21 @@ public class EmployeeLayout extends VerticalLayout {
         final Button btnDocuments = new MButton(MaterialIcons.ARCHIVE, "documents", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnPurpose = new MButton(MaterialIcons.TRENDING_UP, "purpose", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
 
-        btnWork.addClickListener(event -> {
-            setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, workContentRow);
-        });
-        btnKnowledge.addClickListener(event -> {
-            setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, knowContentRow);
-        });
-        btnBudget.addClickListener(event -> {
-            setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, budgContentRow);
-        });
-        btnDocuments.addClickListener(event -> {
-            setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, docsContentRow);
-        });
-        btnPurpose.addClickListener(event -> {
-            setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, purpContentRow);
-        });
+        btnWork.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, workContentRow));
+        btnKnowledge.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, knowContentRow));
+        btnBudget.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, budgContentRow));
+        btnDocuments.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, docsContentRow));
+        btnPurpose.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, purpContentRow));
 
-        buttonContentRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnWork);
-        buttonContentRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnPurpose);
-        buttonContentRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnKnowledge);
-        buttonContentRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnBudget);
-        buttonContentRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnDocuments);
-        buttonContentRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnWork);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnPurpose);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnKnowledge);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnBudget);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnDocuments);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
         workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign"));
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseDesign());
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateDesign());
+        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseImpl(user, notesRepository, reminderRepository));
+        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, consultantRepository));
         knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, AmbitionCategory.DOMAIN));
         knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, AmbitionCategory.SKILL));
         knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, AmbitionCategory.SYSTEM));

@@ -3,7 +3,9 @@ package dk.trustworks.invoicewebui.web.admin.components;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
@@ -47,12 +49,13 @@ public class UserStatusCardImpl extends UserStatusCardDesign {
             getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getStatuses());
         });
         getBtnCreate().addClickListener(event -> {
-            userStatusRepository.save(new UserStatus(user, type, getCbStatus().getValue(), getDfDate().getValue(), Integer.parseInt(getTxtAllocation().getValue())));
+            userStatusRepository.save(new UserStatus(user, getCbType().getValue(), getCbStatus().getValue(), getDfDate().getValue(), Integer.parseInt(getTxtAllocation().getValue())));
             user = userRepository.findOne(user.getUuid());
             userStatusList = user.getStatuses();
             getGridSalaries().setItems(userStatusList);
         });
         getCbStatus().setItems(StatusType.values());
+        getCbType().setItems(ConsultantType.values());
         getCbStatus().setItemCaptionGenerator(StatusType::name);
     }
 

@@ -480,7 +480,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 LocalDate budgetDate = startDate;
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject);
                     if(budget!=null) budgetSum += budget.getBudget();
                     budgetDate = budgetDate.plusMonths(1);
                 }
@@ -524,7 +524,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
 
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject);
 
                     if(budget != null) {
                         budgetRow.setMonth(month, (budget.getBudget() / contractConsultant.getRate())+"");
@@ -575,7 +575,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 if(budgetCountDate.isAfter(budgetRow.getContractConsultant().getContract().getActiveTo())) continue;
                 if(budgetCountDate.isBefore(budgetRow.getContractConsultant().getContract().getActiveFrom())) continue;
                 if(budgetString==null) budgetString = "0.0";
-                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndConsultantAndProject(
+                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
                         budgetRow.getContractConsultant(),

@@ -29,7 +29,7 @@ public class ContractConsultant {
 
     private double hours;
 
-    @OneToMany(mappedBy = "consultant", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "contractConsultant", fetch = FetchType.LAZY)
     private List<BudgetNew> budgets;
 
     public ContractConsultant() {

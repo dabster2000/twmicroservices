@@ -21,7 +21,7 @@ public interface UserStatusRepository extends CrudRepository<UserStatus, String>
             "  yt.useruuid, " +
             "  yt.status,\n" +
             "  yt.statusdate," +
-            "  yt.allocation " +
+            "  yt.allocation, yt.type " +
             "FROM userstatus yt INNER JOIN (" +
             "                          SELECT" +
             "                            uuid," +
@@ -37,7 +37,7 @@ public interface UserStatusRepository extends CrudRepository<UserStatus, String>
             "  yt.useruuid,\n" +
             "  yt.status,\n" +
             "  yt.statusdate,\n" +
-            "  yt.allocation\n" +
+            "  yt.allocation, yt.type \n" +
             "FROM userstatus yt INNER JOIN (\n" +
             "                          SELECT\n" +
             "                            uuid,\n" +

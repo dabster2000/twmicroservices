@@ -5,24 +5,24 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontIcon;
-import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.server.*;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.BrowserFrame;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
+import dk.trustworks.invoicewebui.model.ReminderHistory;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ReminderType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
+import dk.trustworks.invoicewebui.web.profile.components.ConfirmSpeedDateImpl;
 import dk.trustworks.invoicewebui.web.stats.components.Card;
 import dk.trustworks.invoicewebui.web.stats.components.RevenuePerMonthChart;
 import org.slf4j.Logger;
@@ -77,6 +77,8 @@ public class DashboardView extends VerticalLayout implements View {
 
     private final NewsRepository newsRepository;
 
+    private final ReminderHistoryRepository reminderHistoryRepository;
+
     private final UserRepository userRepository;
 
     private final PhotoService photoService;
@@ -90,7 +92,7 @@ public class DashboardView extends VerticalLayout implements View {
     private final RevenuePerMonthChart revenuePerMonthChart;
 
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.budgetNewRepository = budgetNewRepository;
@@ -98,6 +100,7 @@ public class DashboardView extends VerticalLayout implements View {
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.newsRepository = newsRepository;
+        this.reminderHistoryRepository = reminderHistoryRepository;
         this.userRepository = userRepository;
         this.photoService = photoService;
         this.dashboardPreloader = dashboardPreloader;
@@ -217,6 +220,27 @@ public class DashboardView extends VerticalLayout implements View {
         row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
+
+        createNotifications();
+    }
+
+    private void createNotifications() {
+        User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+        List<ReminderHistory> otherReminderHistories = reminderHistoryRepository.findByTargetuuidAndType(user.getUuid(), ReminderType.SPEEDDATE);
+        List<ReminderHistory> myReminderHistories = reminderHistoryRepository.findByTypeAndUserOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user);
+        for (ReminderHistory otherReminderHistory : otherReminderHistories) {
+            boolean found = false;
+            for (ReminderHistory myReminderHistory : myReminderHistories) {
+                if(otherReminderHistory.getUser().getUuid().equals(myReminderHistory.getTargetuuid())) found = true;
+            }
+            if(!found) {
+                Window window = new Window();
+                ConfirmSpeedDateImpl confirmSpeedDate = new ConfirmSpeedDateImpl(user, otherReminderHistory.getUser(), window, reminderHistoryRepository);
+                window.setContent(confirmSpeedDate);
+                window.setModal(true);
+                UI.getCurrent().addWindow(window);
+            }
+        }
     }
 
     private void createTopBoxes(ResponsiveLayout board) {

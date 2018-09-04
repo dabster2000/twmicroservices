@@ -30,6 +30,8 @@ public class ReminderHistory {
     @Column(name = "transmissiondate")
     private LocalDate transmissionDate;
 
+    private String targetuuid;
+
     public ReminderHistory() {
     }
 
@@ -37,6 +39,13 @@ public class ReminderHistory {
         this.type = type;
         this.user = user;
         this.transmissionDate = transmissionDate;
+    }
+
+    public ReminderHistory(ReminderType type, User user, LocalDate transmissionDate, String targetuuid) {
+        this.type = type;
+        this.user = user;
+        this.transmissionDate = transmissionDate;
+        this.targetuuid = targetuuid;
     }
 
     public int getId() {
@@ -71,6 +80,14 @@ public class ReminderHistory {
         this.transmissionDate = transmissionDate;
     }
 
+    public String getTargetuuid() {
+        return targetuuid;
+    }
+
+    public void setTargetuuid(String targetuuid) {
+        this.targetuuid = targetuuid;
+    }
+
     @Override
     public String toString() {
         return "ReminderHistory{" +
@@ -78,6 +95,7 @@ public class ReminderHistory {
                 ", type=" + type +
                 ", user=" + user +
                 ", transmissionDate=" + transmissionDate +
+                ", targetuuid='" + targetuuid + '\'' +
                 '}';
     }
 }

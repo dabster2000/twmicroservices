@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.model;
 
 
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 
 import javax.persistence.*;
 import java.time.LocalDate;

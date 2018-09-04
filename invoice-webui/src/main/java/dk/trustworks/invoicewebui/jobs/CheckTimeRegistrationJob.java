@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.jobs;
 import allbegray.slack.SlackClientFactory;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
-import dk.trustworks.invoicewebui.model.StatusType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.Work;

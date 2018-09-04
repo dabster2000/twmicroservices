@@ -25,7 +25,7 @@ public interface BudgetNewRepository extends CrudRepository<BudgetNew, String> {
      * @return
      */
     List<BudgetNew> findByMonthAndYear(@Param("month") int month, @Param("year") int year);
-    BudgetNew findByMonthAndYearAndConsultantAndProject(@Param("month") int month, @Param("year") int year, @Param("consultant") ContractConsultant contractConsultant, @Param("project") Project project);
+    BudgetNew findByMonthAndYearAndContractConsultantAndProject(@Param("month") int month, @Param("year") int year, @Param("contractconsultant") ContractConsultant contractConsultant, @Param("project") Project project);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(BudgetNew entity);

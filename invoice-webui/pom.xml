@@ -102,25 +102,6 @@
             <version>${org.vaadin.spring.version}</version>
         </dependency>
 
-
-        <!-- Undertow -->
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-core</artifactId>
-            <version>${undertow.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-servlet</artifactId>
-            <version>${undertow.version}</version>
-        </dependency>
-        -->
-
         <!-- Vaadin -->
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -134,13 +115,6 @@
         </dependency>
 
         <!-- Vaadin Addons -->
-        <!--
-        <dependency>
-            <groupId>org.vaadin</groupId>
-            <artifactId>connectoridgenerator-addon</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-charts</artifactId>

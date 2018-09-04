@@ -7,12 +7,17 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.BudgetNew;
+import dk.trustworks.invoicewebui.model.Consultant;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -23,7 +28,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +44,7 @@ public class SalesHeatMap {
 
     private final BudgetNewRepository budgetNewRepository;
 
-    private final UserRepository userRepository;
+    private final ConsultantRepository consultantRepository;
 
     private final ClientRepository clientRepository;
 
@@ -46,9 +54,9 @@ public class SalesHeatMap {
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, UserRepository userRepository, ClientRepository clientRepository, ContractService contractService) {
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService) {
         this.budgetNewRepository = budgetNewRepository;
-        this.userRepository = userRepository;
+        this.consultantRepository = consultantRepository;
         this.clientRepository = clientRepository;
         this.contractService = contractService;
     }
@@ -57,7 +65,7 @@ public class SalesHeatMap {
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
-        List<User> users = userRepository.findByActiveTrue();
+        List<Consultant> consultantList = consultantRepository.findByStatus(StatusType.ACTIVE).stream().filter(consultant -> consultant.getType().equals(ConsultantType.CONSULTANT)).collect(Collectors.toList());
 
         String[] monthNames = getMonthNames(localDateStart, localDateEnd);
 
@@ -127,31 +135,23 @@ public class SalesHeatMap {
             }
         }
 
-        for (User user : users) {
+        for (Consultant user : consultantList) {
             System.out.println("user.getUsername() = " + user.getUsername());
             budgetRowList.putIfAbsent(user.getUuid(), new double[12]);
 
             LocalDate localDate = localDateStart;
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
-                List<UserStatus> userStatuses = user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
-
-                UserStatus userStatus = null;// = new UserStatus(null, null, LocalDate.now(), 0);
-                for (UserStatus userStatusIteration : userStatuses) {
-                    if(userStatusIteration.getStatusdate().isAfter(localDate)) break;
-                    userStatus = userStatusIteration;
-                }
 
                 int weekDays = DateUtils.countWeekDays(localDate, localDate.plusMonths(1));
                 System.out.println("localDate = " + localDate);
                 System.out.println("weekDays = " + weekDays);
-                assert userStatus != null;
-                System.out.println("userStatus.getAllocation() = " + userStatus.getAllocation());
+                System.out.println("userStatus.getAllocation() = " + user.getAllocation());
                 System.out.println("budgetRowList.get(user.getUuid())["+m+"] = " + budgetRowList.get(user.getUuid())[m]);
-                double budget = Math.round((weekDays * (userStatus.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
+                double budget = Math.round((weekDays * (user.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
                 System.out.println("budget = " + budget);
                 if(budget < 0.0) budget = 0.0;
-                budget = Math.round(budget / Math.round(weekDays * (userStatus.getAllocation()/5.0)) * 100.0);
+                budget = Math.round(budget / Math.round(weekDays * (user.getAllocation()/5.0)) * 100.0);
                 System.out.println("budget = " + budget);
 
                 monthAvailabilites[m] += Math.round(budget);
@@ -167,12 +167,12 @@ public class SalesHeatMap {
 
         config.getxAxis().setCategories(monthNames);
 
-        String[] consultants = users.stream().map(User::getUsername).toArray(String[]::new);
+        String[] consultants = consultantList.stream().map(Consultant::getUsername).toArray(String[]::new);
         config.getyAxis().setCategories(consultants);
 
         chart.addPointClickListener(event -> {
             int intValue = new Double(Math.floor(event.getPointIndex() / 12)).intValue();
-            User user = users.get(intValue);
+            Consultant user = consultantList.get(intValue);
 
 
             final Window window = new Window("Window");

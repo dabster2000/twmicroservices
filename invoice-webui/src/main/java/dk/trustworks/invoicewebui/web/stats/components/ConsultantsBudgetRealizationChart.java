@@ -74,7 +74,7 @@ public class ConsultantsBudgetRealizationChart {
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     double weeks = currentDate.getMonth().maxLength() / 7.0;
-                    for (Consultant consultant : contract.getConsultants()) {
+                    for (ContractConsultant consultant : contract.getContractConsultants()) {
                         List<Work> workList = workRepository.findByPeriodAndUserUUID(
                                 currentDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                                 currentDate.withDayOfMonth(currentDate.lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -94,9 +94,9 @@ public class ConsultantsBudgetRealizationChart {
             List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
             for (BudgetNew budget : budgets) {
                 //budgetSum += budget.getBudget();
-                budgetPerUser.putIfAbsent(budget.getConsultant().getUser().getUuid(), 0.0);
-                Double aDouble = Math.floor(budgetPerUser.get(budget.getConsultant().getUser().getUuid())+budget.getBudget());
-                budgetPerUser.replace(budget.getConsultant().getUser().getUuid(), aDouble);
+                budgetPerUser.putIfAbsent(budget.getContractConsultant().getUser().getUuid(), 0.0);
+                Double aDouble = Math.floor(budgetPerUser.get(budget.getContractConsultant().getUser().getUuid())+budget.getBudget());
+                budgetPerUser.replace(budget.getContractConsultant().getUser().getUuid(), aDouble);
             }
         }
 

@@ -1,7 +1,7 @@
 package dk.trustworks.invoicewebui.model.enums;
 
-public enum ReminderType {
+public enum DocumentType {
 
-    SPEEDDATE, TOUCHBASE
+    CONTRACT
 
 }

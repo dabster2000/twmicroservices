@@ -24,6 +24,14 @@ public interface UserRepository extends CrudRepository<User, String> {
     User findByUsername(@Param("username") String username);
     User findBySlackusername(@Param("slackusername") String slackusername);
 
+    @Query(value = "SELECT u.uuid, u.created, u.active, u.email, u.firstname, u.lastname, u.password, u.username, u.slackusername, u.birthday FROM user u " +
+            "LEFT JOIN " +
+            "(SELECT yt.uuid, yt.useruuid, yt.status, yt.statusdate, yt.allocation, yt.type FROM userstatus yt " +
+            "INNER JOIN " +
+            "(SELECT uuid, useruuid, max(statusdate) created FROM userstatus WHERE statusdate < :date GROUP BY useruuid) " +
+            "ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid) kk on u.uuid = kk.useruuid WHERE kk.status LIKE :consultantStatus AND kk.type LIKE :consultantType ORDER BY u.username ;", nativeQuery = true)
+    List<User> findUsersByTypeAndStatusAndDate(@Param("consultantStatus") String consultantStatus, @Param("consultantType") String consultantType, @Param("date") String date);
+
     @Query(value = "SELECT allocation FROM user u RIGHT JOIN ( " +
             "select t.useruuid, t.status, t.statusdate, t.allocation " +
             "from userstatus t " +

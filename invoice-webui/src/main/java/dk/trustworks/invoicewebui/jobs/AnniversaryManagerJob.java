@@ -2,7 +2,7 @@ package dk.trustworks.invoicewebui.jobs;
 
 import com.google.common.hash.Hashing;
 import dk.trustworks.invoicewebui.model.News;
-import dk.trustworks.invoicewebui.model.StatusType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;

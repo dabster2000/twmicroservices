@@ -12,11 +12,16 @@
      <vaadin-vertical-layout>
       <vaadin-vertical-layout>
        <vaadin-label style-name="huge bold white-font" plain-text _id="lblDescription" :middle :center>
-         Why not invite Gisla to a speed date? 
+         Have you been on speed date with Gisla? 
        </vaadin-label>
-       <vaadin-button style-name="flat" plain-text _id="btnDidIt" :middle :center>
-         Click here if you did that already! 
-       </vaadin-button>
+       <vaadin-horizontal-layout :middle :center>
+        <vaadin-button style-name="flat" plain-text _id="btnDidIt">
+          Yep! 
+        </vaadin-button>
+        <vaadin-button style-name="flat" plain-text _id="btnNope">
+          Not yet... 
+        </vaadin-button>
+       </vaadin-horizontal-layout>
       </vaadin-vertical-layout>
      </vaadin-vertical-layout>
     </vaadin-vertical-layout>

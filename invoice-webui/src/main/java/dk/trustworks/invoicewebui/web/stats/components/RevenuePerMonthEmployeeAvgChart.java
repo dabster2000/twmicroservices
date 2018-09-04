@@ -74,22 +74,22 @@ public class RevenuePerMonthEmployeeAvgChart {
         options2.setMarker(new Marker(false));
         avgRevenueList.setPlotOptions(options2);
 
-        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
+        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-MONTH-dd")))).collect(Collectors.toList());
         double avg = 0.0;
         int count = 0;
         for (int i = 0; i < period; i++) {
             if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
                 GraphKeyValue amountPerItem = amountPerItemList.get(i);
-                LocalDate javaDate = LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd"));
+                LocalDate javaDate = LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-MONTH-dd"));
                 if(javaDate.isAfter(LocalDate.now())) continue;
 
                 int consultants = 0;
                 for (User user : employeesJob.getUsersByLocalDate(javaDate)) {
                     if(user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).get().getAllocation()>0) consultants++;
                 }
-                revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), (amountPerItem.getValue() / consultants)));
+                revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-MONTH-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), (amountPerItem.getValue() / consultants)));
                 double expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
-                if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), ((amountPerItem.getValue() - expense) / consultants)));
+                if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-MONTH-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), ((amountPerItem.getValue() - expense) / consultants)));
 
                 if(periodStart.plusMonths(i).isBefore(LocalDate.now().withDayOfMonth(1))) {
                     avg += (amountPerItem.getValue() / consultants);
