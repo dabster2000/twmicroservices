@@ -1,38 +1,48 @@
 package dk.trustworks.invoicewebui.model;
 
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
+import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import java.time.LocalDate;
-import java.util.Date;
-
-/**
- * Created by hans on 23/06/2017.
- */
 @Entity
-public class Consultant {
+@Table(name = "contract_consultants")
+public class ContractConsultant {
 
-    @Id private String uuid;
-    private boolean active;
-    private Date created;
-    private String email;
-    private String firstname;
-    private String lastname;
-    private String username;
-    private String slackusername;
-    private LocalDate birthday;
-    private int salary;
-    @Enumerated(EnumType.STRING)
-    private ConsultantType type;
-    @Enumerated(EnumType.STRING)
-    private StatusType status;
-    private int allocation;
+    @Id
+    private String uuid;
 
-    public Consultant() {
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "contractuuid")
+    private Contract contract;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "useruuid")
+    private User user;
+
+    private double rate;
+
+    private double budget;
+
+    private double hours;
+
+    @OneToMany(mappedBy = "contractConsultant", fetch = FetchType.LAZY)
+    private List<BudgetNew> budgets;
+
+    public ContractConsultant() {
+        uuid = UUID.randomUUID().toString();
+    }
+
+    public ContractConsultant(Contract contract, User user, double rate, double budget, double hours) {
+        this();
+        this.contract = contract;
+        this.user = user;
+        this.rate = rate;
+        this.budget = budget;
+        this.hours = hours;
     }
 
     public String getUuid() {
@@ -43,119 +53,75 @@ public class Consultant {
         this.uuid = uuid;
     }
 
-    public boolean isActive() {
-        return active;
+    public Contract getContract() {
+        return contract;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
-    public Date getCreated() {
-        return created;
+    public User getUser() {
+        return user;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public String getEmail() {
-        return email;
+    public double getRate() {
+        return rate;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setRate(double rate) {
+        this.rate = rate;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public double getBudget() {
+        return budget;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setBudget(double budget) {
+        this.budget = budget;
     }
 
-    public String getLastname() {
-        return lastname;
+    public double getHours() {
+        return hours;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setHours(double hours) {
+        this.hours = hours;
     }
 
-    public String getUsername() {
-        return username;
+    public List<BudgetNew> getBudgets() {
+        return budgets;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getSlackusername() {
-        return slackusername;
-    }
-
-    public void setSlackusername(String slackusername) {
-        this.slackusername = slackusername;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
-    public int getSalary() {
-        return salary;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
-    }
-
-    public ConsultantType getType() {
-        return type;
-    }
-
-    public void setType(ConsultantType type) {
-        this.type = type;
-    }
-
-    public StatusType getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusType status) {
-        this.status = status;
-    }
-
-    public int getAllocation() {
-        return allocation;
-    }
-
-    public void setAllocation(int allocation) {
-        this.allocation = allocation;
+    public void setBudgets(List<BudgetNew> budgets) {
+        this.budgets = budgets;
     }
 
     @Override
     public String toString() {
         return "Consultant{" +
                 "uuid='" + uuid + '\'' +
-                ", active=" + active +
-                ", created=" + created +
-                ", email='" + email + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", username='" + username + '\'' +
-                ", slackusername='" + slackusername + '\'' +
-                ", birthday=" + birthday +
-                ", salary=" + salary +
-                ", type=" + type +
-                ", status=" + status +
-                ", allocation=" + allocation +
+                ", rate=" + rate +
+                ", budget=" + budget +
+                ", hours=" + hours +
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ContractConsultant that = (ContractConsultant) o;
+        return Objects.equals(uuid, that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(uuid);
+    }
 }
