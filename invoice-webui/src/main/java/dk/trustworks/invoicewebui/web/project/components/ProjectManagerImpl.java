@@ -523,7 +523,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 int month = 0;
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
-
                     BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject);
 
                     if(budget != null) {

@@ -65,7 +65,9 @@ public class SalesHeatMap {
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
+
         List<Consultant> consultantList = consultantRepository.findByStatus(StatusType.ACTIVE).stream().filter(consultant -> consultant.getType().equals(ConsultantType.CONSULTANT)).collect(Collectors.toList());
+
 
         String[] monthNames = getMonthNames(localDateStart, localDateEnd);
 

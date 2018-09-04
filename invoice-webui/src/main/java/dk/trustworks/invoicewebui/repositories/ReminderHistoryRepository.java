@@ -21,4 +21,5 @@ public interface ReminderHistoryRepository extends CrudRepository<ReminderHistor
     List<ReminderHistory> findByTypeAndUserOrderByTransmissionDateDesc(@Param("type") ReminderType type, @Param("user") User user);
     List<ReminderHistory> findByTargetuuidAndType(@Param("targetuuid") String targetuuid, @Param("type") ReminderType type);
 
+
 }

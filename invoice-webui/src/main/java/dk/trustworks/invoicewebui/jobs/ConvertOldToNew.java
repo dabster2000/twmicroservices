@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
+import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
@@ -25,7 +25,7 @@ public class ConvertOldToNew {
     private ContractRepository contractRepository;
 
     @Autowired
-    private ContractConsultantRepository contractConsultantRepository;
+    private ConsultantRepository consultantRepository;
 
     //@Transactional
     //@Scheduled(fixedDelay = 1000000, initialDelay = 1000)

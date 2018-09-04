@@ -53,7 +53,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ProjectService projectService;
 
-    private final ContractConsultantRepository contractConsultantRepository;
+    private final ContractConsultantRepository consultantRepository;
 
     private final PhotoService photoService;
 
@@ -75,11 +75,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectService projectService, ContractConsultantRepository contractConsultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository, ChartCacheJob chartCache) {
+    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository, ChartCacheJob chartCache) {
         this.userRepository = userRepository;
         this.contractService = contractService;
         this.projectService = projectService;
-        this.contractConsultantRepository = contractConsultantRepository;
+        this.consultantRepository = consultantRepository;
         this.photoService = photoService;
         this.chartCache = chartCache;
     }
@@ -612,7 +612,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate())+"");
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {
                 contractConsultant.setRate(NumberConverter.parseDouble(event.getValue()));
-                contractConsultantRepository.save(contractConsultant);
+                consultantRepository.save(contractConsultant);
                 updateData(contract);
             });
             consultantRowDesign.getTxtRate().setValueChangeMode(ValueChangeMode.BLUR);
@@ -620,7 +620,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours())+"");
             consultantRowDesign.getTxtHours().addValueChangeListener(event -> {
                 contractConsultant.setHours(NumberConverter.parseDouble(event.getValue()));
-                contractConsultantRepository.save(contractConsultant);
+                consultantRepository.save(contractConsultant);
                 updateData(contract);
             });
             consultantRowDesign.getVlHours().setVisible(contractConsultant.getContract().getContractType().equals(ContractType.PERIOD));
@@ -738,7 +738,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private void removeConsultant(Contract Contract, ContractConsultant contractConsultant) {
         Contract.getContractConsultants().remove(contractConsultant);
-        contractConsultantRepository.delete(contractConsultant);
+        consultantRepository.delete(contractConsultant);
         updateData(Contract);
     }
 
@@ -776,7 +776,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private void createConsultant(Contract contract, User user, double hours, double rate) {
         ContractConsultant contractConsultant = new ContractConsultant(contract, user, rate, 0.0, hours);
         contract.addConsultant(contractConsultant);
-        contractConsultantRepository.save(contractConsultant);
+        consultantRepository.save(contractConsultant);
         updateData(contract);
     }
 }
