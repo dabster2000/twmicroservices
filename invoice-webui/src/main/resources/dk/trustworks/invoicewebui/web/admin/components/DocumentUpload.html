@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+  <meta name="package-mapping" content="server_droporchoose:server.droporchoose">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-vertical-layout spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout size-full :expand>
+     <vaadin-text-field required-indicator-visible caption="Filename:" style-name="floating" width-full _id="txtName"></vaadin-text-field>
+     <server_droporchoose-upload-component _id="uploadComponent"></server_droporchoose-upload-component>
+     <vaadin-vertical-layout style-name="card" spacing="false" margin="false" _id="vlUploadComplete">
+      <vaadin-button icon="fonticon://Vaadin-Icons/e7ad" style-name="icon-only borderless" plain-text _id="btnRemoveUpload" :right></vaadin-button>
+      <vaadin-vertical-layout spacing="false" height="130px" margin="false" :middle :center>
+       <vaadin-label style-name="align-center" width-full plain-text _id="lblFilename" :middle :center>
+         Label 
+       </vaadin-label>
+      </vaadin-vertical-layout>
+     </vaadin-vertical-layout>
+     <vaadin-button icon="fonticon://Vaadin-Icons/e746" style-name="primary" width-full plain-text _id="btnUpload">
+       Upload 
+     </vaadin-button>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

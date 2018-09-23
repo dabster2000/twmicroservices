@@ -9,16 +9,15 @@ import com.vaadin.shared.Registration;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.FooterCell;
 import com.vaadin.ui.components.grid.FooterRow;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.model.*;
+import com.whitestein.vaadin.widgets.wtpdfviewer.WTPdfViewer;
+import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.model.enums.InvoiceType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
@@ -45,6 +44,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.vaadin.server.Sizeable.Unit.PIXELS;
 import static dk.trustworks.invoicewebui.model.enums.InvoiceStatus.*;
 
 /**
@@ -159,12 +159,14 @@ public class InvoiceListImpl extends InvoiceListDesign
             if(gridInvoiceList.getSelectionModel().getFirstSelectedItem().isPresent()) {
                 btnRecreateInvoice.setEnabled(true);
                 btnDownloadPdf.setEnabled(true);
+                btnViewPdf.setEnabled(true);
                 btnCreateCreditNota.setEnabled(true);
                 if(gridInvoiceList.getSelectionModel().getFirstSelectedItem().get().status.equals(CREDIT_NOTE)
                         || gridInvoiceList.getSelectionModel().getFirstSelectedItem().get().type.equals(InvoiceType.CREDIT_NOTE)) {
                     btnCreateCreditNota.setEnabled(false);
                 }
             } else {
+                btnViewPdf.setEnabled(false);
                 btnRecreateInvoice.setEnabled(false);
                 btnDownloadPdf.setEnabled(false);
                 btnCreateCreditNota.setEnabled(false);
@@ -199,16 +201,6 @@ public class InvoiceListImpl extends InvoiceListDesign
         }).setId("type").setCaption("Invoice Type");
 
         gridInvoiceList.setColumnOrder("clientname","projectname","invoicenumber","invoicedate","type","status","sumNoTax","sumWithTax");
-        /*
-      <col column-id="clientname" sortable>
-      <col column-id="projectname" sortable>
-      <col column-id="invoicenumber" sortable>
-      <col column-id="invoicedate" sortable>
-      <col column-id="type" sortable>
-      <col column-id="status" sortable>
-      <col column-id="sumNoTax" sortable>
-      <col column-id="sumWithTax" sortable>
-                */
 
         TextField filteringField2 = getColumnFilterField();
         filteringField2.addValueChangeListener(event -> {
@@ -282,9 +274,26 @@ public class InvoiceListImpl extends InvoiceListDesign
 
         });
 
+        btnViewPdf.addClickListener(event -> {
+            if(!gridInvoiceList.getSelectionModel().getFirstSelectedItem().isPresent()) return;
+            Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
+
+            final StreamResource resource = new StreamResource(() ->
+                    new ByteArrayInputStream(invoice.getPdf()),
+                    invoice.invoicenumber +".pdf"
+            );
+
+
+            WTPdfViewer p = new WTPdfViewer();
+            p.setResource(resource);
+
+            Window window = new Window("Preview Invoice", p);
+            window.setModal(true);
+            UI.getCurrent().addWindow(window);
+        });
+
         btnCreateCreditNota.addClickListener(clickEvent -> {
             Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
-            System.out.println("invoice = " + invoice);
             if(invoice.uuid == null && invoice.uuid.trim().length() == 0) return;
             invoiceService.createCreditNota(invoice);
         });
@@ -344,8 +353,8 @@ public class InvoiceListImpl extends InvoiceListDesign
     private Step getStep1(AbstractComponent attachTo) {
         return new StepBuilder()
                 //.withAttachTo(attachTo)
-                .withWidth(400, Unit.PIXELS)
-                .withHeight(220, Unit.PIXELS)
+                .withWidth(400, PIXELS)
+                .withHeight(220, PIXELS)
                 .withTitle("Invoice Status Page!")
                 .withText(
                         "This page gives an overview of all the created invoices including a monthly view of the invoice totals. From this page you may " +
@@ -358,8 +367,8 @@ public class InvoiceListImpl extends InvoiceListDesign
     private Step getStep2(AbstractComponent attachTo) {
         return new StepBuilder()
                 .withAttachTo(attachTo)
-                .withWidth(400, Unit.PIXELS)
-                .withHeight(350, Unit.PIXELS)
+                .withWidth(400, PIXELS)
+                .withHeight(350, PIXELS)
                 .withTitle("Inovice Status")
                 .withText("This grid gives an overview of all invoices which have on of the following statuses: CREATED, SENT, PAID, or CREDIT NOTE. " +
                         "You can also see the invoice number, invoice date, and the amount with or without tax. " +
@@ -376,8 +385,8 @@ public class InvoiceListImpl extends InvoiceListDesign
     private Step getStep3(AbstractComponent attachTo) {
         return new StepBuilder()
                 .withAttachTo(attachTo)
-                .withWidth(400, Unit.PIXELS)
-                .withHeight(200, Unit.PIXELS)
+                .withWidth(400, PIXELS)
+                .withHeight(200, PIXELS)
                 .withTitle("Download invoice pdf")
                 .withText("When an invoice is created a pdf is generated as well. This an be downloaded by selecting the invoice from the list and clicking this button.")
                 .addButton(new StepButton("Cancel", TourActions::back))
@@ -389,8 +398,8 @@ public class InvoiceListImpl extends InvoiceListDesign
     private Step getStep4(AbstractComponent attachTo) {
         return new StepBuilder()
                 .withAttachTo(attachTo)
-                .withWidth(400, Unit.PIXELS)
-                .withHeight(350, Unit.PIXELS)
+                .withWidth(400, PIXELS)
+                .withHeight(350, PIXELS)
                 .withTitle("Credit Note")
                 .withText("If you need to create a credit note, select the invoice that need to be credit'et and click this button (Create Credit Note). The selected " +
                         "invoice status changes to CREDIT NOTE. " +
@@ -407,8 +416,8 @@ public class InvoiceListImpl extends InvoiceListDesign
     private Step getStep5(AbstractComponent attachTo) {
         return new StepBuilder()
                 .withAttachTo(attachTo)
-                .withWidth(400, Unit.PIXELS)
-                .withHeight(200, Unit.PIXELS)
+                .withWidth(400, PIXELS)
+                .withHeight(200, PIXELS)
                 .withTitle("Credit Note")
                 .withText("This table shows invoice sums by month without tax. Invoices with credit notes aren't counted.")
                 .addButton(new StepButton("Cancel", TourActions::back))

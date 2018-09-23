@@ -68,7 +68,7 @@ public class CumulativeRevenuePerMonthChart {
         DataSeries revenueSeries = new DataSeries("Revenue");
         DataSeries budgetSeries = new DataSeries("Budget");
         DataSeries earningsSeries = new DataSeries("Earnings");
-        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-MONTH-dd")))).collect(Collectors.toList());
+        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
 
         /*
         TrendLine t = new PolyTrendLine(2);

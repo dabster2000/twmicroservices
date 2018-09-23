@@ -22,6 +22,7 @@ public class InvoiceListDesign extends VerticalLayout {
     protected Button btnTour;
     protected Grid<dk.trustworks.invoicewebui.model.Invoice> gridInvoiceList;
     protected Button btnDownloadPdf;
+    protected Button btnViewPdf;
     protected Button btnCreateCreditNota;
     protected Button btnRecreateInvoice;
     protected Grid<dk.trustworks.invoicewebui.web.model.SubTotal> gridSubTotals;

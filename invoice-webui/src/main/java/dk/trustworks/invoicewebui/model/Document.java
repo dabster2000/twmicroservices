@@ -8,12 +8,13 @@ import dk.trustworks.invoicewebui.model.enums.DocumentType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 /**
  * Created by hans on 23/06/2017.
  */
 @Entity
-@Table(name = "document")
+@Table(name = "documents")
 public class Document {
 
     @Id
@@ -27,6 +28,9 @@ public class Document {
     @Column(length = 80)
     private String name;
 
+    @Column(length = 80)
+    private String filename;
+
     @Enumerated(EnumType.STRING)
     private DocumentType type;
 
@@ -35,14 +39,15 @@ public class Document {
     private LocalDate uploaddate;
 
     @Lob
-    private String content;
+    private byte[] content;
 
     public Document() {
     }
 
-    public Document(User user, String name, DocumentType type, LocalDate uploaddate, String content) {
+    public Document(User user, String name, String filename, DocumentType type, LocalDate uploaddate, byte[] content) {
         this.user = user;
         this.name = name;
+        this.filename = filename;
         this.type = type;
         this.uploaddate = uploaddate;
         this.content = content;
@@ -72,6 +77,14 @@ public class Document {
         this.name = name;
     }
 
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     public DocumentType getType() {
         return type;
     }
@@ -88,11 +101,11 @@ public class Document {
         this.uploaddate = uploaddate;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(byte[] content) {
         this.content = content;
     }
 
@@ -102,9 +115,10 @@ public class Document {
                 "id=" + id +
                 ", user=" + user +
                 ", name='" + name + '\'' +
+                ", filename='" + filename + '\'' +
                 ", type=" + type +
                 ", uploaddate=" + uploaddate +
-                ", content='" + content + '\'' +
+                ", content=" + Arrays.toString(content) +
                 '}';
     }
 }

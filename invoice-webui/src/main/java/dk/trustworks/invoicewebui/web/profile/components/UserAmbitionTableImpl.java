@@ -2,9 +2,9 @@ package dk.trustworks.invoicewebui.web.profile.components;
 
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.Ambition;
+import dk.trustworks.invoicewebui.model.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserAmbition;
-import dk.trustworks.invoicewebui.model.enums.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.enums.AmbitionType;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.UserAmbitionRepository;
@@ -29,7 +29,7 @@ public class UserAmbitionTableImpl {
         UserAmbitionTable userAmbitionTable = new UserAmbitionTable();
         List<UserAmbition> userAmbitions = userAmbitionRepository.findByUser(user);
 
-        for (Ambition ambition : ambitionRepository.findAmbitionByActiveIsTrueAndCategory(ambitionCategory)) {
+        for (Ambition ambition : ambitionRepository.findAmbitionByActiveIsTrueAndCategory(ambitionCategory.getAmbitionCategoryType())) {
             final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElse(new UserAmbition(ambition.getId(), user, 0, 1));
             //userAmbitionRepository.save(userAmbition);
             double knowledgeScore = userAmbition.getScore();

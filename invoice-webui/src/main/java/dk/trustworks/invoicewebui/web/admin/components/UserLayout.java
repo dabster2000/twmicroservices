@@ -8,7 +8,6 @@ import com.vaadin.addon.charts.model.Credits;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
@@ -23,7 +22,7 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.web.common.Card;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import static com.vaadin.server.Sizeable.Unit.PIXELS;
 
 @SpringUI
 @SpringComponent
@@ -78,8 +79,6 @@ public class UserLayout {
         ResponsiveRow selectionContentRow = responsiveLayout.addRow();
         ResponsiveRow employeeContentRow = responsiveLayout.addRow();
 
-
-
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
                 .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Consultants", "The car", consultantRepository.findByTypeAndStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE).size()+"", "medium-blue")));
@@ -117,18 +116,14 @@ public class UserLayout {
             loadData(employeeContentRow);
         });
 
-        Card card = new Card();
-        card.getContent().addComponent(getGrid());
-        employeeContentRow.addColumn().withDisplayRules(12, 12, 8, 8)
-                .withComponent(card);
-
-        employeeContentRow.addColumn().withDisplayRules(12, 12, 4, 4)
-                .withComponent(getChart());
+        employeeContentRow.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(new BoxImpl().instance(getGrid()).witHeight(400, PIXELS));
+        employeeContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(getChart()).witHeight(400, PIXELS));
     }
 
     protected Component getChart() {
         Chart chart = new Chart();
-        chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        chart.setSizeFull();//.setWidth(100, PERCENTAGE);
+        //chart.setHeight(380, PIXELS);
         LocalDate periodStart = LocalDate.of(2014, 2, 1);
         LocalDate periodEnd = LocalDate.now();
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -161,7 +156,9 @@ public class UserLayout {
 
     private Grid<Employee> getGrid() {
         Grid<Employee> grid = new Grid<>();
+        //grid.setWidth(100, PERCENTAGE);
         grid.setSizeFull();
+        //grid.setHeight(400, PIXELS);
 
         ArrayList<Employee> employees = new ArrayList();
         // Set the data provider (ListDataProvider<CompanyBudgetHistory>)
@@ -192,7 +189,7 @@ public class UserLayout {
 
         grid.setColumnReorderingAllowed(true);
 
-        grid.getColumns().stream().forEach(column -> column.setHidable(true));
+        grid.getColumns().forEach(column -> column.setHidable(true));
 
         return grid;
     }

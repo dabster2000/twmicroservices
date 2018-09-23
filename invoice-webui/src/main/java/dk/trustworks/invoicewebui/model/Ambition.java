@@ -1,28 +1,30 @@
 package dk.trustworks.invoicewebui.model;
 
-import dk.trustworks.invoicewebui.model.enums.AmbitionCategory;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "ambition")
 public class Ambition {
 
     @Id
+    @GeneratedValue
     private int id;
 
     private String name;
 
     private boolean active;
 
-    @Enumerated(EnumType.STRING)
-    private AmbitionCategory category;
+    //@Enumerated(EnumType.STRING)
+    private String category;
 
 
     public Ambition() {
     }
 
-    public Ambition(String name, boolean active, AmbitionCategory category) {
+    public Ambition(String name, boolean active, String category) {
         this.name = name;
         this.active = active;
         this.category = category;
@@ -48,11 +50,11 @@ public class Ambition {
         this.active = active;
     }
 
-    public AmbitionCategory getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(AmbitionCategory category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 

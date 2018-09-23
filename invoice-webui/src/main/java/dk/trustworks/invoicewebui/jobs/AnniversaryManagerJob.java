@@ -62,7 +62,7 @@ public class AnniversaryManagerJob {
                         sha512hex
                 ));
                 continue;
-            } else if (statuses.size() >=3 &&
+            } else if (firstStatus.getStatusdate().isAfter(LocalDate.now().minusMonths(1)) && statuses.size() >=3 &&
                     statuses.get(statuses.size()-1).getStatus().equals(StatusType.ACTIVE) &&
                     statuses.get(statuses.size()-2).getStatus().equals(StatusType.TERMINATED)) {
                 newsRepository.save(new News(

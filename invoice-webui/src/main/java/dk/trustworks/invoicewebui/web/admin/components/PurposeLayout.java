@@ -66,7 +66,7 @@ public class PurposeLayout {
         userListSelect.setCaption("Select consultant:");
         userListSelect.setWidth(100, Sizeable.Unit.PERCENTAGE);
         userListSelect.setItemCaptionGenerator(User::getUsername);
-        List<User> userList = userRepository.findUsersByTypeAndStatusAndDate(StatusType.ACTIVE.toString(), ConsultantType.CONSULTANT.toString(), LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        List<User> userList = userRepository.findUsersByDateAndStatusAndTypes(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), StatusType.ACTIVE.toString(), ConsultantType.CONSULTANT.toString());
         System.out.println("userList.size() = " + userList.size());
         userListSelect.setItems(userList);
 

@@ -60,8 +60,6 @@ public class TrustworksStatsLayout extends VerticalLayout {
         LocalDate currentFiscalYear = (LocalDate.now().getMonthValue()>6 && LocalDate.now().getMonthValue()<13)?LocalDate.now().withMonth(7).withDayOfMonth(1):LocalDate.now().minusYears(1).withMonth(7).withDayOfMonth(1);
         List<LocalDate> fiscalPeriodList = new ArrayList<>();
         while(startFiscalPeriod.isBefore(currentFiscalYear) || startFiscalPeriod.isEqual(currentFiscalYear)) {
-            System.out.println("startFiscalPeriod = " + startFiscalPeriod);
-            System.out.println("startFiscalPeriod.plusYears(1) = " + startFiscalPeriod.plusYears(1));
             fiscalPeriodList.add(startFiscalPeriod);
             startFiscalPeriod = startFiscalPeriod.plusYears(1);
         }

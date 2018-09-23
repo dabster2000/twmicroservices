@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout :middle :center>
+     <vaadin-absolute-layout width="200px" height="200px" :center>
+      <vaadin-image width="200px" height="200px" _id="imgIcon"></vaadin-image>
+      <vaadin-image visible="false" width="200px" height="200px" _id="imgAmortized"></vaadin-image>
+     </vaadin-absolute-layout>
+     <vaadin-label style-name="small dark-grey-font" plain-text _id="lblDate" :center>
+       21. september 2018 
+     </vaadin-label>
+     <vaadin-label style-name="align-center large bold" width-full plain-text _id="lblDescription">
+       iPhone 8 Plus (256mb) 
+     </vaadin-label>
+     <vaadin-horizontal-layout :center>
+      <vaadin-label style-name="dark-grey-font" plain-text>
+        Amortization period: 
+      </vaadin-label>
+      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblAmortizationPeriod">
+        Label 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-horizontal-layout :center>
+      <vaadin-label style-name="dark-grey-font" plain-text>
+        Amount (w/tax): 
+      </vaadin-label>
+      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblAmount">
+        Label 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-horizontal-layout _id="vlButtonLayout" :center>
+      <vaadin-button style-name="border round" plain-text _id="btnCrashed">
+        Broken 
+      </vaadin-button>
+      <vaadin-button style-name="border round" plain-text _id="btnLost">
+        Lost 
+      </vaadin-button>
+      <vaadin-button style-name="border round" plain-text _id="btnAmortized">
+        Amortized 
+      </vaadin-button>
+     </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

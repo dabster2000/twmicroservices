@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.model.enums;
 
-public enum AmbitionCategory {
+public enum AmbitionCategoryType {
 
     SKILL, DOMAIN, SYSTEM
 

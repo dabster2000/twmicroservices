@@ -12,11 +12,14 @@
      <vaadin-vertical-layout style-name="v-scrollable" height="475px">
       <vaadin-vertical-layout _id="formLayout">
        <vaadin-text-field caption="Full name" placeholder="full name" width-full _id="txtName"></vaadin-text-field>
-       <vaadin-date-field caption="Birthday" placeholder="birthday &amp; year" width-full _id="dfBirthday"></vaadin-date-field>
-       <vaadin-text-field caption="Street" width-full></vaadin-text-field>
-       <vaadin-text-field caption="Postal code" width-full></vaadin-text-field>
-       <vaadin-text-field caption="City" width-full></vaadin-text-field>
-       <vaadin-combo-box caption="Educational Level" style-name="borderless" width-full data-item-type="java.lang.String">
+       <vaadin-date-field caption="Birthday" placeholder="birthday &amp; year" date-format="dd. MMMM yyyy" width-full _id="dfBirthday"></vaadin-date-field>
+       <vaadin-text-field caption="Street" width-full _id="txtStreet"></vaadin-text-field>
+       <vaadin-text-field caption="Postal code" width-full _id="txtPostal"></vaadin-text-field>
+       <vaadin-text-field caption="City" width-full _id="txtCity"></vaadin-text-field>
+       <vaadin-button width-full plain-text _id="btnUpdate">
+         Update 
+       </vaadin-button>
+       <vaadin-combo-box visible="false" caption="Educational Level" style-name="borderless" width-full data-item-type="java.lang.String">
         <option item="SomeHighschool">Some Highschool</option>
         <option item="Option2">Highschool Diploma</option>
         <option item="Option3">Some College</option>

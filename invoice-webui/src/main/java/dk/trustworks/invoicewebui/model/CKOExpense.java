@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class CKOExpense {
 
     @Id
+    @GeneratedValue
     private int id;
 
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -28,17 +29,23 @@ public class CKOExpense {
 
     private int price;
 
+    private String comment;
+
+    private double days;
+
     @Enumerated(EnumType.STRING)
     private CKOExpenseType type;
 
     public CKOExpense() {
     }
 
-    public CKOExpense(LocalDate eventdate, User user, String description, int price, CKOExpenseType type) {
+    public CKOExpense(LocalDate eventdate, User user, String description, int price, String comment, double days, CKOExpenseType type) {
         this.eventdate = eventdate;
         this.user = user;
         this.description = description;
         this.price = price;
+        this.comment = comment;
+        this.days = days;
         this.type = type;
     }
 
@@ -82,6 +89,22 @@ public class CKOExpense {
         this.price = price;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public double getDays() {
+        return days;
+    }
+
+    public void setDays(double days) {
+        this.days = days;
+    }
+
     public CKOExpenseType getType() {
         return type;
     }
@@ -98,6 +121,8 @@ public class CKOExpense {
                 ", user=" + user +
                 ", description='" + description + '\'' +
                 ", price=" + price +
+                ", comment='" + comment + '\'' +
+                ", days=" + days +
                 ", type=" + type +
                 '}';
     }

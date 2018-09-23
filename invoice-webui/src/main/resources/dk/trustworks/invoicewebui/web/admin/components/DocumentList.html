@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+  <meta name="package-mapping" content="server_droporchoose:server.droporchoose">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout spacing="false" size-full margin="false" :expand>
+     <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.model.Document" selection-mode="multi" _id="gridFiles">
+      <table>
+       <colgroup>
+        <col column-id="name" sortable>
+        <col column-id="uploaddate" sortable>
+       </colgroup>
+       <thead>
+        <tr default>
+         <th plain-text column-ids="name">Filename</th>
+         <th plain-text column-ids="uploaddate">Upload date</th>
+        </tr>
+       </thead>
+       <tbody></tbody>
+      </table>
+     </vaadin-grid>
+     <vaadin-horizontal-layout :right>
+      <vaadin-button enabled="false" style-name="flat danger" plain-text _id="btnDelete">
+        Delete Document 
+      </vaadin-button>
+      <vaadin-button enabled="false" style-name="flat friendly" plain-text _id="btnDownload">
+        Download Document 
+      </vaadin-button>
+     </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

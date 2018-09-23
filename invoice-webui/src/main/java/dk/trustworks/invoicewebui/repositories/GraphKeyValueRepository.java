@@ -44,6 +44,24 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "ORDER BY w.year, w.month ", nativeQuery = true)
     List<GraphKeyValue> findRevenueByMonthByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
+    @Cacheable("findBillableHOursByMonthByPeriod")
+    @Query(value = "select w.id as uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.workduration)) value from " +
+            "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
+            "inner join task t on w.taskuuid = t.uuid " +
+            "inner join project p on t.projectuuid = p.uuid " +
+            "inner join user u on w.useruuid = u.uuid " +
+            "inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "inner join contracts c on cp.contractuuid = c.uuid " +
+            "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
+            "where c.activefrom <= registered and c.activeto >= registered " +
+            "and w.registered >= :periodStart AND w.registered <= :periodEnd " +
+            "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
+            "and cc.rate > 0 " +
+            "and u.uuid LIKE :useruuid " +
+            "GROUP BY w.month, w.year " +
+            "ORDER BY w.year, w.month ", nativeQuery = true)
+    List<GraphKeyValue> findBillableHoursByMonthByPeriod(@Param("useruuid") String useruuid, @Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
+
     @Cacheable("findBudgetByMonthByPeriod")
     @Query(value = "SELECT w.taskuuid uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.budget)) value " +
             "    FROM taskworkerconstraint_latest w " +

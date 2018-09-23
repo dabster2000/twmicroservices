@@ -36,6 +36,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.System.currentTimeMillis;
+
 /**
  * Created by hans on 12/08/2017.
  */
@@ -53,7 +55,6 @@ public class DashboardView extends VerticalLayout implements View {
      * Employee page med cv, billede, etc.
      * Project siden skal indeholde en graf over budgetterne
      * Man skal kunne ændre på nyhederne/events
-     * Brugerne skal have tilsendt nye passwords
      * Man skal have overblik over sit eget IT budget
      * Overblik over projekter
      */
@@ -119,7 +120,8 @@ public class DashboardView extends VerticalLayout implements View {
         ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         board.setSizeFull();
         board.setScrollable(true);
-
+        long start = currentTimeMillis();
+        System.out.println("start = " + (start - currentTimeMillis()));
         //BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         NewsImpl newsCard = new NewsImpl(userRepository, newsRepository, 1, 12, "newsCard");
@@ -130,7 +132,7 @@ public class DashboardView extends VerticalLayout implements View {
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
-        VacationCard vacationCard = new VacationCard();
+        VacationCard vacationCard = new VacationCard();System.out.println("9 = " + (start - currentTimeMillis()));
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 
@@ -244,19 +246,17 @@ public class DashboardView extends VerticalLayout implements View {
     }
 
     private void createTopBoxes(ResponsiveLayout board) {
+        long start = currentTimeMillis();
         ResponsiveRow row0 = board.addRow();
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getGoodPeopleBox()));
-
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.createActiveProjectsBox()));
-
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.createBillableHoursBox()));
-
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.createConsultantsPerProjectBox()));

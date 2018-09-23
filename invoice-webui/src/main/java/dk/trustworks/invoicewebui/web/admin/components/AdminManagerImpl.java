@@ -6,6 +6,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.web.admin.layout.DocumentLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
@@ -23,7 +24,10 @@ public class AdminManagerImpl extends VerticalLayout {
     @Autowired
     private UserLayout userLayout;
 
-    @Autowired PurposeLayout purposeLayout;
+    @Autowired
+    private PurposeLayout purposeLayout;
+
+    @Autowired private DocumentLayout documentLayout;
 
     ResponsiveLayout responsiveLayout;
 
@@ -60,7 +64,7 @@ public class AdminManagerImpl extends VerticalLayout {
         final Button btnEmployee = new MButton(MaterialIcons.VERIFIED_USER, "employees", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top").withEnabled(false);
         final Button btnSlack = new MButton(MaterialIcons.CALL, "slack comms", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnBudget = new MButton(MaterialIcons.SHOPPING_CART, "mmm", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
-        final Button btnDocuments = new MButton(MaterialIcons.ARCHIVE, "mmm", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
+        final Button btnDocuments = new MButton(MaterialIcons.ARCHIVE, "Documents", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnPurpose = new MButton(MaterialIcons.TRENDING_UP, "key purpose", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
 
         btnEmployee.addClickListener(event -> {
@@ -91,6 +95,7 @@ public class AdminManagerImpl extends VerticalLayout {
 
         userLayout.createEmployeeLayout(employeeContentRow);
         purposeLayout.createEmployeeLayout(purposeContentRow);
+        docsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(documentLayout);
 
         addComponent(responsiveLayout);
     }

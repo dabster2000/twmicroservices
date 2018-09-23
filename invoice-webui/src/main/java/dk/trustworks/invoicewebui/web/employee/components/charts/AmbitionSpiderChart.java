@@ -2,13 +2,14 @@ package dk.trustworks.invoicewebui.web.employee.components.charts;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import dk.trustworks.invoicewebui.model.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.UserAmbitionDTO;
-import dk.trustworks.invoicewebui.model.enums.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.enums.AmbitionType;
 import dk.trustworks.invoicewebui.repositories.UserAmbitionDTORepository;
 import dk.trustworks.invoicewebui.web.common.Card;
@@ -19,9 +20,7 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 
 import java.util.List;
 
-import static dk.trustworks.invoicewebui.model.enums.AmbitionType.IMPROVE;
-import static dk.trustworks.invoicewebui.model.enums.AmbitionType.SLACK;
-import static dk.trustworks.invoicewebui.model.enums.AmbitionType.STATUS_QUO;
+import static dk.trustworks.invoicewebui.model.enums.AmbitionType.*;
 
 @Service
 public class AmbitionSpiderChart {
@@ -40,14 +39,13 @@ public class AmbitionSpiderChart {
         final Card card = new Card();
         card.getContent().addComponent(createChart(user, ambitionCategory));
         card.getBtnAlt1().setVisible(true);
-        card.getLblTitle().setValue("Competence Chart");
+        card.getLblTitle().setValue("Competence: "+ambitionCategory.getName());
         card.getBtnAlt1().setCaption("");
         card.getBtnAlt1().setIcon(MaterialIcons.EDIT);
         card.getBtnAlt1().addClickListener(event -> {
-            final Window window = new Window("Window");
+            final Window window = new Window("Edit "+ambitionCategory.getName());
             window.setWidth(600.0f, Sizeable.Unit.PIXELS);
             window.setModal(true);
-            window.setCaption("Competence Table");
             //window.setHeight(300, Sizeable.Unit.PIXELS);
             window.setClosable(true);
             window.addCloseListener(e -> {
@@ -77,7 +75,7 @@ public class AmbitionSpiderChart {
         XAxis axis = new XAxis();
 
         //List<Ambition> ambitionList = ambitionRepository.findAmbitionByActiveIsTrue();
-        List<UserAmbitionDTO> userAmbitionList = userAmbitionDTORepository.findUserAmbitionByUseruuidAndCategoryAndActiveTrue(user.getUuid(), ambitionCategory.name());
+        List<UserAmbitionDTO> userAmbitionList = userAmbitionDTORepository.findUserAmbitionByUseruuidAndCategoryAndActiveTrue(user.getUuid(), ambitionCategory.getAmbitionCategoryType());
         for (UserAmbitionDTO ambition : userAmbitionList) {
             axis.addCategory(ambition.getName());
         }
@@ -125,15 +123,17 @@ public class AmbitionSpiderChart {
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setPointPlacement(PointPlacement.ON);
+        plotOptions.setColor(new SolidColor("#236F1F"));
         line1.setPlotOptions(plotOptions);
         line1.setName("Current Knowledge Level");
 
         plotOptions = new PlotOptionsLine();
         plotOptions.setPointPlacement(PointPlacement.ON);
+        plotOptions.setColor(new SolidColor("#bec4c8"));
         line2.setPlotOptions(plotOptions);
         line2.setName("Target Knowledge Level");
 
-        conf.setSeries(line1, line2);
+        conf.setSeries(line2, line1);
 
         chart.drawChart(conf);
 

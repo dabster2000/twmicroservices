@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-vertical-layout :middle :center>
+     <vaadin-date-field placeholder="invoice date" width-full _id="date" :middle :center></vaadin-date-field>
+     <vaadin-combo-box empty-selection-caption="category" width-full data-item-type="dk.trustworks.invoicewebui.model.ITBudgetCategory" data-property-id="longName" _id="cbCategory" :middle :center></vaadin-combo-box>
+     <vaadin-text-field placeholder="description" width-full _id="txtDescription" :middle :center></vaadin-text-field>
+     <vaadin-text-field placeholder="price w/tax" width-full _id="txtAmount" :middle :center></vaadin-text-field>
+     <vaadin-horizontal-layout width-full :center>
+      <vaadin-button style-name="friendly" width-full plain-text _id="btnAdd" :expand>
+        Add 
+      </vaadin-button>
+      <vaadin-button style-name="danger" width-full plain-text _id="btnCancel" :expand>
+        Cancel 
+      </vaadin-button>
+     </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>
