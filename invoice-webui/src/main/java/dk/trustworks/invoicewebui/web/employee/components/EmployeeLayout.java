@@ -19,6 +19,7 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.BubblesCardImpl;
 import dk.trustworks.invoicewebui.web.dashboard.cards.ConsultantAllocationCardImpl;
 import dk.trustworks.invoicewebui.web.employee.components.cards.EmployeeContactInfoCardController;
+import dk.trustworks.invoicewebui.web.employee.components.cards.KeyPurposeHeadlinesCardController;
 import dk.trustworks.invoicewebui.web.employee.components.charts.AmbitionSpiderChart;
 import dk.trustworks.invoicewebui.web.employee.components.charts.BillableConsultantHoursPerMonthChart;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.DocumentTab;
@@ -44,7 +45,7 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final ConsultantRepository consultantRepository;
 
-    private final KeyPurposeRepository keyPurposeRepository;
+    private final KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController;
 
     private final CKOExpenseRepository ckoExpenseRepository;
 
@@ -87,11 +88,11 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeRepository keyPurposeRepository, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
-        this.keyPurposeRepository = keyPurposeRepository;
+        this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
         this.ckoExpenseRepository = ckoExpenseRepository;
         this.notesRepository = notesRepository;
         this.bubbleRepository = bubbleRepository;
@@ -139,7 +140,7 @@ public class EmployeeLayout extends VerticalLayout {
 
         baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(new PhotoUploader(user.getUuid(), 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader()));
         baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(employeeContactInfoCardController.getCard(user));
-        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new KeyPurposeImpl(user, keyPurposeRepository));
+        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(keyPurposeHeadlinesCardController.getCard(user));
 
         final Button btnWork = new MButton(MaterialIcons.WORK, "work", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top").withEnabled(false);
         final Button btnKnowledge = new MButton(VaadinIcons.ACADEMY_CAP, "knowledge", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");

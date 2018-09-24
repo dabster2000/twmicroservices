@@ -1,15 +1,14 @@
 package dk.trustworks.invoicewebui.web.profile.components;
 
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.KeyPurposeRepository;
+import dk.trustworks.invoicewebui.model.KeyPurpose;
+
+import java.util.List;
 
 public class KeyPurposeImpl extends KeyPurposeDesign {
 
-    public KeyPurposeImpl(User user, KeyPurposeRepository keyPurposeRepository) {
-
-        this.getLblPurp1().setValue(keyPurposeRepository.findByUserAndNum(user, 1).getDescription());
-        this.getLblPurp2().setValue(keyPurposeRepository.findByUserAndNum(user, 2).getDescription());
-        this.getLblPurp3().setValue(keyPurposeRepository.findByUserAndNum(user, 3).getDescription());
-
+    public KeyPurposeImpl(List<KeyPurpose> keyPurposeList) {
+        this.getLblPurp1().setValue(keyPurposeList.get(0).getDescription());
+        this.getLblPurp2().setValue(keyPurposeList.get(1).getDescription());
+        this.getLblPurp3().setValue(keyPurposeList.get(2).getDescription());
     }
 }

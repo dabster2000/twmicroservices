@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.CXO})
+@AccessRules(roleTypes = {RoleType.CXO, RoleType.USER})
 @SpringView(name = FaqView.VIEW_NAME)
 public class FaqView extends VerticalLayout implements View {
 

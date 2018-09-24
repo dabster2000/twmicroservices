@@ -2,6 +2,8 @@ package dk.trustworks.invoicewebui.jobs;
 
 import com.google.common.hash.Hashing;
 import dk.trustworks.invoicewebui.model.News;
+import dk.trustworks.invoicewebui.model.Role;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
@@ -47,6 +49,12 @@ public class AnniversaryManagerJob {
     @Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
         for (User user : userRepository.findByActiveTrue()) {
+            boolean isExternal = false;
+            for (Role role : user.getRoleList()) {
+                if(role.getRole().equals(RoleType.EXTERNAL)) isExternal = true;
+            }
+            if(isExternal) continue;
+
             String sha512hex = Hashing.sha512().hashString(user.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
             if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
             List<UserStatus> statuses = user.getStatuses();
