@@ -13,7 +13,9 @@ Profilside
  - konferencer / undervisning
 
 
-- Et ønske til intra, når du har tid: På Report siden vil jeg gerne kunne vælge døde projekter, og meget gerne kunne angive en periode (eller få hele projektet). Det bruger jeg efterhånden ret tit ifm tilbud, og pt sidder jeg og susser mig frem på fakturaoverblik
+
+ - Et minor forslag er under det samlede salg på kunderne - i stedet for at have fx 25607607,98 kr. så enten have tkr. 25.607 eller 25.607.607,98 kr
+ - Et ønske til intra, når du har tid: På Report siden vil jeg gerne kunne vælge døde projekter, og meget gerne kunne angive en periode (eller få hele projektet). Det bruger jeg efterhånden ret tit ifm tilbud, og pt sidder jeg og susser mig frem på fakturaoverblik
 
 
 
