@@ -3,13 +3,17 @@ package dk.trustworks.invoicewebui.web.faq.components;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Faq;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.FaqRepository;
 import dk.trustworks.invoicewebui.web.common.Card;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.labelbutton.LabelButton;
@@ -39,6 +43,7 @@ public class FaqBoard extends VerticalLayout {
 
     @Transactional
     public FaqBoard init() {
+        User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         this.removeAllComponents();
 
         Card card = new Card();
@@ -53,7 +58,8 @@ public class FaqBoard extends VerticalLayout {
         for (Faq faq : faqRepository.findByOrderByFaqgroup()) {
             if(!faq.getFaqgroup().equals(group)) {
                 if(!firstGroup) {
-                    createAddQuestionButton(vl, group);
+                    if(user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EDITOR)))
+                        createAddQuestionButton(vl, group);
                 }
                 group = faq.getFaqgroup();
                 firstGroup = false;
@@ -66,7 +72,8 @@ public class FaqBoard extends VerticalLayout {
             }
             vl.addComponent(createLabelButton(faq, faqRepository.findByOrderByFaqgroup().stream().map(Faq::getFaqgroup).distinct().collect(Collectors.toList())));
         }
-        createAddQuestionButton(vl, group);
+        if(user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EDITOR)))
+            createAddQuestionButton(vl, group);
 
         this.addComponent(card);
         return this;
@@ -74,6 +81,7 @@ public class FaqBoard extends VerticalLayout {
     }
 
     private LabelButton createLabelButton(Faq faq, List<String> groups) {
+        User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         return new LabelButton(faq.getTitle(), labelClickEvent -> {
             Window window = new Window(faq.getTitle());
             window.setModal(true);
@@ -116,6 +124,12 @@ public class FaqBoard extends VerticalLayout {
                     window.close();
                     init();
                 });
+
+                if(!user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EDITOR))) {
+                    btnEdit.setVisible(false);
+                    btnDelete.setVisible(false);
+                    btnSave.setVisible(false);
+                }
 
                 window.setContent(new MVerticalLayout(cbGroup, txtTitle, txtDescription, lblDescription, btnSave, btnEdit, btnDelete).withFullWidth());
             } catch (UnsupportedEncodingException e) {
