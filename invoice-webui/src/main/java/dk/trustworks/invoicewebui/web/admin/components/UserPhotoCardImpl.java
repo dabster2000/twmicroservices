@@ -26,7 +26,7 @@ public class UserPhotoCardImpl extends UserPhotoCardDesign {
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
     public void init(String userUUID) {
         getContainer().removeAllComponents();
-        getContainer().addComponents(new PhotoUploader(userUUID, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader());
+        getContainer().addComponents(new PhotoUploader(userUUID, 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader());
     }
 
 }

@@ -86,10 +86,7 @@ public class AdminManagerImpl extends VerticalLayout {
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnEmployee);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnSlack);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnPurpose);
-        //buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnBudget);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnDocuments);
-        //buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
-        //buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
 

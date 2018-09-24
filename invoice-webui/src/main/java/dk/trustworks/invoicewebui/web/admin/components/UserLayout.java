@@ -232,7 +232,7 @@ public class UserLayout {
 
         employeeContentRow
                 .addColumn()
-                .withDisplayRules(12, 12, 8, 6)
+                .withDisplayRules(12, 12, 8, 8)
                 .withComponent(userStatusCard);
     }
 
@@ -241,7 +241,7 @@ public class UserLayout {
 
         employeeContentRow
                 .addColumn()
-                .withDisplayRules(12, 12, 8, 6)
+                .withDisplayRules(12, 12, 4, 4)
                 .withComponent(userPhotoCard);
 
     }
