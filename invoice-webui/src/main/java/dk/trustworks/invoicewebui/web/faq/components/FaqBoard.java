@@ -59,8 +59,10 @@ public class FaqBoard extends VerticalLayout {
                 firstGroup = false;
                 column = row.addColumn().withDisplayRules(12, 6, 4, 4);
                 vl = new MVerticalLayout();
-                column.withComponent(new MVerticalLayout().withHeight(300, Unit.PIXELS).withStyleName("v-scrollable").withComponent(vl));
-                vl.addComponent(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth());
+                MVerticalLayout scrollLayout = new MVerticalLayout().withHeight(300, Unit.PIXELS).withStyleName("v-scrollable").withComponent(vl);
+                column.withComponent(new MVerticalLayout().withComponents(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth(), scrollLayout));
+
+                //scrollLayout.addComponent(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth());
             }
             vl.addComponent(createLabelButton(faq, faqRepository.findByOrderByFaqgroup().stream().map(Faq::getFaqgroup).distinct().collect(Collectors.toList())));
         }

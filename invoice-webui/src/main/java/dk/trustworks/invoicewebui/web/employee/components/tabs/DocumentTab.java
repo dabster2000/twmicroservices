@@ -39,7 +39,7 @@ public class DocumentTab {
 
     private void createImportantMessgeBox() {
         messageRow.removeAllComponents();
-        ImportantMessageBoxImpl importantMessageBox = new ImportantMessageBoxImpl("This is all your private", "documents at Trustworks").withHalftoneSecondline();
+        ImportantMessageBoxImpl importantMessageBox = new ImportantMessageBoxImpl("These are all your private", "documents at Trustworks").withHalftoneSecondline();
 
         messageRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
