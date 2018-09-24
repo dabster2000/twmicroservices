@@ -20,7 +20,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.ADMIN})
+@AccessRules(roleTypes = {RoleType.CXO})
 @SpringView(name = StatsManagerView.VIEW_NAME)
 public class StatsManagerView extends VerticalLayout implements View {
 
