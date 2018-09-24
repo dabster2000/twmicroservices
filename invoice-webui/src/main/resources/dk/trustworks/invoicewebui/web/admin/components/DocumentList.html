@@ -10,16 +10,18 @@
   <vaadin-vertical-layout size-full>
    <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
     <vaadin-vertical-layout spacing="false" size-full margin="false" :expand>
-     <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.model.Document" selection-mode="multi" _id="gridFiles">
+     <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.web.profile.model.DocumentWithOwner" selection-mode="multi" _id="gridFiles">
       <table>
        <colgroup>
-        <col column-id="name" sortable>
         <col column-id="uploaddate" sortable>
+        <col column-id="name" sortable>
+        <col column-id="username" sortable>
        </colgroup>
        <thead>
         <tr default>
-         <th plain-text column-ids="name">Filename</th>
-         <th plain-text column-ids="uploaddate">Upload date</th>
+         <th plain-text column-ids="uploaddate">Uploaddate</th>
+         <th plain-text column-ids="name">Name</th>
+         <th plain-text column-ids="username">Username</th>
         </tr>
        </thead>
        <tbody></tbody>

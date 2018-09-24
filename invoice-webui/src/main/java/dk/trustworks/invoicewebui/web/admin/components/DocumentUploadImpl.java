@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.admin.components;
 
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
@@ -8,7 +7,7 @@ import dk.trustworks.invoicewebui.model.Document;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
 import dk.trustworks.invoicewebui.repositories.DocumentRepository;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import dk.trustworks.invoicewebui.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -23,21 +22,12 @@ import static com.vaadin.server.Sizeable.Unit.PIXELS;
 @SpringComponent
 public class DocumentUploadImpl extends DocumentUpload {
 
-    private final User user;
-
-    @Autowired
-    private DocumentRepository documentRepository;
-
-    @Autowired
-    private DocumentListImpl documentList;
-
     private byte[] bytes = null;
 
     private String filename = null;
 
-    public DocumentUploadImpl() {
-        user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
-
+    @Autowired
+    public DocumentUploadImpl(DocumentRepository documentRepository, DocumentListImpl documentList, UserRepository userRepository) {
         getBtnUpload().setEnabled(false);
         getVlUploadComplete().setVisible(false);
 
@@ -55,6 +45,9 @@ public class DocumentUploadImpl extends DocumentUpload {
             else getBtnUpload().setEnabled(false);
         });
 
+        getCbUser().setItemCaptionGenerator(User::getUsername);
+        getCbUser().setItems(userRepository.findByOrderByUsername());
+
         getBtnRemoveUpload().addClickListener(event -> {
             bytes = null;
             filename = null;
@@ -66,10 +59,11 @@ public class DocumentUploadImpl extends DocumentUpload {
         getUploadComponent().setCaption("Document upload:");
 
         getBtnUpload().addClickListener(event -> {
-            if(bytes == null && getTxtName().getValue().equals("")) return;
-            Document document = new Document(user, getTxtName().getValue(), filename, DocumentType.CONTRACT, LocalDate.now(), bytes);
+            if(bytes == null || getTxtName().getValue().equals("") || getCbUser().isEmpty()) return;
+            Document document = new Document(getCbUser().getValue(), getTxtName().getValue(), filename, DocumentType.CONTRACT, LocalDate.now(), bytes);
             documentRepository.save(document);
             getTxtName().clear();
+            getCbUser().clear();
             documentList.reload();
             bytes = null;
             filename = null;

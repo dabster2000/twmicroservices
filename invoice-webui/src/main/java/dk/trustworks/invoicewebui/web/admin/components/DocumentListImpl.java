@@ -1,18 +1,17 @@
 package dk.trustworks.invoicewebui.web.admin.components;
 
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.Document;
-import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
 import dk.trustworks.invoicewebui.repositories.DocumentRepository;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import dk.trustworks.invoicewebui.web.profile.model.DocumentWithOwner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,11 +22,7 @@ public class DocumentListImpl extends DocumentList {
     @Autowired
     private DocumentRepository documentRepository;
 
-    private User user;
-
     public DocumentListImpl() {
-        user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
-
         getGridFiles().getColumn("name").setExpandRatio(10);
         getGridFiles().addSelectionListener(event -> {
             if(event.getAllSelectedItems().size()==0) {
@@ -54,7 +49,7 @@ public class DocumentListImpl extends DocumentList {
         });
 
         getBtnDelete().addClickListener(event -> {
-            Set<Document> selectedItems = getGridFiles().getSelectedItems();
+            Set<DocumentWithOwner> selectedItems = getGridFiles().getSelectedItems();
             if(selectedItems.size()==0) return;
             for (Document selectedItem : selectedItems) {
                 documentRepository.delete(selectedItem.getId());
@@ -64,7 +59,11 @@ public class DocumentListImpl extends DocumentList {
     }
 
     public void reload() {
-        List<Document> documents = documentRepository.findByUserAndType(user, DocumentType.CONTRACT);
+        List<DocumentWithOwner> documents = new ArrayList<>();
+        for (Document document : documentRepository.findByType(DocumentType.CONTRACT)) {
+            documents.add(new DocumentWithOwner(document, document.getUser().getUsername()));
+        }
+
         getGridFiles().setItems(documents);
     }
 

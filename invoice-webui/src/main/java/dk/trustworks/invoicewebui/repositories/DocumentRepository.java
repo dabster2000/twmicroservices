@@ -17,6 +17,7 @@ import java.util.List;
 public interface DocumentRepository extends CrudRepository<Document, Integer> {
 
     List<Document> findAll();
+    List<Document> findByType(@Param("contract") DocumentType contract);
     List<Document> findByUserAndType(@Param("user") User user, @Param("contract") DocumentType contract);
 
     @Override @RestResource(exported = false) void delete(Integer id);

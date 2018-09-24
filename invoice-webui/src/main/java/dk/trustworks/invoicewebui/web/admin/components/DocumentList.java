@@ -20,7 +20,7 @@ import com.vaadin.ui.Button;
 @SuppressWarnings("serial")
 public class DocumentList extends VerticalLayout {
     private VerticalLayout cardHolder;
-    private Grid<dk.trustworks.invoicewebui.model.Document> gridFiles;
+    private Grid<dk.trustworks.invoicewebui.web.profile.model.DocumentWithOwner> gridFiles;
     private Button btnDelete;
     private Button btnDownload;
 
@@ -32,7 +32,7 @@ public class DocumentList extends VerticalLayout {
         return cardHolder;
     }
 
-    public Grid<dk.trustworks.invoicewebui.model.Document> getGridFiles() {
+    public Grid<dk.trustworks.invoicewebui.web.profile.model.DocumentWithOwner> getGridFiles() {
         return gridFiles;
     }
 
