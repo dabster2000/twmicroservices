@@ -15,7 +15,7 @@ create table invoicemanager.invoices
 	projectname varchar(100) null,
 	year int null,
 	month int null,
-	type varchar(40) null,
+	currencytype varchar(40) null,
 	constraint invoices_uuid_uindex
 		unique (uuid),
 	constraint invoices_projectuuid_uindex

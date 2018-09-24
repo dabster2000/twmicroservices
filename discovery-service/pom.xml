@@ -58,7 +58,7 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>Dalston.SR1</version>
-                <type>pom</type>
+                <currencytype>pom</currencytype>
                 <scope>import</scope>
             </dependency>
         </dependencies>
