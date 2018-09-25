@@ -10,6 +10,7 @@ import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 
+import java.time.LocalDate;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -79,10 +80,16 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         ListSeries expenseSeries = new ListSeries("expenses");
         ListSeries availableSeries = new ListSeries("available");
 
-        for (String year : expenses.keySet()) {
-            x.addCategory(year);
-            expenseSeries.addData(expenses.get(year));
-            availableSeries.addData(30000-expenses.get(year));
+        if(expenses.keySet().size() == 0) {
+            x.addCategory(LocalDate.now().getYear()+"");
+            expenseSeries.addData(0);
+            availableSeries.addData(30000 );
+        } else {
+            for (String year : expenses.keySet()) {
+                x.addCategory(year);
+                expenseSeries.addData(expenses.get(year));
+                availableSeries.addData(30000 - expenses.get(year));
+            }
         }
 
         conf.addxAxis(x);
