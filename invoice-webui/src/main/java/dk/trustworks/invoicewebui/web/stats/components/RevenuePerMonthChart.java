@@ -73,7 +73,7 @@ public class RevenuePerMonthChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         Tooltip tooltip = new Tooltip();
-        tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' kkr'");
+        tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));

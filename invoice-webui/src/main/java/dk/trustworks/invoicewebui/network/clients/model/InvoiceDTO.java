@@ -86,7 +86,7 @@ public class InvoiceDTO {
     public InvoiceDTO(Invoice invoice) {
         this(invoice.getType().name(),
                 new InvoiceFieldsDTO(),
-                "Trustworks ApS\n" +
+                "Trustworks A/S\n" +
                         "Amagertorv 29a, 3rd floor\n" +
                         "1160 Copenhagen K, Denmark\n" +
                         "CVR: 35648941\n\n"+

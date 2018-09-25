@@ -1,1 +1,0 @@
-ALTER TABLE invoices MODIFY pdf LONGBLOB;

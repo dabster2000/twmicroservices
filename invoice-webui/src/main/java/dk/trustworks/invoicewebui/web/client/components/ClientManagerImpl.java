@@ -293,7 +293,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         conf.getLegend().setEnabled(false);
 
         Tooltip tooltip = new Tooltip();
-        tooltip.setFormatter("this.x +': '+ Highcharts.numberFormat(this.y/1000, 0) +' kkr'");
+        tooltip.setFormatter("this.x +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         conf.setTooltip(tooltip);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
