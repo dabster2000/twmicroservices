@@ -4,6 +4,7 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.annotations.Push;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
@@ -18,6 +19,7 @@ import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +82,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                     Notification.Type.TRAY_NOTIFICATION);
         });
 
+        if(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser().getUuid().equals("7948c5e8-162c-4053-b905-0f59a21d7746")) btnCreateBlankInvoice.setVisible(true);
         btnCreateBlankInvoice.addClickListener(event -> {
             logger.info("New blank invoice created");
             int year = LocalDate.now().getYear();
