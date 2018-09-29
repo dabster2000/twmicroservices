@@ -126,7 +126,7 @@ public class ConsultantsBudgetRealizationChart {
         int j = 0;
         for (GraphKeyValue amountPerItem : amountPerItemList) {
             revenueList.add(new DataSeriesItem(amountPerItem.getDescription(), amountPerItem.getValue()));
-            double v = budgetPerUserMap.get(amountPerItem.getDescription()) - amountPerItem.getValue();
+            double v = budgetPerUserMap.getOrDefault(amountPerItem.getDescription(), 0.0) - amountPerItem.getValue();
             if(v<0.0) v=0.0;
             budgetSeries.add(new DataSeriesItem(amountPerItem.getDescription(), v));
             StringBuilder shortname = new StringBuilder();

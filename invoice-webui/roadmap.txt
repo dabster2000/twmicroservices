@@ -16,6 +16,9 @@ Profilside
 
  - Et ønske til intra, når du har tid: På Report siden vil jeg gerne kunne vælge døde projekter, og meget gerne kunne angive en periode (eller få hele projektet). Det bruger jeg efterhånden ret tit ifm tilbud, og pt sidder jeg og susser mig frem på fakturaoverblik
  - Bemærkningsfelt ud for lønhop
+ - Statement på forsiden: Vi ønsker at være det mest tillidsvækkende IT konsulenthus
+ - Banner på purpose siden
+
 
 
 
