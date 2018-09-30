@@ -117,9 +117,9 @@ public class LeftMenu extends ResponsiveRow {
         MenuItemContainer invoices = new MenuItemContainer(order++).createItem(InvoiceListView.MENU_NAME, false, InvoiceListView.VIEW_ICON, InvoiceListView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(InvoiceListView.VIEW_NAME, invoices);
 
-        MenuItemContainer sales = new MenuItemContainer(order++).createItem("Sales ---", true, null, null, false, RoleType.SALES);
+        MenuItemContainer sales = new MenuItemContainer(order++).createItem("Sales ---", true, null, null, false, RoleType.USER);
         menuItems.put("Sales", sales);
-        MenuItemContainer availabilityplanning = new MenuItemContainer(order++).createItem(ResourcePlanningView.MENU_NAME, false, ResourcePlanningView.VIEW_ICON, ResourcePlanningView.VIEW_NAME, false, RoleType.SALES);
+        MenuItemContainer availabilityplanning = new MenuItemContainer(order++).createItem(ResourcePlanningView.MENU_NAME, false, ResourcePlanningView.VIEW_ICON, ResourcePlanningView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(ResourcePlanningView.VIEW_NAME, availabilityplanning);
 
         MenuItemContainer economy = new MenuItemContainer(order++).createItem("Economy ---", true, null, null, false, RoleType.ADMIN);
