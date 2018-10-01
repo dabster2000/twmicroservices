@@ -1,9 +1,6 @@
 package dk.trustworks.invoicewebui.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "certifications")
@@ -13,7 +10,10 @@ public class Certification {
     @GeneratedValue
     private int id;
 
-    private String useruuid;
+    @ManyToOne()
+    @JoinColumn(name="useruuid")
+
+    private User user;
 
     private String certification;
 
@@ -24,8 +24,8 @@ public class Certification {
     public Certification() {
     }
 
-    public Certification(String useruuid, String certification, String level, int year) {
-        this.useruuid = useruuid;
+    public Certification(User user, String certification, String level, int year) {
+        this.user = user;
         this.certification = certification;
         this.level = level;
         this.year = year;
@@ -39,12 +39,12 @@ public class Certification {
         this.id = id;
     }
 
-    public String getUseruuid() {
-        return useruuid;
+    public User getUser() {
+        return user;
     }
 
-    public void setUseruuid(String useruuid) {
-        this.useruuid = useruuid;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getCertification() {
@@ -75,7 +75,7 @@ public class Certification {
     public String toString() {
         return "Certification{" +
                 "id=" + id +
-                ", useruuid='" + useruuid + '\'' +
+                ", user=" + user +
                 ", certification='" + certification + '\'' +
                 ", level='" + level + '\'' +
                 ", year=" + year +
