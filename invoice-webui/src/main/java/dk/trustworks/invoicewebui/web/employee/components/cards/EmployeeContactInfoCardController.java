@@ -39,10 +39,11 @@ public class EmployeeContactInfoCardController {
 
         userBinder.forField(userDetailsCard.getDfBirthday()).bind(User::getBirthday, User::setBirthday);
 
-        UserContactinfo contactinfo = userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo(user, "", "" ,""));
+        UserContactinfo contactinfo = userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo(user, "", "" ,"", ""));
         contactinfoBinder.forField(userDetailsCard.getTxtCity()).bind(UserContactinfo::getCity, UserContactinfo::setCity);
         contactinfoBinder.forField(userDetailsCard.getTxtPostal()).bind(UserContactinfo::getPostalCode, UserContactinfo::setPostalCode);
         contactinfoBinder.forField(userDetailsCard.getTxtStreet()).bind(UserContactinfo::getStreetName, UserContactinfo::setStreetName);
+        contactinfoBinder.forField(userDetailsCard.getTxtPhone()).bind(UserContactinfo::getPhone, UserContactinfo::setPhone);
 
         userBinder.readBean(user);
         contactinfoBinder.readBean(contactinfo);

@@ -27,6 +27,7 @@ public class UserDetailsCardDesign extends VerticalLayout {
     private TextField txtStreet;
     private TextField txtPostal;
     private TextField txtCity;
+    private TextField txtPhone;
     private Button btnUpdate;
 
     public UserDetailsCardDesign() {
@@ -59,6 +60,10 @@ public class UserDetailsCardDesign extends VerticalLayout {
 
     public TextField getTxtCity() {
         return txtCity;
+    }
+
+    public TextField getTxtPhone() {
+        return txtPhone;
     }
 
     public Button getBtnUpdate() {

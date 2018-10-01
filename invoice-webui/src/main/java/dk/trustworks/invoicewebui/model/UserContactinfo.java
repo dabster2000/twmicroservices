@@ -25,15 +25,17 @@ public class UserContactinfo {
 
     private String city;
 
+    private String phone;
 
     public UserContactinfo() {
     }
 
-    public UserContactinfo(User user, String streetName, String postalCode, String city) {
+    public UserContactinfo(User user, String streetName, String postalCode, String city, String phone) {
         this.user = user;
         this.streetName = streetName;
         this.postalCode = postalCode;
         this.city = city;
+        this.phone = phone;
     }
 
     public int getId() {
@@ -76,6 +78,14 @@ public class UserContactinfo {
         this.city = city;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     @Override
     public String toString() {
         return "UserContactinfo{" +
@@ -84,6 +94,7 @@ public class UserContactinfo {
                 ", streetName='" + streetName + '\'' +
                 ", postalCode='" + postalCode + '\'' +
                 ", city='" + city + '\'' +
+                ", phone='" + phone + '\'' +
                 '}';
     }
 }
