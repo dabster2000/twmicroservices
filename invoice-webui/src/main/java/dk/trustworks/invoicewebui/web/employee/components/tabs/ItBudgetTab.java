@@ -135,7 +135,7 @@ public class ItBudgetTab {
                 item.getBtnDelete().addClickListener(event -> {
                     itBudgetItemRepository.delete(budgetItem.getId());
                     createEquipmentCards();
-                })
+                });
             } else {
                 item.getBtnLost().setEnabled(false);
                 item.getBtnAmortized().setEnabled(false);
