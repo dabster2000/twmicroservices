@@ -68,7 +68,7 @@ public class AdminManagerImpl extends VerticalLayout {
 
         final Button btnEmployee = new MButton(MaterialIcons.VERIFIED_USER, "employees", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top").withEnabled(false);
         final Button btnSlack = new MButton(MaterialIcons.CALL, "slack comms", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
-        final Button btnBudget = new MButton(MaterialIcons.SHOPPING_CART, "mmm", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
+        final Button btnBudget = new MButton(MaterialIcons.SHOPPING_CART, "IT Budget", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnDocuments = new MButton(MaterialIcons.ARCHIVE, "Documents", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnPurpose = new MButton(MaterialIcons.TRENDING_UP, "key purpose", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
 
