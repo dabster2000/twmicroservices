@@ -1,9 +1,11 @@
 package dk.trustworks.invoicewebui.web.employee.components.tabs;
 
+import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ITBudgetCategory;
@@ -12,6 +14,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ItBudgetStatus;
 import dk.trustworks.invoicewebui.repositories.ITBudgetCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.ITBudgetItemRepository;
+import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.web.profile.components.AddBudgetItem;
 import dk.trustworks.invoicewebui.web.profile.components.BudgetItemImpl;
 import dk.trustworks.invoicewebui.web.profile.components.ImportantMessageBoxImpl;
@@ -19,6 +22,8 @@ import org.vaadin.viritin.button.MButton;
 
 import java.time.LocalDate;
 
+import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.LG;
+import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.MD;
 import static dk.trustworks.invoicewebui.model.enums.ItBudgetStatus.*;
 import static dk.trustworks.invoicewebui.utils.NumberConverter.*;
 
@@ -26,18 +31,37 @@ import static dk.trustworks.invoicewebui.utils.NumberConverter.*;
 @SpringComponent
 public class ItBudgetTab {
 
+    private final UserRepository userRepository;
+
     private final ITBudgetItemRepository itBudgetItemRepository;
 
     private final ITBudgetCategoryRepository itBudgetCategoryRepository;
 
+    private ResponsiveRow userRow;
     private ResponsiveRow messageRow;
     private LocalDate currentDate;
     private ResponsiveRow budgetCardsRow;
     private User user;
 
-    public ItBudgetTab(ITBudgetItemRepository itBudgetItemRepository, ITBudgetCategoryRepository itBudgetCategoryRepository) {
+    public ItBudgetTab(UserRepository userRepository, ITBudgetItemRepository itBudgetItemRepository, ITBudgetCategoryRepository itBudgetCategoryRepository) {
+        this.userRepository = userRepository;
         this.itBudgetItemRepository = itBudgetItemRepository;
         this.itBudgetCategoryRepository = itBudgetCategoryRepository;
+    }
+
+    public ResponsiveLayout getTabLayout() {
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+
+        userRow = responsiveLayout.addRow();
+        messageRow = responsiveLayout.addRow();
+        budgetCardsRow = responsiveLayout.addRow();
+
+        currentDate = LocalDate.now();
+
+        createUserSelectBox();
+
+        //createEquipmentCards();
+        return responsiveLayout;
     }
 
     public ResponsiveLayout getTabLayout(User user) {
@@ -50,6 +74,22 @@ public class ItBudgetTab {
         budgetCardsRow = responsiveLayout.addRow();
         createEquipmentCards();
         return responsiveLayout;
+    }
+
+    private void createUserSelectBox() {
+        ResponsiveColumn column = userRow.addColumn().withDisplayRules(12, 12, 4, 4).withOffset(MD, 1).withOffset(LG, 1);
+
+        ComboBox<User> comboBox = new ComboBox<>("Select User: ");
+        comboBox.setItemCaptionGenerator(User::getUsername);
+        comboBox.setItems(userRepository.findByOrderByUsername());
+        comboBox.addValueChangeListener(event -> {
+            if(!event.getSource().isEmpty()) {
+                user = event.getValue();
+                createEquipmentCards();
+            }
+        });
+
+        column.withComponent(comboBox);
     }
 
     private void createImportantMessgeBox(int budgetLeft) {

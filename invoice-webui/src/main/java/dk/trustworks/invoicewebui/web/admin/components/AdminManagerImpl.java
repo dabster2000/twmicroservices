@@ -7,6 +7,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.web.admin.layout.DocumentLayout;
+import dk.trustworks.invoicewebui.web.employee.components.tabs.ItBudgetTab;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
@@ -27,7 +28,11 @@ public class AdminManagerImpl extends VerticalLayout {
     @Autowired
     private PurposeLayout purposeLayout;
 
-    @Autowired private DocumentLayout documentLayout;
+    @Autowired
+    private DocumentLayout documentLayout;
+
+    @Autowired
+    private ItBudgetTab itBudgetTab;
 
     ResponsiveLayout responsiveLayout;
 
@@ -87,12 +92,13 @@ public class AdminManagerImpl extends VerticalLayout {
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnSlack);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnPurpose);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnDocuments);
-        buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
+        buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnBudget);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
 
         userLayout.createEmployeeLayout(employeeContentRow);
         purposeLayout.createEmployeeLayout(purposeContentRow);
         docsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(documentLayout);
+        budgContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(itBudgetTab.getTabLayout());
 
         addComponent(responsiveLayout);
     }
