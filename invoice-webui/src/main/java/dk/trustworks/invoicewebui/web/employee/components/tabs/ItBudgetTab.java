@@ -82,7 +82,7 @@ public class ItBudgetTab {
     }
 
     private void createEquipmentCards() {
-        int budgetLeft = 20000;
+        int budgetLeft = 30000;
         budgetCardsRow.removeAllComponents();
         for (ItBudgetItem budgetItem : itBudgetItemRepository.findByUser(user)) {
             LocalDate tempDate = currentDate.minusMonths(budgetItem.getCategory().getLifespan());
