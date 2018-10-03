@@ -32,6 +32,7 @@ public class BudgetItem extends VerticalLayout {
     private Button btnCrashed;
     private Button btnLost;
     private Button btnAmortized;
+    private Button btnDelete;
 
     public BudgetItem() {
         Design.read(this);
@@ -79,6 +80,10 @@ public class BudgetItem extends VerticalLayout {
 
     public Button getBtnAmortized() {
         return btnAmortized;
+    }
+
+    public Button getBtnDelete() {
+        return btnDelete;
     }
 
 }
