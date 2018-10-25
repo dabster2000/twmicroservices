@@ -7,10 +7,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.Consultant;
-import dk.trustworks.invoicewebui.model.Contract;
-import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
@@ -18,6 +15,7 @@ import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
+import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -50,15 +48,18 @@ public class SalesHeatMap {
 
     private final ContractService contractService;
 
+    private final WorkRepository workRepository;
+
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService) {
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkRepository workRepository) {
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
         this.clientRepository = clientRepository;
         this.contractService = contractService;
+        this.workRepository = workRepository;
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
@@ -146,6 +147,9 @@ public class SalesHeatMap {
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
 
                 int weekDays = DateUtils.countWeekDays(localDate, localDate.plusMonths(1));
+                List<Work> workList = workRepository.findByUserAndTasks(user.getUuid(), "");
+                double vacationAndSickdays = workList.stream().mapToDouble(value -> value.getWorkduration()).sum() / 7.4;
+                weekDays -= vacationAndSickdays;
                 System.out.println("localDate = " + localDate);
                 System.out.println("weekDays = " + weekDays);
                 System.out.println("userStatus.getAllocation() = " + user.getAllocation());
@@ -154,6 +158,7 @@ public class SalesHeatMap {
                 System.out.println("budget = " + budget);
                 if(budget < 0.0) budget = 0.0;
                 budget = Math.round(budget / Math.round(weekDays * (user.getAllocation()/5.0)) * 100.0);
+
                 System.out.println("budget = " + budget);
 
                 monthAvailabilites[m] += Math.round(budget);
@@ -173,7 +178,7 @@ public class SalesHeatMap {
         config.getyAxis().setCategories(consultants);
 
         chart.addPointClickListener(event -> {
-            int intValue = new Double(Math.floor(event.getPointIndex() / 12)).intValue();
+            int intValue = new Double(Math.floor(event.getPointIndex() / 12.0)).intValue();
             Consultant user = consultantList.get(intValue);
 
 

@@ -201,9 +201,9 @@ public class ContractService {
         Set<Project> projectsResult = new HashSet<>();
         for (Project project : projects) {
             if(project.getTasks().size() == 0) continue;
-            List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
+            String[] strings = project.getTasks().stream().map(Task::getUuid).toArray(String[]::new);//.collect(Collectors.toList());
             //System.out.println("tasks = ["+String.join(", ", strings)+"] | user = "+user.getUuid());
-            List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
+            List<Work> workList = workRepository.findByUserAndTasks(user.getUuid(), strings);
             for (Work work : workList) {
                 if(!(work.getWorkduration()>0)) continue;
                 if(findConsultantRateByWork(work, ContractStatus.values())==null) {
@@ -216,8 +216,8 @@ public class ContractService {
 
     public LocalDatePeriod getUsersFirstAndLastWorkOnProject(Project project, User user) {
         if(project.getTasks().size() == 0) return null;
-        List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
-        List<Work> workList = workRepository.findByTasksAndUser(strings, user.getUuid());
+        String[] strings = project.getTasks().stream().map(Task::getUuid).toArray(String[]::new);
+        List<Work> workList = workRepository.findByUserAndTasks(user.getUuid(), strings);
         Optional<Work> workMin = workList.stream().min(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
         Optional<Work> workMax = workList.stream().max(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
         return workMin.map(work -> new LocalDatePeriod(

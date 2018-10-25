@@ -45,8 +45,10 @@ public class UserAmbitionTableImpl {
                 userAmbitionRepository.save(userAmbition);
             });
             ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[ambitionScore].toString());
+            ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[ambitionScore].getDescription());
             ambitionEntry.getBtnAmbition().addClickListener(event -> {
-                ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[userAmbition.rollAmbition()].toString());
+                ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[userAmbition.rollAmbition()].getName());
+                ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[userAmbition.rollAmbition()].getDescription());
                 userAmbitionRepository.save(userAmbition);
             });
             ambitionEntry.getRatingStars().setValueCaption("I know it by name, but I have neither deeper knowledge nor experience with the method", "I know the method but need help to apply it", "I can use the method independently in a project, but may in some cases need assistance", "I am very experienced in the field and use the method as an expert in a project");
