@@ -147,8 +147,8 @@ public class SalesHeatMap {
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
 
                 int weekDays = DateUtils.countWeekDays(localDate, localDate.plusMonths(1));
-                List<Work> workList = workRepository.findByUserAndTasks(user.getUuid(), "");
-                double vacationAndSickdays = workList.stream().mapToDouble(value -> value.getWorkduration()).sum() / 7.4;
+                List<Work> workList = workRepository.findByUserAndTasks(user.getUuid(), "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
+                double vacationAndSickdays = workList.stream().mapToDouble(Work::getWorkduration).sum() / 7.4;
                 weekDays -= vacationAndSickdays;
                 System.out.println("localDate = " + localDate);
                 System.out.println("weekDays = " + weekDays);
