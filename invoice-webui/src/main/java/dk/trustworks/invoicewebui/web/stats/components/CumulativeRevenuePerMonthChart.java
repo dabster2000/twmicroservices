@@ -12,6 +12,7 @@ import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
@@ -39,12 +40,15 @@ public class CumulativeRevenuePerMonthChart {
 
     private final BudgetNewRepository budgetNewRepository;
 
+    private final WorkService workService;
+
     @Autowired
-    public CumulativeRevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository) {
+    public CumulativeRevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.expenseRepository = expenseRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
+        this.workService = workService;
     }
 
     public Chart createCumulativeRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -116,8 +120,9 @@ public class CumulativeRevenuePerMonthChart {
             List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
-                    double weeks = currentDate.getMonth().length(true) / 7.0;
+                    //double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                        double weeks = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0;
                         cumulativeBudgetPerMonth += (contractConsultant.getHours() * weeks) * contractConsultant.getRate();
                     }
                 }

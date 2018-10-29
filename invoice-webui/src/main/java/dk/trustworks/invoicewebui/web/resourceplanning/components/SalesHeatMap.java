@@ -7,7 +7,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.BudgetNew;
+import dk.trustworks.invoicewebui.model.Consultant;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
@@ -15,9 +18,8 @@ import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
@@ -48,18 +50,18 @@ public class SalesHeatMap {
 
     private final ContractService contractService;
 
-    private final WorkRepository workRepository;
+    private final WorkService workService;
 
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkRepository workRepository) {
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService) {
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
         this.clientRepository = clientRepository;
         this.contractService = contractService;
-        this.workRepository = workRepository;
+        this.workService = workService;
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
@@ -108,7 +110,7 @@ public class SalesHeatMap {
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                        double weeks = (getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0);
+                        double weeks = (workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0);
                         if(contractConsultant.getUser().getUsername().equals("hans.lassen")) {
                             System.out.print("Client(" + contractConsultant.getContract().getClient().getName()+"): ");
                             System.out.println("hours = " + (contractConsultant.getHours() * weeks));
@@ -146,7 +148,7 @@ public class SalesHeatMap {
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
 
-                int workDaysInMonth = getWorkDaysInMonth(user.getUuid(), localDate);
+                int workDaysInMonth = workService.getWorkDaysInMonth(user.getUuid(), localDate);
                 System.out.println("localDate = " + localDate);
                 System.out.println("workDaysInMonth = " + workDaysInMonth);
                 System.out.println("userStatus.getAllocation() = " + user.getAllocation());
@@ -236,14 +238,6 @@ public class SalesHeatMap {
         chart.setHeight("700px");
 
         return chart;
-    }
-
-    private int getWorkDaysInMonth(String useruuid, LocalDate month) {
-        int weekDays = DateUtils.countWeekDays(month, month.plusMonths(1));
-        List<Work> workList = workRepository.findByYearAndMonthAndUserAndTasks(month.getYear(), month.getMonthValue()-1, useruuid, "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
-        double vacationAndSickdays = workList.stream().mapToDouble(Work::getWorkduration).sum() / 7.4;
-        weekDays -= vacationAndSickdays;
-        return weekDays;
     }
 
     public Component getAvailabilityChart(LocalDate localDateStart, LocalDate localDateEnd) {

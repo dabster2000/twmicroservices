@@ -13,6 +13,7 @@ import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -42,13 +43,16 @@ public class RevenuePerMonthChart {
 
     private final WorkRepository workRepository;
 
+    private final WorkService workService;
+
     @Autowired
-    public RevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkRepository workRepository) {
+    public RevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkRepository workRepository, WorkService workService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.expenseRepository = expenseRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.workRepository = workRepository;
+        this.workService = workService;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -95,8 +99,9 @@ public class RevenuePerMonthChart {
             double budgetSum = 0.0;
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
-                    double weeks = currentDate.getMonth().maxLength() / 7.0;
+                    //currentDate.getMonth().maxLength() / 7.0;
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                        double weeks = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0;
                         List<Work> workList = workRepository.findByPeriodAndUserUUID(
                                 currentDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                                 currentDate.withDayOfMonth(currentDate.lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
