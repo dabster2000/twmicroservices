@@ -110,6 +110,9 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
 
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.year = :year AND w.month = :month AND w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
+    List<Work> findByYearAndMonthAndUserAndTasks(@Param("year") int year, @Param("month") int month, @Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
+
     @Query(value = "select '2017-05-17 08:09:35' created, w.id, w.day as day, w.month as month, w.year as year, w.taskuuid as taskuuid, w.useruuid as useruuid, workduration as workduration, w.workas as workas from work w " +
             "left join task t on w.taskuuid = t.uuid " +
             "left join project p on t.projectuuid = p.uuid " +
