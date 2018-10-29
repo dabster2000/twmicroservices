@@ -108,8 +108,8 @@ public class SalesHeatMap {
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                        double weeks = getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 7.0;
-                        if(contractConsultant.getUser().getUsername().equals("elvi.nissen")) {
+                        double weeks = (getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0);
+                        if(contractConsultant.getUser().getUsername().equals("hans.lassen")) {
                             System.out.print("Client(" + contractConsultant.getContract().getClient().getName()+"): ");
                             System.out.println("hours = " + (contractConsultant.getHours() * weeks));
                         }
@@ -127,7 +127,7 @@ public class SalesHeatMap {
                 ContractConsultant contractConsultant = budget.getContractConsultant();
                 budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
                 budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
-                if(contractConsultant.getUser().getUsername().equals("elvi.nissen")) {
+                if(contractConsultant.getUser().getUsername().equals("hans.lassen")) {
                     System.out.print("Project (" + budget.getProject().getName()+"): ");
                     System.out.println("hours = " + (budget.getBudget() / budget.getContractConsultant().getRate()));
                 }
