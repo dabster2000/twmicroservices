@@ -107,8 +107,8 @@ public class SalesHeatMap {
             List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
-                    double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                        double weeks = getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 7.0;
                         if(contractConsultant.getUser().getUsername().equals("elvi.nissen")) {
                             System.out.print("Client(" + contractConsultant.getContract().getClient().getName()+"): ");
                             System.out.println("hours = " + (contractConsultant.getHours() * weeks));
@@ -146,18 +146,15 @@ public class SalesHeatMap {
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
 
-                int weekDays = DateUtils.countWeekDays(localDate, localDate.plusMonths(1));
-                List<Work> workList = workRepository.findByYearAndMonthAndUserAndTasks(localDate.getYear(), localDate.getMonthValue()-1, user.getUuid(), "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
-                double vacationAndSickdays = workList.stream().mapToDouble(Work::getWorkduration).sum() / 7.4;
-                weekDays -= vacationAndSickdays;
+                int workDaysInMonth = getWorkDaysInMonth(user.getUuid(), localDate);
                 System.out.println("localDate = " + localDate);
-                System.out.println("weekDays = " + weekDays);
+                System.out.println("workDaysInMonth = " + workDaysInMonth);
                 System.out.println("userStatus.getAllocation() = " + user.getAllocation());
                 System.out.println("budgetRowList.get(user.getUuid())["+m+"] = " + budgetRowList.get(user.getUuid())[m]);
-                double budget = Math.round((weekDays * (user.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
+                double budget = Math.round((workDaysInMonth * (user.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
                 System.out.println("budget = " + budget);
                 if(budget < 0.0) budget = 0.0;
-                budget = Math.round(budget / Math.round(weekDays * (user.getAllocation()/5.0)) * 100.0);
+                budget = Math.round(budget / Math.round(workDaysInMonth * (user.getAllocation()/5.0)) * 100.0);
 
                 System.out.println("budget = " + budget);
 
@@ -239,6 +236,14 @@ public class SalesHeatMap {
         chart.setHeight("700px");
 
         return chart;
+    }
+
+    private int getWorkDaysInMonth(String useruuid, LocalDate month) {
+        int weekDays = DateUtils.countWeekDays(month, month.plusMonths(1));
+        List<Work> workList = workRepository.findByYearAndMonthAndUserAndTasks(month.getYear(), month.getMonthValue()-1, useruuid, "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
+        double vacationAndSickdays = workList.stream().mapToDouble(Work::getWorkduration).sum() / 7.4;
+        weekDays -= vacationAndSickdays;
+        return weekDays;
     }
 
     public Component getAvailabilityChart(LocalDate localDateStart, LocalDate localDateEnd) {
