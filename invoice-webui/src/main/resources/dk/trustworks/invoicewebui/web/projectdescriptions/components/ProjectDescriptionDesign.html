@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.1.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout>
+   <vaadin-vertical-layout style-name="card-3 card-no-padding ripple card-hoverable" spacing="false" margin="false" _id="cardHolder">
+    <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
+    <vaadin-vertical-layout spacing="false" size-full _id="container" :expand>
+     <vaadin-horizontal-layout spacing="false" width-full :middle>
+      <vaadin-label style-name="h5 bold" width-full plain-text _id="lblHeading" :middle :expand>
+        [Bubble Name] 
+      </vaadin-label>
+      <vaadin-horizontal-layout width="100px" height="28px" _id="gaugeContainer"></vaadin-horizontal-layout>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e7fa" description="Edit your bubble" style-name="flat tiny" plain-text _id="btnEdit"></vaadin-button>
+     </vaadin-horizontal-layout>
+     <vaadin-panel style-name="v-scrollable" height="200px" _id="textContentHolder" :expand>
+      <vaadin-label width-full _id="lblDescription">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
+      </vaadin-label>
+     </vaadin-panel>
+     <vaadin-horizontal-layout width-full>
+      <vaadin-panel style-name="v-scrollable" _id="photosContentHolder" :expand>
+       <vaadin-horizontal-layout _id="photoContainer"></vaadin-horizontal-layout>
+      </vaadin-panel>
+     </vaadin-horizontal-layout>
+     <vaadin-panel style-name="v-scrollable" height="100px" _id="userTextContentHolder" :expand>
+      <vaadin-vertical-layout spacing="false">
+       <vaadin-label style-name="white-font" width-full _id="lblUserDescription">
+         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
+       </vaadin-label>
+      </vaadin-vertical-layout>
+     </vaadin-panel>
+    </vaadin-vertical-layout>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>
