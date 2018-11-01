@@ -195,7 +195,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         ComboBox<User> selectUser = new ComboBox<>();
         selectUser.setWidth(100, Unit.PERCENTAGE);
         selectUser.setEmptySelectionAllowed(false);
-        selectUser.setEmptySelectionCaption("Select Consultant");
+        //selectUser.setEmptySelectionCaption("Select Consultant");
         selectUser.setPlaceholder("Select Consultant");
         selectUser.setItemCaptionGenerator(User::getUsername);
         selectUser.setItems(userRepository.findByOrderByUsername());
