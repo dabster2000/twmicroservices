@@ -30,6 +30,7 @@ import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringComponent
 @SpringUI
@@ -96,7 +97,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         clientComboBox.setItemCaptionGenerator(Client::getName);
         clientComboBox.setWidth(100, Unit.PERCENTAGE);
         clientComboBox.addValueChangeListener(event -> {
-            filterDesigns(clientComboBox, event, clientList);
+            filterDesigns(userComboBox, event, clientList);
         });
         filterRow.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
@@ -109,7 +110,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setWidth(100, Unit.PERCENTAGE);
         userComboBox.addValueChangeListener(event -> {
-            filterDesigns(userComboBox, event, userList);
+            filterDesigns(clientComboBox, event, userList);
         });
         filterRow.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
@@ -122,8 +123,10 @@ public class ProjectDescriptionLayout extends VerticalLayout {
     }
 
     private void filterDesigns(ComboBox comboBox, HasValue.ValueChangeEvent event, Map map) {
+        if(!event.isUserOriginated()) return;
         comboBox.clear();
-
+        System.out.println("event = " + event.getValue());
+        System.out.println("event = " + event.isUserOriginated());
         if (event.getValue()!=null) {
             for (ResponsiveColumn design : projectDescriptionDesignList) {
                 design.setVisible(false);
@@ -162,7 +165,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
             List<Image> triangleImageList = new ArrayList<>();
 
             boolean firstUser = true;
-            for (ProjectDescriptionUser projectDescriptionUser : projectDescriptionUserRepository.findByProjectDescription(projectDescription)) {
+            for (ProjectDescriptionUser projectDescriptionUser : projectDescriptionUserRepository.findByProjectDescription(projectDescription).stream().sorted(Comparator.comparing(o -> o.getUser().getUsername())).collect(Collectors.toCollection(ArrayList::new))) {
                 userList.get(projectDescriptionUser.getUser()).add(column);
 
                 Image image = photoService.getRoundMemberImage(projectDescriptionUser.getUser(), false);
@@ -178,13 +181,13 @@ public class ProjectDescriptionLayout extends VerticalLayout {
                                 .withAlign(triangle, Alignment.BOTTOM_CENTER));
 
                 if(firstUser) projectDescriptionDesign.getLblUserDescription().setValue(projectDescriptionUser.getDescription());
-                else projectDescriptionDesign.getLblUserDescription().setValue("");
+                //else projectDescriptionDesign.getLblUserDescription().setValue("");
+                projectDescriptionDesign.getUserTextContentHolder().setStyleName("v-scrollable medium-light-blue");
                 image.addClickListener(event -> {
                     projectDescriptionDesign.getLblUserDescription().setValue(projectDescriptionUser.getDescription());
                     for (Image t : triangleImageList) {
                         t.setVisible(false);
                     }
-                    projectDescriptionDesign.getUserTextContentHolder().setStyleName("v-scrollable medium-light-blue");
                     triangle.setVisible(true);
                 });
                 firstUser = false;
