@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.web.projectdescriptions;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.data.HasValue;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -91,12 +92,11 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         clientComboBox.setStyleName("floating");
         clientComboBox.setItems(clientList.keySet());
         clientComboBox.setEmptySelectionAllowed(true);
-        clientComboBox.setEmptySelectionCaption("Filter client");
+        clientComboBox.setEmptySelectionCaption("No filter");
         clientComboBox.setItemCaptionGenerator(Client::getName);
         clientComboBox.setWidth(100, Unit.PERCENTAGE);
         clientComboBox.addValueChangeListener(event -> {
-            userComboBox.clear();
-            if (event.getValue()!=null) filterDesigns(clientList.get(event.getValue()));
+            filterDesigns(clientComboBox, event, clientList);
         });
         filterRow.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
@@ -105,12 +105,11 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         userComboBox.setStyleName("floating");
         userComboBox.setItems(userList.keySet());
         userComboBox.setEmptySelectionAllowed(true);
-        userComboBox.setEmptySelectionCaption("Filter consultant");
+        userComboBox.setEmptySelectionCaption("No filter");
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setWidth(100, Unit.PERCENTAGE);
         userComboBox.addValueChangeListener(event -> {
-            clientComboBox.clear();
-            if (event.getValue()!=null) filterDesigns(userList.get(event.getValue()));
+            filterDesigns(userComboBox, event, userList);
         });
         filterRow.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
@@ -122,14 +121,20 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         userList.clear();
     }
 
-    private void filterDesigns(List<ResponsiveColumn> list) {
-        for (ResponsiveColumn design : projectDescriptionDesignList) {
-            //projectDescriptionsRow.removeComponent(design);
-            design.setVisible(false);
-        }
-        for (ResponsiveColumn design : list) {
-            //projectDescriptionsRow.add
-            design.setVisible(true);
+    private void filterDesigns(ComboBox comboBox, HasValue.ValueChangeEvent event, Map map) {
+        comboBox.clear();
+
+        if (event.getValue()!=null) {
+            for (ResponsiveColumn design : projectDescriptionDesignList) {
+                design.setVisible(false);
+            }
+            for (ResponsiveColumn design : (List<ResponsiveColumn>) map.get(event.getValue())) {
+                design.setVisible(true);
+            }
+        } else {
+            for (ResponsiveColumn design : projectDescriptionDesignList) {
+                design.setVisible(true);
+            }
         }
     }
 
