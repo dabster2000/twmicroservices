@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.projectdescriptions;
 
+import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.Resource;
@@ -27,10 +28,7 @@ import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @SpringComponent
 @SpringUI
@@ -43,7 +41,15 @@ public class ProjectDescriptionLayout extends VerticalLayout {
     private ProjectDescriptionUserRepository projectDescriptionUserRepository;
 
     private ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-    private ResponsiveRow bubblesRow;
+    private ResponsiveRow projectDescriptionsRow;
+    private ResponsiveRow filterRow;
+
+    private final List<ResponsiveColumn> projectDescriptionDesignList = new ArrayList<>();
+    //private final List<ProjectDescriptionDesign> projectDescriptionDesignList = new ArrayList<>();
+
+
+    private final Map<Client, List<ResponsiveColumn>> clientList = new HashMap();
+    private final Map<User, List<ResponsiveColumn>> userList = new HashMap<>();
 
     @Autowired
     public ProjectDescriptionLayout(UserRepository userRepository, ClientRepository clientRepository, PhotoService photoService, ProjectDescriptionRepository projectDescriptionRepository, ProjectDescriptionUserRepository projectDescriptionUserRepository) {
@@ -57,20 +63,89 @@ public class ProjectDescriptionLayout extends VerticalLayout {
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public ProjectDescriptionLayout init() {
-        bubblesRow = responsiveLayout.addRow();
+        filterRow = responsiveLayout.addRow();
+        projectDescriptionsRow = responsiveLayout.addRow();
         this.addComponent(responsiveLayout);
 
+        createFilterRow();
         loadProjectDescriptions();
         return this;
     }
 
+    private void createFilterRow() {
+        filterRow.removeAllComponents();
+        clearContainers();
+
+        for (ProjectDescription projectDescription : projectDescriptionRepository.findAll()) {
+            Client client = projectDescription.getClient();
+            clientList.putIfAbsent(client, new ArrayList<>());
+
+            for (ProjectDescriptionUser projectDescriptionUser : projectDescriptionUserRepository.findByProjectDescription(projectDescription)) {
+                userList.putIfAbsent(projectDescriptionUser.getUser(), new ArrayList<>());
+            }
+        }
+
+        ComboBox<Client> clientComboBox = new ComboBox<>("Client filter");
+        ComboBox<User> userComboBox = new ComboBox<>("Consultant filter");
+
+        clientComboBox.setStyleName("floating");
+        clientComboBox.setItems(clientList.keySet());
+        clientComboBox.setEmptySelectionAllowed(true);
+        clientComboBox.setEmptySelectionCaption("Filter client");
+        clientComboBox.setItemCaptionGenerator(Client::getName);
+        clientComboBox.setWidth(100, Unit.PERCENTAGE);
+        clientComboBox.addValueChangeListener(event -> {
+            userComboBox.clear();
+            if (event.getValue()!=null) filterDesigns(clientList.get(event.getValue()));
+        });
+        filterRow.addColumn()
+                .withDisplayRules(12, 12, 4, 4)
+                .withComponent(new MVerticalLayout(clientComboBox));
+
+        userComboBox.setStyleName("floating");
+        userComboBox.setItems(userList.keySet());
+        userComboBox.setEmptySelectionAllowed(true);
+        userComboBox.setEmptySelectionCaption("Filter consultant");
+        userComboBox.setItemCaptionGenerator(User::getUsername);
+        userComboBox.setWidth(100, Unit.PERCENTAGE);
+        userComboBox.addValueChangeListener(event -> {
+            clientComboBox.clear();
+            if (event.getValue()!=null) filterDesigns(userList.get(event.getValue()));
+        });
+        filterRow.addColumn()
+                .withDisplayRules(12, 12, 4, 4)
+                .withComponent(new MVerticalLayout(userComboBox));
+    }
+
+    private void clearContainers() {
+        clientList.clear();
+        userList.clear();
+    }
+
+    private void filterDesigns(List<ResponsiveColumn> list) {
+        for (ResponsiveColumn design : projectDescriptionDesignList) {
+            //projectDescriptionsRow.removeComponent(design);
+            design.setVisible(false);
+        }
+        for (ResponsiveColumn design : list) {
+            //projectDescriptionsRow.add
+            design.setVisible(true);
+        }
+    }
+
     private void loadProjectDescriptions() {
-        bubblesRow.removeAllComponents();
+        projectDescriptionsRow.removeAllComponents();
+        projectDescriptionDesignList.clear();
 
         Iterable<ProjectDescription> allProjDesc = projectDescriptionRepository.findAll();
 
         for (ProjectDescription projectDescription : allProjDesc) {
             ProjectDescriptionDesign projectDescriptionDesign = new ProjectDescriptionDesign();
+
+            ResponsiveColumn column = projectDescriptionsRow.addColumn();
+            column.withDisplayRules(12, 12, 6,4).withComponent(projectDescriptionDesign);
+            projectDescriptionDesignList.add(column);
+            clientList.get(projectDescription.getClient()).add(column);
 
             projectDescriptionDesign.getLblHeading().setValue(projectDescription.getName());
             projectDescriptionDesign.getLblDescription().setValue(projectDescription.getDescription());
@@ -81,10 +156,13 @@ public class ProjectDescriptionLayout extends VerticalLayout {
 
             List<Image> triangleImageList = new ArrayList<>();
 
+            boolean firstUser = true;
             for (ProjectDescriptionUser projectDescriptionUser : projectDescriptionUserRepository.findByProjectDescription(projectDescription)) {
+                userList.get(projectDescriptionUser.getUser()).add(column);
+
                 Image image = photoService.getRoundMemberImage(projectDescriptionUser.getUser(), false);
                 Image triangle = new Image(null, new ThemeResource("images/triangle-medium-light-blue.png"));
-                triangle.setVisible(false);
+                triangle.setVisible(firstUser);
 
                 triangleImageList.add(triangle);
 
@@ -94,7 +172,8 @@ public class ProjectDescriptionLayout extends VerticalLayout {
                                 //.withHeight(75+30, Unit.PIXELS)
                                 .withAlign(triangle, Alignment.BOTTOM_CENTER));
 
-                projectDescriptionDesign.getLblUserDescription().setValue("");
+                if(firstUser) projectDescriptionDesign.getLblUserDescription().setValue(projectDescriptionUser.getDescription());
+                else projectDescriptionDesign.getLblUserDescription().setValue("");
                 image.addClickListener(event -> {
                     projectDescriptionDesign.getLblUserDescription().setValue(projectDescriptionUser.getDescription());
                     for (Image t : triangleImageList) {
@@ -103,17 +182,15 @@ public class ProjectDescriptionLayout extends VerticalLayout {
                     projectDescriptionDesign.getUserTextContentHolder().setStyleName("v-scrollable medium-light-blue");
                     triangle.setVisible(true);
                 });
+                firstUser = false;
             }
-            if(!triangleImageList.isEmpty()) triangleImageList.get(0).setVisible(true);
+            //if(!triangleImageList.isEmpty()) triangleImageList.get(0).setVisible(true);
             Resource resource = photoService.getRelatedPhoto(projectDescription.getClient().getUuid());
 
             projectDescriptionDesign.getImgTop().setSource(resource);
-
-
-            bubblesRow.addColumn().withDisplayRules(12, 12, 6,4).withComponent(projectDescriptionDesign);
         }
 
-        bubblesRow.addColumn().withDisplayRules(12, 12, 6 ,4).withComponent(
+        projectDescriptionsRow.addColumn().withDisplayRules(12, 12, 6 ,4).withComponent(
                 new MButton("ADD").withListener(event -> createProjectDescriptionForm(Optional.empty()))
         );
     }
