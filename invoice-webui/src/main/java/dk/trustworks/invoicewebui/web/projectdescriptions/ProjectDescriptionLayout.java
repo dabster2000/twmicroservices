@@ -104,6 +104,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
                     triangle.setVisible(true);
                 });
             }
+            if(!triangleImageList.isEmpty()) triangleImageList.get(0).setVisible(true);
             Resource resource = photoService.getRelatedPhoto(projectDescription.getClient().getUuid());
 
             projectDescriptionDesign.getImgTop().setSource(resource);
@@ -171,8 +172,8 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         projectDescriptionUserRepository.deleteByProjectDescription(projectDescription);
 
         for (User user : userStorieMap.keySet()) {
-            ProjectDescriptionUser desctiptionUser = new ProjectDescriptionUser(user, projectDescription, userStorieMap.get(user).getValue());
-            projectDescriptionUserRepository.save(desctiptionUser);
+            ProjectDescriptionUser descriptionUser = new ProjectDescriptionUser(user, projectDescription, userStorieMap.get(user).getValue());
+            projectDescriptionUserRepository.save(descriptionUser);
         }
     }
 
@@ -186,8 +187,8 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         projectDescription = projectDescriptionRepository.save(projectDescription);
 
         for (User user : userStorieMap.keySet()) {
-            ProjectDescriptionUser desctiptionUser = new ProjectDescriptionUser(user, projectDescription, userStorieMap.get(user).getValue());
-            projectDescriptionUserRepository.save(desctiptionUser);
+            ProjectDescriptionUser descriptionUser = new ProjectDescriptionUser(user, projectDescription, userStorieMap.get(user).getValue());
+            projectDescriptionUserRepository.save(descriptionUser);
         }
     }
 
@@ -195,8 +196,8 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         ComboBox<User> selectUser = new ComboBox<>();
         selectUser.setWidth(100, Unit.PERCENTAGE);
         selectUser.setEmptySelectionAllowed(false);
-        //selectUser.setEmptySelectionCaption("Select Consultant");
-        selectUser.setPlaceholder("Select Consultant");
+        selectUser.setEmptySelectionCaption("Select Consultant");
+        //selectUser.setPlaceholder("Select Consultant");
         selectUser.setItemCaptionGenerator(User::getUsername);
         selectUser.setItems(userRepository.findByOrderByUsername());
         selectUser.addValueChangeListener(event2 -> {
