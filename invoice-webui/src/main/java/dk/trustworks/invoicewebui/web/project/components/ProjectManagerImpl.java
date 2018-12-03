@@ -578,9 +578,15 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 System.out.println("budgetCountDate = " + budgetCountDate);
                 System.out.println("budgetString = " + budgetString);
                 System.out.println("budgetRow.getContractConsultant().getContract().getActiveTo() = " + budgetRow.getContractConsultant().getContract().getActiveTo());
-                if(budgetCountDate.isAfter(budgetRow.getContractConsultant().getContract().getActiveTo())) continue;
+                if(budgetCountDate.isAfter(budgetRow.getContractConsultant().getContract().getActiveTo())) {
+                    budgetCountDate = budgetCountDate.plusMonths(1);
+                    continue;
+                }
                 System.out.println("budgetRow.getContractConsultant().getContract().getActiveFrom() = " + budgetRow.getContractConsultant().getContract().getActiveFrom());
-                if(budgetCountDate.isBefore(budgetRow.getContractConsultant().getContract().getActiveFrom())) continue;
+                if(budgetCountDate.isBefore(budgetRow.getContractConsultant().getContract().getActiveFrom())) {
+                    budgetCountDate = budgetCountDate.plusMonths(1);
+                    continue;
+                }
                 if(budgetString==null) budgetString = "0.0";
                 System.out.println("budgetString = " + budgetString);
                 BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(
@@ -593,7 +599,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
                 System.out.println("budget = " + budget);
                 budgetNewRepository.save(budget);
-                budgetCountDate = budgetCountDate.plusMonths(1);
             }
             updateTreeGrid(currentProject);
         });
