@@ -262,6 +262,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         newTaskRow.getTxtName().addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
+                if(target == null || sender == null) return;
                 System.out.println("sender.equals(newTaskRow) = " + sender.equals(newTaskRow));
                 System.out.println("target.equals(newTaskRow) = " + target.equals(newTaskRow));
                 if(!target.equals(newTaskRow.getTxtName())) return;
@@ -571,18 +572,26 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         grid.getEditor().setEnabled(true);
         grid.getEditor().addSaveListener(event -> {
             BudgetRow budgetRow = event.getBean();
+            System.out.println("budgetRow = " + budgetRow);
             LocalDate budgetCountDate = startDate;
             for (String budgetString : budgetRow.getBudget()) {
+                System.out.println("budgetCountDate = " + budgetCountDate);
+                System.out.println("budgetString = " + budgetString);
+                System.out.println("budgetRow.getContractConsultant().getContract().getActiveTo() = " + budgetRow.getContractConsultant().getContract().getActiveTo());
                 if(budgetCountDate.isAfter(budgetRow.getContractConsultant().getContract().getActiveTo())) continue;
+                System.out.println("budgetRow.getContractConsultant().getContract().getActiveFrom() = " + budgetRow.getContractConsultant().getContract().getActiveFrom());
                 if(budgetCountDate.isBefore(budgetRow.getContractConsultant().getContract().getActiveFrom())) continue;
                 if(budgetString==null) budgetString = "0.0";
+                System.out.println("budgetString = " + budgetString);
                 BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
                         budgetRow.getContractConsultant(),
                         currentProject);
+                System.out.println("budget = " + budget);
                 //if(budget.getProject()==null) budget.setProject(currentProject);
                 budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
+                System.out.println("budget = " + budget);
                 budgetNewRepository.save(budget);
                 budgetCountDate = budgetCountDate.plusMonths(1);
             }
