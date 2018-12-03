@@ -599,6 +599,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
                 System.out.println("budget = " + budget);
                 budgetNewRepository.save(budget);
+                budgetCountDate = budgetCountDate.plusMonths(1);
             }
             updateTreeGrid(currentProject);
         });
