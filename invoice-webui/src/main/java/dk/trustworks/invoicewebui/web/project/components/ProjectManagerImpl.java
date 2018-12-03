@@ -262,6 +262,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         newTaskRow.getTxtName().addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
+                System.out.println("sender.equals(newTaskRow) = " + sender.equals(newTaskRow));
+                System.out.println("target.equals(newTaskRow) = " + target.equals(newTaskRow));
                 if(!target.equals(newTaskRow.getTxtName())) return;
                 Task task = taskRepository.save(new Task(newTaskRow.getTxtName().getValue(), currentProject));
                 currentProject.getTasks().add(task);
