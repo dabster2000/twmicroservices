@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.profile.components;
+package dk.trustworks.invoicewebui.web.dashboard.components;
 
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ReminderHistory;

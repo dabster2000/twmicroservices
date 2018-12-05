@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.profile.components;
+package dk.trustworks.invoicewebui.web.employee.components.parts;
 
 import dk.trustworks.invoicewebui.model.Consultant;
 import dk.trustworks.invoicewebui.model.ReminderHistory;

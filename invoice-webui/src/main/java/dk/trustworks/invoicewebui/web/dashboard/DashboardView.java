@@ -22,7 +22,7 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
-import dk.trustworks.invoicewebui.web.profile.components.ConfirmSpeedDateImpl;
+import dk.trustworks.invoicewebui.web.dashboard.components.ConfirmSpeedDateImpl;
 import dk.trustworks.invoicewebui.web.stats.components.Card;
 import dk.trustworks.invoicewebui.web.stats.components.RevenuePerMonthChart;
 import org.slf4j.Logger;

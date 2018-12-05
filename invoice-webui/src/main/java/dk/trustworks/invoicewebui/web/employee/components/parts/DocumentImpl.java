@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.profile.components;
+package dk.trustworks.invoicewebui.web.employee.components.parts;
 
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;

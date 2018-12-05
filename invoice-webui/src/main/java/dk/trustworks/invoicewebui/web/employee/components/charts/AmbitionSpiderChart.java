@@ -13,7 +13,7 @@ import dk.trustworks.invoicewebui.model.dto.UserAmbitionDTO;
 import dk.trustworks.invoicewebui.model.enums.AmbitionType;
 import dk.trustworks.invoicewebui.repositories.UserAmbitionDTORepository;
 import dk.trustworks.invoicewebui.web.common.Card;
-import dk.trustworks.invoicewebui.web.profile.components.UserAmbitionTableImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.UserAmbitionTableImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.alump.materialicons.MaterialIcons;

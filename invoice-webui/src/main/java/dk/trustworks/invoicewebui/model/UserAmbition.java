@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class UserAmbition {
 
     @Id
+    @GeneratedValue
     private int id;
 
     private int ambitionid;
@@ -27,6 +28,14 @@ public class UserAmbition {
         this.user = user;
         this.score = score;
         this.ambition = ambition;
+    }
+
+    public void refresh(UserAmbition userAmbition) {
+        this.id = userAmbition.getId();
+        this.ambitionid = userAmbition.getAmbitionid();
+        this.user = userAmbition.getUser();
+        this.score = userAmbition.getScore();
+        this.ambition = userAmbition.getAmbition();
     }
 
     public int getId() {

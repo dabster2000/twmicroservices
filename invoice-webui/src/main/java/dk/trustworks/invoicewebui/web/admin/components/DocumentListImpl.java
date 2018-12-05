@@ -6,7 +6,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.Document;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
 import dk.trustworks.invoicewebui.repositories.DocumentRepository;
-import dk.trustworks.invoicewebui.web.profile.model.DocumentWithOwner;
+import dk.trustworks.invoicewebui.web.employee.model.DocumentWithOwner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 

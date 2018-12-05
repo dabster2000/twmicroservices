@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.profile.components;
+package dk.trustworks.invoicewebui.web.employee.components.parts;
 
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.Ambition;
@@ -10,6 +10,7 @@ import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.UserAmbitionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,12 +26,17 @@ public class UserAmbitionTableImpl {
         this.userAmbitionRepository = userAmbitionRepository;
     }
 
+    @Transactional
     public Component getUserAmbitionTable(User user, AmbitionCategory ambitionCategory) {
         UserAmbitionTable userAmbitionTable = new UserAmbitionTable();
         List<UserAmbition> userAmbitions = userAmbitionRepository.findByUser(user);
 
         for (Ambition ambition : ambitionRepository.findAmbitionByActiveIsTrueAndCategory(ambitionCategory.getAmbitionCategoryType())) {
-            final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElse(new UserAmbition(ambition.getId(), user, 0, 1));
+            final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElseGet(() -> {
+                UserAmbition save = userAmbitionRepository.save(new UserAmbition(ambition.getId(), user, 0, 1));
+                System.out.println("save = " + save);
+                return save;
+            });
             //userAmbitionRepository.save(userAmbition);
             double knowledgeScore = userAmbition.getScore();
             int ambitionScore = userAmbition.getAmbition();
@@ -41,15 +47,24 @@ public class UserAmbitionTableImpl {
             ambitionEntry.getRatingStars().setAnimated(true);
             ambitionEntry.getRatingStars().setValue(knowledgeScore);
             ambitionEntry.getRatingStars().addValueChangeListener(event -> {
+                UserAmbition one = userAmbitionRepository.findOne(userAmbition.getId());
+                one.setScore(ambitionEntry.getRatingStars().getValue().intValue());
                 userAmbition.setScore(ambitionEntry.getRatingStars().getValue().intValue());
-                userAmbitionRepository.save(userAmbition);
+                userAmbitionRepository.save(one);
+                System.out.println("one = " + one);
+                System.out.println("userAmbition = " + userAmbition);
             });
-            ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[ambitionScore].toString());
+            ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[ambitionScore].getName());
             ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[ambitionScore].getDescription());
             ambitionEntry.getBtnAmbition().addClickListener(event -> {
+                UserAmbition one = userAmbitionRepository.findOne(userAmbition.getId());
                 ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[userAmbition.rollAmbition()].getName());
-                ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[userAmbition.rollAmbition()].getDescription());
-                userAmbitionRepository.save(userAmbition);
+                one.setAmbition(userAmbition.getAmbition());
+                userAmbition.setAmbition(userAmbition.getAmbition());
+                ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[userAmbition.getAmbition()].getDescription());
+                userAmbitionRepository.save(one);
+                System.out.println("one = " + one);
+                System.out.println("userAmbition = " + userAmbition);
             });
             ambitionEntry.getRatingStars().setValueCaption("I know it by name, but I have neither deeper knowledge nor experience with the method", "I know the method but need help to apply it", "I can use the method independently in a project, but may in some cases need assistance", "I am very experienced in the field and use the method as an expert in a project");
             userAmbitionTable.getContentLayout().addComponent(ambitionEntry);

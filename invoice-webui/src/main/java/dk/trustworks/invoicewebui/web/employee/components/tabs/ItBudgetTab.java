@@ -15,9 +15,9 @@ import dk.trustworks.invoicewebui.model.enums.ItBudgetStatus;
 import dk.trustworks.invoicewebui.repositories.ITBudgetCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.ITBudgetItemRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.web.profile.components.AddBudgetItem;
-import dk.trustworks.invoicewebui.web.profile.components.BudgetItemImpl;
-import dk.trustworks.invoicewebui.web.profile.components.ImportantMessageBoxImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.AddBudgetItem;
+import dk.trustworks.invoicewebui.web.employee.components.parts.BudgetItemImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.ImportantMessageBoxImpl;
 import org.vaadin.viritin.button.MButton;
 
 import java.time.LocalDate;

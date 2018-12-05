@@ -22,10 +22,13 @@ import dk.trustworks.invoicewebui.web.employee.components.cards.EmployeeContactI
 import dk.trustworks.invoicewebui.web.employee.components.cards.KeyPurposeHeadlinesCardController;
 import dk.trustworks.invoicewebui.web.employee.components.charts.AmbitionSpiderChart;
 import dk.trustworks.invoicewebui.web.employee.components.charts.BillableConsultantHoursPerMonthChart;
+import dk.trustworks.invoicewebui.web.employee.components.parts.CKOExpenseImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.KeyPurposeNoteImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.SpeedDateImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.TouchBaseImpl;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.DocumentTab;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.ItBudgetTab;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
-import dk.trustworks.invoicewebui.web.profile.components.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;

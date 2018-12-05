@@ -6,7 +6,7 @@ import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.KeyPurpose;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.KeyPurposeRepository;
-import dk.trustworks.invoicewebui.web.profile.components.KeyPurposeImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.KeyPurposeImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

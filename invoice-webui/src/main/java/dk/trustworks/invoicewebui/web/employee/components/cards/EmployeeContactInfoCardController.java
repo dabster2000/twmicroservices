@@ -10,7 +10,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserContactinfo;
 import dk.trustworks.invoicewebui.repositories.UserContactinfoRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.web.profile.components.UserDetailsCardDesign;
+import dk.trustworks.invoicewebui.web.employee.components.parts.UserDetailsCardDesign;
 
 @SpringUI
 @SpringComponent

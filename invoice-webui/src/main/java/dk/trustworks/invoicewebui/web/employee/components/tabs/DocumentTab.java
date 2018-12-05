@@ -8,8 +8,8 @@ import dk.trustworks.invoicewebui.model.Document;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
 import dk.trustworks.invoicewebui.repositories.DocumentRepository;
-import dk.trustworks.invoicewebui.web.profile.components.DocumentImpl;
-import dk.trustworks.invoicewebui.web.profile.components.ImportantMessageBoxImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.DocumentImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.ImportantMessageBoxImpl;
 
 @SpringUI
 @SpringComponent

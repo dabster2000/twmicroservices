@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.profile.model;
+package dk.trustworks.invoicewebui.web.employee.model;
 
 import dk.trustworks.invoicewebui.model.Document;
 
