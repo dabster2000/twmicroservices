@@ -4,6 +4,7 @@ import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.WorkWithRate;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -66,6 +67,21 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
             "and cc.rate > 0.0 ", nativeQuery = true)
     List<Work> findBillableWorkByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
+
+    @Cacheable("billableWorkByUser")
+    @Query(value = "select w.* from " +
+            "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
+            "inner join task t on w.taskuuid = t.uuid " +
+            "inner join project p on t.projectuuid = p.uuid " +
+            "inner join user u on w.useruuid = u.uuid " +
+            "inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "inner join contracts c on cp.contractuuid = c.uuid " +
+            "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
+            "where c.activefrom <= registered and c.activeto >= registered " +
+            "and w.useruuid LIKE :useruuid " +
+            "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
+            "and cc.rate > 0.0 ", nativeQuery = true)
+    List<Work> findBillableWorkByUser(@Param("useruuid") String useruuid);
 
     @Query(value = "select w.* from " +
             "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +

@@ -18,14 +18,12 @@ import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.BubblesCardImpl;
 import dk.trustworks.invoicewebui.web.dashboard.cards.ConsultantAllocationCardImpl;
+import dk.trustworks.invoicewebui.web.employee.components.cards.AchievementCardController;
 import dk.trustworks.invoicewebui.web.employee.components.cards.EmployeeContactInfoCardController;
 import dk.trustworks.invoicewebui.web.employee.components.cards.KeyPurposeHeadlinesCardController;
 import dk.trustworks.invoicewebui.web.employee.components.charts.AmbitionSpiderChart;
 import dk.trustworks.invoicewebui.web.employee.components.charts.BillableConsultantHoursPerMonthChart;
-import dk.trustworks.invoicewebui.web.employee.components.parts.CKOExpenseImpl;
-import dk.trustworks.invoicewebui.web.employee.components.parts.KeyPurposeNoteImpl;
-import dk.trustworks.invoicewebui.web.employee.components.parts.SpeedDateImpl;
-import dk.trustworks.invoicewebui.web.employee.components.parts.TouchBaseImpl;
+import dk.trustworks.invoicewebui.web.employee.components.parts.*;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.DocumentTab;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.ItBudgetTab;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
@@ -49,6 +47,8 @@ public class EmployeeLayout extends VerticalLayout {
     private final ConsultantRepository consultantRepository;
 
     private final KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController;
+
+    private final AchievementCardController achievementCardController;
 
     private final CKOExpenseRepository ckoExpenseRepository;
 
@@ -91,11 +91,12 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
+        this.achievementCardController = achievementCardController;
         this.ckoExpenseRepository = ckoExpenseRepository;
         this.notesRepository = notesRepository;
         this.bubbleRepository = bubbleRepository;
@@ -140,6 +141,8 @@ public class EmployeeLayout extends VerticalLayout {
 
     private void createMonthReportCard() {
         user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+
+        baseContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(achievementCardController.getCard(user));
 
         baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(new PhotoUploader(user.getUuid(), 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader()));
         baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(employeeContactInfoCardController.getCard(user));
