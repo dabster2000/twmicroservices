@@ -251,7 +251,7 @@ public class DashboardView extends VerticalLayout implements View {
             });
             window.setContent(notificationDesign);
             window.setModal(true);
-            UI.getCurrent().addWindow(window);
+            //UI.getCurrent().addWindow(window);
             break;
         }
 
