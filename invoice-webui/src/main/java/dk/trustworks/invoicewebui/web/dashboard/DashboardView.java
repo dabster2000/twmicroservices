@@ -9,6 +9,7 @@ import com.vaadin.server.*;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
+import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.ReminderHistory;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
@@ -18,11 +19,13 @@ import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.utils.SpriteSheet;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
+import dk.trustworks.invoicewebui.web.dashboard.components.ConfirmSpeedDateImpl;
+import dk.trustworks.invoicewebui.web.dashboard.components.NotificationPopupDesign;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
-import dk.trustworks.invoicewebui.web.dashboard.components.ConfirmSpeedDateImpl;
 import dk.trustworks.invoicewebui.web.stats.components.Card;
 import dk.trustworks.invoicewebui.web.stats.components.RevenuePerMonthChart;
 import org.slf4j.Logger;
@@ -80,6 +83,8 @@ public class DashboardView extends VerticalLayout implements View {
 
     private final ReminderHistoryRepository reminderHistoryRepository;
 
+    private final NotificationRepository notificationRepository;
+
     private final UserRepository userRepository;
 
     private final PhotoService photoService;
@@ -92,8 +97,10 @@ public class DashboardView extends VerticalLayout implements View {
 
     private final RevenuePerMonthChart revenuePerMonthChart;
 
+    private final SpriteSheet spriteSheet;
+
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.budgetNewRepository = budgetNewRepository;
@@ -102,12 +109,14 @@ public class DashboardView extends VerticalLayout implements View {
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.newsRepository = newsRepository;
         this.reminderHistoryRepository = reminderHistoryRepository;
+        this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
         this.photoService = photoService;
         this.dashboardPreloader = dashboardPreloader;
         this.dashboardBoxCreator = dashboardBoxCreator;
         this.emailSender = emailSender;
         this.revenuePerMonthChart = revenuePerMonthChart;
+        this.spriteSheet = spriteSheet;
     }
 
     @Transactional
@@ -228,6 +237,25 @@ public class DashboardView extends VerticalLayout implements View {
 
     private void createNotifications() {
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+
+        List<Notification> notificationList = notificationRepository.findByReceiverAndAndExpirationdateAfter(user, LocalDate.now());
+        for (Notification notification : notificationList) {
+            Window window = new Window();
+            NotificationPopupDesign notificationDesign = new NotificationPopupDesign();
+            notificationDesign.getImgNotification().setSource(spriteSheet.getSprite(Integer.parseInt(notification.getThemeimage())));
+            notificationDesign.getLblDescription().setValue(notification.getContent());
+            notificationDesign.getBtndismiss().addClickListener(event -> {
+                window.close();
+                UI.getCurrent().removeWindow(window);
+                notificationRepository.delete(notification.getUuid());
+            });
+            window.setContent(notificationDesign);
+            window.setModal(true);
+            UI.getCurrent().addWindow(window);
+            break;
+        }
+
+
         List<ReminderHistory> otherReminderHistories = reminderHistoryRepository.findByTargetuuidAndType(user.getUuid(), ReminderType.SPEEDDATE);
         List<ReminderHistory> myReminderHistories = reminderHistoryRepository.findByTypeAndUserOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user);
         for (ReminderHistory otherReminderHistory : otherReminderHistories) {

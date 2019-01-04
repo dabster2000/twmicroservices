@@ -35,7 +35,7 @@ public class ExpenseLayout extends VerticalLayout {
     private DateField date;
 
     @Autowired
-    public ExpenseLayout(EconomicExcelUtility economicExcelUtility, ExpenseRepository expenseRepository) {
+    public ExpenseLayout(EconomicExcelUtility economicExcelUtility, ExpenseRepository expenseRepository, GlobalPhotoUploader globalPhotoUploader) {
         this.economicExcelUtility = economicExcelUtility;
         this.expenseRepository = expenseRepository;
 
@@ -63,6 +63,7 @@ public class ExpenseLayout extends VerticalLayout {
         card.getContent().addComponent(uploadComponent);
 
         responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(card);
+        responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(globalPhotoUploader.init());
         this.addComponent(responsiveLayout);
     }
 

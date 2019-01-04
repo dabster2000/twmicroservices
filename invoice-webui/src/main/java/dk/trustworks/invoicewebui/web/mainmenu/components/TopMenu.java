@@ -25,7 +25,7 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.util.Date;
+import java.time.LocalDate;
 
 import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.SM;
 import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.XS;
@@ -132,7 +132,7 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
             }
 
             userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
-            for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
+            for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), LocalDate.now())) {
                 System.out.println("notification = " + notification);
 
                 notifications.showNotification(notification, notification.getTitel(), notification.getContent());

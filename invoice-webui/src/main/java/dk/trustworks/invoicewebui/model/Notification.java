@@ -1,7 +1,12 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -15,23 +20,30 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "useruuid")
     private User receiver;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date expirationdate;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate entrydate;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate expirationdate;
     private String titel;
     private String content;
     private String link;
+    private String themeimage;
 
     public Notification() {
         uuid = UUID.randomUUID().toString();
     }
 
-    public Notification(User receiver, Date expirationdate, String titel, String content, String link) {
+    public Notification(User receiver, LocalDate entrydate, LocalDate expirationdate, String titel, String content, String link, String themeimage) {
         uuid = UUID.randomUUID().toString();
         this.receiver = receiver;
+        this.entrydate = entrydate;
         this.expirationdate = expirationdate;
         this.titel = titel;
         this.content = content;
         this.link = link;
+        this.themeimage = themeimage;
     }
 
     public String getUuid() {
@@ -50,11 +62,11 @@ public class Notification {
         this.receiver = receiver;
     }
 
-    public Date getExpirationdate() {
+    public LocalDate getExpirationdate() {
         return expirationdate;
     }
 
-    public void setExpirationdate(Date expirationdate) {
+    public void setExpirationdate(LocalDate expirationdate) {
         this.expirationdate = expirationdate;
     }
 
@@ -82,14 +94,33 @@ public class Notification {
         this.link = link;
     }
 
+    public LocalDate getEntrydate() {
+        return entrydate;
+    }
+
+    public void setEntrydate(LocalDate entrydate) {
+        this.entrydate = entrydate;
+    }
+
+    public String getThemeimage() {
+        return themeimage;
+    }
+
+    public void setThemeimage(String themeimage) {
+        this.themeimage = themeimage;
+    }
+
     @Override
     public String toString() {
-        return "Notification{" + "uuid='" + uuid + '\'' +
+        return "Notification{" +
+                "uuid='" + uuid + '\'' +
                 ", receiver=" + receiver +
+                ", entrydate=" + entrydate +
                 ", expirationdate=" + expirationdate +
                 ", titel='" + titel + '\'' +
-                ", notification='" + content + '\'' +
+                ", content='" + content + '\'' +
                 ", link='" + link + '\'' +
+                ", themeimage='" + themeimage + '\'' +
                 '}';
     }
 }

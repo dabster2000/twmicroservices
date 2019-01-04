@@ -1,13 +1,11 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -17,6 +15,6 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "notifications", path = "notifications")
 public interface NotificationRepository extends CrudRepository<Notification, String> {
 
-    List<Notification> findByReceiverAndAndExpirationdateAfter(User user, Date expirationdate);
+    List<Notification> findByReceiverAndAndExpirationdateAfter(User user, LocalDate expirationdate);
 
 }

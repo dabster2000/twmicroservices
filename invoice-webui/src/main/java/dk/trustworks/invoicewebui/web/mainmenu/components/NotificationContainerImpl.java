@@ -9,7 +9,7 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -38,7 +38,7 @@ public class NotificationContainerImpl extends NotificationContainerDesign {
         this.removeAllComponents();
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         if(userSession==null) return;
-        List<Notification> notifications = notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date());
+        List<Notification> notifications = notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), LocalDate.now());
         System.out.println("notifications.size() = " + notifications.size());
         for (Notification notification : notifications) {
             System.out.println("notification = " + notification);
