@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.services;
 
+import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -39,6 +40,10 @@ public class WorkService {
         double vacationAndSickdays = workList.stream().mapToDouble(Work::getWorkduration).sum() / 7.4;
         weekDays -= vacationAndSickdays;
         return weekDays;
+    }
+
+    public List<Work> findVacationByUser(User user) {
+        return workRepository.findByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
     }
 
 }

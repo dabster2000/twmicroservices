@@ -125,7 +125,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         footerButtons.getBtnCopyWeek().setIcon(MaterialIcons.CONTENT_COPY);
         footerButtons.getBtnCopyWeek().addClickListener(event1 -> {
             log.info("getBtnCopyWeek()");
-            timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), dateButtons.getSelActiveUser().getSelectedItem().get());
+            log.info("weekyear: " + currentDate.getWeekOfWeekyear());
+            log.info("getWeekyear: " + currentDate.getWeekyear());
+            timeService.cloneTaskToWeek(currentDate, dateButtons.getSelActiveUser().getSelectedItem().get());
             loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
         });
 
@@ -140,6 +142,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
         footerButtons.getBtnAddTask().setIcon(MaterialIcons.PLAYLIST_ADD);
         footerButtons.getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
             log.info("getBtnAddTask()");
+            log.info("weekyear: " + currentDate.getWeekOfWeekyear());
+            log.info("getWeekyear: " + currentDate.getWeekyear());
             final Window window = new Window("Add Task");
             window.setWidth(300.0f, PIXELS);
             window.setHeight(450.0f, PIXELS);
@@ -209,7 +213,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 }
             });
 
-
             userComboBox.addValueChangeListener(event1 -> {
                 clientComboBox.setVisible(false);
                 if(event1.getValue()==null) return;
@@ -276,13 +279,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 if(onOffSwitch.getValue()) {
                     weekRepository.save(new Week(UUID.randomUUID().toString(),
                             currentDate.getWeekOfWeekyear(),
-                            currentDate.getYear(),
+                            currentDate.getWeekyear(),
                             dateButtons.getSelActiveUser().getValue(),
                             taskComboBox.getSelectedItem().get(), userComboBox.getSelectedItem().get()));
                 } else {
                     weekRepository.save(new Week(UUID.randomUUID().toString(),
                             currentDate.getWeekOfWeekyear(),
-                            currentDate.getYear(),
+                            currentDate.getWeekyear(),
                             dateButtons.getSelActiveUser().getValue(),
                             taskComboBox.getSelectedItem().get()));
                 }
@@ -429,7 +432,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private void createTimesheet(User user) {
         sumHours = 0.0;
         weekDaySums = new WeekValues();
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), user);
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getWeekyear(), user);
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
         List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
@@ -437,7 +440,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             if(weeks.stream().noneMatch(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid()))) {
                 Week week = new Week(UUID.randomUUID().toString(),
                         currentDate.getWeekOfWeekyear(),
-                        currentDate.getYear(),
+                        currentDate.getWeekyear(),
                         workResource.getUser(),
                         workResource.getTask(),
                         workResource.getWorkas());
@@ -518,7 +521,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         ResponsiveRow titleRow = responsiveLayout.addRow().withAlignment(Alignment.MIDDLE_CENTER);
         titleRow.addColumn()
                 .withDisplayRules(12, 12, 6, 8)
-                .withComponent(new MLabel("Week "+currentDate.getWeekOfWeekyear()+" / "+currentDate.getYear()).withStyleName("h3"));
+                .withComponent(new MLabel("Week "+currentDate.getWeekOfWeekyear()+" / "+currentDate.getWeekyear()).withStyleName("h3"));
         titleRow.addColumn()
                 .withDisplayRules(12, 12, 6, 4)
                 .withComponent(dateButtons, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
@@ -852,9 +855,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         //System.out.println("TimeManagerLayout.isOnContract");
         //System.out.println("week = [" + week + "]");
         boolean result = false;
-        LocalDate localDateStart = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(1);
+        LocalDate localDateStart = LocalDate.now().withWeekyear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(1);
         //System.out.println("localDateStart = " + localDateStart);
-        LocalDate localDateEnd = LocalDate.now().withYear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(7);
+        LocalDate localDateEnd = LocalDate.now().withWeekyear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(7);
         //System.out.println("localDateEnd = " + localDateEnd);
         if(isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
         //System.out.println("result = " + result);

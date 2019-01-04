@@ -88,7 +88,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
 
         getBtnCopyWeek().addClickListener(event1 -> {
             log.info("getBtnCopyWeek()");
-            timeService.cloneTaskToWeek(currentDate.getWeekOfWeekyear(), currentDate.getYear(), getSelActiveUser().getSelectedItem().get());
+            timeService.cloneTaskToWeek(currentDate, getSelActiveUser().getSelectedItem().get());
             loadData(getSelActiveUser().getSelectedItem().get());
         });
 
@@ -336,7 +336,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private void loadData(User user) {
         log.info("TimeManagerImpl.loadData");
         log.info("user = [" + user + "]");
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getYear(), user);
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.withDayOfWeek(7).getWeekOfWeekyear(), currentDate.withDayOfWeek(7).getYear(), user);
         log.info("weeks.size() = " + weeks.size());
         if(weeks.size()>0) getBtnCopyWeek().setEnabled(false);
         else getBtnCopyWeek().setEnabled(true);
@@ -389,8 +389,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
         log.info("TimeManagerImpl.setDateFields");
         getTxtWeekNumber().setValue(currentDate.getWeekOfWeekyear()+"");
         log.info("Text Weeknumber = " + currentDate.getWeekOfWeekyear());
-        getTxtYear().setValue(currentDate.getYear()+"");
-        log.info("Text Year = " + currentDate.getYear());
+        getTxtYear().setValue(currentDate.withDayOfWeek(7).getYear()+"");
+        log.info("Text Year = " + currentDate.withDayOfWeek(7).getYear());
         getLblCurrentDate().setValue(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy"));
         log.info("Top Dates = "+(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy")));
     }
