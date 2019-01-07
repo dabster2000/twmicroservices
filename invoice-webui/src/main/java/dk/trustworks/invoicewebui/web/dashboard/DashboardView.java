@@ -143,8 +143,8 @@ public class DashboardView extends VerticalLayout implements View {
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
-        //CateringCardImpl cateringCard = new CateringCardImpl(userRepository.findByActiveTrueOrderByUsername(), emailSender,3, 4, "cateringCard");
-        //cateringCard.init();
+        CateringCardImpl cateringCard = new CateringCardImpl(userRepository.findByActiveTrueOrderByUsername(), emailSender,3, 4, "cateringCard");
+        cateringCard.init();
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
@@ -179,7 +179,7 @@ public class DashboardView extends VerticalLayout implements View {
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         dnaCard.getBoxComponent().setHeight("600px");
-        //cateringCard.getBoxComponent().setHeight("600px");
+        cateringCard.getBoxComponent().setHeight("600px");
 
         photoCard.loadPhoto();
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
@@ -247,7 +247,7 @@ public class DashboardView extends VerticalLayout implements View {
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         ResponsiveRow row3 = mainLayout.addRow();
-        //row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
+        row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
         row3.addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(revenuePerMonthCard);
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
