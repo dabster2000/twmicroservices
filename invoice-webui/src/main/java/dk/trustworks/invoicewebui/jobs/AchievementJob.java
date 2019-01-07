@@ -49,8 +49,8 @@ public class AchievementJob {
     public void init() {
     }
 
-    //@Scheduled(cron = "0 0 23 * * ?")
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(cron = "0 0 23 * * ?")
+    //@Scheduled(fixedRate = 10000)
     public void achievementCollector() {
         log.info("AchievementJob.achievementCollector");
 

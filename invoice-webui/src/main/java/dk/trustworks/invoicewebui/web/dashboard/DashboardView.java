@@ -39,6 +39,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.vaadin.server.Sizeable.Unit.PIXELS;
 import static java.lang.System.currentTimeMillis;
 
 /**
@@ -135,8 +136,8 @@ public class DashboardView extends VerticalLayout implements View {
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         NewsImpl newsCard = new NewsImpl(userRepository, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
-        CateringCardImpl cateringCard = new CateringCardImpl(userRepository.findByActiveTrueOrderByUsername(), emailSender,3, 4, "cateringCard");
-        cateringCard.init();
+        //CateringCardImpl cateringCard = new CateringCardImpl(userRepository.findByActiveTrueOrderByUsername(), emailSender,3, 4, "cateringCard");
+        //cateringCard.init();
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
@@ -164,14 +165,14 @@ public class DashboardView extends VerticalLayout implements View {
         tripVideosCardDesign.getIframeHolder().addComponent(tripVideoBrowser);
 
         dnaCard.getBoxComponent().setHeight("600px");
-        cateringCard.getBoxComponent().setHeight("600px");
+        //cateringCard.getBoxComponent().setHeight("600px");
 
         photoCard.loadPhoto();
 
         createTopBoxes(board);
 
         Card revenuePerMonthCard = new Card();
-        revenuePerMonthCard.setHeight(300, Unit.PIXELS);
+        revenuePerMonthCard.setHeight(300, PIXELS);
         revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
         int adjustStartYear = 0;
         if(LocalDate.now().getMonthValue() >= 1 && LocalDate.now().getMonthValue() <=6)  adjustStartYear = 1;
@@ -200,12 +201,12 @@ public class DashboardView extends VerticalLayout implements View {
         ResponsiveColumn mainComponentColumn = mainRow.addColumn().withDisplayRules(12, 12, 9, 9);
         ResponsiveColumn leftColumn = mainRow.addColumn().withDisplayRules(12, 12, 3, 3);
         leftColumn.withComponent(newsCard);
-        Resource res = new ThemeResource("images/hans.png");
+        // Resource res = new ThemeResource("images/hans.png");
 
         // Display the image without caption
-        Image image = new Image(null, res);
-        image.setStyleName("img-circle");
-        board.addRow().addColumn().withComponent(image);
+        // Image image = new Image(null, res);
+        // image.setStyleName("img-circle");
+        // board.addRow().addColumn().withComponent(image);
 
         ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         mainComponentColumn.withComponent(mainLayout);
@@ -223,7 +224,7 @@ public class DashboardView extends VerticalLayout implements View {
         row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(tripVideosCardDesign);
 
         ResponsiveRow row3 = mainLayout.addRow();
-        row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
+        //row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
         row3.addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(revenuePerMonthCard);
 
         ResponsiveRow row4 = mainLayout.addRow();
@@ -232,17 +233,22 @@ public class DashboardView extends VerticalLayout implements View {
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
 
-        createNotifications();
+        //createNotifications();
     }
 
     private void createNotifications() {
+        logger.info("DashboardView.createNotifications");
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
 
         List<Notification> notificationList = notificationRepository.findByReceiverAndAndExpirationdateAfter(user, LocalDate.now());
+        logger.info("notificationList.size() = " + notificationList.size());
         for (Notification notification : notificationList) {
+            logger.info("notification = " + notification);
             Window window = new Window();
             NotificationPopupDesign notificationDesign = new NotificationPopupDesign();
             notificationDesign.getImgNotification().setSource(spriteSheet.getSprite(Integer.parseInt(notification.getThemeimage())));
+            notificationDesign.getImgNotification().setHeight(100, PIXELS);
+            notificationDesign.getImgNotification().setWidth(100, PIXELS);
             notificationDesign.getLblDescription().setValue(notification.getContent());
             notificationDesign.getBtndismiss().addClickListener(event -> {
                 window.close();
@@ -251,7 +257,7 @@ public class DashboardView extends VerticalLayout implements View {
             });
             window.setContent(notificationDesign);
             window.setModal(true);
-            //UI.getCurrent().addWindow(window);
+            UI.getCurrent().addWindow(window);
             break;
         }
 
