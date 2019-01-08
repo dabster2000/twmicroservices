@@ -15,7 +15,6 @@ import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -60,7 +59,7 @@ public class RevenuePerMonthChart {
         return createRevenuePerMonthChart(periodStart, periodEnd, true);
     }
 
-    @Cacheable("revenueChart")
+    //@Cacheable("revenueChart")
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd, boolean showEarnings) {
         System.out.println("RevenuePerMonthChart.createRevenuePerMonthChart");
         System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "], showEarnings = [" + showEarnings + "]");
