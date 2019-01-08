@@ -1,29 +1,16 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.ChartType;
+import com.vaadin.addon.charts.model.Credits;
+import com.vaadin.addon.charts.model.Tooltip;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by hans on 20/09/2017.
@@ -33,39 +20,22 @@ import java.util.stream.Collectors;
 @SpringUI
 public class RevenuePerMonthChart {
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-
-    private final ExpenseRepository expenseRepository;
-
-    private final ContractService contractService;
-
-    private final BudgetNewRepository budgetNewRepository;
-
-    private final WorkRepository workRepository;
-
-    private final WorkService workService;
+    private final StatisticsService statisticsService;
 
     @Autowired
-    public RevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkRepository workRepository, WorkService workService) {
-        this.graphKeyValueRepository = graphKeyValueRepository;
-        this.expenseRepository = expenseRepository;
-        this.contractService = contractService;
-        this.budgetNewRepository = budgetNewRepository;
-        this.workRepository = workRepository;
-        this.workService = workService;
+    public RevenuePerMonthChart(StatisticsService statisticsService) {
+        this.statisticsService = statisticsService;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
         return createRevenuePerMonthChart(periodStart, periodEnd, true);
     }
 
-    //@Cacheable("revenueChart")
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd, boolean showEarnings) {
         System.out.println("RevenuePerMonthChart.createRevenuePerMonthChart");
         System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "], showEarnings = [" + showEarnings + "]");
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
         chart.setCaption("Revenue during Fiscal Year 07/"+(periodStart.getYear())+" - 06/"+periodEnd.getYear());
         chart.getConfiguration().setTitle("");
@@ -80,12 +50,17 @@ public class RevenuePerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, periodEnd));
+        chart.getConfiguration().addSeries(statisticsService.calcRevenuePerMonth(periodStart, periodEnd));
+        chart.getConfiguration().addSeries(statisticsService.calcBudgetPerMonth(periodStart, periodEnd));
+        if(showEarnings) chart.getConfiguration().addSeries(statisticsService.calcEarningsPerMonth(periodStart, periodEnd));
+        Credits c = new Credits("");
+        chart.getConfiguration().setCredits(c);
+        return chart;
+    }
 
-        String[] categories = new String[months];
-        DataSeries revenueSeries = new DataSeries("Revenue");
-        DataSeries earningsSeries = new DataSeries("Earnings");
-        DataSeries budgetSeries = new DataSeries("Budget");
+    /*
+    private void calcRevenuePerMonth2(LocalDate periodStart, int months, List<GraphKeyValue> amountPerItemList, String[] categories, DataSeries revenueSeries, DataSeries earningsSeries, DataSeries budgetSeries) {
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
@@ -123,12 +98,6 @@ public class RevenuePerMonthChart {
             budgetSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(budgetSum)));
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
-        chart.getConfiguration().getxAxis().setCategories(categories);
-        chart.getConfiguration().addSeries(revenueSeries);
-        chart.getConfiguration().addSeries(budgetSeries);
-        if(showEarnings) chart.getConfiguration().addSeries(earningsSeries);
-        Credits c = new Credits("");
-        chart.getConfiguration().setCredits(c);
-        return chart;
     }
+    */
 }
