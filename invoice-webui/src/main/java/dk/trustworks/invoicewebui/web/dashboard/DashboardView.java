@@ -260,7 +260,7 @@ public class DashboardView extends VerticalLayout implements View {
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
-        createNotifications();
+        //createNotifications();
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
     }
 
