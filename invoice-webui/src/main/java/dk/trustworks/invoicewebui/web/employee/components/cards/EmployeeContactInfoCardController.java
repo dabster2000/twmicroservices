@@ -9,21 +9,21 @@ import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserContactinfo;
 import dk.trustworks.invoicewebui.repositories.UserContactinfoRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.employee.components.parts.UserDetailsCardDesign;
 
 @SpringUI
 @SpringComponent
 public class EmployeeContactInfoCardController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final UserContactinfoRepository userContactinfoRepository;
 
     private User user;
 
-    public EmployeeContactInfoCardController(UserRepository userRepository, UserContactinfoRepository userContactinfoRepository) {
-        this.userRepository = userRepository;
+    public EmployeeContactInfoCardController(UserService userService, UserContactinfoRepository userContactinfoRepository) {
+        this.userService = userService;
         this.userContactinfoRepository = userContactinfoRepository;
     }
 
@@ -53,7 +53,7 @@ public class EmployeeContactInfoCardController {
                 userBinder.writeBean(user);
                 contactinfoBinder.writeBean(contactinfo);
 
-                userRepository.save(user);
+                userService.save(user);
                 userContactinfoRepository.save(contactinfo);
 
                 Notification.show("Contact information updated", Notification.Type.TRAY_NOTIFICATION);

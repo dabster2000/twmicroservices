@@ -5,8 +5,8 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.EmailSender;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -23,12 +23,12 @@ public class ForgotPasswordImpl extends ForgotPasswordDesign {
     private static Map<String, User> uuidMap = new HashMap();
 
     @Autowired
-    public ForgotPasswordImpl(UserRepository userRepository, EmailSender emailSender) {
+    public ForgotPasswordImpl(UserService userService, EmailSender emailSender) {
         System.out.println("ForgotPasswordImpl.ForgotPasswordImpl");
 
         getImgTop().setSource(new ThemeResource("images/password-card.jpg"));
         getBtnLogin().addClickListener(clickEvent -> {
-            User user = userRepository.findByUsername(getTxtUsername().getValue());
+            User user = userService.findByUsername(getTxtUsername().getValue());
             String uuid = UUID.randomUUID().toString();
             uuidMap.put(uuid, user);
             getVlReset().setVisible(false);

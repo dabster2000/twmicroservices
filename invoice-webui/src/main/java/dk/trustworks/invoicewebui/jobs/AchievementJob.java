@@ -3,8 +3,10 @@ package dk.trustworks.invoicewebui.jobs;
 
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.AchievementType;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
 import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ public class AchievementJob {
     private static final Logger log = LoggerFactory.getLogger(AchievementJob.class);
 
     private final AchievementRepository achievementRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final WorkRepository workRepository;
     private final WorkService workService;
     private final ReminderHistoryRepository reminderHistoryRepository;
@@ -35,9 +37,9 @@ public class AchievementJob {
 
 
     @Autowired
-    public AchievementJob(AchievementRepository achievementRepository, UserRepository userRepository, WorkRepository workRepository, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository) {
+    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkRepository workRepository, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository) {
         this.achievementRepository = achievementRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.workRepository = workRepository;
         this.workService = workService;
         this.reminderHistoryRepository = reminderHistoryRepository;
@@ -54,7 +56,7 @@ public class AchievementJob {
     public void achievementCollector() {
         log.info("AchievementJob.achievementCollector");
 
-        for (User user : userRepository.findAll()) {
+        for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
             List<Achievement> achievementList = achievementRepository.findByUser(user);
             textAchievement(user, achievementList, AchievementType.WORKWEEK40, isWortyOfWorkWeekAchievement(user, 40));
             textAchievement(user, achievementList, AchievementType.WORKWEEK50, isWortyOfWorkWeekAchievement(user, 50));

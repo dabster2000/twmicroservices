@@ -19,6 +19,7 @@ import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.ProjectService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
@@ -50,7 +51,7 @@ import static org.hibernate.validator.internal.util.CollectionHelper.newArrayLis
 @SpringUI
 public class ProjectManagerImpl extends ProjectManagerDesign {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final ContractService contractService;
 
@@ -82,8 +83,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserRepository userRepository, ProjectService projectService, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService) {
-        this.userRepository = userRepository;
+    public ProjectManagerImpl(UserService userService, ProjectService projectService, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService) {
+        this.userService = userService;
         this.projectService = projectService;
         this.taskRepository = taskRepository;
         this.clientRepository = clientRepository;
@@ -173,7 +174,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         addComponent(responsiveLayout);
 
         Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
-        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userRepository.findByOrderByUsername(), photoResource, projectService, newsRepository, userRepository);
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(), photoResource, projectService, newsRepository, userService);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.save();
             updateTreeGrid(currentProject);

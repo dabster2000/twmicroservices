@@ -28,7 +28,6 @@ import org.vaadin.addons.producttour.step.StepBuilder;
 import org.vaadin.addons.producttour.tour.Tour;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -94,11 +93,7 @@ public class DraftListImpl extends DraftListDesign
                         saveFormToInvoiceBean(invoice, invoiceEdit);
                         invoice.setStatus(InvoiceStatus.CREATED);
                         invoice.invoicenumber = invoiceRepository.getMaxInvoiceNumber() + 1;
-                        try {
-                            invoice.pdf = invoiceService.createInvoicePdf(invoice);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        invoice.pdf = invoiceService.createInvoicePdf(invoice);
                         invoiceRepository.save(invoice);
                         loadInvoicesToGrid();
                         window.close();

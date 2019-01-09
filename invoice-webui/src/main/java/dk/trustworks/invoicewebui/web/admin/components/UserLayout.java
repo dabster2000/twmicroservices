@@ -22,6 +22,7 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
@@ -50,7 +51,7 @@ public class UserLayout {
     private CountEmployeesJob countEmployees;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private UserInfoCardImpl userInfoCard;
@@ -95,14 +96,14 @@ public class UserLayout {
         MButton addUserButton = new MButton("add user").withStyleName("flat", "friendly").withListener((Button.ClickListener) event -> {
             User user = new User();
             user.setUsername("new.new");
-            userRepository.save(user);
-            userComboBox.setItems(userRepository.findAll());
+            userService.save(user);
+            userComboBox.setItems(userService.findAll());
             userComboBox.setSelectedItem(user);
         });
 
 
         userComboBox = new ComboBox<>();
-        userComboBox.setItems(userRepository.findByOrderByUsername());
+        userComboBox.setItems(userService.findAll());
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setEmptySelectionAllowed(false);
         selectionContentRow
@@ -162,7 +163,7 @@ public class UserLayout {
 
         ArrayList<Employee> employees = new ArrayList();
         // Set the data provider (ListDataProvider<CompanyBudgetHistory>)
-        for (User user : userRepository.findAll()) {
+        for (User user : userService.findAll()) {
             Optional<Salary> salary = user.getSalaries().stream().sorted(Comparator.comparing(Salary::getActivefrom).reversed()).findFirst();
             if(!salary.isPresent()) continue;
             Optional<UserStatus> userStatus = user.getStatuses().stream().sorted((Comparator.comparing(UserStatus::getStatusdate)).reversed()).findFirst();

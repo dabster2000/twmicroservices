@@ -56,7 +56,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private static final Logger log = LoggerFactory.getLogger(TimeManagerImpl.class);
 
     private final ProjectService projectService;
-    private final UserRepository userRepository;
+
+    private final UserService userService;
 
     private final ClientRepository clientRepository;
 
@@ -91,9 +92,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserRepository userRepository, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
         this.projectService = projectService;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.clientRepository = clientRepository;
         this.weekRepository = weekRepository;
         this.workService = workService;
@@ -159,7 +160,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             userComboBox.addStyleName("floating");
             userComboBox.setEmptySelectionAllowed(false);
             userComboBox.setEmptySelectionCaption("Select colleague...");
-            List<User> users = userRepository.findByActiveTrueOrderByUsername();
+            List<User> users = userService.findCurrentlyWorkingEmployees();
             userComboBox.setItems(users);
             UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
 
@@ -313,7 +314,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         if(userSession == null) return new ResponsiveLayout();
 
-        List<User> users = userRepository.findByActiveTrueOrderByUsername();
+        List<User> users = userService.findCurrentlyWorkingEmployees();
         dateButtons.getSelActiveUser().setItemCaptionGenerator(User::getUsername);
         dateButtons.getSelActiveUser().setItems(users);
         // find userSession user

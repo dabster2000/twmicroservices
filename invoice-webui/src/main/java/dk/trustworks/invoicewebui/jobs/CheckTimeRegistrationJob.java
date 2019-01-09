@@ -3,13 +3,13 @@ package dk.trustworks.invoicewebui.jobs;
 import allbegray.slack.SlackClientFactory;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,7 +33,7 @@ public class CheckTimeRegistrationJob {
     private WorkRepository workRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private ContractService contractService;
@@ -91,7 +91,7 @@ public class CheckTimeRegistrationJob {
         List<Work> allWork = workRepository.findByPeriod(dateTime.minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         log.info("workByYearMonthDay.size() = " + allWork.size());
 
-        for (User user : userRepository.findByActiveTrue()) {
+        for (User user : userService.findCurrentlyWorkingEmployees()) {
             log.info("checking user = " + user);
             //if(!user.getUsername().equals("hans.lassen")) continue;
             Optional<UserStatus> userStatus = user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate));

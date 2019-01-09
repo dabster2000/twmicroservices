@@ -3,12 +3,12 @@ package dk.trustworks.invoicewebui.jobs;
 import com.google.common.hash.Hashing;
 import dk.trustworks.invoicewebui.model.News;
 import dk.trustworks.invoicewebui.model.Role;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class AnniversaryManagerJob {
     private NewsRepository newsRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     public AnniversaryManagerJob() {
     }
@@ -48,7 +48,7 @@ public class AnniversaryManagerJob {
     @Transactional
     @Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
-        for (User user : userRepository.findByActiveTrue()) {
+        for (User user : userService.findCurrentlyWorkingEmployees()) {
             boolean isExternal = false;
             for (Role role : user.getRoleList()) {
                 if(role.getRole().equals(RoleType.EXTERNAL)) isExternal = true;

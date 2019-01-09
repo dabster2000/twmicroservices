@@ -7,7 +7,7 @@ import dk.trustworks.invoicewebui.model.Document;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
 import dk.trustworks.invoicewebui.repositories.DocumentRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class DocumentUploadImpl extends DocumentUpload {
     private String filename = null;
 
     @Autowired
-    public DocumentUploadImpl(DocumentRepository documentRepository, DocumentListImpl documentList, UserRepository userRepository) {
+    public DocumentUploadImpl(DocumentRepository documentRepository, DocumentListImpl documentList, UserService userService) {
         getBtnUpload().setEnabled(false);
         getVlUploadComplete().setVisible(false);
 
@@ -46,7 +46,7 @@ public class DocumentUploadImpl extends DocumentUpload {
         });
 
         getCbUser().setItemCaptionGenerator(User::getUsername);
-        getCbUser().setItems(userRepository.findByOrderByUsername());
+        getCbUser().setItems(userService.findAll());
 
         getBtnRemoveUpload().addClickListener(event -> {
             bytes = null;

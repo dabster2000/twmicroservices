@@ -18,7 +18,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class BubbleForm {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final BubbleRepository bubbleRepository;
     private final BubbleMemberRepository bubbleMemberRepository;
     private final PhotoRepository photoRepository;
@@ -39,13 +39,10 @@ public class BubbleForm {
 
     private final ResponsiveLayout newBubbleResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
 
-    private ResponsiveRow uploadRow;
-    private ResponsiveRow membersRow;
-
     private Binder<Bubble> bubbleBinder = new Binder<>();
 
-    public BubbleForm(UserRepository userRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoRepository photoRepository, SlackWebApiClient motherWebApiClient) {
-        this.userRepository = userRepository;
+    public BubbleForm(UserService userService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoRepository photoRepository, SlackWebApiClient motherWebApiClient) {
+        this.userService = userService;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.photoRepository = photoRepository;
@@ -93,7 +90,7 @@ public class BubbleForm {
 
     private void createUploadRow(final Bubble prevBubble, Next next) {
         newBubbleResponsiveLayout.removeAllComponents();
-        uploadRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
+        ResponsiveRow uploadRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
         uploadRow.setVisible(true);
         uploadRow.removeAllComponents();
@@ -105,7 +102,7 @@ public class BubbleForm {
     private void createMembersRow(final Bubble prevBubble, Next next) {
         newBubbleResponsiveLayout.removeAllComponents();
         bubbleBinder.readBean(new Bubble());
-        membersRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
+        ResponsiveRow membersRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
         List<BubbleMember> bubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
         User[] currentUsers = new User[bubbleMembers.size()];
@@ -115,7 +112,7 @@ public class BubbleForm {
         }
 
         TwinColSelect<User> twinColSelect = new TwinColSelect<>();
-        twinColSelect.setItems(userRepository.findByActiveTrue());
+        twinColSelect.setItems(userService.findCurrentlyWorkingEmployees());
         twinColSelect.select(currentUsers);
         twinColSelect.setRows(12);
         twinColSelect.setLeftColumnCaption("Outside bubble");
@@ -128,7 +125,7 @@ public class BubbleForm {
             List<String> currentSlackMembers = channel.getMembers();
             List<BubbleMember> currentBubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
             bubbleMemberRepository.delete(currentBubbleMembers);
-            List<User> userList = userRepository.findByActiveTrue();
+            List<User> userList = userService.findCurrentlyWorkingEmployees();
             for (User user : twinColSelect.getSelectedItems()) {
                 bubbleMemberRepository.save(new BubbleMember(user, prevBubble));
                 try {
@@ -182,7 +179,7 @@ public class BubbleForm {
         bubbleBinder.forField(applicationType).bind(Bubble::getApplication, Bubble::setApplication);
         ComboBox<User> bubbleMaster = new ComboBox<>("Bubble master");
         bubbleMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        bubbleMaster.setItems(userRepository.findByActiveTrue());
+        bubbleMaster.setItems(userService.findCurrentlyWorkingEmployees());
         bubbleMaster.setEmptySelectionAllowed(false);
         bubbleMaster.setItemCaptionGenerator(User::getUsername);
         bubbleBinder.forField(bubbleMaster).bind(Bubble::getUser, Bubble::setUser);

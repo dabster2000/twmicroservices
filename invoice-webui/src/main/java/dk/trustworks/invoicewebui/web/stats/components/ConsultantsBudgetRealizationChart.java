@@ -9,9 +9,9 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,16 +34,16 @@ public class ConsultantsBudgetRealizationChart {
     private final WorkRepository workRepository;
     private final WorkService workService;
     private final BudgetNewRepository budgetNewRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public ConsultantsBudgetRealizationChart(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, WorkRepository workRepository, WorkService workService, BudgetNewRepository budgetNewRepository, UserRepository userRepository) {
+    public ConsultantsBudgetRealizationChart(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, WorkRepository workRepository, WorkService workService, BudgetNewRepository budgetNewRepository, UserService userService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.contractService = contractService;
         this.workRepository = workRepository;
         this.workService = workService;
         this.budgetNewRepository = budgetNewRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public Chart createConsultantsBudgetRealizationChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -109,7 +109,7 @@ public class ConsultantsBudgetRealizationChart {
         Map<String, Double> budgetPerUserMap = new TreeMap<>();
         Map<String, Double> budgetPerUserNoWorkMap = new TreeMap<>();
         for (String useruuid : budgetPerUser.keySet()) {
-            User user = userRepository.findByUuid(useruuid);
+            User user = userService.findByUUID(useruuid);
             String userFullname = user.getFirstname() + " " + user.getLastname();
             //budgetSeries.add(new DataSeriesItem(userFullname, budgetPerUser.get(useruuid)));
             StringBuilder shortname = new StringBuilder();

@@ -5,13 +5,11 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.EventType;
 import dk.trustworks.invoicewebui.model.News;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.model.enums.EventType;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -38,7 +36,7 @@ public class NewsImpl extends NewsDesign implements Box {
     private int boxWidth;
     private String name;
 
-    public NewsImpl(UserRepository userRepository, NewsRepository newsRepository, int priority, int boxWidth, String name) {
+    public NewsImpl(UserService userService, NewsRepository newsRepository, int priority, int boxWidth, String name) {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
@@ -65,8 +63,7 @@ public class NewsImpl extends NewsDesign implements Box {
 
         Set<News> newsList = new TreeSet<>(Comparator.comparing(News::getNewstype).thenComparing(News::getNewsdate).thenComparing(News::getSha512));
 
-        boolean isBirthdayToday = false;
-        for (User user : userRepository.findUsersByDateAndStatusAndTypes(java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), StatusType.ACTIVE.toString(), ConsultantType.CONSULTANT.toString(), ConsultantType.STAFF.toString(), ConsultantType.STUDENT.toString())) {
+        for (User user : userService.findCurrentlyWorkingEmployees()) {
             LocalDate birthday = new LocalDate(user.getBirthday().getYear(), user.getBirthday().getMonthValue(), user.getBirthday().getDayOfMonth());
             Date nextBirthday = birthday.withYear(LocalDate.now().getYear()).toDate();
             if(!isBetweenInclusive(LocalDate.now(), LocalDate.now().plusWeeks(2), LocalDate.fromDateFields(nextBirthday))) continue;

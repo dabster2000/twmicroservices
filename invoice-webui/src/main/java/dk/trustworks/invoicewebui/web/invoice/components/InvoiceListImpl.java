@@ -38,7 +38,6 @@ import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 import org.vaadin.viritin.label.MLabel;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -74,11 +73,7 @@ public class InvoiceListImpl extends InvoiceListDesign
 
         btnRecreateInvoice.addClickListener(event -> {
             Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
-            try {
-                invoice.pdf = invoiceService.createInvoicePdf(invoice);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            invoice.pdf = invoiceService.createInvoicePdf(invoice);
             invoiceRepository.save(invoice);
         });
 

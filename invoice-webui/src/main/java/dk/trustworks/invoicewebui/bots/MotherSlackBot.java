@@ -8,7 +8,7 @@ import ai.api.model.AIResponse;
 import dk.trustworks.invoicewebui.bots.conversations.Conversation;
 import dk.trustworks.invoicewebui.bots.conversations.model.ConversationState;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import me.ramswaroop.jbot.core.common.Controller;
 import me.ramswaroop.jbot.core.common.EventType;
 import me.ramswaroop.jbot.core.common.JBot;
@@ -41,7 +41,7 @@ public class MotherSlackBot extends Bot {
     private ApplicationContext appContext;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     private AIDataService dataService;
 
@@ -83,7 +83,7 @@ public class MotherSlackBot extends Bot {
         AIRequest request = new AIRequest(event.getText());
         log.debug("event.getUser().getId() = " + event.getUserId());
         if(event.getUserId().equals("U7GH6EM70")) return;
-        User user = userRepository.findBySlackusername(event.getUserId());
+        User user = userService.findBySlackusername(event.getUserId());
 
         AIResponse response = null;
         try {

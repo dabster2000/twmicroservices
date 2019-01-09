@@ -11,12 +11,10 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.KeyPurpose;
 import dk.trustworks.invoicewebui.model.Note;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.NoteType;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.KeyPurposeRepository;
 import dk.trustworks.invoicewebui.repositories.NotesRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.common.ImageBoxImpl;
@@ -29,6 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
 import static java.util.Base64.getDecoder;
 import static java.util.Base64.getEncoder;
 
@@ -37,7 +36,7 @@ import static java.util.Base64.getEncoder;
 public class PurposeLayout {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private KeyPurposeRepository keyPurposeRepository;
@@ -66,7 +65,7 @@ public class PurposeLayout {
         userListSelect.setCaption("Select consultant:");
         userListSelect.setWidth(100, Sizeable.Unit.PERCENTAGE);
         userListSelect.setItemCaptionGenerator(User::getUsername);
-        List<User> userList = userRepository.findUsersByDateAndStatusAndTypes(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), StatusType.ACTIVE.toString(), ConsultantType.CONSULTANT.toString());
+        List<User> userList = userService.findCurrentlyWorkingEmployees(CONSULTANT);
         System.out.println("userList.size() = " + userList.size());
         userListSelect.setItems(userList);
 

@@ -16,14 +16,14 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.bubbles.components.ActivityGauge;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
@@ -43,11 +43,11 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @SpringUI
 public class BubblesLayout extends VerticalLayout {
 
-    private UserRepository userRepository;
-    private PhotoRepository photoRepository;
-    private PhotoService photoService;
-    private BubbleRepository bubbleRepository;
-    private BubbleMemberRepository bubbleMemberRepository;
+    private final UserService userService;
+    private final PhotoRepository photoRepository;
+    private final PhotoService photoService;
+    private final BubbleRepository bubbleRepository;
+    private final BubbleMemberRepository bubbleMemberRepository;
 
     private ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
     private ResponsiveRow bubblesRow;
@@ -68,8 +68,8 @@ public class BubblesLayout extends VerticalLayout {
     private SlackWebApiClient bubbleUserBotClient;
 
     @Autowired
-    public BubblesLayout(UserRepository userRepository, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService) {
-        this.userRepository = userRepository;
+    public BubblesLayout(UserService userService, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService) {
+        this.userService = userService;
         this.photoRepository = photoRepository;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
@@ -81,7 +81,7 @@ public class BubblesLayout extends VerticalLayout {
     public BubblesLayout init() {
         bubbleWebApiClient = SlackClientFactory.createWebApiClient(bubbleSlackToken);
         bubbleUserBotClient = SlackClientFactory.createWebApiClient(bubbleBotUserSlackToken);
-        bubbleForm = new BubbleForm(userRepository, bubbleRepository, bubbleMemberRepository, photoRepository, bubbleWebApiClient);
+        bubbleForm = new BubbleForm(userService, bubbleRepository, bubbleMemberRepository, photoRepository, bubbleWebApiClient);
 
         responsiveLayout.removeAllComponents();
         responsiveLayout.addRow(bubbleForm.getNewBubbleButton());

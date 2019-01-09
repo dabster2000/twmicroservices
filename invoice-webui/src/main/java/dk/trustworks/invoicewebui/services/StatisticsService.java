@@ -14,9 +14,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,17 +31,23 @@ public class StatisticsService {
 
     private final BudgetNewRepository budgetNewRepository;
 
+    private final ExpenseRepository expenseRepository;
+
     private final WorkRepository workRepository;
 
     private final WorkService workService;
 
+    private final InvoiceService invoiceService;
+
     @Autowired
-    public StatisticsService(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkRepository workRepository, WorkService workService) {
+    public StatisticsService(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, ExpenseRepository expenseRepository, WorkRepository workRepository, WorkService workService, InvoiceService invoiceService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
+        this.expenseRepository = expenseRepository;
         this.workRepository = workRepository;
         this.workService = workService;
+        this.invoiceService = invoiceService;
     }
 
     @Cacheable("calcRevenuePerMonth")
@@ -96,6 +104,16 @@ public class StatisticsService {
     @Cacheable("calcEarningsPerMonth")
     public DataSeries calcEarningsPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries earningsSeries = new DataSeries("Earnings");
+
+        int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
+        for (int i = 0; i < months; i++) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+
+            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            System.out.println("invoicedAmountByMonth = " + invoicedAmountByMonth);
+            double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
+            earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
+        }
         return earningsSeries;
     }
 

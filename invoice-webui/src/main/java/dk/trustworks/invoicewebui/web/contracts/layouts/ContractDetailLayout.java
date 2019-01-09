@@ -23,10 +23,10 @@ import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.ProjectService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @SpringUI
 public class ContractDetailLayout extends ResponsiveLayout {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final ContractService contractService;
 
@@ -75,8 +75,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserRepository userRepository, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository, ChartCacheJob chartCache) {
-        this.userRepository = userRepository;
+    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository, ChartCacheJob chartCache) {
+        this.userService = userService;
         this.contractService = contractService;
         this.projectService = projectService;
         this.consultantRepository = consultantRepository;
@@ -645,7 +645,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     // Put some components in it
                     subContent.addComponent(new Label("Add consultant"));
                     ComboBox<User> userComboBox = new ComboBox<>();
-                    userComboBox.setItems(userRepository.findByOrderByUsername());
+                    userComboBox.setItems(userService.findAll());
                     userComboBox.setItemCaptionGenerator(User::getUsername);
                     subContent.addComponent(userComboBox);
                     Button addButton = new Button("Add");

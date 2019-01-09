@@ -17,9 +17,9 @@ import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectDescriptionRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectDescriptionUserRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.projectdescriptions.components.ProjectDescriptionDesign;
 import dk.trustworks.invoicewebui.web.projectdescriptions.components.ProjectDescriptionFormDesign;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,26 +36,24 @@ import java.util.stream.Collectors;
 @SpringUI
 public class ProjectDescriptionLayout extends VerticalLayout {
 
-    private UserRepository userRepository;
-    private ClientRepository clientRepository;
-    private PhotoService photoService;
-    private ProjectDescriptionRepository projectDescriptionRepository;
-    private ProjectDescriptionUserRepository projectDescriptionUserRepository;
+    private final UserService userService;
+    private final ClientRepository clientRepository;
+    private final PhotoService photoService;
+    private final ProjectDescriptionRepository projectDescriptionRepository;
+    private final ProjectDescriptionUserRepository projectDescriptionUserRepository;
 
     private ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
     private ResponsiveRow projectDescriptionsRow;
     private ResponsiveRow filterRow;
 
     private final List<ResponsiveColumn> projectDescriptionDesignList = new ArrayList<>();
-    //private final List<ProjectDescriptionDesign> projectDescriptionDesignList = new ArrayList<>();
-
 
     private final Map<Client, List<ResponsiveColumn>> clientList = new HashMap();
     private final Map<User, List<ResponsiveColumn>> userList = new HashMap<>();
 
     @Autowired
-    public ProjectDescriptionLayout(UserRepository userRepository, ClientRepository clientRepository, PhotoService photoService, ProjectDescriptionRepository projectDescriptionRepository, ProjectDescriptionUserRepository projectDescriptionUserRepository) {
-        this.userRepository = userRepository;
+    public ProjectDescriptionLayout(UserService userService, ClientRepository clientRepository, PhotoService photoService, ProjectDescriptionRepository projectDescriptionRepository, ProjectDescriptionUserRepository projectDescriptionUserRepository) {
+        this.userService = userService;
         this.clientRepository = clientRepository;
         this.projectDescriptionRepository = projectDescriptionRepository;
         this.photoService = photoService;
@@ -284,7 +282,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         selectUser.setEmptySelectionCaption("Select Consultant");
         //selectUser.setPlaceholder("Select Consultant");
         selectUser.setItemCaptionGenerator(User::getUsername);
-        selectUser.setItems(userRepository.findByOrderByUsername());
+        selectUser.setItems(userService.findAll());
         selectUser.addValueChangeListener(event2 -> {
             if(userStorieMap.containsKey(event2.getValue())) return;
             formDesign.getVlUserStories().removeComponent(selectUser);

@@ -7,7 +7,7 @@ import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,14 +23,14 @@ public class CheckBudgetJob {
 
     static final Logger log = Logger.getLogger(CheckBudgetJob.class.getName());
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Value("${motherSlackBotToken}")
     private String motherSlackToken;
 
     @Autowired
-    public CheckBudgetJob(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CheckBudgetJob(UserService userService) {
+        this.userService = userService;
     }
 
     @PostConstruct
@@ -55,7 +55,7 @@ public class CheckBudgetJob {
             businessDaysInMonth[i] = getWorkingDaysBetweenTwoDates(localDateStart.plusMonths(i).toDate(), localDateStart.plusMonths(i+1).toDate());
         }
 
-        List<User> activeUsers = userRepository.findByActiveTrue();
+        List<User> activeUsers = userService.findCurrentlyWorkingEmployees();
 
         for (User user : activeUsers) {
             log.info("--- " + user + " ---");
@@ -261,7 +261,7 @@ public class CheckBudgetJob {
         LocalDate currentDate = periodStart;
         int i = 0;
         while(currentDate.isBefore(periodEnd)) {
-            int capacityByMonth = userRepository.calculateCapacityByMonthByUser(userUUID, currentDate.toString("yyyy-MM-dd"));
+            int capacityByMonth = userService.calculateCapacityByMonthByUser(userUUID, currentDate.toString("yyyy-MM-dd"));
             log.info("capacityByMonth for "+currentDate.toString("yyyy-MM-dd")+" is " + capacityByMonth);
             capacities[i++] = capacityByMonth;
             currentDate = currentDate.plusMonths(1);

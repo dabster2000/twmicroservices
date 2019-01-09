@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.User;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,12 +16,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
 public interface UserRepository extends CrudRepository<User, String> {
 
-    List<User> findAll();
-    User findByUuid(@Param("uuid") String uuid);
-    List<User> findByActiveTrue();
     List<User> findByOrderByUsername();
-    List<User> findByActiveTrueOrderByUsername();
-    User findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
     User findByUsername(@Param("username") String username);
     User findBySlackusername(@Param("slackusername") String slackusername);
 
@@ -29,8 +25,8 @@ public interface UserRepository extends CrudRepository<User, String> {
             "(SELECT yt.uuid, yt.useruuid, yt.status, yt.statusdate, yt.allocation, yt.type FROM userstatus yt " +
             "INNER JOIN " +
             "(SELECT uuid, useruuid, max(statusdate) created FROM userstatus WHERE statusdate < :date GROUP BY useruuid) " +
-            "ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid) kk on u.uuid = kk.useruuid WHERE kk.status LIKE :consultantStatus AND kk.type IN :consultantTypes ORDER BY u.username ;", nativeQuery = true)
-    List<User> findUsersByDateAndStatusAndTypes(@Param("date") String date, @Param("consultantStatus") String consultantStatus, @Param("consultantTypes") String... consultantTypes);
+            "ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid) kk on u.uuid = kk.useruuid WHERE kk.status IN :consultantStatusList AND kk.type IN :consultantTypes ORDER BY u.username ;", nativeQuery = true)
+    List<User> findUsersByDateAndStatusListAndTypes(@Param("date") String date, @Param("consultantStatusList") String[] consultantStatusList, @Param("consultantTypes") String... consultantTypes);
 
     @Query(value = "SELECT allocation FROM user u RIGHT JOIN ( " +
             "select t.useruuid, t.status, t.statusdate, t.allocation " +
@@ -45,8 +41,14 @@ public interface UserRepository extends CrudRepository<User, String> {
     int calculateCapacityByMonthByUser(@Param("useruuid") String useruuid, @Param("statusdate") String statusdate);
 
 
+    @Override
+    @CacheEvict("user")
+    <S extends User> Iterable<S> save(Iterable<S> entities);
+
+    @Override
+    @CacheEvict("user")
+    <S extends User> S save(S entity);
+
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(User entity);
-
-    List<User> findByLastnameStartsWithIgnoreCase(String filterText);
 }

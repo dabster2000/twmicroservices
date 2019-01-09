@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.services;
 
-import dk.trustworks.invoicewebui.generators.InvoicePdfGenerator;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
@@ -14,14 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * Created by hans on 20/07/2017.
@@ -31,9 +25,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class InvoiceService {
 
     private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
-
-    @Autowired
-    private InvoicePdfGenerator invoicePdfGenerator;
 
     @Autowired
     private InvoiceAPI invoiceAPI;
@@ -60,13 +51,11 @@ public class InvoiceService {
         invoiceClient.save(invoice);
     }
 
-    @RequestMapping(value = "/search/findByLatestInvoiceByProjectuuid", method = GET)
-    public Invoice findByLatestInvoiceByProjectuuid(@RequestParam("projectuuid") String projectuuid) {
-        return invoiceClient.findByLatestInvoiceByProjectuuid(projectuuid);
+    public double invoicedAmountByMonth(LocalDate month) {
+        return invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).stream().mapToDouble(Invoice::getSumNoTax).sum();
     }
 
-    public byte[] createInvoicePdf(Invoice invoice) throws IOException {
-        //return invoicePdfGenerator.createInvoice(invoice);
+    public byte[] createInvoicePdf(Invoice invoice) {
         return invoiceAPI.createInvoicePDF(invoice);
     }
 

@@ -14,7 +14,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ItBudgetStatus;
 import dk.trustworks.invoicewebui.repositories.ITBudgetCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.ITBudgetItemRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.employee.components.parts.AddBudgetItem;
 import dk.trustworks.invoicewebui.web.employee.components.parts.BudgetItemImpl;
 import dk.trustworks.invoicewebui.web.employee.components.parts.ImportantMessageBoxImpl;
@@ -31,7 +31,7 @@ import static dk.trustworks.invoicewebui.utils.NumberConverter.*;
 @SpringComponent
 public class ItBudgetTab {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final ITBudgetItemRepository itBudgetItemRepository;
 
@@ -43,8 +43,8 @@ public class ItBudgetTab {
     private ResponsiveRow budgetCardsRow;
     private User user;
 
-    public ItBudgetTab(UserRepository userRepository, ITBudgetItemRepository itBudgetItemRepository, ITBudgetCategoryRepository itBudgetCategoryRepository) {
-        this.userRepository = userRepository;
+    public ItBudgetTab(UserService userService, ITBudgetItemRepository itBudgetItemRepository, ITBudgetCategoryRepository itBudgetCategoryRepository) {
+        this.userService = userService;
         this.itBudgetItemRepository = itBudgetItemRepository;
         this.itBudgetCategoryRepository = itBudgetCategoryRepository;
     }
@@ -81,7 +81,7 @@ public class ItBudgetTab {
 
         ComboBox<User> comboBox = new ComboBox<>("Select User: ");
         comboBox.setItemCaptionGenerator(User::getUsername);
-        comboBox.setItems(userRepository.findByOrderByUsername());
+        comboBox.setItems(userService.findAll());
         comboBox.addValueChangeListener(event -> {
             if(!event.getSource().isEmpty()) {
                 user = event.getValue();

@@ -6,8 +6,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.PasswordConstraintValidator;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,7 +23,7 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
     private ForgotPasswordImpl forgotPassword;
 
     @Autowired
-    public ResetPasswordImpl(UserRepository userRepository, ForgotPasswordImpl forgotPassword) {
+    public ResetPasswordImpl(UserService userService, ForgotPasswordImpl forgotPassword) {
         this.forgotPassword = forgotPassword;
         System.out.println("LoginImpl.LoginImpl");
         getImgTop().setSource(new ThemeResource("images/password-card.jpg"));
@@ -37,9 +37,9 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
                 //getTxtVerifyPassword().setValue("");
                 //getTxtVerifyPassword().setWidth(100, Unit.PERCENTAGE);
             } else if (getTxtPassword().getValue().equals(getTxtVerifyPassword().getValue())) {
-                User userDb = userRepository.findOne(user.getUuid());
+                User userDb = userService.findByUUID(user.getUuid());
                 userDb.setPassword(BCrypt.hashpw(getTxtPassword().getValue(), BCrypt.gensalt()));
-                userRepository.save(userDb);
+                userService.save(userDb);
                 getUI().getNavigator().navigateTo("login");
                 Notification.show("Succes",
                         "Your may now use your new password.",

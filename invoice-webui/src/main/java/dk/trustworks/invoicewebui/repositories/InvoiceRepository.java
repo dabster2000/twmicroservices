@@ -14,6 +14,12 @@ import java.util.List;
  */
 @RepositoryRestResource(collectionResourceRel = "invoices", path = "invoices")
 public interface InvoiceRepository extends CrudRepository<Invoice, String> {
+    /**
+     *
+     * @param year the year
+     * @param month the month-of-year, from 0 to 11
+     * @return
+     */
     List<Invoice> findByYearAndMonth(@Param("year") int year, @Param("month") int month);
     List<Invoice> findByStatus(@Param("status") InvoiceStatus status);
     List<Invoice> findByStatusIn(@Param("statuses") InvoiceStatus... statuses);

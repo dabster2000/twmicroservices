@@ -1,13 +1,16 @@
 package dk.trustworks.invoicewebui.jobs;
 
 
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.IncomeForecast;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.IncomeForcastRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +43,7 @@ public class CountEmployeesJob {
 
     private final ContractService contractService;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private Map<LocalDate, List<User>> usersByLocalDate;
 
@@ -51,11 +54,11 @@ public class CountEmployeesJob {
     private final List <Integer> dailyPeopleForecast;
 
     @Autowired
-    public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkRepository workRepository, ContractService contractService, UserRepository userRepository) {
+    public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkRepository workRepository, ContractService contractService, UserService userService) {
         this.incomeForcastRepository = incomeForcastRepository;
         this.workRepository = workRepository;
         this.contractService = contractService;
-        this.userRepository = userRepository;
+        this.userService = userService;
         usersByLocalDate = new HashMap<>();
         startDate = LocalDate.of(2014, 2, 1);
         dailyForecast = new ArrayList<>();
@@ -77,7 +80,7 @@ public class CountEmployeesJob {
     public void countEmployees() {
         log.info("CountEmployeesJob.countEmployees");
         usersByLocalDate.clear();
-        for (User user : userRepository.findAll()) {
+        for (User user : userService.findAll()) {
             LocalDate tryDate = startDate;
             StatusType currentStatus = StatusType.TERMINATED;
             while(tryDate.isBefore(LocalDate.now().plusMonths(2))) {

@@ -2,8 +2,8 @@ package dk.trustworks.invoicewebui.jobs;
 
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +21,12 @@ public class GetVacationJob {
     static final Logger log = Logger.getLogger(GetVacationJob.class.getName());
 
     private final WorkRepository workRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public GetVacationJob(WorkRepository workRepository, UserRepository userRepository) {
+    public GetVacationJob(WorkRepository workRepository, UserService userService) {
         this.workRepository = workRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @PostConstruct
@@ -61,7 +61,7 @@ public class GetVacationJob {
         System.out.println(collect);
 
         for (String useruuid : userVacationByMonth.keySet()) {
-            User user = userRepository.findByUuid(useruuid);
+            User user = userService.findByUUID(useruuid);
             System.out.print(user.getFirstname()+" "+user.getLastname()+";");
 
             Map<String, Double> vacationByMonth = userVacationByMonth.get(useruuid);

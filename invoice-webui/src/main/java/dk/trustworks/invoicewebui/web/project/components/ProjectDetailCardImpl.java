@@ -8,8 +8,8 @@ import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
@@ -28,7 +28,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
     private NewsRepository newsRepository;
     private Binder<Project> projectBinder;
 
-    public ProjectDetailCardImpl(Project project, List<User> users, Photo photo, ProjectService projectService, NewsRepository newsRepository, UserRepository userRepository) {
+    public ProjectDetailCardImpl(Project project, List<User> users, Photo photo, ProjectService projectService, NewsRepository newsRepository, UserService userService) {
         this.project = project;
         this.projectService = projectService;
         this.newsRepository = newsRepository;
@@ -41,7 +41,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
             getLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
 
-        getSelRelationManager().setItems(userRepository.findByOrderByUsername());
+        getSelRelationManager().setItems(userService.findAll());
         getSelRelationManager().setItemCaptionGenerator(User::getUsername);
 
         getSelStartDate().setDateFormat("yyyy-MM");

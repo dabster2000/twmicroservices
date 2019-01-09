@@ -2,7 +2,7 @@ package dk.trustworks.invoicewebui.bots.conversations;
 
 import ai.api.model.AIResponse;
 import dk.trustworks.invoicewebui.bots.conversations.model.ConversationState;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +13,11 @@ public class ChangePasswordConversation implements Conversation {
 
     private static final Logger log = LoggerFactory.getLogger(ChangePasswordConversation.class);
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public ChangePasswordConversation(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public ChangePasswordConversation(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ChangePasswordConversation implements Conversation {
                 conversationState.step++;
                 log.debug("Change password...");
                 conversationState.getUser().setPassword(text);
-                userRepository.save(conversationState.getUser());
+                userService.save(conversationState.getUser());
                 conversationState.setValid(false);
                 return "Password changed!";
             default:

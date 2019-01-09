@@ -20,6 +20,11 @@ Profilside
  - Banner på purpose siden
 
 
+ - Graf der viser omkostning per konsulent. (Løn plus omkostninger i forhold til omsætning) per måned per konsulent.
+ - "Average Revenue per Consultant" per år
+ - Overblik over kontrakter - udløb, udestående, overskridelser, etc.
+ - Forskel på faktureret beløb og timeregistreret beløb
+
 
 
 #####  Color Palette by Paletton.com

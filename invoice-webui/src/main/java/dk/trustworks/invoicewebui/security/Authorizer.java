@@ -5,7 +5,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,11 +28,11 @@ public class Authorizer {
 
     private static final Logger log = LoggerFactory.getLogger(Authorizer.class);
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public Authorizer(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public Authorizer(UserService userService) {
+        this.userService = userService;
     }
 
     public void authorize(Component component, RoleType roleType) {
@@ -101,7 +101,7 @@ public class Authorizer {
         String NAME_COOKIE = "trustworks_login";
         Cookie cookie = getCookieByName(NAME_COOKIE);
         if (cookie != null) {
-            User user = userRepository.findByUuid(cookie.getValue());
+            User user = userService.findByUUID(cookie.getValue());
             UserSession userSession = new UserSession(user, user.getRoleList());
             VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
             return true;

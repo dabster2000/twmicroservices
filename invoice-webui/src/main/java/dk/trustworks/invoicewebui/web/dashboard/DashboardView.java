@@ -19,6 +19,7 @@ import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.SpriteSheet;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
@@ -86,7 +87,7 @@ public class DashboardView extends VerticalLayout implements View {
 
     private final NotificationRepository notificationRepository;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final PhotoService photoService;
 
@@ -101,7 +102,7 @@ public class DashboardView extends VerticalLayout implements View {
     private final SpriteSheet spriteSheet;
 
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserRepository userRepository, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.budgetNewRepository = budgetNewRepository;
@@ -111,7 +112,7 @@ public class DashboardView extends VerticalLayout implements View {
         this.newsRepository = newsRepository;
         this.reminderHistoryRepository = reminderHistoryRepository;
         this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.photoService = photoService;
         this.dashboardPreloader = dashboardPreloader;
         this.dashboardBoxCreator = dashboardBoxCreator;
@@ -139,11 +140,11 @@ public class DashboardView extends VerticalLayout implements View {
         //BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
-        NewsImpl newsCard = new NewsImpl(userRepository, newsRepository, 1, 12, "newsCard");
+        NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
-        CateringCardImpl cateringCard = new CateringCardImpl(userRepository.findByActiveTrueOrderByUsername(), emailSender,3, 4, "cateringCard");
+        CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyWorkingEmployees(), emailSender,3, 4, "cateringCard");
         cateringCard.init();
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");

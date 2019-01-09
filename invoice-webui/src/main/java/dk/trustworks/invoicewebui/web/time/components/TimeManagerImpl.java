@@ -10,6 +10,7 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.TimeService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.layouts.TimeManagerLayout;
@@ -41,8 +42,11 @@ public class TimeManagerImpl extends TimeManagerDesign {
     @Autowired
     private ProjectService projectService;
 
+    //@Autowired
+    //private UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private WeekRepository weekRepository;
@@ -237,7 +241,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
         System.out.println("userSession = " + userSession);
         if(userSession == null) return this;
 
-        List<User> users = userRepository.findByActiveTrue();
+        List<User> users = userService.findCurrentlyWorkingEmployees();
         getSelActiveUser().setItemCaptionGenerator(User::getUsername);
         getSelActiveUser().setItems(users);
 
