@@ -42,8 +42,6 @@ public interface WorkRepository extends CrudRepository<Work, String> {
      * @param useruuid actual user
      * @return
      */
-
-    @Cacheable("findByPeriodAndUserUUID")
     @Query(value = "SELECT * FROM (SELECT *, STR_TO_DATE(CONCAT(w.year,'-',(w.month+1),'-',w.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work w) as k WHERE k.registered >= :fromdate AND k.registered <= :todate AND k.useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByPeriodAndUserUUID(@Param("fromdate") String fromdate,
                                        @Param("todate") String todate,
