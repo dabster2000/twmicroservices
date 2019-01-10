@@ -65,8 +65,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final WorkService workService;
 
-    private final WorkRepository workRepository;
-
     private final PhotoRepository photoRepository;
 
     private final PhotoService photoService;
@@ -92,13 +90,12 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, WorkRepository workRepository, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
         this.projectService = projectService;
         this.userService = userService;
         this.clientRepository = clientRepository;
         this.weekRepository = weekRepository;
         this.workService = workService;
-        this.workRepository = workRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.contractService = contractService;
@@ -436,7 +433,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getWeekyear(), user);
         LocalDate startOfWeek = currentDate.withDayOfWeek(1);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
-        List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
+        List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
         for (Work workResource : workResources) {
             if(weeks.stream().noneMatch(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid()))) {
                 Week week = new Week(UUID.randomUUID().toString(),

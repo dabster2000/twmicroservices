@@ -4,11 +4,11 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.model.UserHourItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class UserMonthReportImpl extends UserMonthReportDesign {
     private final User user;
 
     @Autowired
-    private WorkRepository workRepository;
+    private WorkService workService;
 
     public UserMonthReportImpl() {
         user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
@@ -46,7 +46,7 @@ public class UserMonthReportImpl extends UserMonthReportDesign {
     }
 
     private void loadProjectReport(LocalDate localDate) {
-        List<Work> workList = workRepository.findByPeriodAndUserUUID(localDate.withDayOfMonth(1).toString(), localDate.withDayOfMonth(localDate.lengthOfMonth()).toString(), user.getUuid());
+        List<Work> workList = workService.findByPeriodAndUserUUID(localDate.withDayOfMonth(1), localDate.withDayOfMonth(localDate.lengthOfMonth()), user.getUuid());
 
         Map<String, UserHourItem> userHourItemMap = new HashMap<>();
 

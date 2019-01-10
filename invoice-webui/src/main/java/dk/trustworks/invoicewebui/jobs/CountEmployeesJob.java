@@ -8,9 +8,9 @@ import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.IncomeForcastRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.WorkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class CountEmployeesJob {
 
     private final IncomeForcastRepository incomeForcastRepository;
 
-    private final WorkRepository workRepository;
+    private final WorkService workService;
 
     private final ContractService contractService;
 
@@ -54,9 +54,9 @@ public class CountEmployeesJob {
     private final List <Integer> dailyPeopleForecast;
 
     @Autowired
-    public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkRepository workRepository, ContractService contractService, UserService userService) {
+    public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkService workService, ContractService contractService, UserService userService) {
         this.incomeForcastRepository = incomeForcastRepository;
-        this.workRepository = workRepository;
+        this.workService = workService;
         this.contractService = contractService;
         this.userService = userService;
         usersByLocalDate = new HashMap<>();
@@ -113,7 +113,7 @@ public class CountEmployeesJob {
 
         String pattern = "yyyy-MM-dd";
         Map<String, Double> workByDate = new HashMap<>();
-        for (Work work : workRepository.findByPeriod(startDate.format(DateTimeFormatter.ofPattern(pattern)), now.format(DateTimeFormatter.ofPattern(pattern)))) {
+        for (Work work : workService.findByPeriod(startDate, now)) {
             String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, 1).format(DateTimeFormatter.ofPattern(pattern));
             if(!workByDate.containsKey(dateString)) {
                 workByDate.put(dateString, 0.0);

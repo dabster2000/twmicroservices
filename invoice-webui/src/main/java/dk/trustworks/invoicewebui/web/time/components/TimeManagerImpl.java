@@ -7,10 +7,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.repositories.WeekRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.TimeService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.layouts.TimeManagerLayout;
@@ -42,9 +44,6 @@ public class TimeManagerImpl extends TimeManagerDesign {
     @Autowired
     private ProjectService projectService;
 
-    //@Autowired
-    //private UserRepository userRepository;
-
     @Autowired
     private UserService userService;
 
@@ -52,7 +51,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private WeekRepository weekRepository;
 
     @Autowired
-    private WorkRepository workRepository;
+    private WorkService workService;
 
     @Autowired
     private TimeService timeService;
@@ -174,7 +173,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
             LocalDate saveDate = this.currentDate;
             log.info("saveDate = " + saveDate);
             log.info("event.getBean() = " + event.getBean());
-            workRepository.save(new Work(
+            workService.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
@@ -182,7 +181,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workRepository.save(new Work(
+            workService.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
@@ -190,7 +189,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workRepository.save(new Work(
+            workService.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
@@ -198,7 +197,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workRepository.save(new Work(
+            workService.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
@@ -206,7 +205,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workRepository.save(new Work(
+            workService.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
@@ -214,7 +213,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workRepository.save(new Work(
+            workService.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
@@ -222,7 +221,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
-            workRepository.save(new Work(
+            workService.save(new Work(
                     saveDate.getDayOfMonth(),
                     saveDate.getMonthOfYear()-1,
                     saveDate.getYear(),
@@ -348,7 +347,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
         log.info("startOfWeek = " + startOfWeek);
         LocalDate endOfWeek = currentDate.withDayOfWeek(7);
         log.info("endOfWeek = " + endOfWeek);
-        List<Work> workResources = workRepository.findByPeriodAndUserUUID(startOfWeek.toString("yyyy-MM-dd"), endOfWeek.toString("yyyy-MM-dd"), user.getUuid());
+        List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
         log.info("workResources.size() = " + workResources.size());
 
         List<WeekItem> weekItems = new ArrayList<>();

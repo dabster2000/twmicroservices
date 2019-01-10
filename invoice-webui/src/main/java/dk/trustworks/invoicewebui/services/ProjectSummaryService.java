@@ -10,7 +10,6 @@ import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.network.dto.enums.ProjectSummaryType;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +35,16 @@ public class ProjectSummaryService {
 
     private final ProjectService projectService;
 
-    private final WorkRepository workClient;
+    private final WorkService workService;
 
     private final InvoiceRepository invoiceClient;
 
     @Autowired
-    public ProjectSummaryService(ReceiptsRepository receiptsRepository, ContractService contractService, ProjectService projectService, WorkRepository workClient, InvoiceRepository invoiceClient) {
+    public ProjectSummaryService(ReceiptsRepository receiptsRepository, ContractService contractService, ProjectService projectService, WorkService workService, InvoiceRepository invoiceClient) {
         this.receiptsRepository = receiptsRepository;
         this.contractService = contractService;
         this.projectService = projectService;
-        this.workClient = workClient;
+        this.workService = workService;
         this.invoiceClient = invoiceClient;
     }
 
@@ -58,7 +57,7 @@ public class ProjectSummaryService {
         System.out.println("periodFrom = " + periodFrom);
         LocalDate periodTo = periodFrom.withDayOfMonth(periodFrom.lengthOfMonth());
         System.out.println("periodTo = " + periodTo);
-        List<Work> workResources = workClient.findByYearAndMonth(year, month);
+        List<Work> workResources = workService.findByYearAndMonth(year, month);
         logger.info("workResources.size() = " + workResources.size());
 
         Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
@@ -219,7 +218,7 @@ public class ProjectSummaryService {
         } else if (projectSummary.getProjectSummaryType().equals(ProjectSummaryType.CONTRACT)) {
 
             //List<Work> workResources = workClient.findByYearAndMonth(year, month);
-            List<Work> workResources = workClient.findByYearAndMonthAndProject(year, month, projectSummary.getProjectuuid());
+            List<Work> workResources = workService.findByYearAndMonthAndProject(year, month, projectSummary.getProjectuuid());
 
             Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 

@@ -9,7 +9,6 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
@@ -31,16 +30,14 @@ public class ConsultantsBudgetRealizationChart {
 
     private final GraphKeyValueRepository graphKeyValueRepository;
     private final ContractService contractService;
-    private final WorkRepository workRepository;
     private final WorkService workService;
     private final BudgetNewRepository budgetNewRepository;
     private final UserService userService;
 
     @Autowired
-    public ConsultantsBudgetRealizationChart(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, WorkRepository workRepository, WorkService workService, BudgetNewRepository budgetNewRepository, UserService userService) {
+    public ConsultantsBudgetRealizationChart(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, WorkService workService, BudgetNewRepository budgetNewRepository, UserService userService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.contractService = contractService;
-        this.workRepository = workRepository;
         this.workService = workService;
         this.budgetNewRepository = budgetNewRepository;
         this.userService = userService;
@@ -79,9 +76,9 @@ public class ConsultantsBudgetRealizationChart {
                     //double weeks = currentDate.getMonth().maxLength() / 7.0;
                     for (ContractConsultant consultant : contract.getContractConsultants()) {
                         double weeks = workService.getWorkDaysInMonth(consultant.getUser().getUuid(), currentDate) / 5.0;
-                        List<Work> workList = workRepository.findByPeriodAndUserUUID(
-                                currentDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                                currentDate.withDayOfMonth(currentDate.lengthOfMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                        List<Work> workList = workService.findByPeriodAndUserUUID(
+                                currentDate.withDayOfMonth(1),
+                                currentDate.withDayOfMonth(currentDate.lengthOfMonth()),
                                 consultant.getUser().getUuid());
                         double notWork = 0.0;
                         for (Work work : workList) {

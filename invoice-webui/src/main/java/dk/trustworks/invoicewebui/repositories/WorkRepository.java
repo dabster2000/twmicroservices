@@ -4,6 +4,7 @@ import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.WorkWithRate;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -145,6 +146,15 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "WHERE w.workduration > 0 AND t.type NOT LIKE 'SO' AND c.active = true " +
             "ORDER BY c.name;", nativeQuery = true)
     List<Work> findByActiveClients();
+
+
+    @Override
+    @CacheEvict("work")
+    <S extends Work> Iterable<S> save(Iterable<S> entities);
+
+    @Override
+    @CacheEvict("work")
+    <S extends Work> S save(S entity);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Work entity);

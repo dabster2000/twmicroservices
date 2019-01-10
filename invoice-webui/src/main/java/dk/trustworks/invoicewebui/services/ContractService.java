@@ -6,7 +6,6 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,14 +27,14 @@ public class ContractService {
 
     private final ClientRepository clientRepository;
 
-    private final WorkRepository workRepository;
+    private final WorkService workService;
 
     @Autowired
-    public ContractService(ProjectService projectService, ContractRepository contractRepository, ClientRepository clientRepository, WorkRepository workRepository) {
+    public ContractService(ProjectService projectService, ContractRepository contractRepository, ClientRepository clientRepository, WorkService workService) {
         this.projectService = projectService;
         this.contractRepository = contractRepository;
         this.clientRepository = clientRepository;
-        this.workRepository = workRepository;
+        this.workService = workService;
     }
 
     @Transactional
@@ -152,9 +151,7 @@ public class ContractService {
 
     public Map<String, Work> getWorkErrors(LocalDate errorDate, int months) {
         Map<String, Work> errors = new HashMap<>();
-        for (Work work : workRepository.findByPeriod(
-                errorDate.minusMonths(months).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                errorDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
+        for (Work work : workService.findByPeriod(errorDate.minusMonths(months), errorDate)) {
             if(!(work.getWorkduration()>0)) continue;
             if(work.getTask().getType().equals(TaskType.SO)) continue;
             if(findConsultantRateByWork(work, ContractStatus.values())==null)
@@ -165,10 +162,7 @@ public class ContractService {
 
     public Map<String, Work> getWorkErrors(LocalDate errorDate, User user, int months) {
         Map<String, Work> errors = new HashMap<>();
-        for (Work work : workRepository.findByPeriodAndUserUUID(
-                errorDate.minusMonths(months).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                errorDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                user.getUuid())) {
+        for (Work work : workService.findByPeriodAndUserUUID(errorDate.minusMonths(months), errorDate, user.getUuid())) {
             if(!(work.getWorkduration()>0)) continue;
             if(findConsultantRateByWork(work)==null)
                 errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
@@ -179,9 +173,7 @@ public class ContractService {
     public Set<User> getEmployeesWorkingOnProjectWithNoContract(Project project) {
         Set<User> users = new HashSet<>();
         if(project.getTasks().size() == 0) return users;
-        List<String> strings = project.getTasks().stream().map(Task::getUuid).collect(Collectors.toList());
-        //System.out.println(String.join(", ", strings));
-        for (Work work : workRepository.findByTasks(strings)) {
+        for (Work work : workService.findByTasks(project.getTasks())) {
             if(!(work.getWorkduration()>0)) continue;
             if(findConsultantRateByWork(work, ContractStatus.values())==null)
                 users.add(work.getUser());
@@ -201,9 +193,7 @@ public class ContractService {
         Set<Project> projectsResult = new HashSet<>();
         for (Project project : projects) {
             if(project.getTasks().size() == 0) continue;
-            String[] strings = project.getTasks().stream().map(Task::getUuid).toArray(String[]::new);//.collect(Collectors.toList());
-            //System.out.println("tasks = ["+String.join(", ", strings)+"] | user = "+user.getUuid());
-            List<Work> workList = workRepository.findByUserAndTasks(user.getUuid(), strings);
+            List<Work> workList = workService.findByUserAndTasks(user.getUuid(), project.getTasks());
             for (Work work : workList) {
                 if(!(work.getWorkduration()>0)) continue;
                 if(findConsultantRateByWork(work, ContractStatus.values())==null) {
@@ -216,8 +206,7 @@ public class ContractService {
 
     public LocalDatePeriod getUsersFirstAndLastWorkOnProject(Project project, User user) {
         if(project.getTasks().size() == 0) return null;
-        String[] strings = project.getTasks().stream().map(Task::getUuid).toArray(String[]::new);
-        List<Work> workList = workRepository.findByUserAndTasks(user.getUuid(), strings);
+        List<Work> workList = workService.findByUserAndTasks(user.getUuid(), project.getTasks());
         Optional<Work> workMin = workList.stream().min(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
         Optional<Work> workMax = workList.stream().max(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
         return workMin.map(work -> new LocalDatePeriod(
@@ -227,11 +216,11 @@ public class ContractService {
     }
 
     public List<Work> getWorkOnContractByUser(Contract Contract) {
-        return workRepository.findByProjectsAndUsersAndDateRange(
+        return workService.findByProjectsAndUsersAndDateRange(
                 Contract.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
                 Contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
-                Contract.getActiveFrom().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
-                Contract.getActiveTo().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+                Contract.getActiveFrom(),
+                Contract.getActiveTo());
     }
 
     public List<Contract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
@@ -239,7 +228,7 @@ public class ContractService {
     }
 
     public double findAmountUsedOnContract(Contract contract) {
-        Double result = workRepository.findAmountUsedByContract(contract.getUuid());
+        Double result = workService.findAmountUsedByContract(contract.getUuid());
         return result==null?0.0:result;
     }
 
