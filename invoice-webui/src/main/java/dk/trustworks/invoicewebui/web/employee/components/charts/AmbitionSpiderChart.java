@@ -73,6 +73,7 @@ public class AmbitionSpiderChart {
         conf.addPane(pane);
 
         XAxis axis = new XAxis();
+        axis.setTickmarkPlacement(TickmarkPlacement.ON);
 
         //List<Ambition> ambitionList = ambitionRepository.findAmbitionByActiveIsTrue();
         List<UserAmbitionDTO> userAmbitionList = userAmbitionDTORepository.findUserAmbitionByUseruuidAndCategoryAndActiveTrue(user.getUuid(), ambitionCategory.getAmbitionCategoryType());
@@ -87,6 +88,7 @@ public class AmbitionSpiderChart {
         yaxs.setGridLineInterpolation("polygon");
         yaxs.setMin(0);
         yaxs.setMax(4);
+        yaxs.setTickInterval(1);
         yaxs.setLineWidth(0);
         conf.addxAxis(axis);
         conf.addyAxis(yaxs);
