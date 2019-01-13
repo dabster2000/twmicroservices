@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.services;
 
 
+import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
@@ -69,6 +71,12 @@ public class UserService {
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
+    }
+
+    @Cacheable("salary")
+    public int getUserSalary(User user, LocalDate date) {
+        Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, user));
+        return salary.getSalary();
     }
 
     @Cacheable("user")

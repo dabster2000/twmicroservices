@@ -8,6 +8,9 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -49,6 +52,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     @Autowired
     private ExpensesPerMonthChart expensesPerMonthChart;
+
+    @Autowired
+    private RevenuePerConsultantChart revenuePerConsultantChart;
+
+    @Autowired
+    private UserService userService;
 
 
     public TrustworksStatsLayout init() {
@@ -169,7 +178,20 @@ public class TrustworksStatsLayout extends VerticalLayout {
         expensesPerEmployee.getLblTitle().setValue("Expenses per Employee");
         expensesPerEmployee.getContent().addComponent(expensesPerMonthChart.createExpensesPerMonthChart());
         notification.setDescription("9 out of 9 charts created!");
-        System.out.println("timeMillis 8 = " + (System.currentTimeMillis() - timeMillis));
+        System.out.println("timeMillis 9 = " + (System.currentTimeMillis() - timeMillis));
+
+        Card revenuePerEmployee = new Card();
+        ComboBox<User> userComboBox = new ComboBox<>();
+        userComboBox.setItems(userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT));
+        userComboBox.setItemCaptionGenerator(User::getUsername);
+        userComboBox.addValueChangeListener(event -> {
+            revenuePerEmployee.getContent().removeAllComponents();
+            revenuePerEmployee.getContent().addComponent(revenuePerConsultantChart.createRevenuePerConsultantChart(event.getValue()));
+        });
+        revenuePerEmployee.getHlTopBar().addComponent(userComboBox);
+        revenuePerEmployee.getLblTitle().setValue("Revenue per Employee");
+        notification.setDescription("10 out of 10 charts created!");
+        System.out.println("timeMillis 10 = " + (System.currentTimeMillis() - timeMillis));
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -190,8 +212,11 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsBudgetRealizationCard);
         chartRow.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
+                .withDisplayRules(12, 12, 6, 6)
                 .withComponent(expensesPerEmployee);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(revenuePerEmployee);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(cumulativePredictiveRevenuePerMonthCard);
