@@ -44,7 +44,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "ORDER BY w.year, w.month ", nativeQuery = true)
     List<GraphKeyValue> findRevenueByMonthByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
-    @Cacheable("findBillableHOursByMonthByPeriod")
+    @Cacheable("findBillableHoursByMonthByPeriod")
     @Query(value = "select w.id as uuid, CONCAT(w.year,'-',w.month+1,'-','01') description, ROUND(SUM(w.workduration)) value from " +
             "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
             "inner join task t on w.taskuuid = t.uuid " +
