@@ -90,6 +90,8 @@ public class RevenuePerConsultantChart {
             double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
             int userSalary = userService.getUserSalary(user, currentDate);
             double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / countEmployees.getUsersByLocalDate(currentDate).size();
+            int staffSalaries = userService.getMonthSalaries(currentDate, ConsultantType.STAFF.toString(), ConsultantType.STUDENT.toString()) / countEmployees.getUsersByLocalDate(currentDate).size();
+            //double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / countEmployees.getUsersByLocalDate(currentDate).size();
 
             if(expense == 0) {
                 count = 1;
@@ -97,7 +99,7 @@ public class RevenuePerConsultantChart {
                 continue;
             }
 
-            revenueSum += (revenue - userSalary - expense);
+            revenueSum += (revenue - userSalary - expense - staffSalaries);
 
             if(count == average) {
                 revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), revenueSum / average));

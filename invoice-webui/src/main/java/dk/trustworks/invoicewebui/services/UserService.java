@@ -73,10 +73,16 @@ public class UserService {
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
-    @Cacheable("salary")
+    @Cacheable("user")
     public int getUserSalary(User user, LocalDate date) {
         Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, user));
         return salary.getSalary();
+    }
+
+    @Cacheable("user")
+    public int getMonthSalaries(LocalDate date, String... consultantTypes) {
+        String[] statusList = {ACTIVE.toString()};
+        return userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes).stream().mapToInt(value -> value.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(LocalDate.now(), 0, null)).getSalary()).sum();
     }
 
     @Cacheable("user")
