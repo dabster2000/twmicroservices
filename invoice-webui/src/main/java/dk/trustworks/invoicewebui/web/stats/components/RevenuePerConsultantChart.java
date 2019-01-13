@@ -62,7 +62,7 @@ public class RevenuePerConsultantChart {
         System.out.println("createRevenuePerConsultantChart periodStart = " + periodStart);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1);
 
-        chart.setCaption("Expenses, Salaries and Revenue per Employee");
+        chart.setCaption("Gross profit for "+user.getUsername());
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
