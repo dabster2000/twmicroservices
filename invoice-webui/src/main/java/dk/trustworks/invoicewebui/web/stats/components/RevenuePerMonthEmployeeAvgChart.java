@@ -8,11 +8,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.Expense;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -38,14 +37,14 @@ public class RevenuePerMonthEmployeeAvgChart {
 
     private final ExpenseRepository expenseRepository;
 
-    private final WorkRepository workRepository;
+    private final UserService userService;
 
     @Autowired
-    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, CountEmployeesJob employeesJob, ExpenseRepository expenseRepository, WorkRepository workRepository) {
+    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, CountEmployeesJob employeesJob, ExpenseRepository expenseRepository, UserService userService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.employeesJob = employeesJob;
         this.expenseRepository = expenseRepository;
-        this.workRepository = workRepository;
+        this.userService = userService;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -83,10 +82,10 @@ public class RevenuePerMonthEmployeeAvgChart {
                 LocalDate javaDate = LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd"));
                 if(javaDate.isAfter(LocalDate.now())) continue;
 
-                int consultants = 0;
-                for (User user : employeesJob.getUsersByLocalDate(javaDate)) {
-                    if(user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).get().getAllocation()>0) consultants++;
-                }
+                int consultants = userService.findWorkingEmployeesByDate(javaDate, ConsultantType.CONSULTANT).size();
+                //for (User user : employeesJob.getUsersByLocalDate(javaDate)) {
+                //    if(user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).get().getAllocation()>0) consultants++;
+                //}
                 revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), (amountPerItem.getValue() / consultants)));
                 double expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
                 if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), ((amountPerItem.getValue() - expense) / consultants)));
