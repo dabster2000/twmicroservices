@@ -55,7 +55,7 @@ public class ExpensesPerMonthChart {
         LocalDate periodStart = countEmployees.getStartDate();
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1);
 
-        chart.setCaption("Expenses per Employee");
+        chart.setCaption("Expenses, Salaries and Revenue per Employee");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -70,8 +70,9 @@ public class ExpensesPerMonthChart {
 
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, periodEnd));
 
-        DataSeries expensesSeries = new DataSeries("Expenses (no salaries)");
-        DataSeries salariesSeries = new DataSeries("Salaries (no expenses)");
+        DataSeries revenueSeries = new DataSeries("Revenue");
+        DataSeries expensesSeries = new DataSeries("Expenses");
+        DataSeries salariesSeries = new DataSeries("Salaries");
 
         double expensesSum = 0.0;
         double salariesSum = 0.0;
@@ -80,7 +81,6 @@ public class ExpensesPerMonthChart {
 
         int average = 3;
 
-        DataSeries revenueSeries = new DataSeries("Revenue");
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
 
