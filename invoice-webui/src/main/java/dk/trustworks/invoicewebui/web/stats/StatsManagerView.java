@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
  */
 @AccessRules(roleTypes = {RoleType.CXO})
 @SpringView(name = StatsManagerView.VIEW_NAME)
-public class StatsManagerView extends VerticalLayout implements View {
+public class  StatsManagerView extends VerticalLayout implements View {
 
     protected static Logger logger = LoggerFactory.getLogger(StatsManagerView.class.getName());
 

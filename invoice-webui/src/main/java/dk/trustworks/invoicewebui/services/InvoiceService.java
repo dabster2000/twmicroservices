@@ -52,7 +52,9 @@ public class InvoiceService {
     }
 
     public double invoicedAmountByMonth(LocalDate month) {
-        return invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
+        double invoiceSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.INVOICE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
+        double creditNoteSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.CREDIT_NOTE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
+        return invoiceSum - creditNoteSum;
     }
 
     public byte[] createInvoicePdf(Invoice invoice) {
