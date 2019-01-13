@@ -12,6 +12,7 @@ import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -37,13 +38,16 @@ public class ExpensesPerMonthChart {
 
     private final CountEmployeesJob countEmployees;
 
+    private final UserService userService;
+
     private final GraphKeyValueRepository graphKeyValueRepository;
 
     @Autowired
-    public ExpensesPerMonthChart(StatisticsService statisticsService, ExpenseRepository expenseRepository, CountEmployeesJob countEmployees, GraphKeyValueRepository graphKeyValueRepository) {
+    public ExpensesPerMonthChart(StatisticsService statisticsService, ExpenseRepository expenseRepository, CountEmployeesJob countEmployees, UserService userService, GraphKeyValueRepository graphKeyValueRepository) {
         this.statisticsService = statisticsService;
         this.expenseRepository = expenseRepository;
         this.countEmployees = countEmployees;
+        this.userService = userService;
         this.graphKeyValueRepository = graphKeyValueRepository;
     }
 

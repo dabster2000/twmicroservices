@@ -86,13 +86,23 @@ public class RevenuePerConsultantChart {
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
+            System.out.println("currentDate = " + currentDate);
 
+            int consultantCount = userService.findWorkingEmployeesByDate(currentDate, ConsultantType.CONSULTANT).size();
+            System.out.println("consultantCount = " + consultantCount);
             double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
+            System.out.println("revenue = " + revenue);
             int userSalary = userService.getUserSalary(user, currentDate);
-            double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / countEmployees.getUsersByLocalDate(currentDate).size();
+            System.out.println("userSalary = " + userSalary);
+            double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
+            System.out.println("expense = " + expense);
             int consultantSalaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
+            System.out.println("consultantSalaries = " + consultantSalaries);
             double expenseSalaries = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum();
-            double staffSalaries = (expenseSalaries - consultantSalaries) / countEmployees.getUsersByLocalDate(currentDate).size();
+            System.out.println("expenseSalaries = " + expenseSalaries);
+            double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
+            System.out.println("staffSalaries = " + staffSalaries);
+            System.out.println();
 
             if(expense == 0) {
                 count = 1;

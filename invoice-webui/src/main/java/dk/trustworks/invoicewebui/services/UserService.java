@@ -56,6 +56,15 @@ public class UserService {
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
+    @Cacheable(value = "user")
+    public List<User> findWorkingEmployeesByDate(LocalDate date, ConsultantType... consultantType) {
+        String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
+        return userRepository.findUsersByDateAndStatusListAndTypes(
+                date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                statusList,
+                Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
+    }
+
     @Cacheable("user")
     public List<User> findCurrentlyWorkingEmployees(ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
@@ -73,13 +82,13 @@ public class UserService {
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
-    @Cacheable("user")
+    @Cacheable("salary")
     public int getUserSalary(User user, LocalDate date) {
         Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, user));
         return salary.getSalary();
     }
 
-    @Cacheable("user")
+    @Cacheable("salary")
     public int getMonthSalaries(LocalDate date, String... consultantTypes) {
         String[] statusList = {ACTIVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes).stream().mapToInt(value -> value.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(LocalDate.now(), 0, null)).getSalary()).sum();

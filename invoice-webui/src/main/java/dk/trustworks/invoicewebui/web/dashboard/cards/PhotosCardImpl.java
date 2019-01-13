@@ -54,6 +54,7 @@ public class PhotosCardImpl extends PhotosCardDesign implements Box {
 
     public void loadPhoto() {
         byte[] randomPhoto = dashboardPreloader.getRandomPhoto();
+        if(randomPhoto== null) return;
         System.out.println("randomPhoto.length = " + randomPhoto.length);
         String randomText = dashboardPreloader.getRandomText();
         System.out.println("randomText = " + randomText);
