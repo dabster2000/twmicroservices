@@ -66,6 +66,21 @@ public class StatisticsService {
         return revenueSeries;
     }
 
+    @Cacheable("calcBillableHoursRevenuePerMonth")
+    public DataSeries calcBillableHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
+        DataSeries revenueSeries = new DataSeries("Billable Hours Revenue");
+        int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
+        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
+        for (int i = 0; i < months; i++) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+            if(amountPerItemList.size() <= i) continue;
+            GraphKeyValue amountPerItem = amountPerItemList.get(i);
+            if(amountPerItem!=null) revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
+        }
+        return revenueSeries;
+    }
+
     @Cacheable("calcBudgetPerMonth")
     public DataSeries calcBudgetPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries budgetSeries = new DataSeries("Budget");
