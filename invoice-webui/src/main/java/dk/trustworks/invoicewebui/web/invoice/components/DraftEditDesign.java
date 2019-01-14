@@ -23,6 +23,7 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public class DraftEditDesign extends VerticalLayout {
     protected Label lblInvoiceHeadline;
+    protected Button btnCreatePhantom;
     protected Button btnCreateInvoice;
     protected Button btnSave;
     protected TextField txtClientname;

@@ -14,6 +14,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.enums.InvoiceType;
 import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.web.Broadcaster;
@@ -93,6 +94,21 @@ public class DraftListImpl extends DraftListDesign
                         saveFormToInvoiceBean(invoice, invoiceEdit);
                         invoice.setStatus(InvoiceStatus.CREATED);
                         invoice.invoicenumber = invoiceRepository.getMaxInvoiceNumber() + 1;
+                        invoice.pdf = invoiceService.createInvoicePdf(invoice);
+                        invoiceRepository.save(invoice);
+                        loadInvoicesToGrid();
+                        window.close();
+                    } catch (ValidationException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                invoiceEdit.btnCreatePhantom.addClickListener(clickEvent -> {
+                    try {
+                        saveFormToInvoiceBean(invoice, invoiceEdit);
+                        invoice.setStatus(InvoiceStatus.CREATED);
+                        invoice.setType(InvoiceType.INVOICE);
+                        invoice.invoicenumber = 0;
                         invoice.pdf = invoiceService.createInvoicePdf(invoice);
                         invoiceRepository.save(invoice);
                         loadInvoicesToGrid();
