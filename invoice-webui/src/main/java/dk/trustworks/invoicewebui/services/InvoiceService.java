@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
@@ -51,9 +52,11 @@ public class InvoiceService {
         invoiceClient.save(invoice);
     }
 
-    public double invoicedAmountByMonth(LocalDate month) {
-        double invoiceSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.INVOICE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
-        double creditNoteSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.CREDIT_NOTE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
+    public double invoicedAmountByMonth(LocalDate date) {
+        double invoiceSum = invoiceClient.invoicedAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        double creditNoteSum = invoiceClient.creditNoteAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        //double invoiceSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.INVOICE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
+        //double creditNoteSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.CREDIT_NOTE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
         return invoiceSum - creditNoteSum;
     }
 

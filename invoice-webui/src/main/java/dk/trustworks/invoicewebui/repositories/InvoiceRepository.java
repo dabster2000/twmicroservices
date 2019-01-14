@@ -21,6 +21,15 @@ public interface InvoiceRepository extends CrudRepository<Invoice, String> {
      * @return
      */
     List<Invoice> findByYearAndMonth(@Param("year") int year, @Param("month") int month);
+
+    @Query(value = "SELECT COALESCE(SUM(ii.hours * ii.rate), 0) AS result FROM invoices i LEFT JOIN invoiceitems ii ON i.uuid = ii.invoiceuuid " +
+            "WHERE i.invoicedate >= :periodStart AND i.invoicedate <= :periodEnd AND i.type = 0;", nativeQuery = true)
+    double invoicedAmountByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
+
+    @Query(value = "SELECT COALESCE(SUM(ii.hours * ii.rate), 0) AS result FROM invoices i LEFT JOIN invoiceitems ii ON i.uuid = ii.invoiceuuid " +
+            "WHERE i.invoicedate >= :periodStart AND i.invoicedate <= :periodEnd AND i.type = 1;", nativeQuery = true)
+    double creditNoteAmountByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
+
     List<Invoice> findByStatus(@Param("status") InvoiceStatus status);
     List<Invoice> findByStatusIn(@Param("statuses") InvoiceStatus... statuses);
 
