@@ -6,7 +6,6 @@ import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +28,7 @@ public class WorkService {
         return findByPeriodAndUserUUID(DateUtils.convertJodaToJavaDate(startOfWeek), DateUtils.convertJodaToJavaDate(endOfWeek), userUUID);
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public List<Work> findByPeriodAndUserUUID(LocalDate fromdate, LocalDate todate, String useruuid) {
         return workRepository.findByPeriodAndUserUUID(
                 fromdate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -37,7 +36,7 @@ public class WorkService {
                 useruuid);
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public int getWorkDaysInMonth(String userUUID, LocalDate month) {
         int weekDays = DateUtils.countWeekDays(month, month.plusMonths(1));
         List<Work> workList = workRepository.findByYearAndMonthAndUserAndTasks(month.getYear(), month.getMonthValue()-1, userUUID, "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
@@ -51,7 +50,7 @@ public class WorkService {
         return workRepository.findByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public List<Work> findByPeriod(LocalDate fromDate, LocalDate toDate) {
         return workRepository.findByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
@@ -73,7 +72,7 @@ public class WorkService {
         return workRepository.findByUserAndTasks(userUUID, strings);
     }
 
-    @Cacheable(value = "work")
+    //@Cacheable(value = "work")
     public List<Work> findByYearAndMonth(int year, int month) {
         return workRepository.findByYearAndMonth(year, month);
     }
@@ -83,12 +82,12 @@ public class WorkService {
         return workRepository.findByYearAndMonthAndProject(year, month, projectuuid);
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public List<Work> findByProjectsAndUsersAndDateRange(List<String> projects, List<String> users, LocalDate fromDate, LocalDate toDate) {
         return workRepository.findByProjectsAndUsersAndDateRange(projects, users, fromDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")), toDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public Double findAmountUsedByContract(String contractUUID) {
         return workRepository.findAmountUsedByContract(contractUUID);
     }
