@@ -12,17 +12,20 @@
      <vaadin-label style-name="h2" plain-text _id="lblInvoiceHeadline" :middle>
        FAKTURA 
      </vaadin-label>
-     <vaadin-horizontal-layout height-full :middle :right>
-      <vaadin-button plain-text _id="btnCreatePhantom" :middle :center>
-        Phantom Invoice 
-      </vaadin-button>
-      <vaadin-button style-name="danger" plain-text _id="btnCreateInvoice" :middle :center>
-        Create invoice 
-      </vaadin-button>
-      <vaadin-button style-name="primary" plain-text _id="btnSave" :middle :right>
-        Save 
-      </vaadin-button>
-      <vaadin-css-layout width="10px"></vaadin-css-layout>
+     <vaadin-horizontal-layout height-full :middle :right :expand>
+      <vaadin-css-layout width-full :middle :center>
+       <vaadin-button plain-text _id="btnCreatePhantom">
+         Phantom Invoice 
+       </vaadin-button>
+       <vaadin-label width="5px" plain-text></vaadin-label>
+       <vaadin-button style-name="danger" plain-text _id="btnCreateInvoice">
+         Create invoice 
+       </vaadin-button>
+       <vaadin-label width="5px" plain-text></vaadin-label>
+       <vaadin-button style-name="primary" width-full plain-text _id="btnSave">
+         Save 
+       </vaadin-button>
+      </vaadin-css-layout>
      </vaadin-horizontal-layout>
     </vaadin-horizontal-layout>
     <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
