@@ -46,7 +46,7 @@ public class WorkService {
         return weekDays;
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public List<Work> findVacationByUser(User user) {
         return workRepository.findByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
     }
@@ -61,13 +61,13 @@ public class WorkService {
         return workRepository.findBillableWorkByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public List<Work> findByTasks(List<Task> tasks) {
         List<String> strings = tasks.stream().map(Task::getUuid).collect(Collectors.toList());
         return workRepository.findByTasks(strings);
     }
 
-    @Cacheable("work")
+    //@Cacheable("work")
     public List<Work> findByUserAndTasks(String userUUID, List<Task> tasks) {
         String[] strings = tasks.stream().map(Task::getUuid).toArray(String[]::new);
         return workRepository.findByUserAndTasks(userUUID, strings);
