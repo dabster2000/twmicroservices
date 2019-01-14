@@ -51,7 +51,7 @@ public class RevenuePerMonthChart {
         chart.getConfiguration().setTooltip(tooltip);
 
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, periodEnd));
-        chart.getConfiguration().addSeries(statisticsService.calcBillableHoursRevenuePerMonth(periodStart, periodEnd));
+        if(showEarnings) chart.getConfiguration().addSeries(statisticsService.calcBillableHoursRevenuePerMonth(periodStart, periodEnd));
         chart.getConfiguration().addSeries(statisticsService.calcRevenuePerMonth(periodStart, periodEnd));
         chart.getConfiguration().addSeries(statisticsService.calcBudgetPerMonth(periodStart, periodEnd));
         if(showEarnings) chart.getConfiguration().addSeries(statisticsService.calcEarningsPerMonth(periodStart, periodEnd));
