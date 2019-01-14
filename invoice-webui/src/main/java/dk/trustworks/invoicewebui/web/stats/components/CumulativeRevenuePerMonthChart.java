@@ -12,6 +12,7 @@ import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,13 +43,16 @@ public class CumulativeRevenuePerMonthChart {
 
     private final WorkService workService;
 
+    private final InvoiceService invoiceService;
+
     @Autowired
-    public CumulativeRevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService) {
+    public CumulativeRevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, InvoiceService invoiceService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.expenseRepository = expenseRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.workService = workService;
+        this.invoiceService = invoiceService;
     }
 
     public Chart createCumulativeRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -67,11 +71,12 @@ public class CumulativeRevenuePerMonthChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         String[] categories = new String[period];
         DataSeries revenueSeries = new DataSeries("Revenue");
         DataSeries budgetSeries = new DataSeries("Budget");
         DataSeries earningsSeries = new DataSeries("Earnings");
+
+        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
 
         /*
@@ -104,23 +109,33 @@ public class CumulativeRevenuePerMonthChart {
         for (int i = 0; i < period; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             double expense = 0.0;
+
+            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            if(invoicedAmountByMonth > 0.0) {
+                cumulativeRevenuePerMonth += invoicedAmountByMonth;
+                expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
+                cumulativeExpensePerMonth += expense;
+            } else {
+                if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
+                    cumulativeRevenuePerMonth += amountPerItemList.get(i).getValue();
+                    expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
+                    cumulativeExpensePerMonth += expense;
+                }
+            }
+
+            /*
             if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
                 cumulativeRevenuePerMonth += amountPerItemList.get(i).getValue();
                 expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             }
-            //System.out.println("periodStart.plusMonths(i) = " + periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
-            //System.out.println("amountPerItemList = " + amountPerItemList.size());
-            //System.out.println("t = " + t.predict(i));
-            //System.out.println("avgRevenueList = " + avgRevenueList.size());
-            //if(amountPerItemList.size()>2) avgRevenueList.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), t.predict(i)));
+            */
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
             List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
-                    //double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
                         double weeks = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0;
                         cumulativeBudgetPerMonth += (contractConsultant.getHours() * weeks) * contractConsultant.getRate();

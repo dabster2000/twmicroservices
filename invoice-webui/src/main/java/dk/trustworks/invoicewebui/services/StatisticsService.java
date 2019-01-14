@@ -53,9 +53,14 @@ public class StatisticsService {
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
         for (int i = 0; i < months; i++) {
-            if(amountPerItemList.size() > i) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            if(invoicedAmountByMonth > 0.0) {
+                revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth));
+            } else {
+                if(amountPerItemList.size() <= i) continue;
                 GraphKeyValue amountPerItem = amountPerItemList.get(i);
-                if(amountPerItem!=null) revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
+                if(amountPerItem!=null) revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
             }
         }
         return revenueSeries;

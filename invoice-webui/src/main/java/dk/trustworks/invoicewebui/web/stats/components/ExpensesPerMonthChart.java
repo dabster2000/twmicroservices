@@ -11,6 +11,7 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
+import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,11 +38,14 @@ public class ExpensesPerMonthChart {
 
     private final GraphKeyValueRepository graphKeyValueRepository;
 
+    private final InvoiceService invoiceService;
+
     @Autowired
-    public ExpensesPerMonthChart(ExpenseRepository expenseRepository, UserService userService, GraphKeyValueRepository graphKeyValueRepository) {
+    public ExpensesPerMonthChart(ExpenseRepository expenseRepository, UserService userService, GraphKeyValueRepository graphKeyValueRepository, InvoiceService invoiceService) {
         this.expenseRepository = expenseRepository;
         this.userService = userService;
         this.graphKeyValueRepository = graphKeyValueRepository;
+        this.invoiceService = invoiceService;
     }
 
     public Chart createExpensesPerMonthChart() {
@@ -79,11 +83,9 @@ public class ExpensesPerMonthChart {
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
 
-
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            if(amountPerItemList.size() <= i) continue;
 
             int consultantCount = userService.findWorkingEmployeesByDate(currentDate, ConsultantType.CONSULTANT).size();
 
@@ -91,9 +93,17 @@ public class ExpensesPerMonthChart {
             int consultantSalaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString()) / consultantCount;
             double expenseSalaries = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
             double staffSalaries = (expenseSalaries - consultantSalaries);
-            double revenue = ((amountPerItemList.get(i)!=null)?amountPerItemList.get(i).getValue():0.0) / consultantCount;
+            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            double revenue;
+            if(invoicedAmountByMonth > 0.0) {
+                revenue = invoicedAmountByMonth / consultantCount;
+            } else {
+                if(amountPerItemList.size() <= i) continue;
+                revenue = ((amountPerItemList.get(i) != null) ? amountPerItemList.get(i).getValue() : 0.0) / consultantCount;
+            }
 
-            if(expense == 0) {
+
+            if(revenue == 0.0) {
                 count = 1;
                 revenueSum = 0.0;
                 expensesSum = 0.0;
@@ -101,7 +111,7 @@ public class ExpensesPerMonthChart {
                 continue;
             }
 
-            expensesSum += (expense + staffSalaries);
+            if(expense > 0.0) expensesSum += (expense + staffSalaries);
             salariesSum += consultantSalaries;
             revenueSum += revenue;
 
