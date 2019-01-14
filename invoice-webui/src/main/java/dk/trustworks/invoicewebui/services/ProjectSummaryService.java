@@ -55,7 +55,7 @@ public class ProjectSummaryService {
         logger.info("LOAD findByYearAndMonth");
         LocalDate periodFrom = LocalDate.of(year, month + 1, 1);
         System.out.println("periodFrom = " + periodFrom);
-        LocalDate periodTo = periodFrom.withDayOfMonth(periodFrom.lengthOfMonth());
+        LocalDate periodTo = periodFrom.withDayOfMonth(periodFrom.getMonth().length(periodFrom.isLeapYear()));
         System.out.println("periodTo = " + periodTo);
         List<Work> workResources = workService.findByYearAndMonth(year, month);
         logger.info("workResources.size() = " + workResources.size());
@@ -216,13 +216,14 @@ public class ProjectSummaryService {
                 logger.info("Created new invoice item: "+invoiceItem);
             }
         } else if (projectSummary.getProjectSummaryType().equals(ProjectSummaryType.CONTRACT)) {
-
+            System.out.println("beginning...");
             //List<Work> workResources = workClient.findByYearAndMonth(year, month);
             List<Work> workResources = workService.findByYearAndMonthAndProject(year, month, projectSummary.getProjectuuid());
-
+            System.out.println("workResources.size() = " + workResources.size());
             Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 
             Contract contract = contractService.findOne(projectSummary.getContractuuid());
+            System.out.println("contract = " + contract);
 
             for (Work workResource : workResources) {
                 if (workResource.getWorkduration() == 0) continue;
@@ -237,11 +238,13 @@ public class ProjectSummaryService {
                     continue;
 
                 User user = workResource.getUser();
+                System.out.println("user = " + user);
 
                 if (contract.getClientdata() == null) logger.info("clientdata null: " + contract);
                 Clientdata clientdata = (contract.getClientdata() != null) ? contract.getClientdata() : new Clientdata();
 
                 if (invoice == null) {
+                    System.out.println("new invoice");
                     invoice = new Invoice(InvoiceType.INVOICE,
                             contract.getUuid(),
                             project.getUuid(),
@@ -263,6 +266,7 @@ public class ProjectSummaryService {
                 }
 
                 Double rate = contractService.findConsultantRateByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+                System.out.println("rate = " + rate);
 
                 if (rate == null) {
                     logger.error("Taskworkerconstraint could not be found for user (link: " + user.getUuid() + ") and task (link: " + task.getUuid() + ")");
@@ -284,10 +288,11 @@ public class ProjectSummaryService {
                     invoice.invoiceitems.add(invoiceItem);
                     logger.info("Created new invoice item: " + invoiceItem);
                 }
+                System.out.println("...end");
                 invoiceItemMap.get(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid()).hours += workResource.getWorkduration();
             }
         }
-
+        System.out.println("invoice = " + invoice);
         invoiceClient.save(invoice);
     }
 }

@@ -56,7 +56,7 @@ public class WorkService {
         return workRepository.findByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
-    @Cacheable(value = "work", key = "#root.methodName")
+    //@Cacheable(value = "work")
     public List<Work> findBillableWorkByPeriod(LocalDate fromDate, LocalDate toDate) {
         return workRepository.findBillableWorkByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
@@ -73,12 +73,12 @@ public class WorkService {
         return workRepository.findByUserAndTasks(userUUID, strings);
     }
 
-    @Cacheable(value = "work", key = "#root.methodName")
+    @Cacheable(value = "work")
     public List<Work> findByYearAndMonth(int year, int month) {
         return workRepository.findByYearAndMonth(year, month);
     }
 
-    @Cacheable(value = "work", key = "#root.methodName")
+    //@Cacheable(value = "work")
     public List<Work> findByYearAndMonthAndProject(int year, int month, String projectuuid) {
         return workRepository.findByYearAndMonthAndProject(year, month, projectuuid);
     }
