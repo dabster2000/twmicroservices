@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose;
+import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
 
 import javax.persistence.*;
@@ -36,10 +38,18 @@ public class CKOExpense {
     @Enumerated(EnumType.STRING)
     private CKOExpenseType type;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private CKOExpenseStatus status;
+
+    @Column(name = "purpose")
+    @Enumerated(EnumType.STRING)
+    private CKOExpensePurpose purpose;
+
     public CKOExpense() {
     }
 
-    public CKOExpense(LocalDate eventdate, User user, String description, int price, String comment, double days, CKOExpenseType type) {
+    public CKOExpense(LocalDate eventdate, User user, String description, int price, String comment, double days, CKOExpenseType type, CKOExpenseStatus status, CKOExpensePurpose purpose) {
         this.eventdate = eventdate;
         this.user = user;
         this.description = description;
@@ -47,6 +57,8 @@ public class CKOExpense {
         this.comment = comment;
         this.days = days;
         this.type = type;
+        this.status = status;
+        this.purpose = purpose;
     }
 
     public int getId() {
@@ -113,17 +125,35 @@ public class CKOExpense {
         this.type = type;
     }
 
+    public CKOExpenseStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CKOExpenseStatus status) {
+        this.status = status;
+    }
+
+    public CKOExpensePurpose getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(CKOExpensePurpose purpose) {
+        this.purpose = purpose;
+    }
+
     @Override
     public String toString() {
         return "CKOExpense{" +
                 "id=" + id +
                 ", eventdate=" + eventdate +
-                ", user=" + user +
+                ", user=" + user.getUsername() +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", comment='" + comment + '\'' +
                 ", days=" + days +
                 ", type=" + type +
+                ", status=" + status +
+                ", purpose=" + purpose +
                 '}';
     }
 }

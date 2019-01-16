@@ -27,7 +27,18 @@
         <option item="CONFERENCE">Conference</option>
         <option item="COURSE">Course</option>
        </vaadin-combo-box>
-       <vaadin-text-field caption="type (no tax)" placeholder="price w. no tax" width-full _id="txtPrice"></vaadin-text-field>
+       <vaadin-combo-box caption="status:" placeholder="select status..." width-full data-item-type="java.lang.String" _id="cbStatus">
+        <option item="WISHLIST">Wish list</option>
+        <option item="BOOKED">Booked</option>
+        <option item="COMPLETED">Completed</option>
+       </vaadin-combo-box>
+       <vaadin-combo-box caption="purpose:" placeholder="select purpose..." width-full data-item-type="java.lang.String" _id="cbPurpose">
+        <option item="NEW">New skill</option>
+        <option item="IMPROVE">Improve skill</option>
+        <option item="PASSION">Supports passion</option>
+        <option item="CUSTOMER">Customer driven</option>
+       </vaadin-combo-box>
+       <vaadin-text-field caption="price (no tax):" placeholder="price w. no tax" width-full _id="txtPrice"></vaadin-text-field>
        <vaadin-button style-name="flat friendly" width-full plain-text _id="btnAddSalary">
          CREATE 
        </vaadin-button>
@@ -40,8 +51,10 @@
           <col column-id="eventdate" sortable>
           <col column-id="days" sortable>
           <col column-id="type" sortable>
+          <col column-id="purpose" sortable>
           <col column-id="price" sortable>
-          <col column-id="comment" sortable="false">
+          <col column-id="status" sortable>
+          <col column-id="comment" sortable>
          </colgroup>
          <thead>
           <tr default>
@@ -49,7 +62,9 @@
            <th plain-text column-ids="eventdate">Eventdate</th>
            <th plain-text column-ids="days">Days</th>
            <th plain-text column-ids="type">Type</th>
+           <th plain-text column-ids="purpose">Purpose</th>
            <th plain-text column-ids="price">Price</th>
+           <th plain-text column-ids="status">Status</th>
            <th plain-text column-ids="comment">Comment</th>
           </tr>
          </thead>

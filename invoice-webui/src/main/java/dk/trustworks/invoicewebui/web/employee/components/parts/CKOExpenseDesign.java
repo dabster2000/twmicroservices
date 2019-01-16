@@ -36,6 +36,8 @@ public class CKOExpenseDesign extends VerticalLayout {
     private TextField txtDescription;
     private TextArea txtComments;
     private ComboBox<String> cbType;
+    private ComboBox<String> cbStatus;
+    private ComboBox<String> cbPurpose;
     private TextField txtPrice;
     private Button btnAddSalary;
     private Grid<dk.trustworks.invoicewebui.model.CKOExpense> gridCKOExpenses;
@@ -87,6 +89,14 @@ public class CKOExpenseDesign extends VerticalLayout {
 
     public ComboBox<String> getCbType() {
         return cbType;
+    }
+
+    public ComboBox<String> getCbStatus() {
+        return cbStatus;
+    }
+
+    public ComboBox<String> getCbPurpose() {
+        return cbPurpose;
     }
 
     public TextField getTxtPrice() {

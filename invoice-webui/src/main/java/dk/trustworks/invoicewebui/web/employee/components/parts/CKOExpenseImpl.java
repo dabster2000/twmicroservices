@@ -6,6 +6,8 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.shared.data.sort.SortDirection;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose;
+import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -42,6 +44,8 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         getBtnEdit().addClickListener(event -> {
             getDataContainer().setVisible(!getDataContainer().isVisible());
             getChartContainer().setVisible(!getChartContainer().isVisible());
+            getChartContainer().removeAllComponents();
+            getChartContainer().addComponent(getChart(user));
         });
 
         getBtnDelete().addClickListener(event -> {
@@ -49,7 +53,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUser(user));
         });
         getBtnAddSalary().addClickListener(event -> {
-            this.ckoExpenseRepository.save(new CKOExpense(getDfDate().getValue(), user, getTxtDescription().getValue(), Integer.parseInt(getTxtPrice().getValue()), getTxtComments().getValue(), NumberConverter.parseDouble(getTxtDays().getValue()), CKOExpenseType.valueOf(getCbType().getValue())));
+            this.ckoExpenseRepository.save(new CKOExpense(getDfDate().getValue(), user, getTxtDescription().getValue(), Integer.parseInt(getTxtPrice().getValue()), getTxtComments().getValue(), NumberConverter.parseDouble(getTxtDays().getValue()), CKOExpenseType.valueOf(getCbType().getValue()), CKOExpenseStatus.valueOf(getCbStatus().getValue()), CKOExpensePurpose.valueOf(getCbPurpose().getValue())));
             getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUser(user));
         });
 
@@ -77,7 +81,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         XAxis x = new XAxis();
         x.setTitle("year");
 
-        ListSeries expenseSeries = new ListSeries("expenses");
+        ListSeries expenseSeries = new ListSeries("used");
         ListSeries availableSeries = new ListSeries("available");
 
         if(expenses.keySet().size() == 0) {
