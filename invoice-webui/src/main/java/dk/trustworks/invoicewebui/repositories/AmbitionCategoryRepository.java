@@ -8,8 +8,11 @@ import dk.trustworks.invoicewebui.model.AmbitionCategory;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+
 @RepositoryRestResource(collectionResourceRel = "ambition_categories", path="ambition_categories")
 public interface AmbitionCategoryRepository extends CrudRepository<AmbitionCategory, Integer> {
 
+    List<AmbitionCategory> findByActiveTrue();
 
 }

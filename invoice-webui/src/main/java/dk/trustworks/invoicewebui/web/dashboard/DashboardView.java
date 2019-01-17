@@ -5,9 +5,14 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.*;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontIcon;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.ReminderHistory;
@@ -41,7 +46,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
-import static java.lang.System.currentTimeMillis;
 
 /**
  * Created by hans on 12/08/2017.
@@ -124,39 +128,25 @@ public class DashboardView extends VerticalLayout implements View {
     @Transactional
     @PostConstruct
     void init() {
-        long millis = System.currentTimeMillis();
-        int counter = 1;
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         this.setMargin(false);
         this.setSpacing(false);
         this.addComponent(topMenu);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         this.addComponent(mainTemplate);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         board.setSizeFull();
         board.setScrollable(true);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         //BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyWorkingEmployees(), emailSender,3, 4, "cateringCard");
         cateringCard.init();
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         VacationCard vacationCard = new VacationCard();
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
 
         //projectTimeline.init();
@@ -169,7 +159,6 @@ public class DashboardView extends VerticalLayout implements View {
         browser2.setHeight("300px");
         browser2.setWidth("100%");
         monthNewsCardDesign.getIframeHolder().addComponent(browser2);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         tripVideosCardDesign.setWidth("100%");
         BrowserFrame tripVideoBrowser = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrips()[0]));
@@ -177,16 +166,13 @@ public class DashboardView extends VerticalLayout implements View {
         tripVideoBrowser.setWidth("100%");
         //tripVideosCardDesign.getLblTitle().setValue("Trustworks Travel Videos");
         tripVideosCardDesign.getIframeHolder().addComponent(tripVideoBrowser);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         dnaCard.getBoxComponent().setHeight("600px");
         cateringCard.getBoxComponent().setHeight("600px");
 
         photoCard.loadPhoto();
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         createTopBoxes(board);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         Card revenuePerMonthCard = new Card();
         revenuePerMonthCard.setHeight(300, PIXELS);
@@ -196,7 +182,6 @@ public class DashboardView extends VerticalLayout implements View {
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         /*
         List<Box> boxes = new ArrayList<>();
         //boxes.add(birthdayCard);
@@ -219,7 +204,6 @@ public class DashboardView extends VerticalLayout implements View {
         ResponsiveColumn mainComponentColumn = mainRow.addColumn().withDisplayRules(12, 12, 9, 9);
         ResponsiveColumn leftColumn = mainRow.addColumn().withDisplayRules(12, 12, 3, 3);
         leftColumn.withComponent(newsCard);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         // Resource res = new ThemeResource("images/hans.png");
 
         // Display the image without caption
@@ -231,46 +215,34 @@ public class DashboardView extends VerticalLayout implements View {
         mainComponentColumn.withComponent(mainLayout);
         ResponsiveRow row0 = mainLayout.addRow();
         row0.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantAllocationCard);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         ResponsiveRow row1 = mainLayout.addRow();
         //ResponsiveRow row1 = board.addRow().withGrow(true);
         //row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(newsCard);
         row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(photoCard);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(bubblesCardDesign);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         ResponsiveRow row2 = mainLayout.addRow();
         row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthNewsCardDesign);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(tripVideosCardDesign);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         ResponsiveRow row3 = mainLayout.addRow();
         row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
         row3.addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(revenuePerMonthCard);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         ResponsiveRow row4 = mainLayout.addRow();
         row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(vacationCard);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
         row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
 
         //createNotifications();
-        logger.info("init = " + counter++ + ", " + (System.currentTimeMillis() - millis));
     }
 
     private void createNotifications() {
-        logger.info("DashboardView.createNotifications");
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
 
         List<Notification> notificationList = notificationRepository.findByReceiverAndAndExpirationdateAfter(user, LocalDate.now());
-        logger.info("notificationList.size() = " + notificationList.size());
         for (Notification notification : notificationList) {
             logger.info("notification = " + notification);
             Window window = new Window();
@@ -309,7 +281,6 @@ public class DashboardView extends VerticalLayout implements View {
     }
 
     private void createTopBoxes(ResponsiveLayout board) {
-        long start = currentTimeMillis();
         ResponsiveRow row0 = board.addRow();
         row0.addColumn()
                 .withDisplayRules(12, 6, 3, 3)

@@ -87,12 +87,12 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         if(expenses.keySet().size() == 0) {
             x.addCategory(LocalDate.now().getYear()+"");
             expenseSeries.addData(0);
-            availableSeries.addData(30000 );
+            availableSeries.addData(24000 );
         } else {
             for (String year : expenses.keySet()) {
                 x.addCategory(year);
                 expenseSeries.addData(expenses.get(year));
-                availableSeries.addData(30000 - expenses.get(year));
+                availableSeries.addData(24000 - expenses.get(year));
             }
         }
 

@@ -3,8 +3,8 @@ package dk.trustworks.invoicewebui.security;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -36,16 +36,16 @@ public class Authorizer {
     }
 
     public void authorize(Component component, RoleType roleType) {
-        log.info("Authorizer.authorize");
-        log.info("component = [" + component + "], roleType = [" + roleType + "]");
+        log.debug("Authorizer.authorize");
+        log.debug("component = [" + component + "], roleType = [" + roleType + "]");
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         if(userSession == null) return;
         if(!userSession.hasRole(roleType)) component.getUI().getNavigator().navigateTo("login");
     }
 
     public boolean hasAccess(RoleType... roleTypes) {
-        log.info("Authorizer.hasAccess");
-        log.info("roleTypes = [" + Arrays.toString(roleTypes) + "]");
+        log.debug("Authorizer.hasAccess");
+        log.debug("roleTypes = [" + Arrays.toString(roleTypes) + "]");
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         if(roleTypes == null) return true;
         if(roleTypes.length == 0) return true;
@@ -59,8 +59,8 @@ public class Authorizer {
     }
 
     public boolean hasAccess(Object view) {
-        log.info("Authorizer.hasAccess");
-        log.info("view = [" + view + "]");
+        log.debug("Authorizer.hasAccess");
+        log.debug("view = [" + view + "]");
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         AccessRules accessRules = view.getClass().getAnnotation(AccessRules.class);
         if(accessRules == null) return true;
@@ -79,13 +79,10 @@ public class Authorizer {
         System.out.println("Authorizer.publicMethod");
     }
 
-    //@Around("execution(@dk.trustworks.invoicewebui.security.AccessRules * *(..)) && @annotation(accessRules)")
-    //@Around("execution(public * *(..)) && @annotation(accessRules)")
-    //@Around("@annotation(accessRules) && execution(* *(..))")
     @Around("publicMethod() && @annotation(accessRules) ")
     public Object hasAccess(ProceedingJoinPoint joinPoint, AccessRules accessRules) throws Throwable {
-        log.info("Authorizer.hasAccess");
-        log.info("joinPoint = [" + joinPoint + "], accessRules = [" + accessRules + "]");
+        log.debug("Authorizer.hasAccess");
+        log.debug("joinPoint = [" + joinPoint + "], accessRules = [" + accessRules + "]");
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         RoleType[] roleTypes = accessRules.roleTypes();
         if(roleTypes == null) return joinPoint.proceed();
@@ -119,7 +116,6 @@ public class Authorizer {
                 return cookie;
             }
         }
-
         return null;
     }
 }

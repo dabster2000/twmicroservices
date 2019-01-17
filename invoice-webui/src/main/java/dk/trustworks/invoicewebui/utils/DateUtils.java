@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.utils;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -20,6 +21,10 @@ public class DateUtils {
 
     public static LocalDate lastDayOfMonth(LocalDate localDate) {
         return localDate.withDayOfMonth(localDate.lengthOfMonth());
+    }
+
+    public static LocalDate convertDateToLocalDate(Timestamp date) {
+        return date.toLocalDateTime().toLocalDate();//.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     public static String[] getMonthNames(LocalDate localDateStart, LocalDate localDateEnd) {

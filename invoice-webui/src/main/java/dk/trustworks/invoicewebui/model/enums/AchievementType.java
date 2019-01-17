@@ -33,7 +33,11 @@ public enum AchievementType {
     WEEKVACATION("Vacation every week", 3, 2, "VACATIONMONTH"),
     CKOEXPENSE1("Used CKO budget 1 year", 4, 1, "CKOEXPENSE"),
     CKOEXPENSE2("Used CKO budget 2 year", 4, 2, "CKOEXPENSE"),
-    CKOEXPENSE3("Used CKO budget 3 year", 4, 3, "CKOEXPENSE");
+    CKOEXPENSE3("Used CKO budget 3 year", 4, 3, "CKOEXPENSE"),
+    INTRALOGIN14("Logged in to Intra 14 days in a row", 5, 1, "INTRALOGIN"),
+    INTRALOGIN21("Logged in to Intra 21 days in a row", 5, 2, "INTRALOGIN"),
+    INTRALOGIN28("Logged in to Intra 28 days in a row", 5, 3, "INTRALOGIN"),
+    AMBITIONENTERED("Completed competence charts", 6, 1, "AMBITIONENTERED");
 
     private final String name;
     private final int number;
