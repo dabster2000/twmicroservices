@@ -132,15 +132,15 @@ public class ItBudgetTab {
                 item.getBtnCrashed().addClickListener(event -> updateItemStatus(budgetItem, BROKEN));
                 item.getBtnAmortized().addClickListener(event -> updateItemStatus(budgetItem, AMORTIZED));
                 item.getBtnLost().addClickListener(event -> updateItemStatus(budgetItem, LOST));
-                item.getBtnDelete().addClickListener(event -> {
-                    itBudgetItemRepository.delete(budgetItem.getId());
-                    createEquipmentCards();
-                });
             } else {
                 item.getBtnLost().setEnabled(false);
                 item.getBtnAmortized().setEnabled(false);
                 item.getBtnCrashed().setEnabled(false);
             }
+            item.getBtnDelete().addClickListener(event -> {
+                itBudgetItemRepository.delete(budgetItem.getId());
+                createEquipmentCards();
+            });
             budgetCardsRow.addColumn().withDisplayRules(12, 12, 6, 4).withComponent(item);
         }
         createImportantMessgeBox(budgetLeft);
