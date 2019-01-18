@@ -73,6 +73,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
         SortedMap<String, Integer> expenses = new TreeMap<>();
         for (CKOExpense ckoExpense : ckoExpenseRepository.findCKOExpenseByUser(user)) {
+            if(ckoExpense.getStatus().equals(CKOExpenseStatus.WISHLIST)) continue;
             expenses.putIfAbsent(ckoExpense.getEventdate().getYear()+"", 0);
             Integer integer = expenses.get(ckoExpense.getEventdate().getYear() + "");
             expenses.replace(ckoExpense.getEventdate().getYear()+"", (integer+ckoExpense.getPrice()));
