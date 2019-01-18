@@ -65,7 +65,7 @@ public class AchievementCardController {
         }
 
         // TODO: REMOVE THIS!!!
-        achievementBar.setVisible(false);
+        //achievementBar.setVisible(false);
         return achievementBar;
     }
 }

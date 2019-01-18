@@ -38,7 +38,6 @@ public class DropboxAPI {
     public DropboxAPI(@Value("${dropboxToken}") final String dropboxToken) {
         this.dropboxToken = dropboxToken;
         DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial", "en_US");
-        System.out.println("ACCESS_TOKEN = " + dropboxToken);
         client = new DbxTeamClientV2(config, dropboxToken);
     }
 
@@ -78,8 +77,8 @@ public class DropboxAPI {
     }
 
     public DropboxFile getRandomBinaryFile(String folder) {
-        log.info("DropboxAPI.getRandomBinaryFile");
-        log.info("folder = [" + folder + "]");
+        log.debug("DropboxAPI.getRandomBinaryFile");
+        log.debug("folder = [" + folder + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
             ListFolderResult result = files.listFolder(folder);
@@ -99,8 +98,8 @@ public class DropboxAPI {
     }
 
     public byte[] getSpecificBinaryFile(String filePath) {
-        log.info("DropboxAPI.getSpecificBinaryFile");
-        log.info("filePath = [" + filePath + "]");
+        log.debug("DropboxAPI.getSpecificBinaryFile");
+        log.debug("filePath = [" + filePath + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
             DbxDownloader<FileMetadata> file = files.download(filePath);
@@ -117,7 +116,7 @@ public class DropboxAPI {
 
     public String getSpecificTextFile(String filePath) {
         System.out.println("DropboxAPI.getSpecificTextFile");
-        log.info("filePath = [" + filePath + "]");
+        log.debug("filePath = [" + filePath + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
             DbxDownloader<FileMetadata> file = files.download(filePath);
@@ -132,8 +131,8 @@ public class DropboxAPI {
     }
 
     public String getFileURL(String filePath) {
-        log.info("DropboxAPI.getFileURL");
-        log.info("filePath = [" + filePath + "]");
+        log.debug("DropboxAPI.getFileURL");
+        log.debug("filePath = [" + filePath + "]");
         //String relativeFilePath = filePath.replace("/Users/hans/Dropbox (TrustWorks ApS)","");
         //CacheHandler cache = CacheHandler.createCacheHandler();
 

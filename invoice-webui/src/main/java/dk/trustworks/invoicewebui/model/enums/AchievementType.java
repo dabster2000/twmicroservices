@@ -37,7 +37,7 @@ public enum AchievementType {
     INTRALOGIN14("Logged in to Intra 14 days in a row", 5, 1, "INTRALOGIN"),
     INTRALOGIN21("Logged in to Intra 21 days in a row", 5, 2, "INTRALOGIN"),
     INTRALOGIN28("Logged in to Intra 28 days in a row", 5, 3, "INTRALOGIN"),
-    AMBITIONENTERED("Completed competence charts", 6, 1, "AMBITIONENTERED");
+    AMBITIONENTERED("Completed skill charts", 6, 1, "AMBITIONENTERED");
 
     private final String name;
     private final int number;

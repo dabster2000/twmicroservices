@@ -236,7 +236,7 @@ public class DashboardView extends VerticalLayout implements View {
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
 
-        //createNotifications();
+        createNotifications();
     }
 
     private void createNotifications() {
