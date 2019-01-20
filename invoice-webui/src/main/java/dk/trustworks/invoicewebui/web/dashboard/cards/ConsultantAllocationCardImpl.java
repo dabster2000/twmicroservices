@@ -72,7 +72,9 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
         HeatSeries rs = new HeatSeries("% allocation");
         int userNumber = 0;
 
-        User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+        UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
+        if(userSession==null) return;
+        User user = userSession.getUser();
 
         Map<String, double[]> budgetRowList = new HashMap<>();
         for (int i = 0; i < 12; i++) {
