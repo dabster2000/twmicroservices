@@ -1,9 +1,13 @@
 package dk.trustworks.invoicewebui.services;
 
 
+import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -97,6 +101,28 @@ public class UserService {
     @Cacheable("user")
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
         return userRepository.calculateCapacityByMonthByUser(useruuid, statusdate);
+    }
+
+    public boolean isExternal(User user) {
+        boolean isExternal = false;
+        for (
+                Role role : user.getRoleList()) {
+            if(role.getRole().equals(RoleType.EXTERNAL)) isExternal = true;
+        }
+        return isExternal;
+    }
+
+    /**
+     * Get user status
+     * @param user the user in question
+     * @param first is this the first status or latest
+     * @param type type of status
+     * @return
+     */
+    public UserStatus getStatus(User user, boolean first, StatusType type) {
+        List<UserStatus> statuses = user.getStatuses();
+        statuses.stream().filter(userStatus -> userStatus.getStatus().equals(type)).sorted(Comparator.comparing(UserStatus::getStatusdate));
+        return first?statuses.get(0):statuses.get(statuses.size()-1);
     }
 
     @Transactional

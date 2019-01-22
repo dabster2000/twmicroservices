@@ -26,6 +26,131 @@ Profilside
  - Forskel på faktureret beløb og timeregistreret beløb
 
 
+Intra præsentation og input til forbedringer
+
+
+Dashboard:
+-	Allokeringsbare (man skal forhold sig til det i store træskolængder, tag fat i kundeansvarlig hvis tal ikke passer)
+-	Revenue Per month for alle i TW (bruger tal fra allokeringsbare)
+-	Upcoming events
+o	Vedligeholder kun fødselsdag, start på nye medarbejder og interne jubilæer
+-	Fotos der skifter
+o	Vedligeholdelse mangler ift at skifte billeder, så de skiftes ud jævnligt
+o	Ønske: send link til side, hvor man kan lægge billeder til Dashboards (1)
+-	Bobler (oversigt)
+-	Videostatus
+-	Video fra sidste udlandstur
+-	DNA
+-	Helligdage
+o	Ønske: kan der komme en dato på? Svar: Der kommer ikke datoer på
+-	Bestilling af mad:
+o	Ønske: Send kopi af bestilt mad til den der bestiller (1)
+-	Infobarer i toppen
+o	Good people
+o	Active projects
+o	Billable Hours
+o	Consultants per Project
+o	ØNSKE: Vise hvor gode er man til at hjælpe hinanden (back-office arbejde) (3)
+
+Timesheet:
+-	Er ved at blive gjort mere mobilt
+
+Projects:
+-	ØNSKE: vise i alfabetisk rækkefølge (1)
+-	ØNSKE: proces for oprettelse/vedligeholdelse=> Mikkel og relation managers (PAULA)
+
+FAQ:
+-	ØNSKE: Sende notifikation til folk (via SLACK – KEY INFO?) på opdateringer i FAQ (1)
+
+Keynotes:
+-	Ingen kommentarer
+
+Availability:
+-	Vise tal for availability
+-	OBS: check tal der vises (Hans og Thomas)
+
+
+
+
+Personlig Info:
+-	Fortrolig
+-	Achievements
+-	Der kommer en offentlig side med udvalgt personlig info
+-	Availability bar
+-	Next touch base meeting
+-	Speed dates (krydscheckes med den man spørges om)
+-	Rapport på opsummering af timer på måneden
+-	ØNSKE: Spørg Simon G (noget med linjen for lang på projekt navn så skal man scrolle) (1)
+-	ØNSKE: Vise antal registreret ferie og hvor meget der er tilbage (2)
+-	ØNSKE: Eksport på excel (3)
+-	Oversigt over fakturerede timer per måned og til dd
+-	Knowledge:
+o	ØNSKE: Ændre ordlyd i stjerner under domæne til noget med domæne i stedet for ”metode” for at det giver mening (2)
+o	ØNSKE: Indtaste uddannelse (kandidatgrad o.l.), certificeringer/kurser. Hans og Paula skal sætte sig sammen og se på det. (2)
+o	ØNSKE: Indsætte feature, der gør det muligt at sende ønsker til manglende kompetencer til Paula (2)
+o	ØNSKE: Fjerne ”CKO” begreb og indføre ”KM” for knowledge management (1)
+o	ØNSKE: Tilføje følgende kompetencer (1):
+	Solution architecture
+•	Tilføje ”Datakonvertering/migrering”
+	Business architecture:
+•	Behovsafdækning (tilføje ”og kravspecificering”
+	Project types:
+•	Tilføje ”Post-merger”
+•	Tilføje ”Due diligence”
+	Systems and projects:
+•	Tilføje ”Finansielle fondssystemer”
+•	Tilføje ”Pensions- og bank kernesystemer”
+•	Tilføje ”CRM systemer”
+	Management:
+•	Tilføje ”Undervisning og kursusafholdelse”
+	Project management
+•	Udbudserfaring (ændres til ”Udbudsprojektledelse”)
+•	Tilføje ”Tilbudsevaluering”
+•	Tilføje ”Contract management”
+•	Tilføje ”Strategiudarbejdelse”
+-	Knowledge budget
+o	ØNSKE: Kunne vælge flere purposes (fra aktuel liste på siden), når man registrerer en knowledge-aktivitet (1)
+o	ØNSKE: Kunne registrere knowledge-aktiviteter for andre (Elvi) (3)
+o	ØNSKE: Nulstil formular når man har udfyldt fx et kursus (det forvirrer) (1)
+o	ØNSKE: Det skal være muligt at lægge ideer til aktiviteter ind uden at det tæller med i budgettet på en eller anden måde. Evt med flueben ud for kurset ift om man vil se det indgå i samlet budget (kun muligt ved status ”wish list”) (1)
+o	ØNSKE: Muligt at redigere i allerede oprettede aktiviteter. Fx hvis den er på wish list og man ikke har prisen på det endnu eller vil tilføje en kommentar eller en udgift (fx transport/hotel ophold o.l.) (1)
+o	ØNSKE: Budget status skal kunne ses samtidig med at man opretter aktiviteter (1)
+-	IT budget
+o	Fremadrettet
+
+
+
+ 
+Fra Lars (nu indarbejdet i ovenstående ønsker):
+
+1.	Det kunne være fint at have noget kompetence ”benchmark” på forskellige projekttyper, herunder,
+a.	Post-merger integration
+                                                               i.      Data konvertering
+                                                             ii.      Migrering
+b.	Due diligence
+                                                               i.      På virksomhedsniveau
+                                                             ii.      På applikations niveau, fx evaluering af hvilke af to systemer en kunde skal beholde
+c.	Udarbejdelse af udbudsmateriale
+d.	Evaluering af udbud
+e.	IT kontrakt evaluering
+2.	Ekspertise/erfaring med udvikling af forskellige systemer
+a.	Fondssystemer (finans)
+b.	Pensions og bank kernesystemer
+c.	CRM systemer
+d.	Output management systemer
+3.	Business Architecture eller Management mangler følgende kompetencer
+a.	Evaluering og udarbejdelse af nye strategy
+b.	Strategi workshops
+4.	Generelt mangler der noget om kompetencer oplæg og kursus afholdelse
+
+
+
+
+
+
+
+
+
 
 #####  Color Palette by Paletton.com
 #####  Palette URL: http://paletton.com/#uid=73u290kj9lh9lveeppOn9hbsybV

@@ -2,10 +2,7 @@ package dk.trustworks.invoicewebui.jobs;
 
 
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.enums.AchievementType;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.LogType;
-import dk.trustworks.invoicewebui.model.enums.ReminderType;
+import dk.trustworks.invoicewebui.model.enums.*;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
@@ -66,6 +63,8 @@ public class AchievementJob {
         log.debug("AchievementJob.achievementCollector");
 
         for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
+            if(userService.isExternal(user)) continue;
+
             List<Achievement> achievementList = achievementRepository.findByUser(user);
             /**
              * Disabled
@@ -95,6 +94,10 @@ public class AchievementJob {
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE1, isWorthyOfCkoExpenseAchievement(user, 1));
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE2, isWorthyOfCkoExpenseAchievement(user, 2));
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE3, isWorthyOfCkoExpenseAchievement(user, 3));
+
+            testAchievement(user, achievementList, AchievementType.ANNIVERSARY3, isWorthyOfAnniversary(user, 3));
+            testAchievement(user, achievementList, AchievementType.ANNIVERSARY5, isWorthyOfAnniversary(user, 5));
+            testAchievement(user, achievementList, AchievementType.ANNIVERSARY10, isWorthyOfAnniversary(user, 10));
         }
     }
 
@@ -146,6 +149,11 @@ public class AchievementJob {
             if(month == 0) return false;
         }
         return true;
+    }
+
+    private boolean isWorthyOfAnniversary(User user, int years) {
+        UserStatus status = userService.getStatus(user, false, StatusType.ACTIVE);
+        return status.getStatusdate().isBefore(LocalDate.now().minusYears(years));
     }
 
     private boolean isWorthyOfAmbitionCompleted(User user) {

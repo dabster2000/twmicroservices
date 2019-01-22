@@ -1,11 +1,8 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import com.google.common.hash.Hashing;
 import dk.trustworks.invoicewebui.model.News;
-import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -19,8 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
+
+import static com.google.common.hash.Hashing.sha512;
 
 /**
  * Created by hans on 12/09/2017.
@@ -49,17 +47,13 @@ public class AnniversaryManagerJob {
     @Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
         for (User user : userService.findCurrentlyWorkingEmployees()) {
-            boolean isExternal = false;
-            for (Role role : user.getRoleList()) {
-                if(role.getRole().equals(RoleType.EXTERNAL)) isExternal = true;
-            }
-            if(isExternal) continue;
+            if(userService.isExternal(user)) continue;
 
-            String sha512hex = Hashing.sha512().hashString(user.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
+            String sha512hex = sha512().hashString(user.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();
             if(newsRepository.findFirstBySha512(sha512hex).size()>0) continue;
+
             List<UserStatus> statuses = user.getStatuses();
-            statuses.sort(Comparator.comparing(UserStatus::getStatusdate));
-            UserStatus firstStatus = statuses.get(0);
+            UserStatus firstStatus = userService.getStatus(user, true, StatusType.ACTIVE);
 
             if(firstStatus.getStatusdate().isAfter(LocalDate.now().minusMonths(1)) && firstStatus.getStatus().equals(StatusType.ACTIVE)) {
                 newsRepository.save(new News(
