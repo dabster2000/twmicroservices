@@ -22,7 +22,7 @@
        <vaadin-date-field required-indicator-visible caption="date:" placeholder="date" date-format="yyyy-MM-dd" width-full _id="dfDate"></vaadin-date-field>
        <vaadin-text-field caption="days:" width-full _id="txtDays"></vaadin-text-field>
        <vaadin-text-field caption="description:" placeholder="description" width-full _id="txtDescription" :expand></vaadin-text-field>
-       <vaadin-text-area caption="comments:" width-full _id="txtComments"></vaadin-text-area>
+       <vaadin-text-area caption="comments:" width-full maxlength="250" _id="txtComments"></vaadin-text-area>
        <vaadin-combo-box caption="type:" placeholder="select type..." width-full data-item-type="java.lang.String" _id="cbType">
         <option item="CONFERENCE">Conference</option>
         <option item="COURSE">Course</option>
