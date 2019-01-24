@@ -60,7 +60,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private final ChartCacheJob chartCache;
 
     private ResponsiveRow contractRow;
-    private ResponsiveRow subContractRow;
 
     private VerticalLayout consultantsLayout;
     private VerticalLayout projectsLayout;
@@ -87,7 +86,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     @PostConstruct
     public void init() {
         contractRow = this.addRow();
-        subContractRow = this.addRow();
+        ResponsiveRow subContractRow = this.addRow();
     }
 
     public ResponsiveLayout loadContractDetails(Contract contract, NavigationBar navigationBar) {

@@ -15,6 +15,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "cko_expenses", path="cko_expenses")
 public interface CKOExpenseRepository extends CrudRepository<CKOExpense, Integer> {
 
+
     List<CKOExpense> findCKOExpenseByUser(@Param("user") User user);
 
 }

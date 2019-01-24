@@ -23,24 +23,9 @@
        <vaadin-text-field caption="days:" width-full _id="txtDays"></vaadin-text-field>
        <vaadin-text-field caption="description:" placeholder="description" width-full _id="txtDescription" :expand></vaadin-text-field>
        <vaadin-text-area caption="comments:" width-full maxlength="250" _id="txtComments"></vaadin-text-area>
-       <vaadin-combo-box caption="type:" placeholder="select type..." width-full data-item-type="java.lang.String" _id="cbType">
-        <option item="CONFERENCE">Conference</option>
-        <option item="COURSE">Course</option>
-        <option item="SUBSCRIPTION">Subscription</option>
-        <option item="MEMBERSHIP">Membership</option>
-        <option item="BOOKS">Books, etc.</option>
-       </vaadin-combo-box>
-       <vaadin-combo-box caption="status:" placeholder="select status..." width-full data-item-type="java.lang.String" _id="cbStatus">
-        <option item="WISHLIST">Wish list</option>
-        <option item="BOOKED">Booked</option>
-        <option item="COMPLETED">Completed</option>
-       </vaadin-combo-box>
-       <vaadin-combo-box caption="purpose:" placeholder="select purpose..." width-full data-item-type="java.lang.String" _id="cbPurpose">
-        <option item="NEW">New skill</option>
-        <option item="IMPROVE">Improve skill</option>
-        <option item="PASSION">Supports passion</option>
-        <option item="CUSTOMER">Customer driven</option>
-       </vaadin-combo-box>
+       <vaadin-combo-box caption="type:" placeholder="select type..." width-full data-item-type="dk.trustworks.invoicewebui.model.enums.CKOExpenseType" data-property-id="caption" _id="cbType"></vaadin-combo-box>
+       <vaadin-combo-box caption="status:" placeholder="select status..." width-full data-item-type="dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus" data-property-id="caption" _id="cbStatus"></vaadin-combo-box>
+       <vaadin-combo-box caption="purpose:" placeholder="select purpose..." width-full data-item-type="dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose" data-property-id="caption" _id="cbPurpose"></vaadin-combo-box>
        <vaadin-text-field caption="price (no tax):" placeholder="price w. no tax" width-full _id="txtPrice"></vaadin-text-field>
        <vaadin-button style-name="flat friendly" width-full plain-text _id="btnAddSalary">
          CREATE 
@@ -74,9 +59,14 @@
          <tbody></tbody>
         </table>
        </vaadin-grid>
-       <vaadin-button visible="false" style-name="flat danger" width-full plain-text _id="btnDelete">
-         Delete 
-       </vaadin-button>
+       <vaadin-horizontal-layout width-full>
+        <vaadin-button visible="false" style-name="flat" width-full plain-text _id="btnEditItem">
+          Edit 
+        </vaadin-button>
+        <vaadin-button visible="false" style-name="flat danger" width-full plain-text _id="btnDelete">
+          Delete 
+        </vaadin-button>
+       </vaadin-horizontal-layout>
       </vaadin-vertical-layout>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>

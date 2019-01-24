@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.model.enums.NotificationType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -30,12 +31,16 @@ public class Notification {
     private String content;
     private String link;
     private String themeimage;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
 
     public Notification() {
         uuid = UUID.randomUUID().toString();
     }
 
-    public Notification(User receiver, LocalDate entrydate, LocalDate expirationdate, String titel, String content, String link, String themeimage) {
+    public Notification(User receiver, LocalDate entrydate, LocalDate expirationdate, String titel, String content, String link, String themeimage, NotificationType notificationType) {
+        this.notificationType = notificationType;
         uuid = UUID.randomUUID().toString();
         this.receiver = receiver;
         this.entrydate = entrydate;
@@ -110,6 +115,14 @@ public class Notification {
         this.themeimage = themeimage;
     }
 
+    public NotificationType getNotificationType() {
+        return notificationType;
+    }
+
+    public void setNotificationType(NotificationType notificationType) {
+        this.notificationType = notificationType;
+    }
+
     @Override
     public String toString() {
         return "Notification{" +
@@ -121,6 +134,7 @@ public class Notification {
                 ", content='" + content + '\'' +
                 ", link='" + link + '\'' +
                 ", themeimage='" + themeimage + '\'' +
+                ", notificationType=" + notificationType +
                 '}';
     }
 }

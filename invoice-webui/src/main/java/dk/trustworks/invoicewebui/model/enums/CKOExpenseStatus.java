@@ -2,6 +2,21 @@ package dk.trustworks.invoicewebui.model.enums;
 
 public enum CKOExpenseStatus {
 
-    WISHLIST, BOOKED, COMPLETED
+    WISHLIST("Wish list"), BOOKED("Booked"), COMPLETED("Completed");
+
+    private final String caption;
+
+    CKOExpenseStatus(String caption) {
+        this.caption = caption;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    @Override
+    public String toString() {
+        return this.caption;
+    }
 
 }

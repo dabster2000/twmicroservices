@@ -7,6 +7,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontIcon;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.BrowserFrame;
@@ -17,6 +18,7 @@ import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.ReminderHistory;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.NotificationType;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.*;
@@ -30,6 +32,7 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.dashboard.components.ConfirmSpeedDateImpl;
 import dk.trustworks.invoicewebui.web.dashboard.components.NotificationPopupDesign;
+import dk.trustworks.invoicewebui.web.dashboard.components.ReleaseNotesPopupDesign;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import dk.trustworks.invoicewebui.web.stats.components.Card;
@@ -246,17 +249,29 @@ public class DashboardView extends VerticalLayout implements View {
         for (Notification notification : notificationList) {
             logger.info("notification = " + notification);
             Window window = new Window();
-            NotificationPopupDesign notificationDesign = new NotificationPopupDesign();
-            notificationDesign.getImgNotification().setSource(spriteSheet.getSprite(Integer.parseInt(notification.getThemeimage())));
-            notificationDesign.getImgNotification().setHeight(100, PIXELS);
-            notificationDesign.getImgNotification().setWidth(100, PIXELS);
-            notificationDesign.getLblDescription().setValue(notification.getContent());
-            notificationDesign.getBtndismiss().addClickListener(event -> {
-                window.close();
-                UI.getCurrent().removeWindow(window);
-                notificationRepository.delete(notification.getUuid());
-            });
-            window.setContent(notificationDesign);
+            if(notification.getNotificationType().equals(NotificationType.ACHIEVEMENT)) {
+                NotificationPopupDesign notificationDesign = new NotificationPopupDesign();
+                notificationDesign.getImgNotification().setSource(spriteSheet.getSprite(Integer.parseInt(notification.getThemeimage())));
+                notificationDesign.getImgNotification().setHeight(100, PIXELS);
+                notificationDesign.getImgNotification().setWidth(100, PIXELS);
+                notificationDesign.getLblDescription().setValue(notification.getContent());
+                notificationDesign.getBtndismiss().addClickListener(event -> {
+                    window.close();
+                    UI.getCurrent().removeWindow(window);
+                    notificationRepository.delete(notification.getUuid());
+                });
+                window.setContent(notificationDesign);
+            } else if (notification.getNotificationType().equals(NotificationType.RELEASENOTE)) {
+                ReleaseNotesPopupDesign releaseNotesPopupDesign = new ReleaseNotesPopupDesign();
+                releaseNotesPopupDesign.getLblReleaseNote().setValue(notification.getContent());
+                releaseNotesPopupDesign.getImgNotification().setSource(new ThemeResource("images/icons/rocket-icon.png"));
+                releaseNotesPopupDesign.getBtndismiss().addClickListener(event -> {
+                    window.close();
+                    UI.getCurrent().removeWindow(window);
+                    notificationRepository.delete(notification.getUuid());
+                });
+                window.setContent(releaseNotesPopupDesign);
+            }
             window.setModal(true);
             UI.getCurrent().addWindow(window);
             break;

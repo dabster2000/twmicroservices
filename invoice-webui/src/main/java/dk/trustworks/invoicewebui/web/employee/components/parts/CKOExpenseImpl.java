@@ -3,6 +3,9 @@ package dk.trustworks.invoicewebui.web.employee.components.parts;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
+import com.vaadin.data.*;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.shared.data.sort.SortDirection;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
@@ -10,9 +13,11 @@ import dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
-import dk.trustworks.invoicewebui.utils.NumberConverter;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -25,19 +30,45 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
     private final CKOExpenseRepository ckoExpenseRepository;
 
+    private CKOExpense ckoExpense;
+
     public CKOExpenseImpl(CKOExpenseRepository ckoExpenseRepository, User user) {
         this.ckoExpenseRepository = ckoExpenseRepository;
         this.setVisible(false);
 
+        getCbPurpose().setItems(CKOExpensePurpose.values());
+        getCbStatus().setItems(CKOExpenseStatus.values());
+        getCbType().setItems(CKOExpenseType.values());
+
+        Binder<CKOExpense> binder = new Binder<>();
+        binder.forField(getDfDate()).bind(CKOExpense::getEventdate, CKOExpense::setEventdate);
+        binder.forField(getTxtDescription()).withValidator(new StringLengthValidator(
+                "Name must be between 0 and 250 characters long",
+                0, 250)).bind(CKOExpense::getDescription, CKOExpense::setDescription);
+        binder.forField(getTxtPrice()).withConverter(new StringToIntegerConverter("Must enter a number")).bind(CKOExpense::getPrice, CKOExpense::setPrice);
+        binder.forField(getTxtComments()).bind(CKOExpense::getComment, CKOExpense::setComment);
+        binder.forField(getTxtDays()).withConverter(new MyConverter()).bind(CKOExpense::getDays, CKOExpense::setDays);
+        binder.forField(getCbPurpose()).bind(CKOExpense::getPurpose, CKOExpense::setPurpose);
+        binder.forField(getCbStatus()).bind(CKOExpense::getStatus, CKOExpense::setStatus);
+        binder.forField(getCbType()).bind(CKOExpense::getType, CKOExpense::setType);
+
+        ckoExpense = new CKOExpense(user);
+        binder.readBean(ckoExpense);
+
         getChartContainer().addComponent(getChart(user));
 
         getGridCKOExpenses().addSelectionListener(event -> {
-            if(event.getAllSelectedItems().size() > 0) {
+            if(event.getAllSelectedItems().size() > 1) {
                 //getHlAddBar().setVisible(false);
                 getBtnDelete().setVisible(true);
+                getBtnEditItem().setVisible(false);
+            } else if (event.getAllSelectedItems().size() == 1) {
+                getBtnDelete().setVisible(true);
+                getBtnEditItem().setVisible(true);
             } else {
                 //getHlAddBar().setVisible(true);
                 getBtnDelete().setVisible(false);
+                getBtnEditItem().setVisible(false);
             }
         });
 
@@ -52,8 +83,26 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             this.ckoExpenseRepository.delete(getGridCKOExpenses().getSelectedItems());
             getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUser(user));
         });
+
+        getBtnEditItem().addClickListener(event -> {
+            getBtnAddSalary().setCaption("UPDATE");
+            getBtnDelete().setVisible(true);
+            getBtnEditItem().setVisible(false);
+            ckoExpense = getGridCKOExpenses().getSelectedItems().stream().findFirst().get();
+            binder.readBean(ckoExpense);
+            getGridCKOExpenses().deselectAll();
+        });
+
         getBtnAddSalary().addClickListener(event -> {
-            this.ckoExpenseRepository.save(new CKOExpense(getDfDate().getValue(), user, getTxtDescription().getValue(), Integer.parseInt(getTxtPrice().getValue()), getTxtComments().getValue(), NumberConverter.parseDouble(getTxtDays().getValue()), CKOExpenseType.valueOf(getCbType().getValue()), CKOExpenseStatus.valueOf(getCbStatus().getValue()), CKOExpensePurpose.valueOf(getCbPurpose().getValue())));
+            //this.ckoExpenseRepository.save(new CKOExpense(getDfDate().getValue(), user, getTxtDescription().getValue(), Integer.parseInt(getTxtPrice().getValue()), getTxtComments().getValue(), NumberConverter.parseDouble(getTxtDays().getValue()), CKOExpenseType.valueOf(getCbType().getValue()), CKOExpenseStatus.valueOf(getCbStatus().getValue()), CKOExpensePurpose.valueOf(getCbPurpose().getValue())));
+            try {
+                binder.writeBean(ckoExpense);
+                ckoExpenseRepository.save(ckoExpense);
+                binder.readBean(ckoExpense = new CKOExpense(user));
+                getBtnAddSalary().setCaption("CREATE");
+            } catch (ValidationException e) {
+                e.printStackTrace();
+            }
             getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUser(user));
         });
 
@@ -132,4 +181,35 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         chart.drawChart(conf);
         return chart;
     }
+
+    public class MyConverter implements Converter<String, Double> {
+        @Override
+        public Result<Double> convertToModel(String fieldValue, ValueContext context) {
+            System.out.println("MyConverter.convertToModel");
+            System.out.println("fieldValue = [" + fieldValue + "], context = [" + context + "]");
+            // Produces a converted value or an error
+            try {
+                // ok is a static helper method that creates a Result
+                NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
+                return Result.ok(formatter.parse(fieldValue).doubleValue());
+            } catch (NumberFormatException | ParseException e) {
+                e.printStackTrace();
+                // error is a static helper method that creates a Result
+                return Result.error("Please enter a number");
+            }
+        }
+
+        @Override
+        public String convertToPresentation(Double aDouble, ValueContext context) {
+            System.out.println("MyConverter.convertToPresentation");
+            System.out.println("aDouble = [" + aDouble + "], context = [" + context + "]");
+            // Converting to the field type should always succeed,
+            // so there is no support for returning an error Result.
+            NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
+            formatter.setMaximumFractionDigits(2);
+            formatter.setMinimumFractionDigits(2);
+            return String.valueOf(formatter.format(aDouble));
+        }
+    }
 }
+

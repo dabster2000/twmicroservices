@@ -49,6 +49,10 @@ public class CKOExpense {
     public CKOExpense() {
     }
 
+    public CKOExpense(User user) {
+        this.user = user;
+    }
+
     public CKOExpense(LocalDate eventdate, User user, String description, int price, String comment, double days, CKOExpenseType type, CKOExpenseStatus status, CKOExpensePurpose purpose) {
         this.eventdate = eventdate;
         this.user = user;
