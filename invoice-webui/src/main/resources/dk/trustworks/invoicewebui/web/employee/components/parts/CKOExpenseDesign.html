@@ -26,48 +26,12 @@
        <vaadin-combo-box caption="type:" placeholder="select type..." width-full data-item-type="dk.trustworks.invoicewebui.model.enums.CKOExpenseType" data-property-id="caption" _id="cbType"></vaadin-combo-box>
        <vaadin-combo-box caption="status:" placeholder="select status..." width-full data-item-type="dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus" data-property-id="caption" _id="cbStatus"></vaadin-combo-box>
        <vaadin-combo-box caption="purpose:" placeholder="select purpose..." width-full data-item-type="dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose" data-property-id="caption" _id="cbPurpose"></vaadin-combo-box>
-       <vaadin-text-field caption="price (no tax):" placeholder="price w. no tax" width-full _id="txtPrice"></vaadin-text-field>
+       <vaadin-text-field caption="price (w/o tax):" placeholder="price w. no tax" width-full _id="txtPrice"></vaadin-text-field>
        <vaadin-button style-name="flat friendly" width-full plain-text _id="btnAddSalary">
          CREATE 
        </vaadin-button>
       </vaadin-vertical-layout>
-      <vaadin-vertical-layout size-full margin="false" :expand>
-       <vaadin-grid size-full data-item-type="dk.trustworks.invoicewebui.model.CKOExpense" selection-mode="multi" _id="gridCKOExpenses" :expand>
-        <table>
-         <colgroup>
-          <col column-id="description" sortable>
-          <col column-id="eventdate" sortable>
-          <col column-id="days" sortable>
-          <col column-id="type" sortable>
-          <col column-id="purpose" sortable>
-          <col column-id="price" sortable>
-          <col column-id="status" sortable>
-          <col column-id="comment" sortable>
-         </colgroup>
-         <thead>
-          <tr default>
-           <th plain-text column-ids="description">Description</th>
-           <th plain-text column-ids="eventdate">Eventdate</th>
-           <th plain-text column-ids="days">Days</th>
-           <th plain-text column-ids="type">Type</th>
-           <th plain-text column-ids="purpose">Purpose</th>
-           <th plain-text column-ids="price">Price</th>
-           <th plain-text column-ids="status">Status</th>
-           <th plain-text column-ids="comment">Comment</th>
-          </tr>
-         </thead>
-         <tbody></tbody>
-        </table>
-       </vaadin-grid>
-       <vaadin-horizontal-layout width-full>
-        <vaadin-button visible="false" style-name="flat" width-full plain-text _id="btnEditItem">
-          Edit 
-        </vaadin-button>
-        <vaadin-button visible="false" style-name="flat danger" width-full plain-text _id="btnDelete">
-          Delete 
-        </vaadin-button>
-       </vaadin-horizontal-layout>
-      </vaadin-vertical-layout>
+      <vaadin-vertical-layout style-name="v-scrollable" size-full margin="false" _id="expenseCardContainer" :expand></vaadin-vertical-layout>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>

@@ -27,10 +27,12 @@ public class CKOExpenseItem extends VerticalLayout {
     private Label lblDate;
     private Label lblDays;
     private Label lblDescription;
-    private Label lblAmount;
     private Label lblStatus;
-    private Label lblAmortizationPeriod1;
-    private Label lblAmortizationPeriod11;
+    private Label lblPurpose;
+    private Label lblAmount;
+    private Button btnMore;
+    private VerticalLayout vlExtra;
+    private Label lblComments;
     private CssLayout vlButtonLayout;
     private Button btnEdit;
     private Button btnDelete;
@@ -63,20 +65,28 @@ public class CKOExpenseItem extends VerticalLayout {
         return lblDescription;
     }
 
-    public Label getLblAmount() {
-        return lblAmount;
-    }
-
     public Label getLblStatus() {
         return lblStatus;
     }
 
-    public Label getLblAmortizationPeriod1() {
-        return lblAmortizationPeriod1;
+    public Label getLblPurpose() {
+        return lblPurpose;
     }
 
-    public Label getLblAmortizationPeriod11() {
-        return lblAmortizationPeriod11;
+    public Label getLblAmount() {
+        return lblAmount;
+    }
+
+    public Button getBtnMore() {
+        return btnMore;
+    }
+
+    public VerticalLayout getVlExtra() {
+        return vlExtra;
+    }
+
+    public Label getLblComments() {
+        return lblComments;
     }
 
     public CssLayout getVlButtonLayout() {

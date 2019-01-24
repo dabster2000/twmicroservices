@@ -5,7 +5,6 @@ import com.vaadin.annotations.DesignRoot;
 import com.vaadin.ui.declarative.Design;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
@@ -44,9 +43,7 @@ public class CKOExpenseDesign extends VerticalLayout {
     private ComboBox<dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose> cbPurpose;
     private TextField txtPrice;
     private Button btnAddSalary;
-    private Grid<dk.trustworks.invoicewebui.model.CKOExpense> gridCKOExpenses;
-    private Button btnEditItem;
-    private Button btnDelete;
+    private VerticalLayout expenseCardContainer;
 
     public CKOExpenseDesign() {
         Design.read(this);
@@ -112,16 +109,8 @@ public class CKOExpenseDesign extends VerticalLayout {
         return btnAddSalary;
     }
 
-    public Grid<dk.trustworks.invoicewebui.model.CKOExpense> getGridCKOExpenses() {
-        return gridCKOExpenses;
-    }
-
-    public Button getBtnEditItem() {
-        return btnEditItem;
-    }
-
-    public Button getBtnDelete() {
-        return btnDelete;
+    public VerticalLayout getExpenseCardContainer() {
+        return expenseCardContainer;
     }
 
 }

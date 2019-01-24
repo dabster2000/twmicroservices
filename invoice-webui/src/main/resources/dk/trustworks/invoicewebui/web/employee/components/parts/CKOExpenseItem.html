@@ -34,35 +34,39 @@
        iPhone 8 Plus (256mb) 
      </vaadin-label>
      <vaadin-horizontal-layout :center>
+      <vaadin-label style-name="dark-grey-font" height="24px" plain-text>
+        Status: 
+      </vaadin-label>
+      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblStatus">
+        Label 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-horizontal-layout :center>
+      <vaadin-label style-name="dark-grey-font" height="24px" plain-text>
+        Purpose: 
+      </vaadin-label>
+      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblPurpose">
+        Label 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <vaadin-horizontal-layout :center>
       <vaadin-label style-name="dark-grey-font" plain-text>
-        Amount (w/tax): 
+        Amount (w/o tax): 
       </vaadin-label>
       <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblAmount">
         Label 
       </vaadin-label>
      </vaadin-horizontal-layout>
-     <vaadin-horizontal-layout :center>
-      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblStatus">
+     <vaadin-button style-name="borderless" plain-text _id="btnMore" :center>
+       details... 
+     </vaadin-button>
+     <vaadin-vertical-layout margin="false" _id="vlExtra" :center>
+      <vaadin-label style-name="align-center dark-grey-font" width-full plain-text _id="lblComments" :center>
         Label 
       </vaadin-label>
-     </vaadin-horizontal-layout>
-     <vaadin-vertical-layout margin="false" :center>
-      <vaadin-horizontal-layout :center>
-       <vaadin-label style-name="dark-grey-font" height="24px" plain-text>
-         Purpose: 
-       </vaadin-label>
-       <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblAmortizationPeriod1">
-         Label 
-       </vaadin-label>
-      </vaadin-horizontal-layout>
-      <vaadin-horizontal-layout :center>
-       <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblAmortizationPeriod11" :center>
-         Label 
-       </vaadin-label>
-      </vaadin-horizontal-layout>
       <vaadin-css-layout _id="vlButtonLayout" :center>
        <vaadin-button style-name="border round" plain-text _id="btnEdit">
-         Broken 
+         Edit 
        </vaadin-button>
        <vaadin-label width="5px" plain-text></vaadin-label>
        <vaadin-button style-name="border round danger" plain-text _id="btnDelete">
