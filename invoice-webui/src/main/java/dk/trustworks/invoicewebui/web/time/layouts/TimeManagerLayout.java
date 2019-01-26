@@ -797,9 +797,22 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private MTextField checkIfDisabled(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
         boolean onContract = isOnContract(weekItem.getDate().withDayOfWeek(weekday), workingAs, task);
-        boolean isLastMonth = weekItem.getDate().withDayOfWeek(weekday).withDayOfMonth(1).isBefore(LocalDate.now().withDayOfMonth(1));
+        System.out.println("onContract = " + onContract);
         if(!onContract) return mTextField.withEnabled(false);
-        if(isLastMonth) return mTextField.withEnabled(false);
+
+        // check if item is last month and user is not project manager. Project managers should be able to edit old timesheets
+        boolean isLastMonth = weekItem.getDate().withDayOfWeek(weekday).withDayOfMonth(1).isBefore(LocalDate.now().withDayOfMonth(1));
+        User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+        System.out.println("weekItem.getTask() = " + weekItem.getTask());
+        System.out.println("weekItem.getTask().getProject() = " + weekItem.getTask().getProject());
+        System.out.println("weekItem.getTask().getProject().getOwner() = " + weekItem.getTask().getProject().getOwner());
+        User owner = Optional.ofNullable(weekItem.getTask().getProject().getOwner()).orElse(new User());
+        boolean isProjectOwner = owner.getUuid().equals(user.getUuid());
+        System.out.println("isLastMonth = " + isLastMonth);
+        System.out.println("isLastMonth = " + isLastMonth);
+        if(isLastMonth && !isProjectOwner) return mTextField.withEnabled(false);
+
+        System.out.println("opened");
         return mTextField;
     }
 

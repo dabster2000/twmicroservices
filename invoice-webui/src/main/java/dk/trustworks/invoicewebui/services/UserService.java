@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.services;
 
 
+import com.vaadin.server.VaadinSession;
 import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
@@ -9,6 +10,7 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.ACTIVE;
@@ -30,6 +33,10 @@ public class UserService {
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public Optional<User> getLoggedInUser() {
+        return Optional.of(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser());
     }
 
     @Cacheable(value = "user")
