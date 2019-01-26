@@ -404,9 +404,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         customerExpenses.getExpensesGridContainer().addComponent(customerExpensesGrid);
 
         int rows = 1;
-        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(30)));
+        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(currentDate.withDayOfWeek(7).monthOfYear().getMaximumValue())));
         if(currentDate.withDayOfWeek(1).getMonthOfYear()!=currentDate.withDayOfWeek(7).getMonthOfYear())
-            receipts.addAll(receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(30))));
+            receipts.addAll(receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(currentDate.withDayOfWeek(7).monthOfYear().getMaximumValue()))));
 
         gridExistingReceipts.setRows(receipts.size()+2);
         for (Receipt receipt : receipts) {
@@ -698,7 +698,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(taskTitle, ResponsiveColumn.ColumnComponentAlignment.LEFT);
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(disableIfNoContract(1, weekItem, workingAs, task,
+                .withComponent(checkIfDisabled(1, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getMon(), event -> {
                             double delta = updateTimefield(weekItem, 0, event);
                             weekDaySums.mon += delta;
@@ -712,7 +712,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(disableIfNoContract(2, weekItem, workingAs, task,
+                .withComponent(checkIfDisabled(2, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getTue(), event -> {
                             double delta = updateTimefield(weekItem, 1, event);
                             weekDaySums.tue += delta;
@@ -725,7 +725,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(disableIfNoContract(3, weekItem, workingAs, task,
+                .withComponent(checkIfDisabled(3, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getWed(), event -> {
                             double delta = updateTimefield(weekItem, 2, event);
                             weekDaySums.wed += delta;
@@ -738,7 +738,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(disableIfNoContract(4, weekItem, workingAs, task,
+                .withComponent(checkIfDisabled(4, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getThu(), event -> {
                             double delta = updateTimefield(weekItem, 3, event);
                             weekDaySums.thu += delta;
@@ -751,7 +751,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(disableIfNoContract(5, weekItem, workingAs, task,
+                .withComponent(checkIfDisabled(5, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getFri(), event -> {
                             double delta = updateTimefield(weekItem, 4, event);
                             weekDaySums.fri += delta;
@@ -764,7 +764,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(disableIfNoContract(6, weekItem, workingAs, task,
+                .withComponent(checkIfDisabled(6, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getSat(), event -> {
                             double delta = updateTimefield(weekItem, 5, event);
                             weekDaySums.sat += delta;
@@ -777,7 +777,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         .withStyleName("floating")));
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 1,1)
-                .withComponent(disableIfNoContract(7, weekItem, workingAs, task,
+                .withComponent(checkIfDisabled(7, weekItem, workingAs, task,
                         new MTextField(null, weekItem.getSun(), event -> {
                             double delta = updateTimefield(weekItem, 6, event);
                             weekDaySums.sun += delta;
@@ -795,9 +795,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withComponent(lblWeekItemSum, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
     }
 
-    private MTextField disableIfNoContract(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
+    private MTextField checkIfDisabled(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
         boolean onContract = isOnContract(weekItem.getDate().withDayOfWeek(weekday), workingAs, task);
-        if(!onContract) return mTextField.withEnabled(onContract);
+        boolean isLastMonth = weekItem.getDate().withDayOfWeek(weekday).withDayOfMonth(1).isBefore(LocalDate.now().withDayOfMonth(1));
+        if(!onContract) return mTextField.withEnabled(false);
+        if(isLastMonth) return mTextField.withEnabled(false);
         return mTextField;
     }
 
