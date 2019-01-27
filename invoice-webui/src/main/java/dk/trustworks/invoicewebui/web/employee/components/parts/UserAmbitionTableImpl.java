@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.web.employee.components.parts;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Ambition;
 import dk.trustworks.invoicewebui.model.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.User;
@@ -57,6 +58,10 @@ public class UserAmbitionTableImpl {
             ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[ambitionScore].getDescription());
             ambitionEntry.getBtnAmbition().addClickListener(event -> {
                 UserAmbition one = userAmbitionRepository.findOne(userAmbition.getId());
+                if(one.getAmbition()==1 && userAmbitionRepository.findByUser(user).stream().filter(ua -> ua.getAmbition()!=1).count() >= 5) {
+                    Notification.show("Only 5 changes", "Only five changes are allowed across all skills", Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
                 ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[userAmbition.rollAmbition()].getName());
                 one.setAmbition(userAmbition.getAmbition());
                 userAmbition.setAmbition(userAmbition.getAmbition());
