@@ -64,9 +64,7 @@ public class ProfileLayout extends VerticalLayout {
             viewRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(profileCanvas.init(userComboBox.getSelectedItem().get()));
         });
 
-        BoxImpl box = new BoxImpl().instance(userComboBox);
-        HorizontalLayout layout = new HorizontalLayout(box);
-        return layout;
+        return new HorizontalLayout(new BoxImpl().instance(userComboBox));
     }
 
 }

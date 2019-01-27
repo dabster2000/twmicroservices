@@ -62,7 +62,10 @@ public class ProfileCanvas extends VerticalLayout {
     public void createBase() {
         baseContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(achievementCardController.getCard(user));
 
-        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(new Image(null, photoService.getRelatedPhoto(user.getUuid()))));
-        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(knowledgeChart.getChart(user)));
+        Image image = new Image(null, photoService.getRelatedPhoto(user.getUuid()));
+        image.setWidth(100, Unit.PERCENTAGE);
+        image.setWidth(100, Unit.PERCENTAGE);
+        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(image));
+        baseContentRow.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(new BoxImpl().instance(knowledgeChart.getChart(user)));
     }
 }
