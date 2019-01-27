@@ -27,6 +27,7 @@ public class PhotoService {
         Photo photo = photoRepository.findByRelateduuid(member.getUuid());
 
         Image image = new Image();
+        image.setDescription(member.getFirstname()+" "+member.getLastname());
         if(photo!=null && photo.getPhoto()!=null) {
             image.setSource(
                     new StreamResource((StreamResource.StreamSource) () ->
