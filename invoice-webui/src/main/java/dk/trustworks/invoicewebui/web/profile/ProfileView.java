@@ -4,6 +4,8 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import dk.trustworks.invoicewebui.web.profile.layout.ProfileLayout;
@@ -16,6 +18,7 @@ import javax.annotation.PostConstruct;
  * Created by hans on 19/12/2016.
  */
 
+@AccessRules(roleTypes = {RoleType.USER})
 @SpringView(name = ProfileView.VIEW_NAME)
 public class ProfileView extends VerticalLayout implements View {
 
