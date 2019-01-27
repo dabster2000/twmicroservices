@@ -58,33 +58,32 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         this.projectDescriptionRepository = projectDescriptionRepository;
         this.photoService = photoService;
         this.projectDescriptionUserRepository = projectDescriptionUserRepository;
+
+        filterRow = responsiveLayout.addRow();
+        projectDescriptionsRow = responsiveLayout.addRow();
+        this.addComponent(responsiveLayout);
     }
 
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public ProjectDescriptionLayout init() {
-        filterRow = responsiveLayout.addRow();
-        projectDescriptionsRow = responsiveLayout.addRow();
-        this.addComponent(responsiveLayout);
-
-        createFilterRow();
-        loadProjectDescriptions();
+        refreshPage();
         return this;
     }
 
-    private void createFilterRow() {
+    private void refreshPage() {
+        projectDescriptionsRow.removeAllComponents();
+        projectDescriptionDesignList.clear();
         filterRow.removeAllComponents();
-        clearContainers();
+        clientList.clear();
+        userList.clear();
 
-        for (ProjectDescription projectDescription : projectDescriptionRepository.findAll()) {
-            Client client = projectDescription.getClient();
-            clientList.putIfAbsent(client, new ArrayList<>());
+        updateClientAndUserList();
+        createFilterRow();
+        loadProjectDescriptions();
+    }
 
-            for (ProjectDescriptionUser projectDescriptionUser : projectDescriptionUserRepository.findByProjectDescription(projectDescription)) {
-                userList.putIfAbsent(projectDescriptionUser.getUser(), new ArrayList<>());
-            }
-        }
-
+    private void createFilterRow() {
         ComboBox<Client> clientComboBox = new ComboBox<>("Client filter");
         ComboBox<User> userComboBox = new ComboBox<>("Consultant filter");
 
@@ -115,16 +114,21 @@ public class ProjectDescriptionLayout extends VerticalLayout {
                 .withComponent(new MVerticalLayout(userComboBox));
     }
 
-    private void clearContainers() {
-        clientList.clear();
-        userList.clear();
+    private void updateClientAndUserList() {
+        for (ProjectDescription projectDescription : projectDescriptionRepository.findAll()) {
+            Client client = projectDescription.getClient();
+            System.out.println("client = " + client);
+            clientList.putIfAbsent(client, new ArrayList<>());
+
+            for (ProjectDescriptionUser projectDescriptionUser : projectDescriptionUserRepository.findByProjectDescription(projectDescription)) {
+                userList.putIfAbsent(projectDescriptionUser.getUser(), new ArrayList<>());
+            }
+        }
     }
 
     private void filterDesigns(ComboBox comboBox, HasValue.ValueChangeEvent event, Map map) {
         if(!event.isUserOriginated()) return;
         comboBox.clear();
-        System.out.println("event = " + event.getValue());
-        System.out.println("event = " + event.isUserOriginated());
         if (event.getValue()!=null) {
             for (ResponsiveColumn design : projectDescriptionDesignList) {
                 design.setVisible(false);
@@ -140,10 +144,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
     }
 
     private void loadProjectDescriptions() {
-        projectDescriptionsRow.removeAllComponents();
-        projectDescriptionDesignList.clear();
-
-        Iterable<ProjectDescription> allProjDesc = projectDescriptionRepository.findAll();
+        List<ProjectDescription> allProjDesc = projectDescriptionRepository.findAll().stream().sorted(Comparator.comparing(o1 -> o1.getClient().getName())).collect(Collectors.toList());
 
         for (ProjectDescription projectDescription : allProjDesc) {
             ProjectDescriptionDesign projectDescriptionDesign = new ProjectDescriptionDesign();
@@ -151,6 +152,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
             ResponsiveColumn column = projectDescriptionsRow.addColumn();
             column.withDisplayRules(12, 12, 6,4).withComponent(projectDescriptionDesign);
             projectDescriptionDesignList.add(column);
+
             clientList.get(projectDescription.getClient()).add(column);
 
             projectDescriptionDesign.getLblHeading().setValue(projectDescription.getName());
@@ -235,7 +237,8 @@ public class ProjectDescriptionLayout extends VerticalLayout {
 
             window.close();
             UI.getCurrent().removeWindow(window);
-            loadProjectDescriptions();
+
+            refreshPage();
         });
 
         window.setContent(formDesign);
@@ -243,9 +246,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
     }
 
     private void saveExistingProjectDescription(ProjectDescription projectDescription, HashMap<User, TextArea> userStorieMap, ProjectDescriptionFormDesign formDesign) {
-        System.out.println("ProjectDescriptionLayout.saveExistingProjectDescription");
         projectDescription = projectDescriptionRepository.findOne(projectDescription.getId());
-        System.out.println("projectDescription = " + projectDescription);
 
         projectDescription.setClient(formDesign.getCbClient().getSelectedItem().get());
         projectDescription.setName(formDesign.getTxtName().getValue());
@@ -261,7 +262,6 @@ public class ProjectDescriptionLayout extends VerticalLayout {
     }
 
     private void saveNewProjectDescription(HashMap<User, TextArea> userStorieMap, ProjectDescriptionFormDesign formDesign) {
-        System.out.println("ProjectDescriptionLayout.saveNewProjectDescription");
         ProjectDescription projectDescription = new ProjectDescription(
                 formDesign.getCbClient().getSelectedItem().get(),
                 formDesign.getTxtName().getValue(),

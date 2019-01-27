@@ -140,11 +140,10 @@ public class Client {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ( !(o instanceof Client) ) return false;
 
-        Client client = (Client) o;
-
-        return uuid.equals(client.uuid);
+        final Client client = (Client) o;
+        return getUuid().equals(client.getUuid());
     }
 
     @Override

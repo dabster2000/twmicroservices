@@ -111,9 +111,6 @@ o	ØNSKE: Tilføje følgende kompetencer (1):
 -	Knowledge budget
 o	ØNSKE: Kunne vælge flere purposes (fra aktuel liste på siden), når man registrerer en knowledge-aktivitet (1)
 o	ØNSKE: Kunne registrere knowledge-aktiviteter for andre (Elvi) (3)
-o	ØNSKE: Nulstil formular når man har udfyldt fx et kursus (det forvirrer) (1)
-o	ØNSKE: Det skal være muligt at lægge ideer til aktiviteter ind uden at det tæller med i budgettet på en eller anden måde. Evt med flueben ud for kurset ift om man vil se det indgå i samlet budget (kun muligt ved status ”wish list”) (1)
-o	ØNSKE: Muligt at redigere i allerede oprettede aktiviteter. Fx hvis den er på wish list og man ikke har prisen på det endnu eller vil tilføje en kommentar eller en udgift (fx transport/hotel ophold o.l.) (1)
 o	ØNSKE: Budget status skal kunne ses samtidig med at man opretter aktiviteter (1)
 -	IT budget
 o	Fremadrettet
