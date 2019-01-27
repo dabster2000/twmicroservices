@@ -680,7 +680,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         } else {
             User workas = weekItem.getWorkas();
             if (workas != null) {
-                Image memberImage = photoService.getRoundMemberImage(workas, false, 30);
+                Image memberImage = photoService.getRoundMemberImage(workas, false, 30, PIXELS);
                 memberImage.setDescription("Helping " + workas.getFirstname() + " " + workas.getLastname());
                 taskTitle.getImgConsultant().addComponent(memberImage);
             }

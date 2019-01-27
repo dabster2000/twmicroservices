@@ -20,20 +20,25 @@ public class PhotoService {
     private PhotoRepository photoRepository;
 
     public Image getRoundMemberImage(User member, boolean isOwner) {
-        return getRoundMemberImage(member, isOwner, 75);
+        return getRoundMemberImage(member, isOwner, 75, Sizeable.Unit.PIXELS);
     }
 
-    public Image getRoundMemberImage(User member, boolean isOwner, int width) {
+    public Image getRoundMemberImage(User member, boolean isOwner, int width, Sizeable.Unit unit) {
         Photo photo = photoRepository.findByRelateduuid(member.getUuid());
 
-        Image image = new Image(null,
-                new StreamResource((StreamResource.StreamSource) () ->
-                        new ByteArrayInputStream(photo.getPhoto()),
-                        member.getUsername()+System.currentTimeMillis()+".jpg"));
+        Image image = new Image();
+        if(photo!=null && photo.getPhoto()!=null) {
+            image.setSource(
+                    new StreamResource((StreamResource.StreamSource) () ->
+                            new ByteArrayInputStream(photo.getPhoto()),
+                            member.getUsername() + System.currentTimeMillis() + ".jpg"));
+        } else {
+            image.setSource(new ThemeResource("images/clients/missing-logo.jpg"));
+        }
         if(isOwner) image.setStyleName("img-circle-gold");
         else image.setStyleName("img-circle");
-        image.setWidth(width, Sizeable.Unit.PIXELS);
-        image.setHeight(width, Sizeable.Unit.PIXELS);
+        image.setWidth(width, unit);
+        image.setHeight(width, unit);
         return image;
     }
 

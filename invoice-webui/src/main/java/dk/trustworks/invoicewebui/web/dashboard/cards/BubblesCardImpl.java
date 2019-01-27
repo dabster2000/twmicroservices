@@ -33,7 +33,7 @@ public class BubblesCardImpl extends BubblesCardDesign {
             bubbleRow.getLblName().setValue(bubble.getName());
             bubbleRow.getTxtMembers().setValue(bubbleMemberRepository.findByBubble(bubble).size()+"");
             bubbleRow.getImgBubblePhoto().setSource(photoService.getRelatedPhoto(bubble.getUuid()));
-            bubbleRow.getCssOwnerPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getUser(), true, 35));
+            bubbleRow.getCssOwnerPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getUser(), true, 35, Unit.PIXELS));
             getVlBubbles().addComponent(bubbleRow);
         }
 

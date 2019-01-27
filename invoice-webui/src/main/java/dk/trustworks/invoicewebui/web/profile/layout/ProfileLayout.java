@@ -5,17 +5,17 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.profile.components.ProfileCanvas;
 
 import java.util.List;
+
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.STAFF;
 
 /**
  * Created by hans on 21/12/2016.
@@ -24,12 +24,14 @@ import java.util.List;
 @SpringUI
 public class ProfileLayout extends VerticalLayout {
 
+    private final PhotoService photoService;
     private final UserService userService;
     private final ProfileCanvas profileCanvas;
     private final ResponsiveRow selectorRow;
     private final ResponsiveRow viewRow;
 
-    public ProfileLayout(UserService userService, ProfileCanvas profileCanvas) {
+    public ProfileLayout(PhotoService photoService, UserService userService, ProfileCanvas profileCanvas) {
+        this.photoService = photoService;
         this.userService = userService;
         this.profileCanvas = profileCanvas;
 
@@ -40,12 +42,14 @@ public class ProfileLayout extends VerticalLayout {
         addComponent(responsiveLayout);
 
         selectorRow = responsiveLayout.addRow();
+        selectorRow.setVisible(false);
         viewRow = responsiveLayout.addRow();
     }
 
     public ProfileLayout init() {
         clearContent();
         selectorRow.addColumn().withDisplayRules(12, 12,12,12).withComponent(createSelectorRow(), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+        createDefaultViewRow();
         return this;
     }
 
@@ -55,16 +59,31 @@ public class ProfileLayout extends VerticalLayout {
     }
 
     private Component createSelectorRow() {
-        List<User> users = userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT, ConsultantType.STAFF);
+        List<User> users = userService.findCurrentlyWorkingEmployees(CONSULTANT, STAFF);
         ComboBox<User> userComboBox = new ComboBox<>("Select employee: ", users);
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setEmptySelectionAllowed(false);
         userComboBox.addValueChangeListener(event -> {
-            viewRow.removeAllComponents();
-            viewRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(profileCanvas.init(userComboBox.getSelectedItem().get()));
+            createUserViewRow(userComboBox.getSelectedItem().get());
         });
 
         return new HorizontalLayout(new BoxImpl().instance(userComboBox));
+    }
+
+    private void createDefaultViewRow() {
+        for (User employee : userService.findCurrentlyWorkingEmployees(CONSULTANT, STAFF)) {
+            Image memberImage = photoService.getRoundMemberImage(employee, false, 100, Unit.PERCENTAGE);
+            memberImage.addClickListener(event -> {
+                createUserViewRow(employee);
+            });
+            viewRow.addColumn().withDisplayRules(3, 2, 1, 1).withComponent(memberImage);
+        }
+    }
+
+    private void createUserViewRow(User user) {
+        selectorRow.setVisible(true);
+        viewRow.removeAllComponents();
+        viewRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(profileCanvas.init(user));
     }
 
 }
