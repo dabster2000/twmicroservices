@@ -42,7 +42,6 @@ public class ProfileLayout extends VerticalLayout {
         addComponent(responsiveLayout);
 
         selectorRow = responsiveLayout.addRow();
-        selectorRow.setVisible(false);
         viewRow = responsiveLayout.addRow();
     }
 
@@ -56,6 +55,7 @@ public class ProfileLayout extends VerticalLayout {
     private void clearContent() {
         selectorRow.removeAllComponents();
         viewRow.removeAllComponents();
+        selectorRow.setVisible(false);
     }
 
     private Component createSelectorRow() {

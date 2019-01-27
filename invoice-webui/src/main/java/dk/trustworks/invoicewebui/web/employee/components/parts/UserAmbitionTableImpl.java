@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,7 +35,6 @@ public class UserAmbitionTableImpl {
         for (Ambition ambition : ambitionRepository.findAmbitionByActiveIsTrueAndCategory(ambitionCategory.getAmbitionCategoryType())) {
             final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElseGet(() -> {
                 UserAmbition save = userAmbitionRepository.save(new UserAmbition(ambition.getId(), user, 0, 1));
-                System.out.println("save = " + save);
                 return save;
             });
             //userAmbitionRepository.save(userAmbition);
@@ -50,9 +50,8 @@ public class UserAmbitionTableImpl {
                 UserAmbition one = userAmbitionRepository.findOne(userAmbition.getId());
                 one.setScore(ambitionEntry.getRatingStars().getValue().intValue());
                 userAmbition.setScore(ambitionEntry.getRatingStars().getValue().intValue());
+                one.setUpdated(LocalDate.now());
                 userAmbitionRepository.save(one);
-                System.out.println("one = " + one);
-                System.out.println("userAmbition = " + userAmbition);
             });
             ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[ambitionScore].getName());
             ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[ambitionScore].getDescription());
@@ -61,10 +60,9 @@ public class UserAmbitionTableImpl {
                 ambitionEntry.getBtnAmbition().setCaption(AmbitionType.values()[userAmbition.rollAmbition()].getName());
                 one.setAmbition(userAmbition.getAmbition());
                 userAmbition.setAmbition(userAmbition.getAmbition());
+                one.setUpdated(LocalDate.now());
                 ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[userAmbition.getAmbition()].getDescription());
                 userAmbitionRepository.save(one);
-                System.out.println("one = " + one);
-                System.out.println("userAmbition = " + userAmbition);
             });
             ambitionEntry.getRatingStars().setValueCaption("I know it by name, but I have neither deeper knowledge nor experience with the method", "I know the method but need help to apply it", "I can use the method independently in a project, but may in some cases need assistance", "I am very experienced in the field and use the method as an expert in a project");
             userAmbitionTable.getContentLayout().addComponent(ambitionEntry);

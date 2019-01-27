@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "user_ambition")
@@ -20,6 +21,8 @@ public class UserAmbition {
 
     private int ambition;
 
+    private LocalDate updated;
+
     public UserAmbition() {
     }
 
@@ -28,6 +31,7 @@ public class UserAmbition {
         this.user = user;
         this.score = score;
         this.ambition = ambition;
+        updated = LocalDate.now();
     }
 
     public void refresh(UserAmbition userAmbition) {
@@ -36,6 +40,7 @@ public class UserAmbition {
         this.user = userAmbition.getUser();
         this.score = userAmbition.getScore();
         this.ambition = userAmbition.getAmbition();
+        this.updated = userAmbition.getUpdated();
     }
 
     public int getId() {
@@ -74,6 +79,14 @@ public class UserAmbition {
         this.ambition = ambition;
     }
 
+    public LocalDate getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(LocalDate updated) {
+        this.updated = updated;
+    }
+
     public int rollAmbition() {
         ambition += 1;
         if(ambition == 3) ambition = 0;
@@ -85,9 +98,10 @@ public class UserAmbition {
         return "UserAmbition{" +
                 "id=" + id +
                 ", ambitionid=" + ambitionid +
-                ", user=" + user.getUsername() +
+                ", user=" + user +
                 ", score=" + score +
                 ", ambition=" + ambition +
+                ", updated=" + updated +
                 '}';
     }
 }
