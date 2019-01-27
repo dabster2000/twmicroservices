@@ -6,7 +6,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
-import dk.trustworks.invoicewebui.web.profile.components.ProfileCanvas;
+import dk.trustworks.invoicewebui.web.profile.layout.ProfileLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
@@ -25,13 +25,13 @@ public class ProfileView extends VerticalLayout implements View {
     @Autowired
     private MainTemplate mainTemplate;
 
-    public static final String VIEW_NAME = "profile";
-    public static final String MENU_NAME = "Profile";
-    public static final String VIEW_BREADCRUMB = "User Profile";
+    public static final String VIEW_NAME = "profiles";
+    public static final String MENU_NAME = "Profiles";
+    public static final String VIEW_BREADCRUMB = "User Profiles";
     public static final FontIcon VIEW_ICON = MaterialIcons.VERIFIED_USER;
 
     @Autowired
-    private ProfileCanvas profileTemplate;
+    private ProfileLayout profileTemplate;
 
     @PostConstruct
     void init() {

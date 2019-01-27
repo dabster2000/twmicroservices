@@ -19,6 +19,7 @@ import dk.trustworks.invoicewebui.web.invoice.views.DraftListView;
 import dk.trustworks.invoicewebui.web.invoice.views.InvoiceListView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.knowledge.KnowledgeView;
+import dk.trustworks.invoicewebui.web.profile.ProfileView;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 import dk.trustworks.invoicewebui.web.projectdescriptions.ProjectDescriptionView;
 import dk.trustworks.invoicewebui.web.resourceplanning.ResourcePlanningView;
@@ -148,6 +149,9 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("employeeinfo", employeeinfo);
         MenuItemContainer employee = new MenuItemContainer(order++).createItem(EmployeeView.MENU_NAME, false, EmployeeView.VIEW_ICON, EmployeeView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(EmployeeView.VIEW_NAME, employee);
+        MenuItemContainer profile = new MenuItemContainer(order++).createItem(ProfileView.MENU_NAME, false, ProfileView.VIEW_ICON, ProfileView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(ProfileView.VIEW_NAME, profile);
+
 
         MenuItemContainer admin = new MenuItemContainer(order++).createItem("Administration ---", true, null, null, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
         menuItems.put("admin", admin);

@@ -11,6 +11,7 @@ public class UserAmbitionDTO {
     private String name;
     private int score;
     private int ambition;
+    private String category;
 
     public UserAmbitionDTO() {
     }
@@ -47,12 +48,22 @@ public class UserAmbitionDTO {
         this.ambition = ambition;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "UserAmbitionDTO{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", score=" + score +
                 ", ambition=" + ambition +
+                ", category='" + category + '\'' +
                 '}';
     }
 }

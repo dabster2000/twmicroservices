@@ -158,7 +158,7 @@ public class AchievementJob {
 
     private boolean isWorthyOfAmbitionCompleted(User user) {
         int ambitionCount = ambitionRepository.findAmbitionByActiveIsTrue().size();
-        int userAmbitionCount = userAmbitionDTORepository.findUserAmbitionByUseruuidAndCategoryAndActiveTrue(user.getUuid()).size();
+        int userAmbitionCount = userAmbitionDTORepository.findUserAmbitionByUseruuidAndActiveTrue(user.getUuid()).size();
         return userAmbitionCount>=ambitionCount;
     }
 
