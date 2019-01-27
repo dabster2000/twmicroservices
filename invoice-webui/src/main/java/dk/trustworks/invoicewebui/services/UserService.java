@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.ACTIVE;
@@ -128,8 +129,14 @@ public class UserService {
      */
     public UserStatus getStatus(User user, boolean first, StatusType type) {
         List<UserStatus> statuses = user.getStatuses();
-        statuses.stream().filter(userStatus -> userStatus.getStatus().equals(type)).sorted(Comparator.comparing(UserStatus::getStatusdate));
+        statuses = statuses.stream().filter(userStatus -> userStatus.getStatus().equals(type)).sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
         return first?statuses.get(0):statuses.get(statuses.size()-1);
+    }
+
+    public boolean isEmployed(User user) {
+        List<UserStatus> statuses = user.getStatuses();
+        UserStatus userStatus = statuses.stream().max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus());
+        return !userStatus.getStatus().equals(StatusType.TERMINATED);
     }
 
     @Transactional
