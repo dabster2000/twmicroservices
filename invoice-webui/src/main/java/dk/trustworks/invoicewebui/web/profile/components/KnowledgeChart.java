@@ -63,9 +63,10 @@ public class KnowledgeChart {
 
         List<UserAmbitionDTO> userAmbitionList = userAmbitionDTORepository.findUserAmbitionByUseruuidAndActiveTrue(user.getUuid());
         for (AmbitionCategory ambitionCategory : ambitionCategoryRepository.findByActiveTrue()) {
-            int score = userAmbitionList.stream().filter(u -> u.getCategory().equals(ambitionCategory.getAmbitionCategoryType())).mapToInt(UserAmbitionDTO::getScore).sum();
+            double total = userAmbitionList.stream().filter(u -> u.getCategory().equals(ambitionCategory.getAmbitionCategoryType())).count() * 4;
+            double score = userAmbitionList.stream().filter(u -> u.getCategory().equals(ambitionCategory.getAmbitionCategoryType())).mapToInt(UserAmbitionDTO::getScore).sum();
 
-            DataSeriesItem item = new DataSeriesItem(ambitionCategory.getName(), score);
+            DataSeriesItem item = new DataSeriesItem(ambitionCategory.getName(), Math.round((score / total) * 100.0));
             DataSeries drillSeries = new DataSeries(ambitionCategory.getName());
             drillSeries.setId(ambitionCategory.getAmbitionCategoryType());
 
@@ -74,7 +75,7 @@ public class KnowledgeChart {
 
             List<UserAmbitionDTO> collect = userAmbitionList.stream().filter(u -> u.getCategory().equals(ambitionCategory.getAmbitionCategoryType())).sorted(Comparator.comparing(UserAmbitionDTO::getName)).collect(Collectors.toList());
             String[] categories = collect.stream().map(UserAmbitionDTO::getName).toArray(String[]::new);
-            Number[] ys = collect.stream().map(value -> value.getScore()).toArray(Number[]::new);
+            Number[] ys = collect.stream().map(UserAmbitionDTO::getScore).toArray(Number[]::new);
             drillSeries.setData(categories, ys);
             series.addItemWithDrilldown(item, drillSeries);
         }
