@@ -14,6 +14,7 @@ import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractDesign;
@@ -170,8 +171,8 @@ public class ContractListLayout extends VerticalLayout {
         }
 */
 
-        gantt.setStartDate(startDate);
-        gantt.setEndDate(endDate);
+        gantt.setStartDate(DateUtils.convertLocalDateToDate(startDate));
+        gantt.setEndDate(DateUtils.convertLocalDateToDate(endDate));
 
         gantt.addClickListener((Gantt.ClickListener) event -> Notification.show("Clicked" + event.getStep().getCaption()));
 
@@ -187,8 +188,8 @@ public class ContractListLayout extends VerticalLayout {
         Optional<Contract> lastContract = client.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo));
         if(!firstContract.isPresent() || !lastContract.isPresent()) return;
         if(lastContract.get().getActiveTo().isBefore(LocalDate.now())) return;
-        projectStep.setStartDate(Date.from(firstContract.get().getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        projectStep.setEndDate(Date.from(lastContract.get().getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        projectStep.setStartDate(DateUtils.convertLocalDateToDate(firstContract.get().getActiveFrom()));
+        projectStep.setEndDate(DateUtils.convertLocalDateToDate(lastContract.get().getActiveTo()));
 
         projectStep.setBackgroundColor("8FA78A");
 
