@@ -188,7 +188,8 @@ public class ContractListLayout extends VerticalLayout {
         Optional<Contract> lastContract = client.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo));
         if(!firstContract.isPresent() || !lastContract.isPresent()) return;
         if(lastContract.get().getActiveTo().isBefore(LocalDate.now())) return;
-        projectStep.setStartDate(DateUtils.convertLocalDateToDate((firstContract.get().getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():firstContract.get().getActiveFrom()));
+        //projectStep.setStartDate(DateUtils.convertLocalDateToDate((firstContract.get().getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():firstContract.get().getActiveFrom()));
+        projectStep.setStartDate(DateUtils.convertLocalDateToDate(firstContract.get().getActiveFrom()));
         projectStep.setEndDate(DateUtils.convertLocalDateToDate(lastContract.get().getActiveTo()));
 
         projectStep.setBackgroundColor("8FA78A");
@@ -209,12 +210,13 @@ public class ContractListLayout extends VerticalLayout {
     private Step createContract(Contract contract) {
         if(contract.getActiveTo().isBefore(LocalDate.now())) return null;
 
-        //if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
+        if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
         if(contract.getActiveTo().isAfter(endDate)) endDate = contract.getActiveTo();
 
         String consultantNames = String.join(",", contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
         Step contractStep = new Step(contract.getContractType().name() + "(" + consultantNames + ")");
-        Date contractStartDate = DateUtils.convertLocalDateToDate((contract.getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():contract.getActiveFrom());
+        //Date contractStartDate = DateUtils.convertLocalDateToDate((contract.getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():contract.getActiveFrom());
+        Date contractStartDate = DateUtils.convertLocalDateToDate(contract.getActiveFrom());
         Date contractEndDate = DateUtils.convertLocalDateToDate(contract.getActiveTo());
         contractStep.setStartDate(contractStartDate);
         contractStep.setEndDate(contractEndDate);
