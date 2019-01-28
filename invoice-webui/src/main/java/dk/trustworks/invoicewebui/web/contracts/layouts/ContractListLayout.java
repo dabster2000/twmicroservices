@@ -209,7 +209,7 @@ public class ContractListLayout extends VerticalLayout {
     private Step createContract(Contract contract) {
         if(contract.getActiveTo().isBefore(LocalDate.now())) return null;
 
-        //if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
+        if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
         if(contract.getActiveTo().isAfter(endDate)) endDate = contract.getActiveTo();
 
         String consultantNames = String.join(",", contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
