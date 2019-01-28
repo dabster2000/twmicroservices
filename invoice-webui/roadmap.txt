@@ -1,16 +1,16 @@
 Profilside
- - billede
- - fødselsdag
- - løn / allokering
- - bobler
+ x billede
+ x fødselsdag
+ x løn / allokering
+ x bobler
  - projekter / kontrakter
  - touchbase oversigt
- - speed dates
- - kontrakter / dokumenter
- - udstyr / it budget
- - kontakt info
- - cko budget
- - konferencer / undervisning
+ x speed dates
+ x kontrakter / dokumenter
+ x udstyr / it budget
+ x kontakt info
+ x cko budget
+ x konferencer / undervisning
 
 
 
@@ -20,8 +20,8 @@ Profilside
  - Banner på purpose siden
 
 
- - Graf der viser omkostning per konsulent. (Løn plus omkostninger i forhold til omsætning) per måned per konsulent.
- - "Average Revenue per Consultant" per år
+ x Graf der viser omkostning per konsulent. (Løn plus omkostninger i forhold til omsætning) per måned per konsulent.
+ x "Average Revenue per Consultant" per år
  - Overblik over kontrakter - udløb, udestående, overskridelser, etc.
  - Forskel på faktureret beløb og timeregistreret beløb
 

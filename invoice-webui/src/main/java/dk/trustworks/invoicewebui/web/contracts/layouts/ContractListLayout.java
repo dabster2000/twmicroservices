@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -82,6 +83,7 @@ public class ContractListLayout extends VerticalLayout {
         contractResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         createSearchBar();
         createErrorBox();
+        showGantt();
         contractRow = contractResponsiveLayout.addRow();
         this.addComponent(contractResponsiveLayout);
         if(contractSearch.getSelClient().getOptionalValue().isPresent()) reloadContractView(contractSearch.getSelClient().getValue());
@@ -120,10 +122,119 @@ public class ContractListLayout extends VerticalLayout {
 
     private void reloadContractView(Client client) {
         errorRow.setVisible(false);
-        //showGantt(client);
         contractRow.removeAllComponents();
         client = createContractView(client);
         createNewContractButton(client);
+    }
+
+    private void showGantt() {
+        errorRow.removeAllComponents();
+
+        Card card = new Card();
+        card.getLblTitle().setValue("Customer Timeline");
+        errorRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(card);
+
+        Gantt gantt = new Gantt();
+        card.getContent().addComponent(gantt);
+
+        gantt.setWidth(100, Unit.PERCENTAGE);
+        gantt.setHeight(500, Unit.PIXELS);
+        gantt.setResizableSteps(false);
+        gantt.setMovableSteps(false);
+        gantt.setResolution(Resolution.Week);
+        gantt.setMovableStepsBetweenRows(true);
+        gantt.setShowCurrentTime(true);
+
+        List<Client> clients = clientRepository.findByActiveTrueOrderByName();
+        //List<Contract> contracts = client.getContracts();
+        //List<Project> projects = client.getProjects();
+
+        startDate = LocalDate.now();
+        endDate = LocalDate.now().plusMonths(1);
+
+        Map<String, Step> contractSet = new HashMap<>();
+        Map<String, Step> projectSet = new HashMap<>();
+
+        for (Client client : clients) {
+            createClient(gantt, client);
+        }
+
+/*
+        for (Contract contract : contracts) {
+            createContract(gantt, contractSet, projectSet, contract);
+        }
+        */
+/*
+        for (Project project : projects) {
+            createProject(gantt, project, contractSet, projectSet);
+        }
+*/
+
+        gantt.setStartDate(startDate);
+        gantt.setEndDate(endDate);
+
+        gantt.addClickListener((Gantt.ClickListener) event -> Notification.show("Clicked" + event.getStep().getCaption()));
+
+        gantt.addMoveListener((Gantt.MoveListener) event -> Notification.show("Moved " + event.getStep().getCaption()));
+
+        gantt.addResizeListener((Gantt.ResizeListener) event -> Notification.show("Resized " + event.getStep().getCaption()));
+    }
+
+    private void createClient(Gantt gantt, Client client) {
+        Step projectStep = new Step(client.getName());
+
+        Optional<Contract> firstContract = client.getContracts().stream().min(Comparator.comparing(Contract::getActiveFrom));
+        Optional<Contract> lastContract = client.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo));
+        if(!firstContract.isPresent() || !lastContract.isPresent()) return;
+        if(lastContract.get().getActiveTo().isBefore(LocalDate.now())) return;
+        projectStep.setStartDate(Date.from(firstContract.get().getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        projectStep.setEndDate(Date.from(lastContract.get().getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+        projectStep.setBackgroundColor("8FA78A");
+
+
+        //projectSet.put(project.getUuid(), projectStep);
+
+        gantt.addStep(projectStep);
+
+        for (Contract contract : client.getContracts()) {
+            Step relatedContract = createContract(contract);
+            if(relatedContract == null) continue;
+            //projectStep.addStep(relatedContract);
+            gantt.addStep(relatedContract);
+        }
+    }
+
+    private Step createContract(Contract contract) {
+        if(contract.getActiveTo().isBefore(LocalDate.now())) return null;
+
+        //if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
+        if(contract.getActiveTo().isAfter(endDate)) endDate = contract.getActiveTo();
+
+        String consultantNames = String.join(",", contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
+        Step contractStep = new Step(contract.getContractType().name() + "(" + consultantNames + ")");
+        contractStep.setStartDate(Date.from(contract.getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        contractStep.setEndDate(Date.from(contract.getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+        contractStep.setDescription(consultantNames);
+        contractStep.setBackgroundColor("FBB14D");
+
+        double amountUsedOnContract = contractService.findAmountUsedOnContract(contract);
+        double percentage;
+        if(contract.getContractType().equals(ContractType.AMOUNT)) {
+            percentage = (amountUsedOnContract/contract.getAmount()) * 100.0;
+        } else {
+            long weeks = ChronoUnit.WEEKS.between(contract.getActiveFrom(), contract.getActiveTo());
+            double amount = 0.0;
+            for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                amount += contractConsultant.getRate() * contractConsultant.getHours() * weeks;
+            }
+            percentage = (amountUsedOnContract / amount) * 100.0;
+        }
+        contractStep.setShowProgress(true);
+        contractStep.setProgress(percentage);
+
+        return contractStep;
     }
 
     private void showGantt(Client client) {
@@ -151,15 +262,15 @@ public class ContractListLayout extends VerticalLayout {
 
         Map<String, Step> contractSet = new HashMap<>();
         Map<String, Step> projectSet = new HashMap<>();
-/*
+
         for (Contract contract : contracts) {
             createContract(gantt, contractSet, projectSet, contract);
         }
-*/
+/*
         for (Project project : projects) {
             createProject(gantt, project, contractSet, projectSet);
         }
-
+*/
 
         gantt.setStartDate(startDate);
         gantt.setEndDate(endDate);
@@ -181,9 +292,9 @@ public class ContractListLayout extends VerticalLayout {
         contractStep.setStartDate(Date.from(contract.getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         contractStep.setEndDate(Date.from(contract.getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        //contractStep.setDescription(consultantNames);
+        contractStep.setDescription(consultantNames);
         contractStep.setBackgroundColor("FBB14D");
-        //gantt.addStep(contractStep);
+        gantt.addStep(contractStep);
 
         //contractSet.put(contract.getUuid(), contractStep);
 /*
