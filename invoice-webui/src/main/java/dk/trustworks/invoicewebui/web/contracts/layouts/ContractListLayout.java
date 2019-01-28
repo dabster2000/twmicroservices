@@ -174,21 +174,21 @@ public class ContractListLayout extends VerticalLayout {
         gantt.setStartDate(DateUtils.convertLocalDateToDate(startDate));
         gantt.setEndDate(DateUtils.convertLocalDateToDate(endDate));
 
-        gantt.addClickListener((Gantt.ClickListener) event -> Notification.show("Clicked" + event.getStep().getCaption()));
+        //gantt.addClickListener((Gantt.ClickListener) event -> Notification.show("Clicked" + event.getStep().getCaption()));
 
-        gantt.addMoveListener((Gantt.MoveListener) event -> Notification.show("Moved " + event.getStep().getCaption()));
+        //gantt.addMoveListener((Gantt.MoveListener) event -> Notification.show("Moved " + event.getStep().getCaption()));
 
-        gantt.addResizeListener((Gantt.ResizeListener) event -> Notification.show("Resized " + event.getStep().getCaption()));
+        //gantt.addResizeListener((Gantt.ResizeListener) event -> Notification.show("Resized " + event.getStep().getCaption()));
     }
 
     private void createClient(Gantt gantt, Client client) {
         Step projectStep = new Step(client.getName());
 
-        Optional<Contract> firstContract = client.getContracts().stream().min(Comparator.comparing(Contract::getActiveFrom));
+        Optional<Contract> firstContract = client.getContracts().stream().filter(contract -> contract.getActiveTo().isAfter(LocalDate.now())).min(Comparator.comparing(Contract::getActiveFrom));
         Optional<Contract> lastContract = client.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo));
         if(!firstContract.isPresent() || !lastContract.isPresent()) return;
         if(lastContract.get().getActiveTo().isBefore(LocalDate.now())) return;
-        projectStep.setStartDate(DateUtils.convertLocalDateToDate(firstContract.get().getActiveFrom()));
+        projectStep.setStartDate(DateUtils.convertLocalDateToDate((firstContract.get().getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():firstContract.get().getActiveFrom()));
         projectStep.setEndDate(DateUtils.convertLocalDateToDate(lastContract.get().getActiveTo()));
 
         projectStep.setBackgroundColor("8FA78A");
@@ -209,13 +209,15 @@ public class ContractListLayout extends VerticalLayout {
     private Step createContract(Contract contract) {
         if(contract.getActiveTo().isBefore(LocalDate.now())) return null;
 
-        if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
+        //if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
         if(contract.getActiveTo().isAfter(endDate)) endDate = contract.getActiveTo();
 
         String consultantNames = String.join(",", contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
         Step contractStep = new Step(contract.getContractType().name() + "(" + consultantNames + ")");
-        contractStep.setStartDate(Date.from(contract.getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        contractStep.setEndDate(Date.from(contract.getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        Date contractStartDate = DateUtils.convertLocalDateToDate((contract.getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():contract.getActiveFrom());
+        Date contractEndDate = DateUtils.convertLocalDateToDate(contract.getActiveTo());
+        contractStep.setStartDate(contractStartDate);
+        contractStep.setEndDate(contractEndDate);
 
         contractStep.setDescription(consultantNames);
         contractStep.setBackgroundColor("FBB14D");
