@@ -16,6 +16,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 /**
@@ -35,6 +36,7 @@ public class InvoiceWebUIApplication {
     private static final Logger log = LoggerFactory.getLogger(InvoiceWebUIApplication.class);
 
     public static void main(String[] args) {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Copenhagen"));
         SpringApplication.run(InvoiceWebUIApplication.class);
         Locale.setDefault(new Locale("da", "DK"));
     }
