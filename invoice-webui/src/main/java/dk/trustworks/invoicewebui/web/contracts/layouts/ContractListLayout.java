@@ -192,7 +192,7 @@ public class ContractListLayout extends VerticalLayout {
         projectStep.setStartDate(DateUtils.convertLocalDateToDate(firstContract.get().getActiveFrom()));
         projectStep.setEndDate(DateUtils.convertLocalDateToDate(lastContract.get().getActiveTo()));
 
-        projectStep.setBackgroundColor("4B6E83");
+        projectStep.setBackgroundColor("5FA75C");
 
 
         //projectSet.put(project.getUuid(), projectStep);
@@ -222,7 +222,7 @@ public class ContractListLayout extends VerticalLayout {
         contractStep.setEndDate(contractEndDate);
 
         contractStep.setDescription(consultantNames);
-        contractStep.setBackgroundColor("CEA471");
+        contractStep.setBackgroundColor("F9D8B0");
 
         double amountUsedOnContract = contractService.findAmountUsedOnContract(contract);
         double percentage;
