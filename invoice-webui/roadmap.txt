@@ -12,6 +12,7 @@ Profilside
  x cko budget
  x konferencer / undervisning
 
+ - Kunder, domæner, services mapping...
 
 
  - Et ønske til intra, når du har tid: På Report siden vil jeg gerne kunne vælge døde projekter, og meget gerne kunne angive en periode (eller få hele projektet). Det bruger jeg efterhånden ret tit ifm tilbud, og pt sidder jeg og susser mig frem på fakturaoverblik
@@ -24,7 +25,7 @@ Profilside
  x "Average Revenue per Consultant" per år
  - Overblik over kontrakter - udløb, udestående, overskridelser, etc.
  - Forskel på faktureret beløb og timeregistreret beløb
-
+ - Forslag til Intra: Bedre visning af FAQ, så det er muligt at se der er flere emner. Gerne alfabetisk
 
 Intra præsentation og input til forbedringer
 

@@ -7,10 +7,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
-import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.Consultant;
-import dk.trustworks.invoicewebui.model.Contract;
-import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
@@ -19,6 +17,7 @@ import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,16 +51,19 @@ public class SalesHeatMap {
 
     private final WorkService workService;
 
+    private final UserService userService;
+
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService) {
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService, UserService userService) {
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
         this.clientRepository = clientRepository;
         this.contractService = contractService;
         this.workService = workService;
+        this.userService = userService;
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
@@ -290,6 +292,47 @@ public class SalesHeatMap {
         chart.setHeight("700px");
 
         return chart;
+    }
+
+    public Component getSalesOverview() {
+        TreeGrid<UserBooking> treeGrid = new TreeGrid<>();
+
+        for (User user : userService.findCurrentlyWorkingEmployees()) {
+            LocalDate currentDate = LocalDate.now();
+            UserBooking userBooking = new UserBooking(user.getUsername());
+
+            for (int i = 0; i < 3; i++) {
+                List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
+                for (Contract contract : contracts) {
+                    if(contract.getContractType().equals(ContractType.PERIOD)) {
+                        for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                            double weeks = (workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0);
+                            userBooking.setM1AmountItemsPerProjekts((contractConsultant.getHours() * weeks) + userBooking.getM1AmountItemsPerProjekts());
+                        }
+                    }
+                }
+            }
+        }
+
+/*
+        treeGrid.setItems(, Project::getSubProjects);
+
+        treeGrid.addColumn(Project::getName).setCaption("Project Name").setId("name-column");
+        treeGrid.addColumn(Project::getHoursDone).setCaption("Hours Done");
+        treeGrid.addColumn(Project::getLastModified).setCaption("Last Modified");
+
+        treeGrid.addCollapseListener(event -> {
+            Notification.show(
+                    "Project '" + event.getCollapsedItem().getName() + "' collapsed.",
+                    Notification.Type.TRAY_NOTIFICATION);
+        });
+        treeGrid.addExpandListener(event -> {
+            Notification.show(
+                    "Project '" + event.getExpandedItem().getName()+ "' expanded.",
+                    Notification.Type.TRAY_NOTIFICATION);
+        });
+        */
+        return null;
     }
 
 
