@@ -16,7 +16,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 /**
@@ -36,9 +35,27 @@ public class InvoiceWebUIApplication {
     private static final Logger log = LoggerFactory.getLogger(InvoiceWebUIApplication.class);
 
     public static void main(String[] args) {
-        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SpringApplication.run(InvoiceWebUIApplication.class);
+        //TimeZone.setDefault(TimeZone.getTimeZone("Europe/Copenhagen"));
         Locale.setDefault(new Locale("da", "DK"));
+        /*
+        System.out.println("1 = " + 1);
+        Trello trelloApi = new TrelloImpl("667f15f00708bc0486898e6b6c48e528", "96f9f88e22ba9d229e2699877496006c1a203c880823cbd21d10453b70d87622", new ApacheHttpClient());
+        System.out.println("2 = " + 2);
+        Board board = trelloApi.getBoard("5c49bf6b621b8f73d27169bd");
+        System.out.println("3 = " + 3);
+        List<TList> lists = board.fetchLists();
+        System.out.println("4 = " + 4);
+        for (TList list : lists) {
+            System.out.println("5 = " + 5);
+            for (Card card : list.getCards()) {
+
+                System.out.println("card = " + card.getName());
+                System.out.println("card = " + card.getDesc());
+                System.out.println();
+            }
+        }
+        */
+        SpringApplication.run(InvoiceWebUIApplication.class);
     }
 
     @Bean
