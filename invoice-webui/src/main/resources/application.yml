@@ -20,7 +20,7 @@ spring:
       hibernate:
         enable_lazy_load_no_trans: true
   datasource:
-    url: ${URL:jdbc:mysql://localhost:3306/usermanager?noDatetimeStringSync=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=true&serverTimezone=Europe/Copenhagen}
+    url: ${URL:jdbc:mysql://localhost:3306/usermanager?noDatetimeStringSync=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=true&serverTimezone=UTC}
     username: ${USERNAME:root}
     password: ${PASSWORD:}
     driverClassName: com.mysql.cj.jdbc.Driver
