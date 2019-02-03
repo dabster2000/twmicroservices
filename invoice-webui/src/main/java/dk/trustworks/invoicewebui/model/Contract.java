@@ -143,7 +143,7 @@ public class Contract {
     }
 
     public void setActiveTo(LocalDate activeTo) {
-        this.activeTo = activeTo.withDayOfMonth(activeTo.lengthOfMonth());
+        this.activeTo = activeTo;
     }
 
     public Date getCreated() {
@@ -208,7 +208,7 @@ public class Contract {
     }
 
     public void setActiveFrom(LocalDate activeFrom) {
-        this.activeFrom = activeFrom.withDayOfMonth(1);
+        this.activeFrom = activeFrom;
     }
 
     public void addConsultants(List<ContractConsultant> contractConsultants) {
