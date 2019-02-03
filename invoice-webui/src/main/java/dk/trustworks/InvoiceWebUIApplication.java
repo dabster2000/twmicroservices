@@ -36,7 +36,7 @@ public class InvoiceWebUIApplication {
     private static final Logger log = LoggerFactory.getLogger(InvoiceWebUIApplication.class);
 
     public static void main(String[] args) {
-        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Copenhagen"));
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         Locale.setDefault(new Locale("da", "DK"));
         /*
         System.out.println("1 = " + 1);
