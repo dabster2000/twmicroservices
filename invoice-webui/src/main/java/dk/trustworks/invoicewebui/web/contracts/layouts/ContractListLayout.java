@@ -60,6 +60,7 @@ public class ContractListLayout extends VerticalLayout {
     private ResponsiveLayout contractResponsiveLayout;
     private ResponsiveRow contractRow;
     private ResponsiveRow errorRow;
+    private ResponsiveRow ganttRow;
     private Card errorCard;
 
     LocalDate startDate;
@@ -83,8 +84,8 @@ public class ContractListLayout extends VerticalLayout {
         this.removeAllComponents();
         contractResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         createSearchBar();
-        createErrorBox();
         showGantt();
+        createErrorBox();
         contractRow = contractResponsiveLayout.addRow();
         this.addComponent(contractResponsiveLayout);
         if(contractSearch.getSelClient().getOptionalValue().isPresent()) reloadContractView(contractSearch.getSelClient().getValue());
@@ -123,17 +124,19 @@ public class ContractListLayout extends VerticalLayout {
 
     private void reloadContractView(Client client) {
         errorRow.setVisible(false);
+        ganttRow.setVisible(false);
         contractRow.removeAllComponents();
         client = createContractView(client);
         createNewContractButton(client);
     }
 
     private void showGantt() {
-        errorRow.removeAllComponents();
+        ganttRow = contractResponsiveLayout.addRow();
+        //errorRow.removeAllComponents();
 
         Card card = new Card();
         card.getLblTitle().setValue("Customer Timeline");
-        errorRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(card);
+        ganttRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(card);
 
         Gantt gantt = new Gantt();
         card.getContent().addComponent(gantt);
