@@ -20,9 +20,13 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
+import dk.trustworks.invoicewebui.repositories.WeekRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.components.*;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
@@ -659,7 +663,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 Notification.show("Cannot remove row!", "Cannot remove row as long as you have registered hours on the task this week", Notification.Type.WARNING_MESSAGE);
                 return;
             }
-            weekRepository.delete(weekItem.getWeek());
+            weekRepository.delete(weekItem.getWeek().getUuid());
             responsiveLayout.removeComponent(time1Row);
         });
         Photo photo = photoRepository.findByRelateduuid(weekItem.getTask().getProject().getClient().getUuid());
@@ -691,7 +695,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         User workingAs = (weekItem.getWorkas()!=null)?weekItem.getWorkas():weekItem.getUser();
         Task task = weekItem.getTask();
 
-        final MLabel lblWeekItemSum = new MLabel(weekItem.getBudgetleft() + "").withStyleName("h5");
+        final MLabel lblWeekItemSum = new MLabel(NumberUtils.round(weekItem.getBudgetleft(), 2) + "").withStyleName("h5");
 
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
