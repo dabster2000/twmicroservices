@@ -235,6 +235,10 @@ $v-focus-color: #00BCD4;
     text-align: center;
   }
 
+  .v-grid-row.error_row > td {
+    background-color: $color-secondary-1-3;
+  }
+
   .center-label {
     text-align: center;
   }

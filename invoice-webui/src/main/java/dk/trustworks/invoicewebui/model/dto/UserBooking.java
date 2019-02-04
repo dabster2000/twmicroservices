@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.model.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserBooking {
 
@@ -22,7 +23,7 @@ public class UserBooking {
     private double m3BookingPercentage;
     private double m3MonthNorm;
 
-    private List<UserProjectBooking> subProjects = new ArrayList<>();
+    private List<UserBooking> subProjects = new ArrayList<>();
 
     public UserBooking() {
     }
@@ -63,6 +64,10 @@ public class UserBooking {
         this.m1AmountItemsPerProjekts = m1AmountItemsPerProjekts;
     }
 
+    public void addM1AmountItemsPerProjects(double m1AmountItemsPerProjekts) {
+        this.m1AmountItemsPerProjekts += m1AmountItemsPerProjekts;
+    }
+
     public double getM1AmountItemsPerPrebooking() {
         return m1AmountItemsPerPrebooking;
     }
@@ -93,6 +98,10 @@ public class UserBooking {
 
     public void setM2AmountItemsPerProjekts(double m2AmountItemsPerProjekts) {
         this.m2AmountItemsPerProjekts = m2AmountItemsPerProjekts;
+    }
+
+    public void addM2AmountItemsPerProjects(double m2AmountItemsPerProjekts) {
+        this.m2AmountItemsPerProjekts += m2AmountItemsPerProjekts;
     }
 
     public double getM2AmountItemsPerPrebooking() {
@@ -127,6 +136,10 @@ public class UserBooking {
         this.m3AmountItemsPerProjekts = m3AmountItemsPerProjekts;
     }
 
+    public void addM3AmountItemsPerProjects(double m3AmountItemsPerProjekts) {
+        this.m3AmountItemsPerProjekts += m3AmountItemsPerProjekts;
+    }
+
     public double getM3AmountItemsPerPrebooking() {
         return m3AmountItemsPerPrebooking;
     }
@@ -151,11 +164,11 @@ public class UserBooking {
         this.m3MonthNorm = m3MonthNorm;
     }
 
-    public List<UserProjectBooking> getSubProjects() {
+    public List<UserBooking> getSubProjects() {
         return subProjects;
     }
 
-    public void setSubProjects(List<UserProjectBooking> subProjects) {
+    public void setSubProjects(List<UserBooking> subProjects) {
         this.subProjects = subProjects;
     }
 
@@ -185,6 +198,7 @@ public class UserBooking {
                 ", m3AmountItemsPerPrebooking=" + m3AmountItemsPerPrebooking +
                 ", m3BookingPercentage=" + m3BookingPercentage +
                 ", m3MonthNorm=" + m3MonthNorm +
+                ", subProjects=" + subProjects.stream().map(UserBooking::toString).collect(Collectors.joining(", ")) +
                 '}';
     }
 }
