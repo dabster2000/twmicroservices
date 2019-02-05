@@ -707,7 +707,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                             double delta = updateTimefield(weekItem, 0, event);
                             weekDaySums.mon += delta;
                             weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
                             updateSums();
                         }).withValueChangeMode(ValueChangeMode.BLUR)
                                 .withWidth(100, PERCENTAGE)
@@ -721,7 +721,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                             double delta = updateTimefield(weekItem, 1, event);
                             weekDaySums.tue += delta;
                             weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
                     updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
@@ -734,7 +734,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                             double delta = updateTimefield(weekItem, 2, event);
                             weekDaySums.wed += delta;
                             weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
                     updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
@@ -747,7 +747,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                             double delta = updateTimefield(weekItem, 3, event);
                             weekDaySums.thu += delta;
                             weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
                             updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
@@ -760,7 +760,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                             double delta = updateTimefield(weekItem, 4, event);
                             weekDaySums.fri += delta;
                             weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
                             updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
@@ -773,7 +773,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                             double delta = updateTimefield(weekItem, 5, event);
                             weekDaySums.sat += delta;
                             weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
                             updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
@@ -786,7 +786,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                             double delta = updateTimefield(weekItem, 6, event);
                             weekDaySums.sun += delta;
                             weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(weekItem.getBudgetleft()+"");
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
                             updateSums();
                 }).withValueChangeMode(ValueChangeMode.BLUR)
                         .withWidth(100, PERCENTAGE)
