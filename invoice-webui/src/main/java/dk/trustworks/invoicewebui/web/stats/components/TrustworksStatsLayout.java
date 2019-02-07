@@ -170,7 +170,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         Card consultantsBudgetRealizationCard = new Card();
         consultantsBudgetRealizationCard.getLblTitle().setValue("Consultant Budget Realization");
-        consultantsBudgetRealizationCard.getContent().addComponent(consultantsBudgetRealizationChart.createConsultantsBudgetRealizationChart(localDateStart, localDateEnd));
+        consultantsBudgetRealizationCard.getContent().addComponent(consultantsBudgetRealizationChart.createConsultantsBudgetRealizationChart());
         notification.setDescription("8 out of 10 charts created!");
         System.out.println("timeMillis 8 = " + (System.currentTimeMillis() - timeMillis));
 

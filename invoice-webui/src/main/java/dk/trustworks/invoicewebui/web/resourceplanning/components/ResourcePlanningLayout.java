@@ -15,16 +15,16 @@ import java.time.LocalDate;
  */
 @SpringComponent
 @SpringUI
-public class SalesView extends VerticalLayout {
+public class ResourcePlanningLayout extends VerticalLayout {
 
     @Autowired
     private SalesHeatMap salesHeatMap;
 
-    public SalesView() {
+    public ResourcePlanningLayout() {
     }
 
     @Transactional
-    public SalesView init() {
+    public ResourcePlanningLayout init() {
         this.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         ResponsiveRow row = responsiveLayout.addRow();
@@ -38,18 +38,12 @@ public class SalesView extends VerticalLayout {
         Card availabilityChartCard = new Card();
         availabilityChartCard.getCardHolder().addComponent(salesHeatMap.getAvailabilityChart(localDateStart, localDateEnd));
 
-        Card salesViewCard = new Card();
-        salesViewCard.getCardHolder().addComponent(salesHeatMap.getSalesOverview());
-
         row.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(heatMapCard);
         row.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(availabilityChartCard);
-        row.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
-                .withComponent(salesViewCard);
 
         this.addComponent(responsiveLayout);
 

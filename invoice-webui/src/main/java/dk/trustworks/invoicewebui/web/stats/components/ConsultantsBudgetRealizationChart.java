@@ -43,13 +43,13 @@ public class ConsultantsBudgetRealizationChart {
         this.userService = userService;
     }
 
-    public Chart createConsultantsBudgetRealizationChart(LocalDate periodStart, LocalDate periodEnd) {
-        periodStart = LocalDate.now().withDayOfMonth(1);
-        periodEnd = LocalDate.now().plusMonths(1).withDayOfMonth(1);
+    public Chart createConsultantsBudgetRealizationChart() {
+        LocalDate periodStart = LocalDate.now().withDayOfMonth(1);
+        LocalDate periodEnd = LocalDate.now().plusMonths(1).withDayOfMonth(1);
         Chart chart = new Chart();
         chart.setSizeFull();
 
-        chart.setCaption("Consultant Budget Realization for "+periodStart.format(DateTimeFormatter.ofPattern("MMM yyyy")));
+        chart.setCaption("Consultant Budget Realization for "+ periodStart.format(DateTimeFormatter.ofPattern("MMM yyyy")));
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -58,10 +58,10 @@ public class ConsultantsBudgetRealizationChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd"))).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
+        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantBillableHoursByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd"))).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
 
         String[] categories = new String[amountPerItemList.size()+5];
-        DataSeries revenueList = new DataSeries("Revenue");
+        DataSeries revenueList = new DataSeries("Realization");
 
         Map<String, Double> budgetPerUser = new HashMap<>();
 
@@ -86,7 +86,7 @@ public class ConsultantsBudgetRealizationChart {
                                     work.getTask().getUuid().equals("f585f46f-19c1-4a3a-9ebd-1a4f21007282")) notWork += work.getWorkduration();
                         }
                         budgetPerUser.putIfAbsent(consultant.getUser().getUuid(), 0.0);
-                        Double aDouble = Math.floor(budgetPerUser.get(consultant.getUser().getUuid())+((consultant.getHours() * weeks) - notWork) * consultant.getRate());
+                        Double aDouble = Math.floor(budgetPerUser.get(consultant.getUser().getUuid())+((consultant.getHours() * weeks) - notWork));
                         budgetPerUser.replace(consultant.getUser().getUuid(), aDouble);
                         //budgetSum += ((consultant.getHours() * weeks) - notWork) * consultant.getRate();
                     }
@@ -96,7 +96,7 @@ public class ConsultantsBudgetRealizationChart {
             for (BudgetNew budget : budgets) {
                 //budgetSum += budget.getBudget();
                 budgetPerUser.putIfAbsent(budget.getContractConsultant().getUser().getUuid(), 0.0);
-                Double aDouble = Math.floor(budgetPerUser.get(budget.getContractConsultant().getUser().getUuid())+budget.getBudget());
+                Double aDouble = Math.floor(budgetPerUser.get(budget.getContractConsultant().getUser().getUuid())+budget.getBudget() / budget.getContractConsultant().getRate());
                 budgetPerUser.replace(budget.getContractConsultant().getUser().getUuid(), aDouble);
             }
         }

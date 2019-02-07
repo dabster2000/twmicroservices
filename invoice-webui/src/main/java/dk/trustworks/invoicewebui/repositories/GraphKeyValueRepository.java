@@ -100,6 +100,20 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "GROUP BY w.useruuid ORDER BY value DESC;", nativeQuery = true)
     List<GraphKeyValue> findConsultantRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
+    @Cacheable("findConsultantRevenueByPeriod")
+    @Query(value = "select u.uuid uuid, concat(u.firstname, ' ', u.lastname) description, ROUND(SUM(w.workduration)) value from " +
+            "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
+            "inner join task t on w.taskuuid = t.uuid " +
+            "inner join project p on t.projectuuid = p.uuid " +
+            "inner join user u on w.useruuid = u.uuid " +
+            "inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "inner join contracts c on cp.contractuuid = c.uuid " +
+            "where c.activefrom <= registered and c.activeto >= registered " +
+            "and w.registered >= :periodStart AND w.registered <= :periodEnd " +
+            "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
+            "GROUP BY w.useruuid ORDER BY value DESC;", nativeQuery = true)
+    List<GraphKeyValue> findConsultantBillableHoursByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
+
     @Cacheable("countConsultantsPerProject")
     @Query(value = "SELECT p.uuid uuid, p.name description, COUNT(DISTINCT w.useruuid) value FROM usermanager.work w " +
             "LEFT JOIN usermanager.task t ON t.uuid = w.taskuuid " +
