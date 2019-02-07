@@ -19,6 +19,7 @@ import java.util.List;
 @Service
 public class UserAmbitionTableImpl {
 
+    public static final int MAX_VALUE = 5;
     private final AmbitionRepository ambitionRepository;
     private final UserAmbitionRepository userAmbitionRepository;
 
@@ -34,17 +35,15 @@ public class UserAmbitionTableImpl {
         List<UserAmbition> userAmbitions = userAmbitionRepository.findByUser(user);
 
         for (Ambition ambition : ambitionRepository.findAmbitionByActiveIsTrueAndCategory(ambitionCategory.getAmbitionCategoryType())) {
-            final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElseGet(() -> {
-                UserAmbition save = userAmbitionRepository.save(new UserAmbition(ambition.getId(), user, 0, 1));
-                return save;
-            });
+            final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElseGet(() ->
+                    userAmbitionRepository.save(new UserAmbition(ambition.getId(), user, 0, 1)));
             //userAmbitionRepository.save(userAmbition);
             double knowledgeScore = userAmbition.getScore();
             int ambitionScore = userAmbition.getAmbition();
 
             UserAmbitionEntry ambitionEntry = new UserAmbitionEntry();
             ambitionEntry.getLblAmbitionName().setValue(ambition.getName());
-            ambitionEntry.getRatingStars().setMaxValue(4);
+            ambitionEntry.getRatingStars().setMaxValue(MAX_VALUE);
             ambitionEntry.getRatingStars().setAnimated(true);
             ambitionEntry.getRatingStars().setValue(knowledgeScore);
             ambitionEntry.getRatingStars().addValueChangeListener(event -> {
@@ -69,7 +68,7 @@ public class UserAmbitionTableImpl {
                 ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[userAmbition.getAmbition()].getDescription());
                 userAmbitionRepository.save(one);
             });
-            ambitionEntry.getRatingStars().setValueCaption("I know it by name, but I have neither deeper knowledge nor experience with the method", "I know the method but need help to apply it", "I can use the method independently in a project, but may in some cases need assistance", "I am very experienced in the field and use the method as an expert in a project");
+            ambitionEntry.getRatingStars().setValueCaption("Never heard of or just know by name.", "I have basic knowledge about this, perhaps even a certification, but have no actual project experience with this", "I have project experience with this, but I sometimes need assistance", "I have quite some years project experience with this, and can work independently with this on a project", "I have several years of project experience with this -and regarded as an expert by my peers");
             userAmbitionTable.getContentLayout().addComponent(ambitionEntry);
         }
 

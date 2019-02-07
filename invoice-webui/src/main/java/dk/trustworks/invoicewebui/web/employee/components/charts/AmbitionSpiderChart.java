@@ -87,7 +87,7 @@ public class AmbitionSpiderChart {
         YAxis yaxs = new YAxis();
         yaxs.setGridLineInterpolation("polygon");
         yaxs.setMin(0);
-        yaxs.setMax(4);
+        yaxs.setMax(UserAmbitionTableImpl.MAX_VALUE);
         yaxs.setTickInterval(1);
         yaxs.setLineWidth(0);
         conf.addxAxis(axis);
