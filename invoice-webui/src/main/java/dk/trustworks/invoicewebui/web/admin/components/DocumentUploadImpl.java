@@ -8,6 +8,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
 import dk.trustworks.invoicewebui.repositories.DocumentRepository;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -26,8 +27,11 @@ public class DocumentUploadImpl extends DocumentUpload {
 
     private String filename = null;
 
+    private final FileUtils fileUtils;
+
     @Autowired
-    public DocumentUploadImpl(DocumentRepository documentRepository, DocumentListImpl documentList, UserService userService) {
+    public DocumentUploadImpl(DocumentRepository documentRepository, DocumentListImpl documentList, UserService userService, FileUtils fileUtils) {
+        this.fileUtils = fileUtils;
         getBtnUpload().setEnabled(false);
         getVlUploadComplete().setVisible(false);
 
@@ -83,6 +87,7 @@ public class DocumentUploadImpl extends DocumentUpload {
             getLblFilename().setValue(filename);
             if(getTxtName().getValue().trim().length()>0) getBtnUpload().setEnabled(true);
         } catch (IOException e) {
+            Notification.show("Document is too large", "The document is too large. Try to compress the photos in the document.", Notification.Type.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
