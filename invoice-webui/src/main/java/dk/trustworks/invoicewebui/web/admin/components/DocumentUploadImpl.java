@@ -80,7 +80,7 @@ public class DocumentUploadImpl extends DocumentUpload {
     private void uploadReceived(String filename, Path file) {
         Notification.show("Upload finished: " + filename, Notification.Type.HUMANIZED_MESSAGE);
         try {
-            bytes = Files.readAllBytes(file);
+            bytes = fileUtils.compressPDF(Files.readAllBytes(file));
             this.filename = filename;
             getVlUploadComplete().setVisible(true);
             getUploadComponent().setVisible(false);
@@ -88,6 +88,9 @@ public class DocumentUploadImpl extends DocumentUpload {
             if(getTxtName().getValue().trim().length()>0) getBtnUpload().setEnabled(true);
         } catch (IOException e) {
             Notification.show("Document is too large", "The document is too large. Try to compress the photos in the document.", Notification.Type.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            Notification.show("Something went wrong", "I have no clue what you should do - this shouldn't happen...!!!", Notification.Type.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
