@@ -25,6 +25,10 @@ public class MainTemplate extends VerticalLayout {
 
     private final ResponsiveColumn mainSectionCol;
     private final LeftMenu leftMenu;
+    private final ResponsiveColumn sideMenuCol;
+    private ResponsiveRow topRow;
+    private ResponsiveLayout responsiveLayout;
+    private VerticalLayout vlContainer;
 
     @Autowired
     public MainTemplate(LeftMenu leftMenu) {
@@ -39,12 +43,12 @@ public class MainTemplate extends VerticalLayout {
         addComponent(responsiveLayout);
 
         // ResponsiveLayouts have rows
-        // Our first row will contain our 2 Columns
+        // Our first topRow will contain our 2 Columns
         // The Menu Column & the Main Column
         ResponsiveRow rootRow = responsiveLayout.addRow();
         rootRow.setHeight("100%");
 
-        ResponsiveColumn sideMenuCol = new ResponsiveColumn(12, 12, 2, 2);
+        sideMenuCol = new ResponsiveColumn(12, 12, 2, 2);
         sideMenuCol.addStyleName("dark-blue");
         rootRow.addColumn(sideMenuCol);
 
@@ -62,13 +66,13 @@ public class MainTemplate extends VerticalLayout {
         logger.debug("mainSectionCol = " + mainSectionCol);
         leftMenu.init();
 
-        VerticalLayout vlContainer = new VerticalLayout();
+        vlContainer = new VerticalLayout();
         vlContainer.setMargin(false);
         vlContainer.setSpacing(false);
         vlContainer.setSizeFull();
         mainSectionCol.setComponent(vlContainer);
 
-        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         responsiveLayout.setWidth("100%");
         responsiveLayout.setHeight("75px");
         responsiveLayout.addStyleName("white-bg");
@@ -101,23 +105,31 @@ public class MainTemplate extends VerticalLayout {
         breadcrumbContainer.setMargin(true);
         breadcrumbContainer.setComponentAlignment(breadcrumb, Alignment.MIDDLE_RIGHT);
 
-        ResponsiveRow row = responsiveLayout.addRow();
-        row.addColumn()
+        topRow = responsiveLayout.addRow();
+        topRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
                 .setComponent(hlTitleContainer);
-        row.addColumn()
+        topRow.addColumn()
                 .withDisplayRules(3, 3, 3, 3)
                 .withVisibilityRules(false, false, true, true)
                 .setComponent(new Label());
-        row.addColumn()
+        topRow.addColumn()
                 .withDisplayRules(3, 3, 3, 3)
                 .withVisibilityRules(false, false, true, true)
                 .setComponent(new Label());
-        row.addColumn()
+        topRow.addColumn()
                 .withDisplayRules(3, 3, 3, 3)
                 .withVisibilityRules(false, false, true, true)
                 .setComponent(breadcrumbContainer);
 
         vlContainer.addComponent(component);
+    }
+
+    public void hideLeftMenu() {
+        sideMenuCol.withVisibilityRules(false, false, false, false);
+        mainSectionCol.withDisplayRules(12, 12, 12, 12);
+        mainSectionCol.removeStyleName("light-grey");
+        responsiveLayout.removeComponent(topRow);
+        vlContainer.removeComponent(responsiveLayout);
     }
 }

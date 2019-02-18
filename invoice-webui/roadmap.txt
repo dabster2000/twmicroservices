@@ -5,6 +5,7 @@ Profilside
  x bobler
  - projekter / kontrakter
  - touchbase oversigt
+ - Liste over valg af nye og historisk afholdte speed dates
  x speed dates
  x kontrakter / dokumenter
  x udstyr / it budget
@@ -74,13 +75,6 @@ Availability:
 
 
 Personlig Info:
--	Fortrolig
--	Achievements
--	Der kommer en offentlig side med udvalgt personlig info
--	Availability bar
--	Next touch base meeting
--	Speed dates (krydscheckes med den man spørges om)
--	Rapport på opsummering af timer på måneden
 -	ØNSKE: Spørg Simon G (noget med linjen for lang på projekt navn så skal man scrolle) (1)
 -	ØNSKE: Vise antal registreret ferie og hvor meget der er tilbage (2)
 -	ØNSKE: Eksport på excel (3)
@@ -115,38 +109,6 @@ o	ØNSKE: Kunne registrere knowledge-aktiviteter for andre (Elvi) (3)
 o	ØNSKE: Budget status skal kunne ses samtidig med at man opretter aktiviteter (1)
 -	IT budget
 o	Fremadrettet
-
-
-
- 
-Fra Lars (nu indarbejdet i ovenstående ønsker):
-
-1.	Det kunne være fint at have noget kompetence ”benchmark” på forskellige projekttyper, herunder,
-a.	Post-merger integration
-                                                               i.      Data konvertering
-                                                             ii.      Migrering
-b.	Due diligence
-                                                               i.      På virksomhedsniveau
-                                                             ii.      På applikations niveau, fx evaluering af hvilke af to systemer en kunde skal beholde
-c.	Udarbejdelse af udbudsmateriale
-d.	Evaluering af udbud
-e.	IT kontrakt evaluering
-2.	Ekspertise/erfaring med udvikling af forskellige systemer
-a.	Fondssystemer (finans)
-b.	Pensions og bank kernesystemer
-c.	CRM systemer
-d.	Output management systemer
-3.	Business Architecture eller Management mangler følgende kompetencer
-a.	Evaluering og udarbejdelse af nye strategy
-b.	Strategi workshops
-4.	Generelt mangler der noget om kompetencer oplæg og kursus afholdelse
-
-
-
-
-
-
-
 
 
 
