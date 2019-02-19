@@ -32,8 +32,8 @@ spring:
       basePath: /api
   mail:
     host: smtp.office365.com
-    username: ${EMAILUSERNAME:hans.lassen@trustworks.dk}
-    password: ${EMAILPASSWORD:hEnn%opH}
+    username: ${EMAILUSERNAME:xx}
+    password: ${EMAILPASSWORD:xx}
     port: 587
     properties.mail.smtp.auth: true
     properties.mail.smtp.starttls.enable: true
