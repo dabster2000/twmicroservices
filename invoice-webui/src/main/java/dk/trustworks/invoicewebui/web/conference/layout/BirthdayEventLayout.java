@@ -1,5 +1,8 @@
 package dk.trustworks.invoicewebui.web.conference.layout;
 
+import allbegray.slack.SlackClientFactory;
+import allbegray.slack.webapi.SlackWebApiClient;
+import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
@@ -7,10 +10,15 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.services.EmailSender;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.label.MLabel;
@@ -23,11 +31,24 @@ public class BirthdayEventLayout {
 
     String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
+    @Value("${motherSlackBotToken}")
+    private String slackToken;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private EmailSender emailSender;
+
+    private SlackWebApiClient motherWebApiClient;
+
     public BirthdayEventLayout() {
 
     }
 
     public Component init() {
+        motherWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
+
         ResponsiveLayout mainResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         ResponsiveLayout cardResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         cardResponsiveLayout.setSpacing();
@@ -49,6 +70,7 @@ public class BirthdayEventLayout {
                 new BirthdayApplicationType("Desværre, har jeg alligevel ikke mulighed for at deltage", false));
         buttonGroup.setSelectedItem(defaultButton);
 
+        ImageCardDesign cardDesign = new ImageCardDesign();
 
         binder.forField(email).bind(BirthdayFormData::getEmail, BirthdayFormData::setEmail);
         binder.forField(fuldeNavn).bind(BirthdayFormData::getName, BirthdayFormData::setName);
@@ -75,6 +97,53 @@ public class BirthdayEventLayout {
                     }
 
                     Notification.show("NU HAR JEG SENDT EN MAIL...", Notification.Type.HUMANIZED_MESSAGE);
+
+                    cardDesign.getVlContent().removeComponent(cardResponsiveLayout);
+                    cardDesign.getVlContent().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+                    cardDesign.getVlContent().addComponent(new MLabel(""));
+                    if(birthdayFormData.getBirthdayApplicationType().isGoing()) {
+                        cardDesign.getVlContent().addComponent(new MLabel(
+                                "<h3>Bekr&aelig;ftelse p&aring; din tilmelding</h3>\n" +
+                                        "<p>Du har nu tilmeldt dig Trustworks 5 &aring;rs f&oslash;dselsdag.</p>\n" +
+                                        "<p>&nbsp;</p>\n" +
+                                        "<p><strong>Tid og sted<br /></strong>D. 5. april 2019 fra 15.00-20.00</p>\n" +
+                                        "<p>&nbsp;</p>\n" +
+                                        "<p><strong>Adresse:<br /></strong>Amagertorv 29a, 3. sal<br />1160 K&oslash;benhavn K, Denmark</p>\n" +
+                                        "<p>&nbsp;</p>\n" +
+                                        "<p>Vi ser frem til at fejre dagen sammen med dig.</p>\n" +
+                                        "<p>&nbsp;</p>\n" +
+                                        "<p>Mange hilsner fra</p>\n" +
+                                        "<p>Trustworks</p>\n" +
+                                        "<p>&nbsp;</p>\n"
+                        ).withContentMode(ContentMode.HTML).withWidth(90, Sizeable.Unit.PERCENTAGE));
+                    } else {
+                        cardDesign.getVlContent().addComponent(new MLabel(
+                                "<h3>Bekr&aelig;ftelse p&aring; din afmelding</h3>\n" +
+                                        "<p>&nbsp;</p>\n" +
+                                        "<p>Vi har nu noteret os, at du ikke deltager i Trustworks f&oslash;dselsdag.</p>\n" +
+                                        "<p>Det er vi selvf&oslash;lgelig kede af.</p>\n" +
+                                        "<p>Vi h&aring;ber, at du har mulighed for at deltage en anden gang.</p>\n" +
+                                        "<p>&nbsp;</p>\n" +
+                                        "<p>Mange hilsner fra</p>\n" +
+                                        "<p>Trustworks</p>"
+                        ).withContentMode(ContentMode.HTML).withWidth(90, Sizeable.Unit.PERCENTAGE));
+                    }
+                    cardDesign.getVlContent().addComponent(new MLabel(""));
+
+                    ChatPostMessageMethod textMessage1 = new ChatPostMessageMethod("@hans", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
+                    textMessage1.setAs_user(true);
+                    motherWebApiClient.postMessage(textMessage1);
+
+                    ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
+                    textMessage2.setAs_user(true);
+                    motherWebApiClient.postMessage(textMessage2);
+
+                    ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@hans", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
+                    textMessage3.setAs_user(true);
+                    motherWebApiClient.postMessage(textMessage3);
+
+                    emailSender.sendBirthdayInvitation(birthdayFormData.getEmail(), birthdayFormData.getName(), birthdayFormData.getBirthdayApplicationType().isGoing());
+
                 } catch (ValidationException e) {
                     e.printStackTrace();
                 }
@@ -83,12 +152,16 @@ public class BirthdayEventLayout {
             }
         }).withFullWidth();
 
-        ImageCardDesign cardDesign = new ImageCardDesign();
         cardDesign.getImgTop().setSource(new ThemeResource("images/cards/birthday4.jpg"));
         cardDesign.getVlContent().addComponent(cardResponsiveLayout);
         ResponsiveRow mainRow = mainResponsiveLayout.addRow();
         mainRow.addColumn().withDisplayRules(0, 0, 3, 4).withComponent(new Label());
         mainRow.addColumn().withDisplayRules(0, 0, 6, 4).withComponent(cardDesign);
+        mainRow.addColumn().withDisplayRules(0, 0, 3, 4).withComponent(new Label());
+        mainRow.addColumn().withDisplayRules(0, 0, 3, 4).withComponent(new Label());
+        Image logo = new Image(null, new ThemeResource("images/logo.png"));
+        logo.setWidth(50, Sizeable.Unit.PERCENTAGE);
+        mainRow.addColumn().withDisplayRules(0, 0, 6, 4).withComponent(logo, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
 
         createFormItemColumn(cardResponsiveLayout, headline1);
         createFormItemColumn(cardResponsiveLayout, headline2);
