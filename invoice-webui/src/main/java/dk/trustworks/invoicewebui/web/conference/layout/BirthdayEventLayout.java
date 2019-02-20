@@ -96,7 +96,7 @@ public class BirthdayEventLayout {
                         return;
                     }
 
-                    Notification.show("NU HAR JEG SENDT EN MAIL...", Notification.Type.HUMANIZED_MESSAGE);
+                    //Notification.show("NU HAR JEG SENDT EN MAIL...", Notification.Type.HUMANIZED_MESSAGE);
 
                     cardDesign.getVlContent().removeComponent(cardResponsiveLayout);
                     cardDesign.getVlContent().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
@@ -134,16 +134,15 @@ public class BirthdayEventLayout {
                     textMessage1.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage1);
 
-                    ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
+                    ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@Janni Thoft", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
                     textMessage2.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage2);
 
-                    ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@hans", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
+                    ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@gisla", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
                     textMessage3.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage3);
 
                     emailSender.sendBirthdayInvitation(birthdayFormData.getEmail(), birthdayFormData.getName(), birthdayFormData.getBirthdayApplicationType().isGoing());
-
                 } catch (ValidationException e) {
                     e.printStackTrace();
                 }
