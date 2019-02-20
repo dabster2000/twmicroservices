@@ -9,7 +9,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,7 +20,6 @@ public class EmailSender {
     @Autowired
     public JavaMailSender emailSender;
 
-    @Async
     public void sendCateringOrder(CateringEntry cateringEntry) {
         System.out.println("EmailSender.sendCateringOrder");
         System.out.println("cateringEntry = [" + cateringEntry + "]");
@@ -42,7 +40,6 @@ public class EmailSender {
         emailSender.send(message);
     }
 
-    @Async
     public void sendBirthdayInvitation(String receiver, String name, boolean isGoing) {
         System.out.println("EmailSender.sendBirthdayInvitation");
         System.out.println("receiver = [" + receiver + "], name = [" + name + "]");
@@ -86,7 +83,6 @@ public class EmailSender {
         emailSender.send(preparator);
     }
 
-    @Async
     public void sendResetPassword(User user, String uuid) {
         System.out.println("EmailSender.sendResetPassword");
         System.out.println("user = [" + user + "]");
