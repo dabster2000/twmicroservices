@@ -38,6 +38,7 @@ public class SpeedDateImpl extends SpeedDateDesign {
         List<String> useruuidList = reminderHistoryList.stream().map(ReminderHistory::getTargetuuid).collect(Collectors.toList());
         useruuidList.add(user.getUuid());
         List<Consultant> allConsultants = consultantRepository.findByTypeAndStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE);
+        allConsultants.addAll(consultantRepository.findByTypeAndStatus(ConsultantType.STAFF, StatusType.ACTIVE));
         List<Consultant> proposedConsultants = allConsultants.stream().filter(consultant -> !useruuidList.contains(consultant.getUuid())).collect(Collectors.toList());
         Consultant consultant = proposedConsultants.get(new Random(System.currentTimeMillis()).nextInt(proposedConsultants.size()));
         target = consultant.getUuid();
