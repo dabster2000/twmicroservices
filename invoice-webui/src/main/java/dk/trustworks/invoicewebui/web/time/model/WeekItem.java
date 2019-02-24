@@ -4,7 +4,8 @@ import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Week;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
-import org.joda.time.LocalDate;
+
+import java.time.LocalDate;
 
 /**
  * Created by hans on 16/08/2017.

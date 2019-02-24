@@ -15,7 +15,6 @@ import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import dk.trustworks.invoicewebui.web.time.layouts.TimeManagerLayout;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
 import org.joda.time.LocalDate;
@@ -90,8 +89,9 @@ public class TimeManagerImpl extends TimeManagerDesign {
         getSelActiveUser().addValueChangeListener(event -> updateGrid(getSelActiveUser().getSelectedItem().get()));
 
         getBtnCopyWeek().addClickListener(event1 -> {
+            // TODO: FIX IT
             log.info("getBtnCopyWeek()");
-            timeService.cloneTaskToWeek(currentDate, getSelActiveUser().getSelectedItem().get());
+            //timeService.cloneTaskToWeek(currentDate, getSelActiveUser().getSelectedItem().get());
             loadData(getSelActiveUser().getSelectedItem().get());
         });
 
@@ -369,7 +369,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 log.info("work = " + work);
                 sumHours += work.getWorkduration();
                 LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
-                TimeManagerLayout.setWeekItemAmounts(weekItem, work, workDate);
+                // TODO: FIX IT!!
+                //TimeManagerLayout.setWeekItemAmounts(weekItem, work, workDate);
             }
         }
         log.info("sumHours = " + sumHours);

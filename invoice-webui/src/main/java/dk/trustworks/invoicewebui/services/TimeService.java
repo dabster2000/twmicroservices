@@ -3,12 +3,14 @@ package dk.trustworks.invoicewebui.services;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Week;
 import dk.trustworks.invoicewebui.repositories.WeekRepository;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -34,9 +36,9 @@ public class TimeService {
     }
 
     public void cloneTaskToWeek(LocalDate currentDate, User user) {
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.minusWeeks(1).getWeekOfWeekyear(), currentDate.minusWeeks(1).getWeekyear(), user);
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.minusWeeks(1).get(WeekFields.ISO.weekOfYear()), user);
         for (Week week : weeks) {
-            weekRepository.save(new Week(UUID.randomUUID().toString(), currentDate.getWeekOfWeekyear(), currentDate.getWeekyear(), week.getUser(), week.getTask()));
+            weekRepository.save(new Week(UUID.randomUUID().toString(), currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.ISO.weekOfYear()), week.getUser(), week.getTask()));
         }
     }
 }

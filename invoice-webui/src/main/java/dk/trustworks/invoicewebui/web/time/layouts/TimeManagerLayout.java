@@ -15,8 +15,8 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
@@ -31,7 +31,6 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.components.*;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +43,15 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
-import static dk.trustworks.invoicewebui.utils.DateUtils.convertJodaToJavaDate;
 import static dk.trustworks.invoicewebui.utils.DateUtils.lastDayOfMonth;
 
 @SpringComponent
@@ -79,7 +80,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private ResponsiveLayout responsiveLayout;
 
-    private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);
+    private LocalDate currentDate = LocalDate.now().with(DayOfWeek.MONDAY);
 
     private final FooterButtons footerButtons;
     private final DateButtons dateButtons;
@@ -126,9 +127,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         footerButtons.getBtnCopyWeek().setIcon(MaterialIcons.CONTENT_COPY);
         footerButtons.getBtnCopyWeek().addClickListener(event1 -> {
-            log.info("getBtnCopyWeek()");
-            log.info("weekyear: " + currentDate.getWeekOfWeekyear());
-            log.info("getWeekyear: " + currentDate.getWeekyear());
             timeService.cloneTaskToWeek(currentDate, dateButtons.getSelActiveUser().getSelectedItem().get());
             loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
         });
@@ -144,8 +142,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
         footerButtons.getBtnAddTask().setIcon(MaterialIcons.PLAYLIST_ADD);
         footerButtons.getBtnAddTask().addClickListener((Button.ClickEvent event) -> {
             log.info("getBtnAddTask()");
-            log.info("weekyear: " + currentDate.getWeekOfWeekyear());
-            log.info("getWeekyear: " + currentDate.getWeekyear());
+            log.info("weekyear: " + currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+            log.info("getWeekyear: " + currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()));
             final Window window = new Window("Add Task");
             window.setWidth(300.0f, PIXELS);
             window.setHeight(450.0f, PIXELS);
@@ -280,14 +278,14 @@ public class TimeManagerLayout extends ResponsiveLayout {
             addTaskButton.addClickListener(event1 -> {
                 if(onOffSwitch.getValue()) {
                     weekRepository.save(new Week(UUID.randomUUID().toString(),
-                            currentDate.getWeekOfWeekyear(),
-                            currentDate.getWeekyear(),
+                            currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
+                            currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
                             dateButtons.getSelActiveUser().getValue(),
                             taskComboBox.getSelectedItem().get(), userComboBox.getSelectedItem().get()));
                 } else {
                     weekRepository.save(new Week(UUID.randomUUID().toString(),
-                            currentDate.getWeekOfWeekyear(),
-                            currentDate.getWeekyear(),
+                            currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
+                            currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
                             dateButtons.getSelActiveUser().getValue(),
                             taskComboBox.getSelectedItem().get()));
                 }
@@ -307,7 +305,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private List<Contract> getMainContracts(ContractService contractService, User user) {
-        return contractService.findTimeActiveConsultantContracts(user, java.time.LocalDate.of(currentDate.getYear(), currentDate.getMonthOfYear(), 1));
+        return contractService.findTimeActiveConsultantContracts(user, java.time.LocalDate.of(currentDate.getYear(), currentDate.getMonthValue(), 1));
     }
 
     public ResponsiveLayout init() {
@@ -371,8 +369,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
         customerExpensesGrid.getCbProject().setItems(projectSet);
         customerExpensesGrid.getCbProject().setItemCaptionGenerator(item -> item.getClient().getName()+" - "+item.getName());
 
-        customerExpensesGrid.getDfReceiptDate().setRangeEnd(lastDayOfMonth(convertJodaToJavaDate(currentDate)));
-        customerExpensesGrid.getDfReceiptDate().setRangeStart(convertJodaToJavaDate(currentDate.withDayOfMonth(1)));
+        customerExpensesGrid.getDfReceiptDate().setRangeEnd(lastDayOfMonth(currentDate));
+        customerExpensesGrid.getDfReceiptDate().setRangeStart(currentDate.withDayOfMonth(1));
 
 
         receiptBinder.forField(customerExpensesGrid.getDfReceiptDate())
@@ -408,9 +406,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         customerExpenses.getExpensesGridContainer().addComponent(customerExpensesGrid);
 
         int rows = 1;
-        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(1).withDayOfMonth(currentDate.withDayOfWeek(7).monthOfYear().getMaximumValue())));
-        if(currentDate.withDayOfWeek(1).getMonthOfYear()!=currentDate.withDayOfWeek(7).getMonthOfYear())
-            receipts.addAll(receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(1)), convertJodaToJavaDate(currentDate.withDayOfWeek(7).withDayOfMonth(currentDate.withDayOfWeek(7).monthOfYear().getMaximumValue()))));
+        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(1), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).getMonth().length(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).isLeapYear())));
+        if(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).getMonthValue()!=currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).getMonthValue())
+            receipts.addAll(receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).withDayOfMonth(1), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).withDayOfMonth(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).getMonth().length(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).isLeapYear()))));
 
         gridExistingReceipts.setRows(receipts.size()+2);
         for (Receipt receipt : receipts) {
@@ -434,15 +432,20 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private void createTimesheet(User user) {
         sumHours = 0.0;
         weekDaySums = new WeekValues();
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.getWeekOfWeekyear(), currentDate.getWeekyear(), user);
-        LocalDate startOfWeek = currentDate.withDayOfWeek(1);
-        LocalDate endOfWeek = currentDate.withDayOfWeek(7);
+        System.out.println("currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()) = " + currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()));
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user);
+        LocalDate startOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
+        System.out.println("startOfWeek = " + startOfWeek);
+        LocalDate endOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
+        System.out.println("endOfWeek = " + endOfWeek);
         List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
         for (Work workResource : workResources) {
             if(weeks.stream().noneMatch(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid()))) {
+                System.out.println("WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear() = " + WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
+                System.out.println("currentDate.getYear() = " + currentDate.getYear());
                 Week week = new Week(UUID.randomUUID().toString(),
-                        currentDate.getWeekOfWeekyear(),
-                        currentDate.getWeekyear(),
+                        currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
+                        currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
                         workResource.getUser(),
                         workResource.getTask(),
                         workResource.getWorkas());
@@ -477,7 +480,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
                 sumHours += work.getWorkduration();
                 sumTask += work.getWorkduration();
-                LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
+                LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay());
                 setWeekItemAmounts(weekItem, work, workDate);
             }
             weekItem.setBudgetleft(sumTask);
@@ -493,7 +496,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     public static void setWeekItemAmounts(WeekItem weekItem, Work work, LocalDate workDate) {
-        switch (workDate.getDayOfWeek()) {
+        switch (workDate.getDayOfWeek().getValue()) {
             case 1:
                 weekItem.setMon(NumberConverter.formatDouble(work.getWorkduration()+0));
                 break;
@@ -519,11 +522,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private void createTitleRow() {
-        dateButtons.getTxtWeekNumber().setValue(currentDate.getWeekOfWeekyear()+"");
+        dateButtons.getTxtWeekNumber().setValue(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())+"");
         ResponsiveRow titleRow = responsiveLayout.addRow().withAlignment(Alignment.MIDDLE_CENTER);
         titleRow.addColumn()
                 .withDisplayRules(12, 12, 6, 8)
-                .withComponent(new MLabel("Week "+currentDate.getWeekOfWeekyear()+" / "+currentDate.getWeekyear()).withStyleName("h3"));
+                .withComponent(new MLabel("Week "+currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())+" / "+currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear())).withStyleName("h3"));
         titleRow.addColumn()
                 .withDisplayRules(12, 12, 6, 4)
                 .withComponent(dateButtons, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
@@ -575,7 +578,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 "Fri", "Sat", "Sun" };
         return new MVerticalLayout(
                 new MLabel(strDays[weekDay].toUpperCase()).withStyleName("h5").withHeight(25, PIXELS),
-                new MLabel(currentDate.plusDays(weekDay).toString("dd/MM")).withStyleName("tiny light").withHeight(15, PIXELS)
+                new MLabel(currentDate.plusDays(weekDay).format(DateTimeFormatter.ofPattern("dd/MM"))).withStyleName("tiny light").withHeight(15, PIXELS)
         ).alignAll(Alignment.MIDDLE_CENTER).withHeight(40, PIXELS).withSpacing(false).withMargin(false);
     }
 
@@ -800,12 +803,12 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private MTextField checkIfDisabled(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
-        boolean onContract = isOnContract(weekItem.getDate().withDayOfWeek(weekday), workingAs, task);
+        boolean onContract = isOnContract(weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday), workingAs, task);
         System.out.println("onContract = " + onContract);
         if(!onContract) return mTextField.withEnabled(false);
 
         // check if item is last month and user is not project manager. Project managers should be able to edit old timesheets
-        boolean isLastMonth = weekItem.getDate().withDayOfWeek(weekday).withDayOfMonth(1).isBefore(LocalDate.now().withDayOfMonth(1));
+        boolean isLastMonth = weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday).withDayOfMonth(1).isBefore(LocalDate.now().withDayOfMonth(1));
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         System.out.println("weekItem.getTask() = " + weekItem.getTask());
         System.out.println("weekItem.getTask().getProject() = " + weekItem.getTask().getProject());
@@ -853,9 +856,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
             double newValue = event.getValue().equals("")?0.0:nf.parse(event.getValue()).doubleValue();
             Work work;
             if(weekItem.getWorkas()==null) {
-                work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask());
+                work = new Work(workDate.getDayOfMonth(), workDate.getMonthValue() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask());
             } else {
-                work = new Work(workDate.getDayOfMonth(), workDate.getMonthOfYear() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask(), weekItem.getWorkas());
+                work = new Work(workDate.getDayOfMonth(), workDate.getMonthValue() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask(), weekItem.getWorkas());
             }
             workService.saveWork(work);
             if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));
@@ -869,22 +872,23 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private boolean isOnContract(Week week) {
-        //System.out.println("TimeManagerLayout.isOnContract");
-        //System.out.println("week = [" + week + "]");
+        System.out.println("TimeManagerLayout.isOnContract");
+        System.out.println("week = [" + week + "]");
         boolean result = false;
-        LocalDate localDateStart = LocalDate.now().withWeekyear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(1);
-        //System.out.println("localDateStart = " + localDateStart);
-        LocalDate localDateEnd = LocalDate.now().withWeekyear(week.getYear()).withWeekOfWeekyear(week.getWeeknumber()).withDayOfWeek(7);
-        //System.out.println("localDateEnd = " + localDateEnd);
+        System.out.println("LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()) = " + LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()));
+        LocalDate localDateStart = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
+        System.out.println("localDateStart = " + localDateStart);
+        LocalDate localDateEnd = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
+        System.out.println("localDateEnd = " + localDateEnd);
         if(isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
-        //System.out.println("result = " + result);
+        System.out.println("result = " + result);
         if(isOnContract(localDateEnd, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
-        //System.out.println("result = " + result);
+        System.out.println("result = " + result);
         return result;
     }
 
     private boolean isOnContract(LocalDate localDate, User user, Task task) {
-        return contractService.findConsultantRate(localDate.getYear(), localDate.getMonthOfYear(), localDate.getDayOfMonth(), user, task, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED)!=null;
+        return contractService.findConsultantRate(localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth(), user, task, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED)!=null;
     }
 
     private class WeekValues {
