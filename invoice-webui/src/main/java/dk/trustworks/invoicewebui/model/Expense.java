@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.model;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -12,8 +12,8 @@ public class Expense {
 
     @Id
     private String uuid;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date period;
+
+    private LocalDate period;
     @Enumerated(EnumType.STRING)
     private ExcelExpenseType expensetype;
     private double amount;
@@ -21,7 +21,7 @@ public class Expense {
     public Expense() {
     }
 
-    public Expense(Date period, ExcelExpenseType expensetype, double amount) {
+    public Expense(LocalDate period, ExcelExpenseType expensetype, double amount) {
         this.uuid = UUID.randomUUID().toString();
         this.period = period;
         this.expensetype = expensetype;
@@ -32,11 +32,11 @@ public class Expense {
         return uuid;
     }
 
-    public Date getPeriod() {
+    public LocalDate getPeriod() {
         return period;
     }
 
-    public void setPeriod(Date period) {
+    public void setPeriod(LocalDate period) {
         this.period = period;
     }
 

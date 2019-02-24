@@ -13,11 +13,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,7 +125,7 @@ public class StatisticsService {
 
             double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             System.out.println("invoicedAmountByMonth = " + invoicedAmountByMonth);
-            double expense = expenseRepository.findByPeriod(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
+            double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }
         return earningsSeries;

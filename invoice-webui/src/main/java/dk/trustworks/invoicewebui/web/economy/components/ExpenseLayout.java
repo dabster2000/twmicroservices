@@ -8,8 +8,8 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.model.Expense;
+import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.utils.EconomicExcelUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import server.droporchoose.UploadComponent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Date;
 import java.time.LocalDate;
 
 import static com.vaadin.ui.Notification.Type.*;
@@ -77,10 +76,10 @@ public class ExpenseLayout extends VerticalLayout {
     private void uploadReceived(String fileName, Path file) {
         Notification.show("New expense report added: " + fileName, HUMANIZED_MESSAGE);
         try {
-            expenseRepository.deleteByPeriod(Date.valueOf(date.getValue()));
+            expenseRepository.deleteByPeriod(date.getValue().withDayOfMonth(1));
             Table<LocalDate, ExcelExpenseType, Double> expenses = economicExcelUtility.getExpenses(Files.readAllBytes(file));
             for (Table.Cell<LocalDate, ExcelExpenseType, Double> cellSet : expenses.cellSet()) {
-                expenseRepository.save(new Expense(Date.valueOf(date.getValue()), cellSet.getColumnKey(), cellSet.getValue()));
+                expenseRepository.save(new Expense(date.getValue().withDayOfMonth(1), cellSet.getColumnKey(), cellSet.getValue()));
             }
         } catch (IOException e) {
             uploadFailed(fileName, file);

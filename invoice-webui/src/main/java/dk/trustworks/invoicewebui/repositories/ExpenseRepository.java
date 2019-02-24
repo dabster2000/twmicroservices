@@ -10,15 +10,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @RepositoryRestResource(collectionResourceRel = "expenses", path="expenses")
 public interface ExpenseRepository extends CrudRepository<Expense, String> {
 
-    List<Expense> findByPeriod(@Param("period") Date period);
+    List<Expense> findByPeriod(@Param("period") LocalDate period);
 
     @Transactional
-    void deleteByPeriod(@Param("period") Date period);
+    void deleteByPeriod(@Param("period") LocalDate period);
 
 }
