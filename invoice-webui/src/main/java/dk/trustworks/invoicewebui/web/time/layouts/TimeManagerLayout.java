@@ -406,10 +406,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
         customerExpenses.getExpensesGridContainer().addComponent(customerExpensesGrid);
 
         int rows = 1;
-        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(1), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).getMonth().length(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).isLeapYear())));
-        if(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).getMonthValue()!=currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).getMonthValue())
-            receipts.addAll(receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).withDayOfMonth(1), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).withDayOfMonth(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).getMonth().length(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7).isLeapYear()))));
 
+        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(1), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).getMonth().length(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).isLeapYear())));
         gridExistingReceipts.setRows(receipts.size()+2);
         for (Receipt receipt : receipts) {
             System.out.println("rows = " + rows);
