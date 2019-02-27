@@ -46,7 +46,7 @@ public class EmailSender {
 
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper message1 = new MimeMessageHelper(mimeMessage);
-            message1.setFrom("hans.lassen@trustworks.dk");
+            message1.setFrom("event@trustworks.dk");
             message1.setTo(receiver);
             if(isGoing) {
                 message1.setSubject("Bekræftelse på din tilmelding");
