@@ -140,6 +140,10 @@ public class BirthdayEventLayout {
                     textMessage3.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage3);
 
+                    ChatPostMessageMethod textMessage4 = new ChatPostMessageMethod("UG170B2DN", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
+                    textMessage4.setAs_user(true);
+                    motherWebApiClient.postMessage(textMessage4);
+
                     ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("UC4HHBRQW", birthdayFormData.getName() + " har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
                     textMessage2.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage2);
