@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
+import javax.mail.internet.InternetAddress;
+
 @Service
 public class EmailSender {
 
@@ -46,8 +48,8 @@ public class EmailSender {
 
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper message1 = new MimeMessageHelper(mimeMessage);
-            message1.setFrom("event@trustworks.dk");
-            message1.setReplyTo("event@trustworks.dk");
+            message1.setFrom(new InternetAddress("event@trustworks.dk", "Trustworks"));
+            message1.setReplyTo(new InternetAddress("event@trustworks.dk", "Trustworks"));
             message1.setTo(receiver);
             if(isGoing) {
                 message1.setSubject("Bekræftelse på din tilmelding");
