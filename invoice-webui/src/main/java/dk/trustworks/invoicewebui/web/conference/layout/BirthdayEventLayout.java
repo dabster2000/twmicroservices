@@ -114,7 +114,9 @@ public class BirthdayEventLayout {
                                         "<p>&nbsp;</p>\n" +
                                         "<p>Mange hilsner fra</p>\n" +
                                         "<p>Trustworks</p>\n" +
-                                        "<p>&nbsp;</p>\n"
+                                        "<p>&nbsp;</p>\n" +
+                                        "<br /><br /><br/>" +
+                                        "<p><i>Ved tilmelding bliver du bedt om at oplyse navn og e-mail. Informationerne bruger vi, s&aring; vi ved, hvem der deltager i receptionen, til navneskilte, og s&aring; vi kan kontakte Jer, hvis der skulle ske &aelig;ndringer til arrangementet. Vi opbevarer informationer indtil arrangementet er afholdt, hvorefter vi sletter informationerne igen.</i></p>"
                         ).withContentMode(ContentMode.HTML).withWidth(90, Sizeable.Unit.PERCENTAGE));
                     } else {
                         cardDesign.getVlContent().addComponent(new MLabel(
@@ -156,6 +158,8 @@ public class BirthdayEventLayout {
             }
         }).withFullWidth();
 
+        Label gdpr = new MLabel("Ved tilmelding bliver du bedt om at oplyse navn og e-mail. Informationerne bruger vi, så vi ved, hvem der deltager i receptionen, til navneskilte, og så vi kan kontakte Jer, hvis der skulle ske ændringer til arrangementet. Vi opbevarer informationer indtil arrangementet er afholdt, hvorefter vi sletter informationerne igen.").withStyleName("small", "align-center").withWidth(90, Sizeable.Unit.PERCENTAGE);
+
         cardDesign.getImgTop().setSource(new ThemeResource("images/cards/birthday4.jpg"));
         cardDesign.getVlContent().addComponent(cardResponsiveLayout);
         ResponsiveRow mainRow = mainResponsiveLayout.addRow();
@@ -174,6 +178,9 @@ public class BirthdayEventLayout {
         createFormItemColumn(cardResponsiveLayout, buttonGroup);
         //createFormItemColumn(cardResponsiveLayout, afmelding);
         createFormItemColumn(cardResponsiveLayout, send);
+        createFormItemColumn(cardResponsiveLayout, new Label());
+        createFormItemColumn(cardResponsiveLayout, new Label());
+        createFormItemColumn(cardResponsiveLayout, gdpr);
         createFormItemColumn(cardResponsiveLayout, new Label());
 
         return mainResponsiveLayout;
