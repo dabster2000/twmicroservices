@@ -4,7 +4,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.conference.layout.BirthdayEventLayout;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
@@ -17,7 +16,6 @@ import javax.annotation.PostConstruct;
  * Created by hans on 19/12/2016.
  */
 
-@AccessRules(roleTypes = {})
 @SpringView(name = BirthdayEventView.VIEW_NAME)
 public class BirthdayEventView extends VerticalLayout implements View {
 

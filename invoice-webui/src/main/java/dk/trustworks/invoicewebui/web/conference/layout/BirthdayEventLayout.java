@@ -15,7 +15,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.services.EmailSender;
-import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,9 +32,6 @@ public class BirthdayEventLayout {
 
     @Value("${motherSlackBotToken}")
     private String slackToken;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private EmailSender emailSender;

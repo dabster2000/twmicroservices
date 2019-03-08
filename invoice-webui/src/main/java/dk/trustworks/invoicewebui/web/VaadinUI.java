@@ -41,6 +41,9 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
     @Autowired
     private Authorizer authorizer;
 
+    //@Autowired
+    //private BirthdayEventView birthdayEventView;
+
     @Override
     protected void init(VaadinRequest request) {
         //notifications.setNotificationClickedListener(newStatus -> Notification.show(newStatus.getTitle()));
@@ -60,8 +63,14 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         root.setExpandRatio(springViewDisplay, 1.0f);
         Broadcaster.register(this);
 
+        final String hostname = Page.getCurrent().getLocation().getHost();
+        if(hostname.equals("event.trustworks.dk")) UI.getCurrent().getNavigator().navigateTo("birthdayevent");
+
         navigator.addViewChangeListener((ViewChangeListener) event -> {
-            if(!authorizer.hasAccess(event.getNewView())) event.getNavigator().navigateTo("login");
+            if(!authorizer.hasAccess(event.getNewView())) {
+                if(hostname.equals("event.trustworks.dk")) UI.getCurrent().getNavigator().navigateTo("birthdayevent");
+                event.getNavigator().navigateTo("login");
+            }
             return authorizer.hasAccess(event.getNewView());
         });
 
@@ -74,7 +83,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
                 logger.error(errorUuid, event.getThrowable());
 
                 Notification notification = new Notification("The click failed: ",
-                        String.valueOf(errorUuid),
+                        errorUuid,
                         Notification.Type.ASSISTIVE_NOTIFICATION);
                 notification.setStyleName("failure");
                 notification.show(Page.getCurrent());
@@ -119,6 +128,16 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         }
         */
         if(!authorizer.hasAccess(view)) this.getNavigator().navigateTo("login");
+/*
+        String hostname = Page.getCurrent().getLocation().getHost();
+        System.out.println("view.getViewComponent() = " + view.getViewComponent());
+        System.out.println("view.getViewComponent().getId() = " + view.getViewComponent().getId());
+        if(hostname.equals("localhost") && (view.getViewComponent().getId()==null || !view.getViewComponent().getId().equals("birthdayevent"))) {
+            UI.getCurrent().getNavigator().navigateTo("birthdayevent");
+            return;
+        }
+*/
+
         springViewDisplay.setContent((Component) view);
     }
 
