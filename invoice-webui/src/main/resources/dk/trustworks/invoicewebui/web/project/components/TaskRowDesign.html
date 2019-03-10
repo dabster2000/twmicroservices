@@ -4,21 +4,28 @@
   <meta charset="UTF-8">
   <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
   <meta name="vaadin-version" content="8.1.5">
+  <meta name="package-mapping" content="org_vaadin_addons:org.vaadin.addons">
   <meta name="package-mapping" content="com_jarektoro_responsivelayout:com.jarektoro.responsivelayout">
+  <meta name="package-mapping" content="com_explicatis_ext_token_field:com.explicatis.ext_token_field">
+  <meta name="package-mapping" content="dk_trustworks_invoicewebui_web_project_components:dk.trustworks.invoicewebui.web.project.components">
+  <meta name="package-mapping" content="com_fo0_advancedtokenfield_main:com.fo0.advancedtokenfield.main">
  </head>
  <body>
   <vaadin-vertical-layout spacing="false" margin="false">
-   <vaadin-horizontal-layout spacing="false" width-full>
+   <vaadin-horizontal-layout width-full>
     <vaadin-button icon="fonticon://Vaadin-Icons/e73d" style-name="borderless" plain-text _id="btnIcon"></vaadin-button>
-    <vaadin-css-layout width-full _id="cssTaskName" :middle :expand>
+    <vaadin-css-layout width-full height="24px" _id="cssTaskName" :middle :expand>
      <vaadin-label width-full plain-text _id="lblName">
        Nærpension STP 
      </vaadin-label>
     </vaadin-css-layout>
-    <vaadin-text-field placeholder="tasks name" width-full _id="txtName" :expand></vaadin-text-field>
+    <vaadin-vertical-layout spacing="false" margin="false" _id="vlTextTokenField" :expand>
+     <vaadin-text-field style-name="floating" placeholder="tasks name" width-full _id="txtName"></vaadin-text-field>
+     <dk_trustworks_invoicewebui_web_project_components-token-list-impl _id="tokenField"></dk_trustworks_invoicewebui_web_project_components-token-list-impl>
+    </vaadin-vertical-layout>
     <vaadin-button style-name="flat icon-only" plain-text _id="btnDelete" :middle :right></vaadin-button>
    </vaadin-horizontal-layout>
-   <vaadin-horizontal-layout visible="false" spacing="false" width-full _id="hlChart"></vaadin-horizontal-layout>
+   <vaadin-vertical-layout visible="false" spacing="false" margin="false" _id="hlChart"></vaadin-vertical-layout>
   </vaadin-vertical-layout>
  </body>
 </html>

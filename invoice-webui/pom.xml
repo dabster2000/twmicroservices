@@ -165,6 +165,23 @@
             <artifactId>vaadin-onoffswitch</artifactId>
             <version>1.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>vaadin-combobox-multiselect</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>extended-token-field</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fo0.advancedtokenfield</groupId>
+            <artifactId>AdvancedTokenField</artifactId>
+            <version>0.5.1</version>
+        </dependency>
+
+
         <!--
         <dependency>
             <groupId>pl.pdfviewer</groupId>

@@ -265,6 +265,12 @@ $v-focus-color: #00BCD4;
     word-wrap: break-word !important;
   }
 
+  .v-button.v-button-red .v-button-wrap {
+    font-weight: bold;
+    color: white;
+    background: $color-secondary-1-4;
+  }
+
   .img-circle {
     border-radius: 50%;
   }

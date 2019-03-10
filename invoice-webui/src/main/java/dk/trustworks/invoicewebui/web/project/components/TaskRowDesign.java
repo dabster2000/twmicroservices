@@ -7,7 +7,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.CssLayout;
 
 /**
@@ -25,9 +24,11 @@ public class TaskRowDesign extends VerticalLayout {
     private Button btnIcon;
     private CssLayout cssTaskName;
     private Label lblName;
+    private VerticalLayout vlTextTokenField;
     private TextField txtName;
+    private TokenListImpl tokenField;
     private Button btnDelete;
-    private HorizontalLayout hlChart;
+    private VerticalLayout hlChart;
 
     public TaskRowDesign() {
         Design.read(this);
@@ -45,15 +46,23 @@ public class TaskRowDesign extends VerticalLayout {
         return lblName;
     }
 
+    public VerticalLayout getVlTextTokenField() {
+        return vlTextTokenField;
+    }
+
     public TextField getTxtName() {
         return txtName;
+    }
+
+    public TokenListImpl getTokenField() {
+        return tokenField;
     }
 
     public Button getBtnDelete() {
         return btnDelete;
     }
 
-    public HorizontalLayout getHlChart() {
+    public VerticalLayout getHlChart() {
         return hlChart;
     }
 

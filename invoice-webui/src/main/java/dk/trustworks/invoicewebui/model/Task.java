@@ -5,7 +5,9 @@ import dk.trustworks.invoicewebui.model.enums.TaskType;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 public class Task {
@@ -22,6 +24,9 @@ public class Task {
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private List<Work> workList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<TaskOffering> taskOfferings = new ArrayList<>();
 
     public Task() {
     }
@@ -74,6 +79,30 @@ public class Task {
 
     public List<Work> getWorkList() {
         return workList;
+    }
+
+    public List<TaskOffering> getTaskOfferings() {
+        return taskOfferings;
+    }
+
+    public void setTaskOfferings(List<TaskOffering> taskOfferings) {
+        this.taskOfferings = taskOfferings;
+    }
+
+    public void addOffering(TaskOffering taskOffering) {
+        taskOfferings.add(taskOffering);
+        taskOffering.setTask(this);
+    }
+
+    public void addOfferings(Set<TaskOffering> taskOfferingList) {
+        taskOfferings.addAll(taskOfferingList);
+        for (TaskOffering taskOffering : taskOfferingList) {
+            taskOffering.setTask(this);
+        }
+    }
+
+    public void removeOffering(TaskOffering taskOffering) {
+        taskOfferings = taskOfferings.stream().filter(taskOffering1 -> !taskOffering1.getName().equals(taskOffering.getName())).collect(Collectors.toList());
     }
 
     @Override
