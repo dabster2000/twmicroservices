@@ -161,13 +161,13 @@ public class SalesLayout extends VerticalLayout {
         series.setPlotOptions(plotOptionsColumn);
 
         for (AmbitionCategory category : ambitionMap.values()) {
-            DataSeriesItem item = new DataSeriesItem(category.getName(), Math.round(hoursByOfferingCategoryMap.get(category.getName())));
+            DataSeriesItem item = new DataSeriesItem(category.getName(), Math.round(hoursByOfferingCategoryMap.getOrDefault(category.getName(), 0.0)));
             DataSeries drillSeries = new DataSeries(category.getName());
             drillSeries.setId(category.getAmbitionCategoryType());
             String[] ambitionNames = ambitionMap.keySet().stream().filter(s -> ambitionMap.get(s).getAmbitionCategoryType().equals(category.getAmbitionCategoryType())).toArray(String[]::new);
             List<Number> hoursByAmbition = new ArrayList<>();
             for (String ambitionName : ambitionNames) {
-                hoursByAmbition.add(Math.round(hoursByOfferingsMap.get(ambitionName)));
+                hoursByAmbition.add(Math.round(hoursByOfferingsMap.getOrDefault(ambitionName, 0.0)));
             }
 
             drillSeries.setData(ambitionNames, hoursByAmbition.toArray(new Number[0]));
