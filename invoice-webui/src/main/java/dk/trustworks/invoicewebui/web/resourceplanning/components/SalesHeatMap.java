@@ -297,7 +297,7 @@ public class SalesHeatMap {
         Map<String, UserProjectBooking> userProjectBookingMap = new HashMap<>();
 
         for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
-            currentDate = LocalDate.now().withDayOfMonth(1).plusMonths(0);
+            currentDate = LocalDate.now().withDayOfMonth(1).plusMonths(1);
             UserBooking userBooking = new UserBooking(user.getUsername());
             userBookings.add(userBooking);
 
