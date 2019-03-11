@@ -246,25 +246,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             TaskRowDesign taskRow = new TaskRowDesign();
             taskRow.getLblName().setValue(task.getName());
             taskRow.getVlTextTokenField().setVisible(false);
-/*
-            ComboBox<SimpleTokenizable>	comboBox = buildComboBox();
-            comboBox.addValueChangeListener((HasValue.ValueChangeListener<SimpleTokenizable>) event -> {
-                SimpleTokenizable value = event.getValue();
-                if (value != null) {
-                    System.out.println("value = " + value);
-                    taskRow.getTokenField().addToken(value);
-                    TaskOffering taskOffering = new TaskOffering(task, value.getStringValue());
-                    taskOfferingRepository.save(taskOffering);
-                    task.addOffering(taskOffering);
-                    taskRepository.save(task);
-                    event.getSource().setValue(null);
-                }
-            });
-            */
-
-            //taskRow.getTokenField().setInputField(new ComboBox<>());
-            //taskRow.getTokenField().setEnableDefaultDeleteTokenAction(true);
-            //taskRow.getTokenField().setValue(selectedAmbitions.stream().map(ambition -> new SimpleTokenizable(ambition.getId(), ambition.getName())).collect(Collectors.toList()));
+            taskRow.getSubRow().setVisible(false);
 
             if(task.getWorkList().size()>0 || task.getType()==TaskType.SO)  taskRow.getBtnDelete().setVisible(false);
             taskRow.getBtnDelete().setIcon(MaterialIcons.DELETE);
@@ -275,18 +257,18 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             });
             taskRow.getCssTaskName().addLayoutClickListener(event -> {
                 taskRow.getHlChart().removeAllComponents();
-                if(taskRow.getHlChart().isVisible()) {
-                    taskRow.getHlChart().setVisible(false);
+                if(taskRow.getSubRow().isVisible()) {
+                    taskRow.getSubRow().setVisible(false);
                 } else {
                     Task updatedTask = taskRepository.findOne(task.getUuid());
-                    List<Ambition> ambitionList = ambitionRepository.findAmbitionByActiveIsTrue();
+                    List<Ambition> ambitionList = ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue();
                     List<Ambition> selectedAmbitions = new ArrayList<>();
                     for (TaskOffering taskOffering : updatedTask.getTaskOfferings()) {
                         ambitionList.stream().filter(ambition -> ambition.getName().equals(taskOffering.getName())).findFirst().ifPresent(selectedAmbitions::add);
                     }
 
                     TokenListImpl tokenList = new TokenListImpl(
-                            ambitionRepository.findAmbitionByActiveIsTrue().stream().map(Ambition::getName).sorted().collect(Collectors.toList()),
+                            ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue().stream().map(Ambition::getName).sorted().collect(Collectors.toList()),
                             selectedAmbitions.stream().map(Ambition::getName).sorted().collect(Collectors.toList())
                     );
                     tokenList.addTokenListener(new TokenEventListener() {
@@ -315,7 +297,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     taskRow.getHlChart().addComponent(tokenList);
 
                     taskRow.getHlChart().addComponent(createTopGrossingConsultantsChart(task));
-                    taskRow.getHlChart().setVisible(true);
+                    taskRow.getSubRow().setVisible(true);
                 }
             });
             tasksLayout.add(taskRow);
@@ -323,25 +305,10 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         TaskRowDesign newTaskRow = new TaskRowDesign();
         newTaskRow.getLblName().setVisible(false);
         newTaskRow.getCssTaskName().setVisible(false);
-        /*
-        ComboBox<SimpleTokenizable>	comboBox = buildComboBox();
-        comboBox.addValueChangeListener((HasValue.ValueChangeListener<SimpleTokenizable>) event -> {
-            SimpleTokenizable value = event.getValue();
-            if (value != null) {
-                newTaskRow.getTokenField().addTokenizable(value);
-                event.getSource().setValue(null);
-            }
-        });
-           */
-        //newTaskRow.getTokenField().setInputField(comboBox);
-        //newTaskRow.getTokenField().setEnableDefaultDeleteTokenAction(true);
 
-        newTaskRow.getTokenField().setSelectableValues(ambitionRepository.findAmbitionByActiveIsTrue().stream()
+        newTaskRow.getTokenField().setSelectableValues(ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue().stream()
                 .map(Ambition::getName).collect(Collectors.toList()));
 
-
-        //newTaskRow.getTasktypes().setItems(ambitionList);
-        //newTaskRow.getTasktypes().setItemCaptionGenerator(Ambition::getName);
 
         newTaskRow.getBtnDelete().setIcon(MaterialIcons.ADD);
         newTaskRow.getTxtName().addShortcutListener(new ShortcutListener("Shortcut Name", ShortcutAction.KeyCode.ENTER, null) {
@@ -371,7 +338,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     }
 
     private Collection<SimpleTokenizable> initTokenCollection() {
-        return ambitionRepository.findAmbitionByActiveIsTrue().stream()
+        return ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue().stream()
                 .map(ambition -> new SimpleTokenizable(ambition.getId(), ambition.getName()))//
                 .collect(Collectors.toList());
     }
@@ -412,7 +379,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         YAxis y = new YAxis();
         y.setCategories("Consultant");
-        y.setVisible(false);
+        y.setVisible(true);
         chart.getConfiguration().addyAxis(y);
 
         PlotOptionsSeries plot = new PlotOptionsSeries();

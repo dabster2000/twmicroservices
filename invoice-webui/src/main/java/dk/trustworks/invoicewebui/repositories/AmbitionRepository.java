@@ -15,6 +15,7 @@ import java.util.List;
 public interface AmbitionRepository extends CrudRepository<Ambition, Integer> {
 
     List<Ambition> findAmbitionByActiveIsTrue();
+    List<Ambition> findAmbitionByOfferingIsTrueAndActiveIsTrue();
     List<Ambition> findAmbitionByActiveIsTrueAndCategory(@Param("category") String category);
 
 }

@@ -109,11 +109,6 @@ public class ConsultantsBudgetRealizationChart {
             User user = userService.findByUUID(useruuid);
             String userFullname = user.getFirstname() + " " + user.getLastname();
             //budgetSeries.add(new DataSeriesItem(userFullname, budgetPerUser.get(useruuid)));
-            StringBuilder shortname = new StringBuilder();
-            for (String s : userFullname.split(" ")) {
-                shortname.append(s.charAt(0));
-            }
-            System.out.println("shortname = " + shortname.toString());
             Double budget = budgetPerUser.get(useruuid);
             if(budget<0.0) budget = 0.0;
             //if(!ArrayUtils.contains(categories, shortname.toString())) {

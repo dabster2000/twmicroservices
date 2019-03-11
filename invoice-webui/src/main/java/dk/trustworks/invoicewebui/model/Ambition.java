@@ -20,14 +20,9 @@ public class Ambition {
     //@Enumerated(EnumType.STRING)
     private String category;
 
+    private boolean offering;
 
     public Ambition() {
-    }
-
-    public Ambition(String name, boolean active, String category) {
-        this.name = name;
-        this.active = active;
-        this.category = category;
     }
 
     public int getId() {
@@ -58,13 +53,22 @@ public class Ambition {
         this.category = category;
     }
 
+    public boolean isOffering() {
+        return offering;
+    }
+
+    public void setOffering(boolean offering) {
+        this.offering = offering;
+    }
+
     @Override
     public String toString() {
         return "Ambition{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", active=" + active +
-                ", category=" + category +
+                ", category='" + category + '\'' +
+                ", offering=" + offering +
                 '}';
     }
 }

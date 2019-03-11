@@ -25,7 +25,10 @@
     </vaadin-vertical-layout>
     <vaadin-button style-name="flat icon-only" plain-text _id="btnDelete" :middle :right></vaadin-button>
    </vaadin-horizontal-layout>
-   <vaadin-vertical-layout visible="false" spacing="false" margin="false" _id="hlChart"></vaadin-vertical-layout>
+   <vaadin-horizontal-layout visible="false" spacing="false" width-full _id="subRow">
+    <vaadin-label width="58px" height="50px" plain-text></vaadin-label>
+    <vaadin-vertical-layout spacing="false" margin="false" _id="hlChart" :expand></vaadin-vertical-layout>
+   </vaadin-horizontal-layout>
   </vaadin-vertical-layout>
  </body>
 </html>
