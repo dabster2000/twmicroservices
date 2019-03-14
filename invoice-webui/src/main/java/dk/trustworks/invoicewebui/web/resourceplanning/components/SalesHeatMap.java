@@ -541,19 +541,19 @@ public class SalesHeatMap {
     }
 
     private int createFutureColumns(TreeGrid<UserBooking> treeGrid, LocalDate currentDate, int key, Grid.Column<?, ?>[] headerCells, int colNumber) {
-        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(colNumber))
+        headerCells[0] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getAmountItemsPerProjects(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Budget");
-        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(colNumber))
+        headerCells[1] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getAmountItemsPerPrebooking(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Prebooking");
-        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(colNumber))
+        headerCells[2] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getBookingPercentage(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Booking (%)");
-        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(colNumber))
+        headerCells[3] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getMonthNorm(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Month norm");
@@ -561,19 +561,19 @@ public class SalesHeatMap {
     }
 
     private int createPastColumns(TreeGrid<UserBooking> treeGrid, LocalDate currentDate, int key, Grid.Column<?, ?>[] headerCells, int colNumber) {
-        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(colNumber))
+        headerCells[0] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getAmountItemsPerProjects(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Budget");
-        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(colNumber))
+        headerCells[1] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getAmountItemsPerPrebooking(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Actual");
-        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(colNumber))
+        headerCells[2] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getBookingPercentage(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Performance (%)");
-        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(colNumber))
+        headerCells[3] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getMonthNorm(colNumber),2))
                 .setStyleGenerator(budgetHistory -> "align-right")
                 .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
                 .setCaption("Month norm");
