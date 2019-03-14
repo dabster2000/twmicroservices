@@ -23,13 +23,22 @@ public class UserBooking {
     private double m3BookingPercentage;
     private double m3MonthNorm;
 
+    private double[] amountItemsPerProjects;
+    private double[] amountItemsPerPrebooking;
+    private double[] bookingPercentage;
+    private double[] monthNorm;
+
     private List<UserBooking> subProjects = new ArrayList<>();
 
     public UserBooking() {
     }
 
-    public UserBooking(String username) {
+    public UserBooking(String username, int monthsInFuture) {
         this.username = username;
+        amountItemsPerProjects = new double[monthsInFuture];
+        amountItemsPerPrebooking = new double[monthsInFuture];
+        bookingPercentage = new double[monthsInFuture];
+        monthNorm = new double[monthsInFuture];
     }
 
     public UserBooking(String username, double m1AmountItemsPerProjekts, double m1AmountItemsPerPrebooking, double m1BookingPercentage, double m1MonthNorm, double m2AmountItemsPerProjekts, double m2AmountItemsPerPrebooking, double m2BookingPercentage, double m2MonthNorm, double m3AmountItemsPerProjekts, double m3AmountItemsPerPrebooking, double m3BookingPercentage, double m3MonthNorm) {
@@ -90,6 +99,42 @@ public class UserBooking {
 
     public void setM1MonthNorm(double m1MonthNorm) {
         this.m1MonthNorm = m1MonthNorm;
+    }
+
+    public double getAmountItemsPerProjects(int i) {
+        return amountItemsPerProjects[i];
+    }
+
+    public void setAmountItemsPerProjects(double amountItemsPerProjects, int i) {
+        this.amountItemsPerProjects[i] = amountItemsPerProjects;
+    }
+
+    public void addAmountItemsPerProjects(double amountItemsPerProjects, int i) {
+        this.amountItemsPerProjects[i] += amountItemsPerProjects;
+    }
+
+    public double getAmountItemsPerPrebooking(int i) {
+        return amountItemsPerPrebooking[i];
+    }
+
+    public void setAmountItemsPerPrebooking(double amountItemsPerPrebooking, int i) {
+        this.amountItemsPerPrebooking[i] = amountItemsPerPrebooking;
+    }
+
+    public double getBookingPercentage(int i) {
+        return bookingPercentage[i];
+    }
+
+    public void setBookingPercentage(double bookingPercentage, int i) {
+        this.bookingPercentage[i] = bookingPercentage;
+    }
+
+    public double getMonthNorm(int i) {
+        return monthNorm[i];
+    }
+
+    public void setMonthNorm(double monthNorm, int i) {
+        this.monthNorm[i] = monthNorm;
     }
 
     public double getM2AmountItemsPerProjekts() {

@@ -63,6 +63,7 @@ public class TokenListImpl extends TokenList {
         comboBox.setItems(selectableValues);
         comboBox.addStyleName("floating");
         comboBox.addStyleName("tiny");
+        comboBox.setPlaceholder("add offering");
         comboBox.setTextInputAllowed(true);
         comboBox.addValueChangeListener(event -> {
             addToken(event.getValue());
