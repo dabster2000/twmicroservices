@@ -64,6 +64,7 @@ public class ConsultantsBudgetRealizationChart {
         DataSeries revenueList = new DataSeries("Realization");
 
         Map<String, Double> budgetPerUser = new HashMap<>();
+        Map<String, Double> prebookingPerUser = new HashMap<>();
 
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);//, LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()));
 
@@ -85,39 +86,20 @@ public class ConsultantsBudgetRealizationChart {
                             if(work.getTask().getUuid().equals("02bf71c5-f588-46cf-9695-5864020eb1c4") ||
                                     work.getTask().getUuid().equals("f585f46f-19c1-4a3a-9ebd-1a4f21007282")) notWork += work.getWorkduration();
                         }
-                        budgetPerUser.putIfAbsent(consultant.getUser().getUuid(), 0.0);
-                        Double aDouble = Math.floor(budgetPerUser.get(consultant.getUser().getUuid())+((consultant.getHours() * weeks) - notWork));
-                        budgetPerUser.replace(consultant.getUser().getUuid(), aDouble);
+                        addBookingToMap(budgetPerUser, consultant, weeks, notWork);
                         //budgetSum += ((consultant.getHours() * weeks) - notWork) * consultant.getRate();
                     }
                 }
             }
             List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
             for (BudgetNew budget : budgets) {
-                //budgetSum += budget.getBudget();
-                budgetPerUser.putIfAbsent(budget.getContractConsultant().getUser().getUuid(), 0.0);
-                Double aDouble = Math.floor(budgetPerUser.get(budget.getContractConsultant().getUser().getUuid())+budget.getBudget() / budget.getContractConsultant().getRate());
-                budgetPerUser.replace(budget.getContractConsultant().getUser().getUuid(), aDouble);
+                addBudgetPerUser(budgetPerUser, budget);
             }
         }
 
         DataSeries budgetSeries = new DataSeries("Budget");
 
-        Map<String, Double> budgetPerUserMap = new TreeMap<>();
-        Map<String, Double> budgetPerUserNoWorkMap = new TreeMap<>();
-        for (String useruuid : budgetPerUser.keySet()) {
-            User user = userService.findByUUID(useruuid);
-            String userFullname = user.getFirstname() + " " + user.getLastname();
-            //budgetSeries.add(new DataSeriesItem(userFullname, budgetPerUser.get(useruuid)));
-            Double budget = budgetPerUser.get(useruuid);
-            if(budget<0.0) budget = 0.0;
-            //if(!ArrayUtils.contains(categories, shortname.toString())) {
-                //categories[j++] = shortname.toString();
-                //budgetPerUserNoWorkMap.put(userFullname,budget);
-            //} else {
-                budgetPerUserMap.put(userFullname, budget);
-            //}
-        }
+        Map<String, Double> budgetPerUserMap = prepareNamedMap(budgetPerUser);
 
         int j = 0;
         for (GraphKeyValue amountPerItem : amountPerItemList) {
@@ -137,6 +119,7 @@ public class ConsultantsBudgetRealizationChart {
             budgetSeries.add(new DataSeriesItem(s, budgetPerUserMap.get(s)));
         }
         */
+/*
         for (String s : budgetPerUserNoWorkMap.keySet()) {
             revenueList.add(new DataSeriesItem(s, 0.0));
             budgetSeries.add(new DataSeriesItem(s, budgetPerUserNoWorkMap.get(s)));
@@ -147,6 +130,7 @@ public class ConsultantsBudgetRealizationChart {
             System.out.println("shortname = " + shortname.toString());
             categories[j++] = shortname.toString();
         }
+        */
 
 
         //budgetSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(budgetSum)));
@@ -162,6 +146,30 @@ public class ConsultantsBudgetRealizationChart {
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;
+    }
+
+    private Map<String, Double> prepareNamedMap(Map<String, Double> budgetPerUser) {
+        Map<String, Double> budgetPerUserMap = new TreeMap<>();
+        for (String useruuid : budgetPerUser.keySet()) {
+            User user = userService.findByUUID(useruuid);
+            String userFullname = user.getFirstname() + " " + user.getLastname();
+            Double budget = budgetPerUser.get(useruuid);
+            if (budget < 0.0) budget = 0.0;
+            budgetPerUserMap.put(userFullname, budget);
+        }
+        return budgetPerUserMap;
+    }
+
+    private void addBudgetPerUser(Map<String, Double> prebookingPerUser, BudgetNew budget) {
+        prebookingPerUser.putIfAbsent(budget.getContractConsultant().getUser().getUuid(), 0.0);
+        Double aDouble = Math.floor(prebookingPerUser.get(budget.getContractConsultant().getUser().getUuid()) + budget.getBudget() / budget.getContractConsultant().getRate());
+        prebookingPerUser.replace(budget.getContractConsultant().getUser().getUuid(), aDouble);
+    }
+
+    private void addBookingToMap(Map<String, Double> prebookingPerUser, ContractConsultant consultant, double weeks, double notWork) {
+        prebookingPerUser.putIfAbsent(consultant.getUser().getUuid(), 0.0);
+        Double aDouble = Math.floor(prebookingPerUser.get(consultant.getUser().getUuid()) + ((consultant.getHours() * weeks) - notWork));
+        prebookingPerUser.replace(consultant.getUser().getUuid(), aDouble);
     }
 
 }

@@ -23,6 +23,7 @@ import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -290,7 +291,8 @@ public class SalesHeatMap {
             }
         });
 
-        int monthsInFuture = 4;
+        int monthsInFuture = 7;
+        int monthsInPast = 3;
 
         List<UserBooking> userBookings = new ArrayList<>();
 
@@ -299,7 +301,7 @@ public class SalesHeatMap {
         Map<String, UserProjectBooking> userProjectBookingMap = new HashMap<>();
 
         for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
-            currentDate = LocalDate.now().withDayOfMonth(1).plusMonths(0);
+            currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
             UserBooking userBooking = new UserBooking(user.getUsername(), monthsInFuture);
             userBookings.add(userBooking);
 
@@ -317,15 +319,32 @@ public class SalesHeatMap {
                             }
                             UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
 
+
                             double workDaysInMonth = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate);
                             double weeks = (workDaysInMonth / 5.0);
-                            double budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                            double booking = NumberUtils.round((budget / (workDaysInMonth * 7.4)) * 100.0, 2);
+                            double preBooking = 0.0;
+                            double budget = 0.0;
+                            double booking;
+                            if(i < monthsInPast) {
+                                budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
+                                preBooking = workService.findBillableWorkByPeriod(DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate)).stream()
+                                        .filter(work -> work.getUser().getUuid().equals(user.getUuid()))
+                                        .mapToDouble(Work::getWorkduration).sum();
+                                booking = NumberUtils.round((preBooking / budget) * 100.0, 2);
+                            } else {
+                                if (contract.getStatus().equals(ContractStatus.BUDGET)) {
+                                    preBooking = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
+                                } else {
+                                    budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
+                                }
+                                booking = NumberUtils.round((budget / (workDaysInMonth * 7.4)) * 100.0, 2);
+                            }
+
 
                             userProjectBooking.setAmountItemsPerProjects(budget, i);
-                            userProjectBooking.setAmountItemsPerPrebooking(0.0, i);
+                            userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
                             userProjectBooking.setBookingPercentage(booking, i);
-                            userProjectBooking.setMonthNorm(workDaysInMonth * 7.4, i);
+                            userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 1), i);
 
                             /*
                             if(i==0) {
@@ -364,13 +383,29 @@ public class SalesHeatMap {
                     UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
 
                     double workDaysInMonth = workService.getWorkDaysInMonth(user.getUuid(), currentDate);
-                    double hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
-                    double booking = NumberUtils.round(((hourBudget) / (workDaysInMonth * 7.4)) * 100.0, 2);
+                    double preBooking = 0.0;
+                    double hourBudget = 0.0;
+                    double booking;
+
+                    if(i < monthsInPast) {
+                        hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
+                        preBooking = workService.findBillableWorkByPeriod(DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate)).stream()
+                                .filter(work -> work.getUser().getUuid().equals(user.getUuid()))
+                                .mapToDouble(Work::getWorkduration).sum();
+                        booking = NumberUtils.round((preBooking / hourBudget) * 100.0, 2);
+                    } else {
+                        if (budget.getContractConsultant().getContract().getStatus().equals(ContractStatus.BUDGET)) {
+                            preBooking = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
+                        } else {
+                            hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
+                        }
+                        booking = NumberUtils.round(((hourBudget) / (workDaysInMonth * 7.4)) * 100.0, 2);
+                    }
 
                     userProjectBooking.setAmountItemsPerProjects(hourBudget, i);
-                    userProjectBooking.setAmountItemsPerPrebooking(0.0, i);
+                    userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
                     userProjectBooking.setBookingPercentage(booking, i);
-                    userProjectBooking.setMonthNorm(workDaysInMonth * 7.4, i);
+                    userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4,1), i);
                     /*
                     if(i==0) {
                         userProjectBooking.setM1AmountItemsPerProjekts(hourBudget);
@@ -402,7 +437,7 @@ public class SalesHeatMap {
             for (UserBooking subProject : userBooking.getSubProjects()) {
                 for (int i = 0; i < monthsInFuture; i++) {
                     userBooking.addAmountItemsPerProjects(subProject.getAmountItemsPerProjects(i), i);
-                    userBooking.setAmountItemsPerPrebooking(0.0, i);
+                    userBooking.setAmountItemsPerPrebooking(subProject.getAmountItemsPerPrebooking(i), i);
                     userBooking.setMonthNorm(subProject.getMonthNorm(i), i);
                 }
                 /*
@@ -421,7 +456,12 @@ public class SalesHeatMap {
             }
 
             for (int i = 0; i < monthsInFuture; i++) {
-                if(userBooking.getMonthNorm(i)>0.0) userBooking.setBookingPercentage(NumberUtils.round((userBooking.getAmountItemsPerProjects(i) / (userBooking.getMonthNorm(i))) * 100.0, 2), i);
+                if(i<monthsInPast) {
+                    userBooking.setBookingPercentage(NumberUtils.round((userBooking.getAmountItemsPerPrebooking(i) / userBooking.getAmountItemsPerProjects(i)) * 100.0, 2), i);
+                } else {
+                    if (userBooking.getMonthNorm(i) > 0.0)
+                        userBooking.setBookingPercentage(NumberUtils.round((userBooking.getAmountItemsPerProjects(i) / (userBooking.getMonthNorm(i))) * 100.0, 2), i);
+                }
             }
             /*
             if(userBooking.getM1MonthNorm()>0.0) userBooking.setM1BookingPercentage(NumberUtils.round((userBooking.getM1AmountItemsPerProjekts() / (userBooking.getM1MonthNorm())) * 100.0, 2));
@@ -430,7 +470,7 @@ public class SalesHeatMap {
             */
         }
 
-        currentDate = LocalDate.now().withDayOfMonth(1).plusMonths(0);
+        currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
 
         treeGrid.setItems(userBookings, UserBooking::getSubProjects);
 
@@ -439,100 +479,52 @@ public class SalesHeatMap {
         treeGrid.addColumn(UserBooking::getUsername).setCaption("Name").setId("name-column");
 
         int key = 0;
+        for (int i = 0; i < monthsInFuture; i++) {
+            Grid.Column<?, ?>[] headerCells = new Grid.Column<?, ?>[4];
+            if(i<monthsInPast) {
+                key = createPastColumns(treeGrid, currentDate, key, headerCells, i);
+            } else {
+                key = createFutureColumns(treeGrid, currentDate, key, headerCells, i);
+            }
+            topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
+            currentDate = currentDate.plusMonths(1);
+        }
 
-        Grid.Column<?, ?>[] headerCells = new Grid.Column<?, ?>[monthsInFuture];
-        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(0))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Budget");
-        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(0))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Prebooking");
-        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(0))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Booking (%)");
-        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(0))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Month norm");
+        /*
+        Grid.Column<?, ?>[] headerCells = new Grid.Column<?, ?>[4];
+        key = createFutureColumns(treeGrid, currentDate, key, headerCells, i++);
         topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
 
         currentDate = currentDate.plusMonths(1);
-
-        headerCells = new Grid.Column<?, ?>[monthsInFuture];
-        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(1))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Budget");
-
-        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(1))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Prebooking");
-
-        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(1))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Booking (%)");
-
-        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(1))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Month norm");
-        topHeader.join(headerCells)
-                .setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
+        headerCells = new Grid.Column<?, ?>[4];
+        key = createFutureColumns(treeGrid, currentDate, key, headerCells, i);
+        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
 
         currentDate = currentDate.plusMonths(1);
-
-        headerCells = new Grid.Column<?, ?>[monthsInFuture];
-        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(2))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Budget");
-
-        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(2))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Prebooking");
-
-        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(2))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Booking (%)");
-
-        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(2))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Month norm");
-        topHeader.join(headerCells)
-                .setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
+        headerCells = new Grid.Column<?, ?>[4];
+        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 2);
+        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
 
         currentDate = currentDate.plusMonths(1);
+        headerCells = new Grid.Column<?, ?>[4];
+        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 3);
+        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
 
-        headerCells = new Grid.Column<?, ?>[monthsInFuture];
-        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(3))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Budget");
+        currentDate = currentDate.plusMonths(1);
+        headerCells = new Grid.Column<?, ?>[4];
+        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 4);
+        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
 
-        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(3))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Prebooking");
+        currentDate = currentDate.plusMonths(1);
+        headerCells = new Grid.Column<?, ?>[4];
+        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 5);
+        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
 
-        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(3))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Booking (%)");
-
-        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(3))
-                .setStyleGenerator(budgetHistory -> "align-right")
-                .setId(key++ +currentDate.format(DateTimeFormatter.ofPattern("MMM")))
-                .setCaption("Month norm");
-        topHeader.join(headerCells)
-                .setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
+        currentDate = currentDate.plusMonths(1);
+        headerCells = new Grid.Column<?, ?>[4];
+        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 6);
+        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
+        */
 
         treeGrid.addCollapseListener(event -> {
             Notification.show(
@@ -546,6 +538,46 @@ public class SalesHeatMap {
         });
 
         return treeGrid;
+    }
+
+    private int createFutureColumns(TreeGrid<UserBooking> treeGrid, LocalDate currentDate, int key, Grid.Column<?, ?>[] headerCells, int colNumber) {
+        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Budget");
+        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Prebooking");
+        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Booking (%)");
+        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Month norm");
+        return key;
+    }
+
+    private int createPastColumns(TreeGrid<UserBooking> treeGrid, LocalDate currentDate, int key, Grid.Column<?, ?>[] headerCells, int colNumber) {
+        headerCells[0] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerProjects(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Budget");
+        headerCells[1] = treeGrid.addColumn(userBooking -> userBooking.getAmountItemsPerPrebooking(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Actual");
+        headerCells[2] = treeGrid.addColumn(userBooking -> userBooking.getBookingPercentage(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Performance (%)");
+        headerCells[3] = treeGrid.addColumn(userBooking -> userBooking.getMonthNorm(colNumber))
+                .setStyleGenerator(budgetHistory -> "align-right")
+                .setId(key++ + currentDate.format(DateTimeFormatter.ofPattern("MMM")))
+                .setCaption("Month norm");
+        return key;
     }
 
 
