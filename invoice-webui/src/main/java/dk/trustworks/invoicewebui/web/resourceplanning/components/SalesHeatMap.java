@@ -327,9 +327,7 @@ public class SalesHeatMap {
                             double booking;
                             if(i < monthsInPast) {
                                 budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                preBooking = workService.findBillableWorkByPeriod(DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate)).stream()
-                                        .filter(work -> work.getUser().getUuid().equals(user.getUuid()))
-                                        .mapToDouble(Work::getWorkduration).sum();
+                                preBooking = workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate));
                                 booking = NumberUtils.round((preBooking / budget) * 100.0, 2);
                             } else {
                                 if (contract.getStatus().equals(ContractStatus.BUDGET)) {
@@ -389,9 +387,12 @@ public class SalesHeatMap {
 
                     if(i < monthsInPast) {
                         hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
+                        workService.findHoursRegisteredOnContractByPeriod(budget.getContractConsultant().getContract().getUuid(), budget.getContractConsultant().getUser().getUuid(), DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate));
+                        /*
                         preBooking = workService.findBillableWorkByPeriod(DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate)).stream()
                                 .filter(work -> work.getUser().getUuid().equals(user.getUuid()))
                                 .mapToDouble(Work::getWorkduration).sum();
+                                */
                         booking = NumberUtils.round((preBooking / hourBudget) * 100.0, 2);
                     } else {
                         if (budget.getContractConsultant().getContract().getStatus().equals(ContractStatus.BUDGET)) {

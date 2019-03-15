@@ -92,6 +92,10 @@ public class WorkService {
         return workRepository.findAmountUsedByContract(contractUUID);
     }
 
+    public Double findHoursRegisteredOnContractByPeriod(String contractUUID, String useruuid, LocalDate fromdate, LocalDate todate) {
+        return workRepository.findHoursRegisteredOnContractByPeriod(contractUUID, useruuid, fromdate, todate);
+    }
+
     public List<Work> findByActiveClients() {
         return workRepository.findByActiveClients();
     }

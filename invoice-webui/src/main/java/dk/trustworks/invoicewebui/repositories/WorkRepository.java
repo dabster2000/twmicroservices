@@ -112,6 +112,22 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and cc.rate > 0.0 ", nativeQuery = true)
     Double findAmountUsedByContract(@Param("contractuuid") String contractuuid);
 
+    @Query(value = "select sum(w.workduration) as used from " +
+            "(SELECT *, STR_TO_DATE(CONCAT(k.year,'-',(k.month+1),'-',k.day), '%Y-%m-%d') as registered, '2017-05-17 08:09:35' created FROM work k) as w " +
+            "inner join task t on w.taskuuid = t.uuid " +
+            "inner join project p on t.projectuuid = p.uuid " +
+            "inner join user u on w.useruuid = u.uuid " +
+            "inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "inner join contracts c on cp.contractuuid = c.uuid " +
+            "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
+            "where c.activefrom <= w.registered and c.activeto >= w.registered " +
+            "and  w.registered >= :fromdate AND w.registered < :todate " +
+            "and c.uuid like :contractuuid " +
+            "and w.workduration > 0 " +
+            "and u.uuid LIKE :useruuid " +
+            "and cc.rate > 0.0 ", nativeQuery = true)
+    Double findHoursRegisteredOnContractByPeriod(@Param("contractuuid") String contractuuid, @Param("useruuid") String useruuid, @Param("fromdate") LocalDate fromdate, @Param("todate") LocalDate todate);
+
     @Query(value = "SELECT id, day, month, year, taskuuid, useruuid, w.workas as workas, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM work w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
     List<Work> findByYearAndMonth(@Param("year") int year,
                                   @Param("month") int month);
