@@ -126,7 +126,7 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and w.workduration > 0 " +
             "and u.uuid LIKE :useruuid " +
             "and cc.rate > 0.0 ", nativeQuery = true)
-    Double findHoursRegisteredOnContractByPeriod(@Param("contractuuid") String contractuuid, @Param("useruuid") String useruuid, @Param("fromdate") LocalDate fromdate, @Param("todate") LocalDate todate);
+    Double findHoursRegisteredOnContractByPeriod(@Param("contractuuid") String contractuuid, @Param("useruuid") String useruuid, @Param("fromdate") String fromdate, @Param("todate") String todate);
 
     @Query(value = "SELECT id, day, month, year, taskuuid, useruuid, w.workas as workas, sum(workduration) as workduration, '2017-05-17 08:09:35' created FROM work w WHERE w.year = :year AND w.month = :month GROUP BY taskuuid, useruuid", nativeQuery = true)
     List<Work> findByYearAndMonth(@Param("year") int year,

@@ -305,12 +305,15 @@ public class SalesHeatMap {
             UserBooking userBooking = new UserBooking(user.getUsername(), monthsInFuture);
             userBookings.add(userBooking);
 
+            boolean debug = user.getUsername().equals("hans.lassen");
+
             for (int i = 0; i < monthsInFuture; i++) {
                 List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
                 for (Contract contract : contracts) {
+                    if(debug) System.out.println("contract = " + contract);
                     if(contract.getContractType().equals(ContractType.PERIOD)) {
                         for (ContractConsultant contractConsultant : contract.getContractConsultants().stream().filter(c -> c.getUser().getUsername().equals(user.getUsername())).collect(Collectors.toList())) {
-
+                            if(debug) System.out.println("contractConsultant = " + contractConsultant);
                             String key = contractConsultant.getUser().getUuid()+contractConsultant.getContract().getClient().getUuid();
                             if(!userProjectBookingMap.containsKey(key)) {
                                 UserProjectBooking newUserProjectBooking = new UserProjectBooking(contractConsultant.getContract().getClient().getName(), monthsInFuture);
@@ -319,51 +322,49 @@ public class SalesHeatMap {
                             }
                             UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
 
-
                             double workDaysInMonth = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate);
+                            if(debug) System.out.println("workDaysInMonth = " + workDaysInMonth);
                             double weeks = (workDaysInMonth / 5.0);
+                            if(debug) System.out.println("weeks = " + weeks);
                             double preBooking = 0.0;
                             double budget = 0.0;
                             double booking;
                             if(i < monthsInPast) {
+                                if(debug) System.out.println("PAST");
                                 budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                preBooking = workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate));
+                                if(debug) System.out.println("budget = " + budget);
+                                //preBooking = Optional.ofNullable(workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate))).orElse(0.0);
+                                Double preBookingObj = workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                                if(debug) System.out.println("preBookingObj = " + preBookingObj);
+                                if(preBookingObj != null) preBooking = preBookingObj;
+                                if(debug) System.out.println("preBooking = " + preBooking);
+                                if(debug) System.out.println("contract.getUuid() = " + contract.getUuid());
+                                if(debug) System.out.println("user.getUuid() = " + user.getUuid());
+                                if(debug) System.out.println("DateUtils.getFirstDayOfMonth(currentDate) = " + DateUtils.getFirstDayOfMonth(currentDate));
+                                if(debug) System.out.println("DateUtils.getLastDayOfMonth(currentDate) = " + DateUtils.getLastDayOfMonth(currentDate));
+                                if(debug) System.out.println("preBooking = " + preBooking);
                                 booking = NumberUtils.round((preBooking / budget) * 100.0, 2);
+                                if(debug) System.out.println("booking = " + booking);
                             } else {
+                                if(debug) System.out.println("FUTURE");
                                 if (contract.getStatus().equals(ContractStatus.BUDGET)) {
+                                    if(debug) System.out.println("BUDGET");
                                     preBooking = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
+                                    if(debug) System.out.println("preBooking = " + preBooking);
                                 } else {
+                                    if(debug) System.out.println("TIME");
                                     budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
+                                    if(debug) System.out.println("budget = " + budget);
                                 }
                                 booking = NumberUtils.round((budget / (workDaysInMonth * 7.4)) * 100.0, 2);
+                                if(debug) System.out.println("booking = " + booking);
                             }
-
 
                             userProjectBooking.setAmountItemsPerProjects(budget, i);
                             userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
                             userProjectBooking.setBookingPercentage(booking, i);
-                            userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 1), i);
-
-                            /*
-                            if(i==0) {
-                                userProjectBooking.setM1AmountItemsPerProjekts(budget);
-                                userProjectBooking.setM1AmountItemsPerPrebooking(0.0);
-                                userProjectBooking.setM1BookingPercentage(booking);
-                                userProjectBooking.setM1MonthNorm(workDaysInMonth * 7.4);
-                            }
-                            if(i==1) {
-                                userProjectBooking.setM2AmountItemsPerProjekts(budget);
-                                userProjectBooking.setM2AmountItemsPerPrebooking(0.0);
-                                userProjectBooking.setM2BookingPercentage(booking);
-                                userProjectBooking.setM2MonthNorm(workDaysInMonth * 7.4);
-                            }
-                            if(i==2) {
-                                userProjectBooking.setM3AmountItemsPerProjekts(budget);
-                                userProjectBooking.setM3AmountItemsPerPrebooking(0.0);
-                                userProjectBooking.setM3BookingPercentage(booking);
-                                userProjectBooking.setM3MonthNorm(workDaysInMonth * 7.4);
-                            }
-                            */
+                            //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 2), i);
+                            if(debug) System.out.println("(workDaysInMonth * 7.4) = " + (workDaysInMonth * 7.4));
                         }
                     }
                 }
@@ -387,12 +388,7 @@ public class SalesHeatMap {
 
                     if(i < monthsInPast) {
                         hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
-                        workService.findHoursRegisteredOnContractByPeriod(budget.getContractConsultant().getContract().getUuid(), budget.getContractConsultant().getUser().getUuid(), DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate));
-                        /*
-                        preBooking = workService.findBillableWorkByPeriod(DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate)).stream()
-                                .filter(work -> work.getUser().getUuid().equals(user.getUuid()))
-                                .mapToDouble(Work::getWorkduration).sum();
-                                */
+                        preBooking = Optional.ofNullable(workService.findHoursRegisteredOnContractByPeriod(budget.getContractConsultant().getContract().getUuid(), budget.getContractConsultant().getUser().getUuid(), DateUtils.getFirstDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))).orElse(0.0);
                         booking = NumberUtils.round((preBooking / hourBudget) * 100.0, 2);
                     } else {
                         if (budget.getContractConsultant().getContract().getStatus().equals(ContractStatus.BUDGET)) {
@@ -406,69 +402,38 @@ public class SalesHeatMap {
                     userProjectBooking.setAmountItemsPerProjects(hourBudget, i);
                     userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
                     userProjectBooking.setBookingPercentage(booking, i);
-                    userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4,1), i);
-                    /*
-                    if(i==0) {
-                        userProjectBooking.setM1AmountItemsPerProjekts(hourBudget);
-                        userProjectBooking.setM1AmountItemsPerPrebooking(0.0);
-                        userProjectBooking.setM1BookingPercentage(booking);
-                        userProjectBooking.setM1MonthNorm(workDaysInMonth * 7.4);
-                    }
-                    if(i==1) {
-                        userProjectBooking.setM2AmountItemsPerProjekts(hourBudget);
-                        userProjectBooking.setM2AmountItemsPerPrebooking(0.0);
-                        userProjectBooking.setM2BookingPercentage(booking);
-                        userProjectBooking.setM2MonthNorm(workDaysInMonth * 7.4);
-                    }
-                    if(i==2) {
-                        userProjectBooking.setM3AmountItemsPerProjekts(hourBudget);
-                        userProjectBooking.setM3AmountItemsPerPrebooking(0.0);
-                        userProjectBooking.setM3BookingPercentage(booking);
-                        userProjectBooking.setM3MonthNorm(workDaysInMonth * 7.4);
-                    }
-                    */
+                    //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4,2), i);
                 }
 
                 currentDate = currentDate.plusMonths(1);
             }
         }
 
+        System.out.println("SUM PROJECTS");
         for(UserBooking userBooking : userBookings) {
             if(userBooking.getSubProjects().size() == 0) continue;
+            boolean debug = (userBooking.getUsername().equals("hans.lassen"));
             for (UserBooking subProject : userBooking.getSubProjects()) {
+                currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
                 for (int i = 0; i < monthsInFuture; i++) {
+                    if(debug) System.out.println("i = " + i);
                     userBooking.addAmountItemsPerProjects(subProject.getAmountItemsPerProjects(i), i);
-                    userBooking.setAmountItemsPerPrebooking(subProject.getAmountItemsPerPrebooking(i), i);
-                    userBooking.setMonthNorm(subProject.getMonthNorm(i), i);
+                    userBooking.addAmountItemsPerPrebooking(subProject.getAmountItemsPerPrebooking(i), i);
+                    int workDaysInMonth = workService.getWorkDaysInMonth(userService.findByUsername(userBooking.getUsername()).getUuid(), currentDate);
+                    userBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 2), i);
+                    subProject.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 2), i);
+                    currentDate = currentDate.plusMonths(1);
                 }
-                /*
-                userBooking.addM1AmountItemsPerProjects(subProject.getM1AmountItemsPerProjekts());
-                userBooking.addM2AmountItemsPerProjects(subProject.getM2AmountItemsPerProjekts());
-                userBooking.addM3AmountItemsPerProjects(subProject.getM3AmountItemsPerProjekts());
-
-                userBooking.setM1AmountItemsPerPrebooking(0.0);
-                userBooking.setM2AmountItemsPerPrebooking(0.0);
-                userBooking.setM3AmountItemsPerPrebooking(0.0);
-
-                userBooking.setM1MonthNorm(subProject.getM1MonthNorm());
-                userBooking.setM2MonthNorm(subProject.getM2MonthNorm());
-                userBooking.setM3MonthNorm(subProject.getM3MonthNorm());
-                */
             }
 
             for (int i = 0; i < monthsInFuture; i++) {
-                if(i<monthsInPast) {
+                if(i < monthsInPast) {
                     userBooking.setBookingPercentage(NumberUtils.round((userBooking.getAmountItemsPerPrebooking(i) / userBooking.getAmountItemsPerProjects(i)) * 100.0, 2), i);
                 } else {
                     if (userBooking.getMonthNorm(i) > 0.0)
                         userBooking.setBookingPercentage(NumberUtils.round((userBooking.getAmountItemsPerProjects(i) / (userBooking.getMonthNorm(i))) * 100.0, 2), i);
                 }
             }
-            /*
-            if(userBooking.getM1MonthNorm()>0.0) userBooking.setM1BookingPercentage(NumberUtils.round((userBooking.getM1AmountItemsPerProjekts() / (userBooking.getM1MonthNorm())) * 100.0, 2));
-            if(userBooking.getM2MonthNorm()>0.0) userBooking.setM2BookingPercentage(NumberUtils.round((userBooking.getM2AmountItemsPerProjekts() / (userBooking.getM2MonthNorm())) * 100.0, 2));
-            if(userBooking.getM3MonthNorm()>0.0) userBooking.setM3BookingPercentage(NumberUtils.round((userBooking.getM3AmountItemsPerProjekts() / (userBooking.getM3MonthNorm())) * 100.0, 2));
-            */
         }
 
         currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
@@ -490,42 +455,6 @@ public class SalesHeatMap {
             topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
             currentDate = currentDate.plusMonths(1);
         }
-
-        /*
-        Grid.Column<?, ?>[] headerCells = new Grid.Column<?, ?>[4];
-        key = createFutureColumns(treeGrid, currentDate, key, headerCells, i++);
-        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
-
-        currentDate = currentDate.plusMonths(1);
-        headerCells = new Grid.Column<?, ?>[4];
-        key = createFutureColumns(treeGrid, currentDate, key, headerCells, i);
-        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
-
-        currentDate = currentDate.plusMonths(1);
-        headerCells = new Grid.Column<?, ?>[4];
-        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 2);
-        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
-
-        currentDate = currentDate.plusMonths(1);
-        headerCells = new Grid.Column<?, ?>[4];
-        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 3);
-        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
-
-        currentDate = currentDate.plusMonths(1);
-        headerCells = new Grid.Column<?, ?>[4];
-        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 4);
-        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
-
-        currentDate = currentDate.plusMonths(1);
-        headerCells = new Grid.Column<?, ?>[4];
-        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 5);
-        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
-
-        currentDate = currentDate.plusMonths(1);
-        headerCells = new Grid.Column<?, ?>[4];
-        key = createFutureColumns(treeGrid, currentDate, key, headerCells, 6);
-        topHeader.join(headerCells).setText(currentDate.format(DateTimeFormatter.ofPattern("MMMM")));
-        */
 
         treeGrid.addCollapseListener(event -> {
             Notification.show(

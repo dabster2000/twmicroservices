@@ -92,7 +92,7 @@ public class WorkService {
         return workRepository.findAmountUsedByContract(contractUUID);
     }
 
-    public Double findHoursRegisteredOnContractByPeriod(String contractUUID, String useruuid, LocalDate fromdate, LocalDate todate) {
+    public Double findHoursRegisteredOnContractByPeriod(String contractUUID, String useruuid, String fromdate, String todate) {
         return workRepository.findHoursRegisteredOnContractByPeriod(contractUUID, useruuid, fromdate, todate);
     }
 
