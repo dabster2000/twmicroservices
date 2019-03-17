@@ -361,15 +361,15 @@ public class SalesHeatMap {
                                     budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
                                     if(debug) System.out.println("budget = " + budget);
                                 }
-                                booking = NumberUtils.round((budget / (workDaysInMonth * 7.4)) * 100.0, 2);
+                                booking = NumberUtils.round((budget / (workDaysInMonth * 7)) * 100.0, 2);
                                 if(debug) System.out.println("booking = " + booking);
                             }
 
                             userProjectBooking.setAmountItemsPerProjects(budget, i);
                             userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
                             userProjectBooking.setBookingPercentage(booking, i);
-                            //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 2), i);
-                            if(debug) System.out.println("(workDaysInMonth * 7.4) = " + (workDaysInMonth * 7.4));
+                            //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
+                            if(debug) System.out.println("(workDaysInMonth * 7) = " + (workDaysInMonth * 7));
                         }
                     }
                 }
@@ -401,13 +401,13 @@ public class SalesHeatMap {
                         } else {
                             hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
                         }
-                        booking = NumberUtils.round(((hourBudget) / (workDaysInMonth * 7.4)) * 100.0, 2);
+                        booking = NumberUtils.round(((hourBudget) / (workDaysInMonth * 7)) * 100.0, 2);
                     }
 
                     userProjectBooking.setAmountItemsPerProjects(hourBudget, i);
                     userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
                     userProjectBooking.setBookingPercentage(booking, i);
-                    //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4,2), i);
+                    //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7,2), i);
                 }
 
                 currentDate = currentDate.plusMonths(1);
@@ -425,8 +425,8 @@ public class SalesHeatMap {
                     userBooking.addAmountItemsPerProjects(subProject.getAmountItemsPerProjects(i), i);
                     userBooking.addAmountItemsPerPrebooking(subProject.getAmountItemsPerPrebooking(i), i);
                     int workDaysInMonth = workService.getWorkDaysInMonth(userService.findByUsername(userBooking.getUsername()).getUuid(), currentDate);
-                    userBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 2), i);
-                    subProject.setMonthNorm(NumberUtils.round(workDaysInMonth * 7.4, 2), i);
+                    userBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
+                    subProject.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
                     currentDate = currentDate.plusMonths(1);
                 }
             }
