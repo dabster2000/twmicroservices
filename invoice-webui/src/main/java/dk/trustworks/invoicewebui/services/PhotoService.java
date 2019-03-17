@@ -43,6 +43,24 @@ public class PhotoService {
         return image;
     }
 
+    public Image getRoundImage(String uuid, boolean isOwner, int width, Sizeable.Unit unit) {
+        Photo photo = photoRepository.findByRelateduuid(uuid);
+
+        Image image = new Image();
+        if(photo!=null && photo.getPhoto()!=null) {
+            image.setSource(
+                    new StreamResource((StreamResource.StreamSource) () ->
+                            new ByteArrayInputStream(photo.getPhoto()),
+                            uuid + System.currentTimeMillis() + ".jpg"));
+        } else {
+            image.setSource(new ThemeResource("images/clients/missing-logo.jpg"));
+        }
+        image.setStyleName("img-circle");
+        image.setWidth(width, unit);
+        image.setHeight(width, unit);
+        return image;
+    }
+
     public Resource getRelatedPhoto(String relatedUUID) {
         Photo photo = photoRepository.findByRelateduuid(relatedUUID);
         if(photo!=null && photo.getPhoto().length > 0) {

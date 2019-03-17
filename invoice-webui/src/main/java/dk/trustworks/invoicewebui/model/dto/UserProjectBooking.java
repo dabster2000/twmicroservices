@@ -5,8 +5,8 @@ public class UserProjectBooking extends UserBooking {
     public UserProjectBooking() {
     }
 
-    public UserProjectBooking(String username, int i) {
-        super(username, i);
+    public UserProjectBooking(String username, String uuid, int i, boolean parent) {
+        super(username, uuid, i, parent);
     }
 
     @Override

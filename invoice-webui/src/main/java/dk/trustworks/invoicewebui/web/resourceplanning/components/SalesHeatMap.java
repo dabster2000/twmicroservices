@@ -21,6 +21,7 @@ import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -28,6 +29,7 @@ import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -56,17 +58,20 @@ public class SalesHeatMap {
 
     private final UserService userService;
 
+    private final PhotoService photoService;
+
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService, UserService userService) {
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService, UserService userService, PhotoService photoService) {
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
         this.clientRepository = clientRepository;
         this.contractService = contractService;
         this.workService = workService;
         this.userService = userService;
+        this.photoService = photoService;
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
@@ -302,7 +307,7 @@ public class SalesHeatMap {
 
         for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
             currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
-            UserBooking userBooking = new UserBooking(user.getUsername(), monthsInFuture);
+            UserBooking userBooking = new UserBooking(user.getUsername(),user.getUuid(), monthsInFuture, true);
             userBookings.add(userBooking);
 
             boolean debug = user.getUsername().equals("hans.lassen");
@@ -316,7 +321,7 @@ public class SalesHeatMap {
                             if(debug) System.out.println("contractConsultant = " + contractConsultant);
                             String key = contractConsultant.getUser().getUuid()+contractConsultant.getContract().getClient().getUuid();
                             if(!userProjectBookingMap.containsKey(key)) {
-                                UserProjectBooking newUserProjectBooking = new UserProjectBooking(contractConsultant.getContract().getClient().getName(), monthsInFuture);
+                                UserProjectBooking newUserProjectBooking = new UserProjectBooking(contractConsultant.getContract().getClient().getName(), contractConsultant.getContract().getClient().getUuid(), monthsInFuture, false);
                                 userProjectBookingMap.put(key, newUserProjectBooking);
                                 userBooking.addSubProject(newUserProjectBooking);
                             }
@@ -375,7 +380,7 @@ public class SalesHeatMap {
 
                     String key = budget.getContractConsultant().getUser().getUuid()+budget.getProject().getUuid();
                     if(!userProjectBookingMap.containsKey(key)) {
-                        UserProjectBooking newUserProjectBooking = new UserProjectBooking(budget.getProject().getName() + " / " + budget.getProject().getClient().getName(), monthsInFuture);
+                        UserProjectBooking newUserProjectBooking = new UserProjectBooking(budget.getProject().getName() + " / " + budget.getProject().getClient().getName(), budget.getProject().getClient().getUuid(), monthsInFuture, false);
                         userProjectBookingMap.put(key, newUserProjectBooking);
                         userBooking.addSubProject(newUserProjectBooking);
                     }
@@ -442,7 +447,16 @@ public class SalesHeatMap {
 
         HeaderRow topHeader = treeGrid.prependHeaderRow();
 
-        treeGrid.addColumn(UserBooking::getUsername).setCaption("Name").setId("name-column");
+        treeGrid.addComponentColumn(userBooking -> {
+                return new MHorizontalLayout(
+                        photoService.getRoundImage(
+                                userBooking.getUuid(),
+                                false,
+                                30,
+                                Sizeable.Unit.PIXELS),
+                        new Label(userBooking.getUsername()));
+                }).setCaption("Name").setId("name-column");
+        //treeGrid.addColumn(UserBooking::getUsername).setCaption("Name").setId("name-column");
         treeGrid.setFrozenColumnCount(1);
 
         int key = 0;

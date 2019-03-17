@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 public class UserBooking {
 
+    private final boolean parent;
     private String username;
+    private String uuid;
 
     private double[] amountItemsPerProjects;
     private double[] amountItemsPerPrebooking;
@@ -17,14 +19,17 @@ public class UserBooking {
     private List<UserBooking> subProjects = new ArrayList<>();
 
     public UserBooking() {
+        parent = false;
     }
 
-    public UserBooking(String username, int monthsInFuture) {
+    public UserBooking(String username, String uuid, int monthsInFuture, boolean parent) {
         this.username = username;
         amountItemsPerProjects = new double[monthsInFuture];
         amountItemsPerPrebooking = new double[monthsInFuture];
         bookingPercentage = new double[monthsInFuture];
         monthNorm = new double[monthsInFuture];
+        this.parent = parent;
+        this.uuid = uuid;
     }
 
     public String getUsername() {
@@ -87,9 +92,17 @@ public class UserBooking {
         subProjects.add(subProject);
     }
 
+    public boolean isParent() {
+        return parent;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
     public int getHoursDone() {
         return getSubProjects().stream()
-                .map(project -> project.getHoursDone())
+                .map(UserBooking::getHoursDone)
                 .reduce(0, Integer::sum);
     }
 
