@@ -443,6 +443,7 @@ public class SalesHeatMap {
         HeaderRow topHeader = treeGrid.prependHeaderRow();
 
         treeGrid.addColumn(UserBooking::getUsername).setCaption("Name").setId("name-column");
+        treeGrid.setFrozenColumnCount(1);
 
         int key = 0;
         for (int i = 0; i < monthsInFuture; i++) {
