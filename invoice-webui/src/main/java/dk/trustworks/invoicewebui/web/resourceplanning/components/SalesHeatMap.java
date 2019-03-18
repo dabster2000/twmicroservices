@@ -133,7 +133,7 @@ public class SalesHeatMap {
             List<BudgetNew> budgetsWithNoValidContract = new ArrayList<>();
             for (BudgetNew budget : budgets) {
                 ContractConsultant contractConsultant = budget.getContractConsultant();
-                LocalDate localDate = LocalDate.of(budget.getYear(), budget.getMonth(), 15);
+                LocalDate localDate = LocalDate.of(budget.getYear(), budget.getMonth()+1, 15);
                 if(localDate.isAfter(contractConsultant.getContract().getActiveFrom()) && localDate.isBefore(contractConsultant.getContract().getActiveTo())) {
                     budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
                     budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
