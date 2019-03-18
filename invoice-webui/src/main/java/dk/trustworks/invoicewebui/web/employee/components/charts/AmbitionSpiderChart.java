@@ -125,7 +125,7 @@ public class AmbitionSpiderChart {
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setPointPlacement(PointPlacement.ON);
-        plotOptions.setColor(new SolidColor("#236F1F"));
+        plotOptions.setColor(new SolidColor("#13B06D"));
         line1.setPlotOptions(plotOptions);
         line1.setName("Current Knowledge Level");
 

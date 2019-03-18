@@ -6,9 +6,9 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
@@ -97,7 +97,7 @@ public class SalesHeatMap {
         config.getColorAxis().setMin(0);
         config.getColorAxis().setMax(100);
         config.getColorAxis().setMinColor(SolidColor.WHITE);
-        config.getColorAxis().setMaxColor(new SolidColor("#3B8937"));
+        config.getColorAxis().setMaxColor(new SolidColor("#54D69E"));
 
 
         config.getLegend().setLayout(LayoutDirection.VERTICAL);
@@ -130,15 +130,22 @@ public class SalesHeatMap {
                 }
             }
             List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
+            List<BudgetNew> budgetsWithNoValidContract = new ArrayList<>();
             for (BudgetNew budget : budgets) {
                 ContractConsultant contractConsultant = budget.getContractConsultant();
-                budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
-                budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
+                LocalDate localDate = LocalDate.of(budget.getYear(), budget.getMonth(), 15);
+                if(localDate.isAfter(contractConsultant.getContract().getActiveFrom()) && localDate.isBefore(contractConsultant.getContract().getActiveTo())) {
+                    budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
+                    budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
 
-                userAllocationPerAssignmentMap.putIfAbsent(contractConsultant.getUser().getUuid(), new HashMap<>());
-                userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).putIfAbsent(budget.getProject().getClient().getUuid(), new double[12]);
-                userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).get(budget.getProject().getClient().getUuid())[i] += (budget.getBudget() / budget.getContractConsultant().getRate());
+                    userAllocationPerAssignmentMap.putIfAbsent(contractConsultant.getUser().getUuid(), new HashMap<>());
+                    userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).putIfAbsent(budget.getProject().getClient().getUuid(), new double[12]);
+                    userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).get(budget.getProject().getClient().getUuid())[i] += (budget.getBudget() / budget.getContractConsultant().getRate());
+                } else {
+                    budgetsWithNoValidContract.add(budget);
+                }
             }
+            budgetNewRepository.delete(budgetsWithNoValidContract);
         }
 
         for (Consultant user : consultantList) {
@@ -254,7 +261,7 @@ public class SalesHeatMap {
 
         XAxis xAxis = new XAxis();
         xAxis.setCategories(monthNames);
-        xAxis.setLineColor(new SolidColor("#3B8937"));
+        xAxis.setLineColor(new SolidColor("#54D69E"));
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();
