@@ -97,7 +97,7 @@ public class SalesHeatMap {
         config.getColorAxis().setMin(0);
         config.getColorAxis().setMax(100);
         config.getColorAxis().setMinColor(SolidColor.WHITE);
-        config.getColorAxis().setMaxColor(new SolidColor("#54D69E"));
+        config.getColorAxis().setMaxColor(new SolidColor(163, 211, 209));
 
 
         config.getLegend().setLayout(LayoutDirection.VERTICAL);
@@ -225,7 +225,7 @@ public class SalesHeatMap {
         plotOptionsHeatmap.setTooltip(tooltip);
 
         Hover hover = new Hover();
-        hover.setFillColor(new SolidColor("#0A2A3C"));
+        hover.setFillColor(new SolidColor(18, 51, 117));
         States states = new States();
         states.setHover(hover);
         plotOptionsHeatmap.setStates(states);
@@ -261,7 +261,7 @@ public class SalesHeatMap {
 
         XAxis xAxis = new XAxis();
         xAxis.setCategories(monthNames);
-        xAxis.setLineColor(new SolidColor("#54D69E"));
+        xAxis.setLineColor(new SolidColor(163, 211, 209));
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();

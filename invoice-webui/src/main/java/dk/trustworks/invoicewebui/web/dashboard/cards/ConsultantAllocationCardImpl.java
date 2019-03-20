@@ -59,7 +59,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
         config.getColorAxis().setMin(0);
         config.getColorAxis().setMax(100);
         config.getColorAxis().setMinColor(SolidColor.WHITE);
-        config.getColorAxis().setMaxColor(new SolidColor("#54D69E"));
+        config.getColorAxis().setMaxColor(new SolidColor(163, 211, 209));
 
         config.getLegend().setLayout(LayoutDirection.VERTICAL);
         config.getLegend().setAlign(HorizontalAlign.RIGHT);

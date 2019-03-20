@@ -49,7 +49,7 @@ public class MainTemplate extends VerticalLayout {
         rootRow.setHeight("100%");
 
         sideMenuCol = new ResponsiveColumn(12, 12, 2, 2);
-        sideMenuCol.addStyleName("dark-blue");
+        sideMenuCol.addStyleName("dark-grey");
         rootRow.addColumn(sideMenuCol);
 
         // Fluent API
@@ -98,7 +98,7 @@ public class MainTemplate extends VerticalLayout {
         hlTitleContainer.setComponentAlignment(vlTitle, Alignment.MIDDLE_RIGHT);
 
         Label breadcrumb = new Label(MaterialIcons.HOME.getHtml() + " Home / "+location, ContentMode.HTML);
-        breadcrumb.addStyleName("dark-green-font");
+        breadcrumb.addStyleName("turquoise-font");
         VerticalLayout breadcrumbContainer = new VerticalLayout(breadcrumb);
         breadcrumbContainer.setHeight("75px");
         breadcrumbContainer.setSpacing(false);

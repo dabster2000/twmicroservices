@@ -2,6 +2,8 @@ package dk.trustworks.invoicewebui.services;
 
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.addon.charts.model.PlotOptionsArea;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
@@ -67,6 +69,11 @@ public class StatisticsService {
     @Cacheable("calcBillableHoursRevenuePerMonth")
     public DataSeries calcBillableHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries revenueSeries = new DataSeries("Billable Hours Revenue");
+
+        PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
+        plotOptionsArea.setColor(new SolidColor(84, 214, 158));
+        revenueSeries.setPlotOptions(plotOptionsArea);
+
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
@@ -82,6 +89,11 @@ public class StatisticsService {
     @Cacheable("calcBudgetPerMonth")
     public DataSeries calcBudgetPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries budgetSeries = new DataSeries("Budget");
+
+        PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
+        plotOptionsArea.setColor(new SolidColor(18, 51, 117));
+        budgetSeries.setPlotOptions(plotOptionsArea);
+
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);

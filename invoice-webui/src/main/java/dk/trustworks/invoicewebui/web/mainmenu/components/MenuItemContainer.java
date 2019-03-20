@@ -65,12 +65,12 @@ public class MenuItemContainer {
         Component menuItem;
         // If title
         if(isTitle) {
-            menuItem = new MLabel("     "+caption).withStyleName("dark-grey-font dark-grey-icon");
+            menuItem = new MLabel("     "+caption).withStyleName("white-font white-font-icon");
         } else {
             menuItem = new MenuItemImpl()
                     .withCaption(caption)
                     .withIcon(icon)
-                    .withFontStyle("grey-font grey-icon")
+                    .withFontStyle("turquoise-font turquoise-font-icon")
                     .setChild(isChild);
             ((MenuItemImpl)menuItem).addClickListener(event -> UI.getCurrent().getNavigator().navigateTo(nagivateTo));
         }

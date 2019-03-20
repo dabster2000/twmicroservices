@@ -55,7 +55,7 @@ import static com.vaadin.server.Sizeable.Unit.PIXELS;
  */
 @AccessRules(roleTypes = {RoleType.USER, RoleType.EXTERNAL})
 @SpringView(name = DashboardView.VIEW_NAME)
-public class DashboardView extends VerticalLayout implements View {
+public class   DashboardView extends VerticalLayout implements View {
 
     private static final Logger logger = LoggerFactory.getLogger(DashboardView.class);
     /**

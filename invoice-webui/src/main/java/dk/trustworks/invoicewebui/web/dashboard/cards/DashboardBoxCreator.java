@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.dashboard.cards;
 
-import com.vaadin.server.ThemeResource;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.Work;
@@ -46,7 +45,7 @@ public class DashboardBoxCreator {
         // TODO: Count instead of load
         float goodPeopleLastYear = userStatusRepository.findAllActiveByDate(date).size();
         int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
-        return new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Good People", percent + "% more than last year", Math.round(goodPeopleNow)+"", "medium-blue");
+        return new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Good People", percent + "% more than last year", Math.round(goodPeopleNow)+"", "dark-blue");
     }
 
     @Cacheable("activeprojects")
@@ -79,7 +78,7 @@ public class DashboardBoxCreator {
         String projectsMoreOrLess = "more";
         if(percentProjects < 0) projectsMoreOrLess = "less";
         percentProjects = Math.abs(percentProjects);
-        return new TopCardContent("images/icons/ic_date_range_48pt_2x.png", "Active Projects", percentProjects+"% "+projectsMoreOrLess+" than last year", ""+currentProjectSet.size(), "dark-green");
+        return new TopCardContent("images/icons/trustworks_icon_kalender.svg", "Active Projects", percentProjects+"% "+projectsMoreOrLess+" than last year", ""+currentProjectSet.size(), "dark-blue");
     }
 
     @Cacheable("billablehours")
@@ -113,7 +112,7 @@ public class DashboardBoxCreator {
         int percentBillableHours = Math.round((billableHoursThisYear / billableHoursLastYear) * 100) - 100;
         String hoursMoreOrLess = "more";
         if(percentBillableHours < 0) hoursMoreOrLess = "less";
-        return new TopCardContent("images/icons/ic_access_time_48pt_2x.png", "Billable Hours", percentBillableHours+"% "+hoursMoreOrLess+" than last year", ""+Math.round(billableHoursThisYear), "orange");
+        return new TopCardContent("images/icons/trustworks_icon_ur.svg", "Billable Hours", percentBillableHours+"% "+hoursMoreOrLess+" than last year", ""+Math.round(billableHoursThisYear), "dark-blue");
     }
 
     @Cacheable("consultantsperproject")
@@ -142,13 +141,15 @@ public class DashboardBoxCreator {
 
         double percentNumberOfConsultantsPerProject = Math.round((numberOfConsultantsPerProject / numberOfConsultantsPerProjectOld) * 100) - 100;
 
+        /*
         TopCardDesign consultantsCard4 = new TopCardDesign();
         consultantsCard4.getImgIcon().setSource(new ThemeResource("images/icons/ic_people_black_48dp_2x.png"));
         consultantsCard4.getLblNumber().setValue(""+numberOfConsultantsPerProject);
         consultantsCard4.getLblTitle().setValue("Consultants per Project");
         consultantsCard4.getLblSubtitle().setValue(percentNumberOfConsultantsPerProject+"% "+numberOfConsultantsMoreOrLess+" than last year");
         consultantsCard4.getCardHolder().addStyleName("dark-grey");
-        return new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Consultants per Project", percentNumberOfConsultantsPerProject+"% "+numberOfConsultantsMoreOrLess+" than last year", ""+numberOfConsultantsPerProject, "dark-grey");
+        */
+        return new TopCardContent("images/icons/trustworks_icon_gruppe.svg", "Consultants per Project", percentNumberOfConsultantsPerProject+"% "+numberOfConsultantsMoreOrLess+" than last year", ""+numberOfConsultantsPerProject, "dark-blue");
     }
 
 }
