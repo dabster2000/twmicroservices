@@ -7,6 +7,7 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +22,8 @@ import java.util.Map;
 @Component
 public class DashboardBoxCreator {
 
+    private final UserService userService;
+
     private final UserStatusRepository userStatusRepository;
 
     private final WorkService workService;
@@ -30,7 +33,8 @@ public class DashboardBoxCreator {
     private final ContractService contractService;
 
     @Autowired
-    public DashboardBoxCreator(UserStatusRepository userStatusRepository, WorkService workService, GraphKeyValueRepository graphKeyValueRepository, ContractService contractService) {
+    public DashboardBoxCreator(UserService userService, UserStatusRepository userStatusRepository, WorkService workService, GraphKeyValueRepository graphKeyValueRepository, ContractService contractService) {
+        this.userService = userService;
         this.userStatusRepository = userStatusRepository;
         this.workService = workService;
         this.graphKeyValueRepository = graphKeyValueRepository;
@@ -40,7 +44,8 @@ public class DashboardBoxCreator {
     @Cacheable("goodpeople")
     public TopCardContent getGoodPeopleBox() {
         // TODO: Count instead of load: https://stackoverflow.com/questions/37569467/spring-data-jpa-get-the-values-of-a-non-entity-column-of-a-custom-native-query
-        float goodPeopleNow = userStatusRepository.findAllActive().size();
+        float goodPeopleNow = userService.countCurrentlyWorkingEmployees().size();
+        //float goodPeopleNow = userStatusRepository.findAllActive().size();
         String date = LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         // TODO: Count instead of load
         float goodPeopleLastYear = userStatusRepository.findAllActiveByDate(date).size();
