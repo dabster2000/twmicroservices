@@ -354,6 +354,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void loadExistingReceipts() {
         CustomerExpensesGrid customerExpensesGrid = new CustomerExpensesGrid();
+
         GridLayout gridExistingReceipts = customerExpensesGrid.getGridExistingReceipts();
 
         for (int i = 0; i < gridExistingReceipts.getColumns(); i++) {
@@ -402,6 +403,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             }
         });
 
+
         customerExpenses.getExpensesGridContainer().removeAllComponents();
         customerExpenses.getExpensesGridContainer().addComponent(customerExpensesGrid);
 
@@ -413,7 +415,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             System.out.println("rows = " + rows);
             gridExistingReceipts.addComponent(new MLabel(receipt.getReceiptdate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))), 0, rows);
             gridExistingReceipts.addComponent(new MLabel(receipt.getProject().getName()), 1, rows);
-            gridExistingReceipts.addComponent(new MLabel(receipt.getDescription()), 2, rows);
+            gridExistingReceipts.addComponent(new MLabel(receipt.getDescription()).withWidth(100, PERCENTAGE).withStyleName("cut_text"), 2, rows);
             gridExistingReceipts.addComponent(new MLabel(NumberConverter.formatCurrency(receipt.getAmount())), 3, rows);
             gridExistingReceipts.addComponent(new MButton("")
                     .withIcon(MaterialIcons.DELETE)
