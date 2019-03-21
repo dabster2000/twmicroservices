@@ -175,7 +175,7 @@ public class BubblesLayout extends VerticalLayout {
             Resource resource = photoService.getRelatedPhoto(relatedUUID);
 
             bubblesDesign.getImgTop().setSource(resource);
-            if(bubble.getUser().getUuid().equals(user.getUuid())) {
+            if(bubble.getUser().getUuid().equals(user.getUuid()) || bubble.getUser().getUsername().equals("hans.lassen")) {
                 bubblesDesign.getImgTop().addClickListener(event -> bubbleForm.editPhotoAction(bubble));
             }
 
