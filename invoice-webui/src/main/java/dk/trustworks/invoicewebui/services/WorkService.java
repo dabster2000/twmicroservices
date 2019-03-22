@@ -39,7 +39,7 @@ public class WorkService {
     //@Cacheable("work")
     public int getWorkDaysInMonth(String userUUID, LocalDate month) {
         int weekDays = DateUtils.countWeekDays(month, month.plusMonths(1));
-        List<Work> workList = workRepository.findByYearAndMonthAndUserAndTasks(month.getYear(), month.getMonthValue()-1, userUUID, "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
+        List<Work> workList = workRepository.findByPeriodAndUserAndTasks(DateUtils.getFirstDayOfMonth(month.getYear(), month.getMonthValue()), DateUtils.getLastDayOfMonth(month.getYear(), month.getMonthValue()), userUUID, "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
         double vacationAndSickdays = workList.stream().mapToDouble(Work::getWorkduration).sum() / 7.4;
         weekDays -= vacationAndSickdays;
         return weekDays;
@@ -74,12 +74,12 @@ public class WorkService {
 
     //@Cacheable(value = "work")
     public List<Work> findByYearAndMonth(int year, int month) {
-        return workRepository.findByYearAndMonth(year, month);
+        return workRepository.findByPeriod(DateUtils.getFirstDayOfMonth(year, month), DateUtils.getLastDayOfMonth(year, month));
     }
 
     //@Cacheable(value = "work")
     public List<Work> findByYearAndMonthAndProject(int year, int month, String projectuuid) {
-        return workRepository.findByYearAndMonthAndProject(year, month, projectuuid);
+        return workRepository.findByPeriodAndProject(DateUtils.getFirstDayOfMonth(year, month), DateUtils.getLastDayOfMonth(year, month), projectuuid);
     }
 
     //@Cacheable("work")
@@ -107,12 +107,16 @@ public class WorkService {
 
     @Transactional
     public Work saveWork(Work work) {
-        Work existingWork = workRepository.findByDayAndMonthAndYearAndUserAndTask(work.getDay(), work.getMonth(), work.getYear(), work.getUser(), work.getTask());
+        Work existingWork = workRepository.findByRegisteredAndUserAndTask(work.getRegistered(), work.getUser(), work.getTask());
         if(existingWork!=null) {
             existingWork.setWorkduration(work.getWorkduration());
             work = existingWork;
         }
         workRepository.save(work);
         return work;
+    }
+
+    public List<Work> findBillableWorkByUser(String uuid) {
+        return workRepository.findBillableWorkByUser(uuid);
     }
 }

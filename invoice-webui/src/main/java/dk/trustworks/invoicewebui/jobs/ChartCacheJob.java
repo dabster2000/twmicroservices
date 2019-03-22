@@ -65,13 +65,12 @@ public class ChartCacheJob {
     private void loadBurndownRateForSingleContract(Contract mainContract) {
         Map<LocalDate, Double> runningBudget = new TreeMap<>();
         double budget = mainContract.getAmount();
-        for (Work work : contractService.getWorkOnContractByUser(mainContract).stream().sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).thenComparing(Work::getDay)).collect(Collectors.toList())) {
+        for (Work work : contractService.getWorkOnContractByUser(mainContract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList())) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
             Optional<ContractConsultant> optionalConsultant = mainContract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;
             budget -= (work.getWorkduration() * optionalConsultant.get().getRate());
-            LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay());
-            runningBudget.put(workDate, budget);
+            runningBudget.put(work.getRegistered(), budget);
         }
         burndownCache.put(mainContract.getUuid(), runningBudget);
     }

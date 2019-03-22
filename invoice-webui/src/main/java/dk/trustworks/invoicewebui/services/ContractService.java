@@ -6,6 +6,7 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -106,18 +107,18 @@ public class ContractService {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
         if(work.getWorkas()==null) {
-            return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+            return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         } else {
-            return contractRepository.findConsultantRateByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+            return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         }
     }
 
     public Contract findContractByWork(Work work, ContractStatus... statusList) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
         if(work.getWorkas()==null) {
-            return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
+            return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
         } else {
-            return contractRepository.findContractByWork(work.getYear() + "-" + (work.getMonth() + 1) + "-01", work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
+            return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
         }
     }
 
@@ -207,11 +208,11 @@ public class ContractService {
     public LocalDatePeriod getUsersFirstAndLastWorkOnProject(Project project, User user) {
         if(project.getTasks().size() == 0) return null;
         List<Work> workList = workService.findByUserAndTasks(user.getUuid(), project.getTasks());
-        Optional<Work> workMin = workList.stream().min(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
-        Optional<Work> workMax = workList.stream().max(Comparator.comparing(o -> LocalDate.of(o.getYear(), o.getMonth()+1, o.getDay())));
+        Optional<Work> workMin = workList.stream().min(Comparator.comparing(Work::getRegistered));
+        Optional<Work> workMax = workList.stream().max(Comparator.comparing(Work::getRegistered));
         return workMin.map(work -> new LocalDatePeriod(
-                LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay()),
-                LocalDate.of(workMax.get().getYear(), workMax.get().getMonth() + 1, workMax.get().getDay())
+                work.getRegistered(),
+                workMax.get().getRegistered()
         )).orElse(null);
     }
 
@@ -234,14 +235,14 @@ public class ContractService {
 
     public Collection<String> createErrorList(Map<String, Work> errors) {
         SortedMap<String, String> errorList = new TreeMap<>();
-        for (Work work : errors.values().stream().filter(work -> work.getWorkduration()>0).sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).reversed()).collect(Collectors.toList())) {
+        for (Work work : errors.values().stream().filter(work -> work.getWorkduration()>0).sorted(Comparator.comparing(Work::getRegistered).reversed()).collect(Collectors.toList())) {
             String client = work.getTask().getProject().getClient().getName();
             String project = work.getTask().getProject().getName();
             String username = work.getUser().getUsername();
             String error = "There is no valid contract for " + username +
                     " work on " + client +
                     "'s project " + project +
-                    " on date " + (work.getMonth() + 1) + "/" + work.getYear();
+                    " on date " + (work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             errorList.put(client+project+username, error);
         }
         return errorList.values();

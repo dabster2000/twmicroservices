@@ -50,8 +50,7 @@ public class ProjectManagerJob {
             taskLoop:
             for (Task task : project.getTasks()) {
                 for (Work work : task.getWorkList()) {
-                    LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay());
-                    if(workDate.isAfter(dateThreeMonthsAgo)) {
+                    if(work.getRegistered().isAfter(dateThreeMonthsAgo)) {
                         projectHasWork = true;
                         break taskLoop;
                     }

@@ -12,6 +12,7 @@ import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.web.model.StatusItem;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class StatusImpl extends StatusDesign implements Box {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
-        org.joda.time.LocalDate dateThreeMonthsAgo = org.joda.time.LocalDate.now().minusMonths(3);
+        LocalDate dateThreeMonthsAgo = LocalDate.now().minusMonths(3);
 
         getEventGrid().setColumnExpandRatio(1, 1.0f);
         List<StatusItem> statusItems = new ArrayList<>();
@@ -38,8 +39,7 @@ public class StatusImpl extends StatusDesign implements Box {
             taskLoop:
             for (Task task : project.getTasks()) {
                 for (Work work : task.getWorkList()) {
-                    org.joda.time.LocalDate workDate = new org.joda.time.LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
-                    if(workDate.isAfter(dateThreeMonthsAgo)) {
+                    if(work.getRegistered().isAfter(dateThreeMonthsAgo)) {
                         projectHasWork = true;
                         break taskLoop;
                     }

@@ -7,9 +7,10 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,7 +31,7 @@ public class CheckTimeRegistrationJob {
     static final Logger log = Logger.getLogger(CheckTimeRegistrationJob.class.getName());
 
     @Autowired
-    private WorkRepository workRepository;
+    private WorkService workService;
 
     @Autowired
     private UserService userService;
@@ -49,8 +50,8 @@ public class CheckTimeRegistrationJob {
         LocalDate dateTime = LocalDate.now();
         Map<String, Work> uniqueWork = new HashMap<>();
         List<Work> failedWork = new ArrayList<>();
-        for (Work work : workRepository.findByYearAndMonth(dateTime.getYear(), dateTime.getMonthValue() - 1)) {
-            String key = work.getUser().getUuid()+""+work.getTask().getUuid()+""+work.getYear()+""+work.getMonth()+""+work.getDay();
+        for (Work work : workService.findByPeriod(DateUtils.getFirstDayOfMonth(dateTime), DateUtils.getLastDayOfMonth(dateTime))) {
+            String key = work.getUser().getUuid()+""+work.getTask().getUuid()+""+work.getRegistered().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             if(uniqueWork.containsKey(key)) {
                 failedWork.add(work);
             } else {
@@ -61,7 +62,7 @@ public class CheckTimeRegistrationJob {
         if(failedWork.size() > 0) {
             String text = "";
             for (Work work : failedWork) {
-                text = work.getUser().getUsername() + " duplicate entry " + work.getTask().getName() + " on " + work.getYear() + "." + (work.getMonth()+1) + "." + work.getDay();
+                text = work.getUser().getUsername() + " duplicate entry " + work.getTask().getName() + " on " + work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             }
             ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@hans", text);
             textMessage3.setAs_user(true);
@@ -88,7 +89,7 @@ public class CheckTimeRegistrationJob {
         }
         log.info("dateTime = " + dateTime);
 
-        List<Work> allWork = workRepository.findByPeriod(dateTime.minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        List<Work> allWork = workService.findByPeriod(dateTime.minusDays(1), dateTime);
         log.info("workByYearMonthDay.size() = " + allWork.size());
 
         for (User user : userService.findCurrentlyWorkingEmployees()) {

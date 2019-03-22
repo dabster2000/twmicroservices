@@ -58,13 +58,12 @@ public class ConsultantsBudgetRealizationChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantBillableHoursByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd"))).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
+        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantBillableHoursByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
 
         String[] categories = new String[amountPerItemList.size()+5];
         DataSeries revenueList = new DataSeries("Realization");
 
         Map<String, Double> budgetPerUser = new HashMap<>();
-        Map<String, Double> prebookingPerUser = new HashMap<>();
 
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);//, LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()));
 

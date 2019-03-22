@@ -17,13 +17,13 @@ import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import tm.kod.widgets.numberfield.NumberField;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,7 +55,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
     @Autowired
     private TimeService timeService;
 
-    private LocalDate currentDate = LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
+    private LocalDate currentDate = null; //LocalDate.now().withDayOfWeek(1);//new LocalDate(2017, 02, 015);//LocalDate.now();
 
     public TimeManagerImpl() {
         getBtnWeekNumberDecr().addClickListener(event -> {
@@ -156,8 +156,8 @@ public class TimeManagerImpl extends TimeManagerDesign {
             });
 
             addTaskButton.addClickListener(event1 -> {
-                weekRepository.save(new Week(UUID.randomUUID().toString(),
-                        currentDate.getWeekOfWeekyear(),
+                weekRepository.save(new Week(UUID.randomUUID().toString(),1, //TODO: FIX
+                        //currentDate.getWeekOfWeekyear(),
                         currentDate.getYear(),
                         getSelActiveUser().getValue(),
                         taskComboBox.getSelectedItem().get()));
@@ -174,58 +174,38 @@ public class TimeManagerImpl extends TimeManagerDesign {
             log.info("saveDate = " + saveDate);
             log.info("event.getBean() = " + event.getBean());
             workService.save(new Work(
-                    saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear()-1,
-                    saveDate.getYear(),
+                    saveDate,
                     NumberConverter.parseDouble(event.getBean().getMon()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
             workService.save(new Work(
-                    saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear()-1,
-                    saveDate.getYear(),
-                    NumberConverter.parseDouble(event.getBean().getTue()),
+                    saveDate, NumberConverter.parseDouble(event.getBean().getTue()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
             workService.save(new Work(
-                    saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear()-1,
-                    saveDate.getYear(),
-                    NumberConverter.parseDouble(event.getBean().getWed()),
+                    saveDate, NumberConverter.parseDouble(event.getBean().getWed()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
             workService.save(new Work(
-                    saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear()-1,
-                    saveDate.getYear(),
-                    NumberConverter.parseDouble(event.getBean().getThu()),
+                    saveDate, NumberConverter.parseDouble(event.getBean().getThu()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
             workService.save(new Work(
-                    saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear()-1,
-                    saveDate.getYear(),
-                    NumberConverter.parseDouble(event.getBean().getFri()),
+                    saveDate, NumberConverter.parseDouble(event.getBean().getFri()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
             workService.save(new Work(
-                    saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear()-1,
-                    saveDate.getYear(),
-                    NumberConverter.parseDouble(event.getBean().getSat()),
+                    saveDate, NumberConverter.parseDouble(event.getBean().getSat()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             saveDate = saveDate.plusDays(1);
             workService.save(new Work(
-                    saveDate.getDayOfMonth(),
-                    saveDate.getMonthOfYear()-1,
-                    saveDate.getYear(),
-                    NumberConverter.parseDouble(event.getBean().getSun()),
+                    saveDate, NumberConverter.parseDouble(event.getBean().getSun()),
                     event.getBean().getUser(),
                     event.getBean().getTask()));
             loadData(getSelActiveUser().getSelectedItem().get());
@@ -339,13 +319,17 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private void loadData(User user) {
         log.info("TimeManagerImpl.loadData");
         log.info("user = [" + user + "]");
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.withDayOfWeek(7).getWeekOfWeekyear(), currentDate.withDayOfWeek(7).getYear(), user);
-        log.info("weeks.size() = " + weeks.size());
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(
+                1, //TODO: FIX
+                1, user); //TODO: FIX);
+                //currentDate.withDayOfWeek(7).getWeekOfWeekyear(),
+                //currentDate.withDayOfWeek(7).getYear(), user);
+        //log.info("weeks.size() = " + weeks.size());
         if(weeks.size()>0) getBtnCopyWeek().setEnabled(false);
         else getBtnCopyWeek().setEnabled(true);
-        LocalDate startOfWeek = currentDate.withDayOfWeek(1);
+        LocalDate startOfWeek = LocalDate.now(); //TODO: FIX currentDate.withDayOfWeek(1);
         log.info("startOfWeek = " + startOfWeek);
-        LocalDate endOfWeek = currentDate.withDayOfWeek(7);
+        LocalDate endOfWeek = LocalDate.now(); //TODO: FIX currentDate.withDayOfWeek(7);
         log.info("endOfWeek = " + endOfWeek);
         List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
         log.info("workResources.size() = " + workResources.size());
@@ -368,7 +352,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
                 log.info("work = " + work);
                 sumHours += work.getWorkduration();
-                LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
+                //LocalDate workDate = new LocalDate(work.getYear(), work.getMonth()+1, work.getDay());
                 // TODO: FIX IT!!
                 //TimeManagerLayout.setWeekItemAmounts(weekItem, work, workDate);
             }
@@ -391,11 +375,11 @@ public class TimeManagerImpl extends TimeManagerDesign {
 
     private void setDateFields() {
         log.info("TimeManagerImpl.setDateFields");
-        getTxtWeekNumber().setValue(currentDate.getWeekOfWeekyear()+"");
-        log.info("Text Weeknumber = " + currentDate.getWeekOfWeekyear());
-        getTxtYear().setValue(currentDate.withDayOfWeek(7).getYear()+"");
-        log.info("Text Year = " + currentDate.withDayOfWeek(7).getYear());
-        getLblCurrentDate().setValue(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy"));
-        log.info("Top Dates = "+(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy")));
+        //getTxtWeekNumber().setValue(currentDate.getWeekOfWeekyear()+"");
+        //log.info("Text Weeknumber = " + currentDate.getWeekOfWeekyear());
+        //getTxtYear().setValue(currentDate.withDayOfWeek(7).getYear()+"");
+        //log.info("Text Year = " + currentDate.withDayOfWeek(7).getYear());
+        //getLblCurrentDate().setValue(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy"));
+        //log.info("Top Dates = "+(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy")));
     }
 }

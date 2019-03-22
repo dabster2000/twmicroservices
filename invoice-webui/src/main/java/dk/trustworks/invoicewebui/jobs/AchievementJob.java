@@ -29,7 +29,6 @@ public class AchievementJob {
 
     private final AchievementRepository achievementRepository;
     private final UserService userService;
-    private final WorkRepository workRepository;
     private final WorkService workService;
     private final ReminderHistoryRepository reminderHistoryRepository;
     private final CKOExpenseRepository ckoExpenseRepository;
@@ -40,10 +39,9 @@ public class AchievementJob {
 
 
     @Autowired
-    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkRepository workRepository, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository) {
+    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository) {
         this.achievementRepository = achievementRepository;
         this.userService = userService;
-        this.workRepository = workRepository;
         this.workService = workService;
         this.reminderHistoryRepository = reminderHistoryRepository;
         this.ckoExpenseRepository = ckoExpenseRepository;
@@ -143,7 +141,7 @@ public class AchievementJob {
         List<Work> workList = workService.findVacationByUser(user);
         int[] months = new int[12];
         for (Work work : workList) {
-            if(work.getWorkduration() >= 7.4) months[work.getMonth()] += 1;
+            if(work.getWorkduration() >= 7.4) months[work.getRegistered().getMonthValue()-1] += 1;
         }
         for (int month : months) {
             if(month == 0) return false;
@@ -182,8 +180,7 @@ public class AchievementJob {
         List<Work> workList = workService.findVacationByUser(user);
         int[] weeks = new int[53];
         for (Work work : workList) {
-            LocalDate date = LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay());
-            int week = date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+            int week = work.getRegistered().get(ChronoField.ALIGNED_WEEK_OF_YEAR);
             if(work.getWorkduration() > 7.4) weeks[week-1] += 1;
         }
         for (int week : weeks) {
@@ -221,7 +218,7 @@ public class AchievementJob {
     }
 
     private boolean isWortyOfWorkWeekAchievement(User user, int minWork) {
-        List<Work> workList = workRepository.findBillableWorkByUser(user.getUuid());
+        List<Work> workList = workService.findBillableWorkByUser(user.getUuid());
         Map<String, Double> hoursPerWeekMap = getHoursPerWeek(workList);
         if(hoursPerWeekMap.size()==0) return false;
 
@@ -232,8 +229,7 @@ public class AchievementJob {
     private Map<String, Double> getHoursPerWeek(List<Work> workList) {
         Map<String, Double> hoursPerWeekMap = new HashMap<>();
         for (Work work : workList) {
-            LocalDate date = LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay());
-            String key = date.getYear() + "" + date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+            String key = work.getRegistered().getYear() + "" + work.getRegistered().get(ChronoField.ALIGNED_WEEK_OF_YEAR);
             hoursPerWeekMap.putIfAbsent(key, 0.0);
             double hours = hoursPerWeekMap.get(key);
             hours += work.getWorkduration();

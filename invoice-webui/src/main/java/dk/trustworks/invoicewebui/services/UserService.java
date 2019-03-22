@@ -135,9 +135,14 @@ public class UserService {
     }
 
     public boolean isEmployed(User user) {
+        System.out.println("UserService.isEmployed");
+        System.out.println("user = [" + user + "]");
+        return findCurrentlyWorkingEmployees().stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
+        /*
         List<UserStatus> statuses = user.getStatuses();
         UserStatus userStatus = statuses.stream().max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus());
         return !userStatus.getStatus().equals(StatusType.TERMINATED);
+        */
     }
 
     @Transactional

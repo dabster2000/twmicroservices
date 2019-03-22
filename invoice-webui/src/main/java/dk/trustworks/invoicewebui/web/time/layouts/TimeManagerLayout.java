@@ -480,8 +480,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
                 sumHours += work.getWorkduration();
                 sumTask += work.getWorkduration();
-                LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay());
-                setWeekItemAmounts(weekItem, work, workDate);
+                setWeekItemAmounts(weekItem, work, work.getRegistered());
             }
             weekItem.setBudgetleft(sumTask);
 
@@ -856,9 +855,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
             double newValue = event.getValue().equals("")?0.0:nf.parse(event.getValue()).doubleValue();
             Work work;
             if(weekItem.getWorkas()==null) {
-                work = new Work(workDate.getDayOfMonth(), workDate.getMonthValue() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask());
+                work = new Work(workDate, newValue, weekItem.getUser(), weekItem.getTask());
             } else {
-                work = new Work(workDate.getDayOfMonth(), workDate.getMonthValue() - 1, workDate.getYear(), newValue, weekItem.getUser(), weekItem.getTask(), weekItem.getWorkas());
+                work = new Work(workDate, newValue, weekItem.getUser(), weekItem.getTask(), weekItem.getWorkas());
             }
             workService.saveWork(work);
             if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));

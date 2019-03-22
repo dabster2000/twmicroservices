@@ -4,6 +4,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,7 @@ public class GetVacationJob {
         Map<String, Map<String, Double>> userVacationByMonth = new HashMap<>();
 
         for (Work work : workList) {
-            LocalDate month = LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay()).withDayOfMonth(1);
+            LocalDate month = DateUtils.getFirstDayOfMonth(work.getRegistered());
             dates.add(month.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             userVacationByMonth.putIfAbsent(work.getUser().getUuid(), new TreeMap<>());
             Map<String, Double> vacationByMonth = userVacationByMonth.get(work.getUser().getUuid());

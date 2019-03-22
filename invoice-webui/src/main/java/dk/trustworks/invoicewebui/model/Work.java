@@ -12,9 +12,7 @@ public class Work {
 
     @Id
     private int id;
-    private int day;
-    private int month;
-    private int year;
+    private LocalDate registered;
     private double workduration;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,19 +30,15 @@ public class Work {
     public Work() {
     }
 
-    public Work(int day, int month, int year, double workduration, User user, Task task) {
-        this.day = day;
-        this.month = month;
-        this.year = year;
+    public Work(LocalDate registered, double workduration, User user, Task task) {
+        this.registered = registered;
         this.workduration = workduration;
         this.user = user;
         this.task = task;
     }
 
-    public Work(int day, int month, int year, double workduration, User user, Task task, User workas) {
-        this.day = day;
-        this.month = month;
-        this.year = year;
+    public Work(LocalDate registered, double workduration, User user, Task task, User workas) {
+        this.registered = registered;
         this.workduration = workduration;
         this.user = user;
         this.task = task;
@@ -59,28 +53,12 @@ public class Work {
         this.id = id;
     }
 
-    public int getDay() {
-        return day;
+    public LocalDate getRegistered() {
+        return registered;
     }
 
-    public void setDay(int day) {
-        this.day = day;
-    }
-
-    public int getMonth() {
-        return month;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
+    public void setRegistered(LocalDate registered) {
+        this.registered = registered;
     }
 
     public double getWorkduration() {
@@ -115,15 +93,10 @@ public class Work {
         this.workas = workas;
     }
 
-    public LocalDate getDate() {
-        return LocalDate.of(year, month+1, day);
-    }
-
     @Override
     public String toString() {
         return "Work{" +
                 "id='" + id + '\'' +
-                ", date=" + getDate() +
                 ", workduration=" + workduration +
                 ", task=" + task.getUuid() +
                 ", user=" + user.getUuid() +

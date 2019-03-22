@@ -33,6 +33,14 @@ public class DateUtils {
         return month.atDay(1);
     }
 
+    public static LocalDate getFirstDayOfMonth(int year, int month) {
+        return getFirstDayOfMonth(LocalDate.of(year, month, 1));
+    }
+
+    public static LocalDate getLastDayOfMonth(int year, int month) {
+        return getLastDayOfMonth(LocalDate.of(year, month, 1));
+    }
+
     public static LocalDate getLastDayOfMonth(LocalDate localDate) {
         YearMonth month = YearMonth.from(localDate);
         return month.atEndOfMonth();

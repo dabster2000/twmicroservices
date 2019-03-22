@@ -453,12 +453,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
             unit = "quarters";
             temporalAdjuster = new FirstDayOfQuarter();
         }
-        List<Work> workList = contractService.getWorkOnContractByUser(contract).stream().sorted(Comparator.comparing(Work::getYear).thenComparing(Work::getMonth).thenComparing(Work::getDay)).collect(Collectors.toList());
+        List<Work> workList = contractService.getWorkOnContractByUser(contract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList());
         for (Work work : workList) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
             Optional<ContractConsultant> optionalConsultant = contract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;
-            LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth()+1, work.getDay()).with(temporalAdjuster);
+            LocalDate workDate = work.getRegistered().with(temporalAdjuster);
             Map<LocalDate, Double> runningBudget;
             if(!userMapMap.containsKey(work.getUser())) {
                 userMapMap.put(work.getUser(), new TreeMap<>());

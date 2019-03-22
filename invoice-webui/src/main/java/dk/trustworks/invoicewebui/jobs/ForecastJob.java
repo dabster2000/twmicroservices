@@ -6,6 +6,7 @@ import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class ForecastJob {
         String pattern = "yyyy-MM-dd";
         Map<String, Double> workByDate = new HashMap<>();
         for (Work work : workRepository.findByPeriod(startDate.format(DateTimeFormatter.ofPattern(pattern)), now.format(DateTimeFormatter.ofPattern(pattern)))) {
-            String dateString = LocalDate.of(work.getYear(), work.getMonth()+1, 1).format(DateTimeFormatter.ofPattern(pattern));
+            String dateString = DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern(pattern));
             if(!workByDate.containsKey(dateString)) {
                 workByDate.put(dateString, 0.0);
             }
