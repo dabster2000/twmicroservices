@@ -157,7 +157,7 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
         long start = System.currentTimeMillis();
         logger.debug("start = " + start);
         createErrorList(errorCard);
-        List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue() - 1);
+        List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(cbSelectYearMonth.getValue().getDate().getYear(), cbSelectYearMonth.getValue().getDate().getMonthValue());
 
         gridProjectSummaryList.setDataProvider(DataProvider.ofCollection(projectSummaries));
         gridProjectSummaryList.getDataProvider().refreshAll();

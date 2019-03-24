@@ -39,7 +39,7 @@ public class WorkService {
     //@Cacheable("work")
     public int getWorkDaysInMonth(String userUUID, LocalDate month) {
         int weekDays = DateUtils.countWeekDays(month, month.plusMonths(1));
-        List<Work> workList = workRepository.findByPeriodAndUserAndTasks(DateUtils.getFirstDayOfMonth(month.getYear(), month.getMonthValue()), DateUtils.getLastDayOfMonth(month.getYear(), month.getMonthValue()), userUUID, "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
+        List<Work> workList = workRepository.findByPeriodAndUserAndTasks(DateUtils.getFirstDayOfMonth(month.getYear(), month.getMonthValue()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(month.getYear(), month.getMonthValue()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), userUUID, "02bf71c5-f588-46cf-9695-5864020eb1c4", "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
         double vacationAndSickdays = workList.stream().mapToDouble(Work::getWorkduration).sum() / 7.4;
         weekDays -= vacationAndSickdays;
         return weekDays;
@@ -74,12 +74,12 @@ public class WorkService {
 
     //@Cacheable(value = "work")
     public List<Work> findByYearAndMonth(int year, int month) {
-        return workRepository.findByPeriod(DateUtils.getFirstDayOfMonth(year, month), DateUtils.getLastDayOfMonth(year, month));
+        return workRepository.findByPeriod(DateUtils.getFirstDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
     //@Cacheable(value = "work")
     public List<Work> findByYearAndMonthAndProject(int year, int month, String projectuuid) {
-        return workRepository.findByPeriodAndProject(DateUtils.getFirstDayOfMonth(year, month), DateUtils.getLastDayOfMonth(year, month), projectuuid);
+        return workRepository.findByPeriodAndProject(DateUtils.getFirstDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), projectuuid);
     }
 
     //@Cacheable("work")

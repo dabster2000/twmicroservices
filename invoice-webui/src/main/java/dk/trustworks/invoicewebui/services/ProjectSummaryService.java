@@ -53,14 +53,14 @@ public class ProjectSummaryService {
         logger.info("InvoiceController.loadProjectSummaryByYearAndMonth");
         logger.info("year = [" + year + "], month = [" + month + "]");
         logger.info("LOAD findByYearAndMonth");
-        LocalDate periodFrom = LocalDate.of(year, month + 1, 1);
+        LocalDate periodFrom = LocalDate.of(year, month, 1);
         System.out.println("periodFrom = " + periodFrom);
         LocalDate periodTo = periodFrom.withDayOfMonth(periodFrom.getMonth().length(periodFrom.isLeapYear()));
         System.out.println("periodTo = " + periodTo);
         List<Work> workResources = workService.findByYearAndMonth(year, month);
         logger.info("workResources.size() = " + workResources.size());
 
-        Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month);
+        Collection<Invoice> invoices = invoiceClient.findByYearAndMonth(year, month-1);
 
         Map<String, ProjectSummary> projectSummaryMap = new HashMap<>();
 
