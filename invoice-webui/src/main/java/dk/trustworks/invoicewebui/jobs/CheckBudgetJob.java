@@ -5,17 +5,26 @@ import allbegray.slack.type.Attachment;
 import allbegray.slack.type.Field;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
-import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.UserBooking;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -25,21 +34,27 @@ public class CheckBudgetJob {
 
     private final UserService userService;
 
+    private final ClientRepository clientRepository;
+
+    private final StatisticsService statisticsService;
+
     @Value("${motherSlackBotToken}")
     private String motherSlackToken;
 
     @Autowired
-    public CheckBudgetJob(UserService userService) {
+    public CheckBudgetJob(UserService userService, ClientRepository clientRepository, StatisticsService statisticsService) {
         this.userService = userService;
+        this.clientRepository = clientRepository;
+        this.statisticsService = statisticsService;
     }
 
     @PostConstruct
     public void startup() {
-        //checkBudgetJob();
+        checkBudgetJob();
     }
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
-    //@Scheduled(cron = "0 30 10 8,18 * ?")
+    @Scheduled(cron = "0 30 10 8,18 * ?")
     public void checkBudgetJob() {
         SlackWebApiClient motherWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
         log.info("CheckBudgetJob.execute");
@@ -55,66 +70,44 @@ public class CheckBudgetJob {
             businessDaysInMonth[i] = getWorkingDaysBetweenTwoDates(localDateStart.plusMonths(i).toDate(), localDateStart.plusMonths(i+1).toDate());
         }
 
-        List<User> activeUsers = userService.findCurrentlyWorkingEmployees();
+        List<UserBooking> bookingList = statisticsService.getUserBooking(3, 0);
+
+
+        List<User> activeUsers = userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT);
 
         for (User user : activeUsers) {
             log.info("--- " + user + " ---");
             //if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
-            String message = "*Here is a quick summary of "+localDateStart.monthOfYear().getAsText()+"*\n\n" +
+            String message = "*Here is a quick summary of your project allocation for the next three months*\n\n" +
                     "According to my calculations there is "+businessDaysInMonth[0]+" work days in "+localDateStart.monthOfYear().getAsText()+", " +
-                    ""+businessDaysInMonth[1]+" days in "+localDateStart.plusMonths(1).monthOfYear().getAsText()+" " +
-                    ", and "+businessDaysInMonth[1]+" in "+localDateStart.plusMonths(2).monthOfYear().getAsText()+".\n\n";
+                    ""+businessDaysInMonth[1]+" days in "+localDateStart.plusMonths(1).monthOfYear().getAsText()+", " +
+                    "and "+businessDaysInMonth[1]+" in "+localDateStart.plusMonths(2).monthOfYear().getAsText()+".\n\n";
 
-            message += "You have the following tasks assigned in "+localDateStart.monthOfYear().getAsText()+":\n";
+            List<UserBooking> userBookingList = bookingList.stream().filter(userBooking -> userBooking.getUsername().equals(user.getUsername())).flatMap(userBooking -> userBooking.getSubProjects().stream()).collect(Collectors.toList());
 
-            //double[] totalBudget = new double[3];
-
-
-            Map<Task, double[]> budgetMap = new HashMap<>();
-            /*
-            for (Budget budget : budgetRepository.findByPeriodAndUseruuid(
-                    Integer.parseInt(localDateStart.toString("yyyyMMdd")),
-                    Integer.parseInt(localDateEnd.minusDays(1).toString("yyyyMMdd")),
-                    user.getUuid()).stream().filter(budget -> budget.getBudget()>0.0).collect(Collectors.toList())) {
-                log.info("*************************");
-                log.info("budget = " + budget);
-
-                Double rate = contractService.findConsultantRate(budget.getYear(), budget.getMonth(), 1, budget.getUser(), budget.getTask());
-                if (rate == null) continue;
-
-                Task task = budget.getTask();
-
-                if (!budgetMap.containsKey(task)) {
-                    double[] budgetNumbers = {0.0, 0.0, 0.0};
-                    budgetMap.put(task, budgetNumbers);
-                }
-                double[] doubles = budgetMap.get(task);
-                double budgetHours = (budget.getBudget() / rate);
-                if((budget.getMonth() - (localDateStart.getMonthOfYear() - 1))>3) continue;
-                log.info("Month ("+(budget.getMonth() - (localDateStart.getMonthOfYear() - 1))+") " +
-                        "now has "+budgetHours+" budget hours.");
-                doubles[budget.getMonth() - (localDateStart.getMonthOfYear() - 1)] = budgetHours;
-
+            if(userBookingList.size() > 0) {
+                message += "You have the following allocation in the next three months" + ":\n";
+            } else {
+                message += "You are not assigned to projects the upcoming 3 months.\n";
             }
-            */
 
             List<Attachment> attachments = new ArrayList<>();
-            for (Task task : budgetMap.keySet()) {
+            for (UserBooking userBooking : userBookingList) {
                 log.info("*** creating attachments ***");
                 Attachment attachment = new Attachment();
-                attachment.setTitle(task.getProject().getName());
-                attachment.setText(task.getName());
-                if(task.getProject().getOwner()!=null) attachment.setFooter("Project lead: "+task.getProject().getOwner().getUsername());
+                attachment.setTitle(clientRepository.findOne(userBooking.getUuid()).getName());
+                attachment.setText(userBooking.getUsername());
+                //if(task.getProject().getOwner()!=null) attachment.setFooter("Project lead: "+task.getProject().getOwner().getUsername());
                 attachment.setColor("#fbb14d");
                 attachments.add(attachment);
 
-                for (int i = 0; i < budgetMap.get(task).length; i++) {
-                    log.info("Budget for "+localDateStart.plusMonths(i).monthOfYear().getAsText());
-                    log.info((Math.round(budgetMap.get(task)[i]*100.0)/100.0)+" hours");
-                    attachment.addField(new Field("Budget for "+localDateStart.plusMonths(i).monthOfYear().getAsText(), (Math.round(budgetMap.get(task)[i]*100.0)/100.0)+" hours", true));
+                for (int i = 0; i < 3; i++) {
+                    attachment.addField(new Field("Budget for "+localDateStart.plusMonths(i).monthOfYear().getAsText(), (NumberUtils.round(userBooking.getAmountItemsPerProjects(i), 2)+" hours"), true));
                 }
             }
+
             ChatPostMessageMethod textMessage = new ChatPostMessageMethod(user.getSlackusername(), message);
+            //ChatPostMessageMethod textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), message);
             textMessage.setAs_user(true);
             textMessage.setAttachments(attachments);
             //if(user.getUsername().equalsIgnoreCase("hans.lassen")) {
@@ -124,6 +117,7 @@ public class CheckBudgetJob {
 
             int[] userCapacities = capacitypermonthbyuser(user.getUuid(), localDateStart, localDateEnd);
 
+            /*
             log.info("*** creating totalbudget month ***");
             double[] totalBudgetMonth = new double[3];
             for (double[] doubles : budgetMap.values()) {
@@ -148,12 +142,13 @@ public class CheckBudgetJob {
                 allocationPercent[j] = Math.round((totalBudgetMonth[j] / ((userCapacities[j] / 5) * businessDaysInMonth[j])) * 100);
                 log.info("allocation is "+allocationPercent[j]);
             }
-
+*/
             String concludingMessage = "";
 
             concludingMessage += "If this seems ok, do nothing. If this seems wrong, please contact your project leads and tell them to fix it!";
 
             //textMessage = new ChatPostMessageMethod("@"+slackUser.getName(), concludingMessage);
+            //textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), concludingMessage);
             textMessage = new ChatPostMessageMethod(user.getSlackusername(), concludingMessage);
             textMessage.setAs_user(true);
 
@@ -162,11 +157,12 @@ public class CheckBudgetJob {
                 motherWebApiClient.postMessage(textMessage);
             //}
 
-
+/*
             ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", "User "+user.getUsername()+" has "+allocationPercent[0]+"% and "+allocationPercent[1]+"% and "+allocationPercent[2]+"% allocation.");
             textMessage2.setAs_user(true);
             log.info("Sending message to admin");
             motherWebApiClient.postMessage(textMessage2);
+            */
 /*
             if(allocationPercentMonthOne < 75.0 || allocationPercentMonthOne > 100.0 || allocationPercentMonthTwo < 75.0 || allocationPercentMonthTwo > 100.0) {
                 ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@tobias_kjoelsen", "User " + user.username + " has " + allocationPercentMonthOne + "% and " + allocationPercentMonthTwo + "% allocation.");

@@ -7,12 +7,13 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.BudgetNew;
+import dk.trustworks.invoicewebui.model.Consultant;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
-import dk.trustworks.invoicewebui.model.dto.UserProjectBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
@@ -20,11 +21,7 @@ import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,22 +53,22 @@ public class SalesHeatMap {
 
     private final WorkService workService;
 
-    private final UserService userService;
-
     private final PhotoService photoService;
+
+    private final StatisticsService statisticsService;
 
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService, UserService userService, PhotoService photoService) {
+    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService, UserService userService, PhotoService photoService, StatisticsService statisticsService) {
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
         this.clientRepository = clientRepository;
         this.contractService = contractService;
         this.workService = workService;
-        this.userService = userService;
         this.photoService = photoService;
+        this.statisticsService = statisticsService;
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
@@ -306,147 +303,9 @@ public class SalesHeatMap {
         int monthsInFuture = 7;
         int monthsInPast = 3;
 
-        List<UserBooking> userBookings = new ArrayList<>();
-
         LocalDate currentDate;
 
-        Map<String, UserProjectBooking> userProjectBookingMap = new HashMap<>();
-
-        for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
-            currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
-            UserBooking userBooking = new UserBooking(user.getUsername(),user.getUuid(), monthsInFuture, true);
-            userBookings.add(userBooking);
-
-            boolean debug = user.getUsername().equals("hans.lassen");
-
-            for (int i = 0; i < monthsInFuture; i++) {
-                List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
-                for (Contract contract : contracts) {
-                    if(debug) System.out.println("contract = " + contract);
-                    if(contract.getContractType().equals(ContractType.PERIOD)) {
-                        for (ContractConsultant contractConsultant : contract.getContractConsultants().stream().filter(c -> c.getUser().getUsername().equals(user.getUsername())).collect(Collectors.toList())) {
-                            if(debug) System.out.println("contractConsultant = " + contractConsultant);
-                            String key = contractConsultant.getUser().getUuid()+contractConsultant.getContract().getClient().getUuid();
-                            if(!userProjectBookingMap.containsKey(key)) {
-                                UserProjectBooking newUserProjectBooking = new UserProjectBooking(contractConsultant.getContract().getClient().getName(), contractConsultant.getContract().getClient().getUuid(), monthsInFuture, false);
-                                userProjectBookingMap.put(key, newUserProjectBooking);
-                                userBooking.addSubProject(newUserProjectBooking);
-                            }
-                            UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
-
-                            double workDaysInMonth = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate);
-                            if(debug) System.out.println("workDaysInMonth = " + workDaysInMonth);
-                            double weeks = (workDaysInMonth / 5.0);
-                            if(debug) System.out.println("weeks = " + weeks);
-                            double preBooking = 0.0;
-                            double budget = 0.0;
-                            double booking;
-                            if(i < monthsInPast) {
-                                if(debug) System.out.println("PAST");
-                                budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                if(debug) System.out.println("budget = " + budget);
-                                //preBooking = Optional.ofNullable(workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate))).orElse(0.0);
-                                Double preBookingObj = workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                                if(debug) System.out.println("preBookingObj = " + preBookingObj);
-                                if(preBookingObj != null) preBooking = preBookingObj;
-                                if(debug) System.out.println("preBooking = " + preBooking);
-                                if(debug) System.out.println("contract.getUuid() = " + contract.getUuid());
-                                if(debug) System.out.println("user.getUuid() = " + user.getUuid());
-                                if(debug) System.out.println("DateUtils.getFirstDayOfMonth(currentDate) = " + DateUtils.getFirstDayOfMonth(currentDate));
-                                if(debug) System.out.println("DateUtils.getLastDayOfMonth(currentDate) = " + DateUtils.getLastDayOfMonth(currentDate));
-                                if(debug) System.out.println("preBooking = " + preBooking);
-                                booking = NumberUtils.round((preBooking / budget) * 100.0, 2);
-                                if(debug) System.out.println("booking = " + booking);
-                            } else {
-                                if(debug) System.out.println("FUTURE");
-                                if (contract.getStatus().equals(ContractStatus.BUDGET)) {
-                                    if(debug) System.out.println("BUDGET");
-                                    preBooking = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                    if(debug) System.out.println("preBooking = " + preBooking);
-                                } else {
-                                    if(debug) System.out.println("TIME");
-                                    budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                    if(debug) System.out.println("budget = " + budget);
-                                }
-                                booking = NumberUtils.round((budget / (workDaysInMonth * 7)) * 100.0, 2);
-                                if(debug) System.out.println("booking = " + booking);
-                            }
-
-                            userProjectBooking.setAmountItemsPerProjects(budget, i);
-                            userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
-                            userProjectBooking.setBookingPercentage(booking, i);
-                            //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
-                            if(debug) System.out.println("(workDaysInMonth * 7) = " + (workDaysInMonth * 7));
-                        }
-                    }
-                }
-
-                List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
-                for (BudgetNew budget : budgets) {
-                    if(!budget.getContractConsultant().getUser().getUsername().equals(user.getUsername())) continue;
-
-                    String key = budget.getContractConsultant().getUser().getUuid()+budget.getProject().getUuid();
-                    if(!userProjectBookingMap.containsKey(key)) {
-                        UserProjectBooking newUserProjectBooking = new UserProjectBooking(budget.getProject().getName() + " / " + budget.getProject().getClient().getName(), budget.getProject().getClient().getUuid(), monthsInFuture, false);
-                        userProjectBookingMap.put(key, newUserProjectBooking);
-                        userBooking.addSubProject(newUserProjectBooking);
-                    }
-                    UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
-
-                    double workDaysInMonth = workService.getWorkDaysInMonth(user.getUuid(), currentDate);
-                    double preBooking = 0.0;
-                    double hourBudget = 0.0;
-                    double booking;
-
-                    if(i < monthsInPast) {
-                        hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
-                        preBooking = Optional.ofNullable(workService.findHoursRegisteredOnContractByPeriod(budget.getContractConsultant().getContract().getUuid(), budget.getContractConsultant().getUser().getUuid(), DateUtils.getFirstDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))).orElse(0.0);
-                        booking = NumberUtils.round((preBooking / hourBudget) * 100.0, 2);
-                    } else {
-                        if (budget.getContractConsultant().getContract().getStatus().equals(ContractStatus.BUDGET)) {
-                            preBooking = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
-                        } else {
-                            hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
-                        }
-                        booking = NumberUtils.round(((hourBudget) / (workDaysInMonth * 7)) * 100.0, 2);
-                    }
-
-                    userProjectBooking.setAmountItemsPerProjects(hourBudget, i);
-                    userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
-                    userProjectBooking.setBookingPercentage(booking, i);
-                    //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7,2), i);
-                }
-
-                currentDate = currentDate.plusMonths(1);
-            }
-        }
-
-        System.out.println("SUM PROJECTS");
-        for(UserBooking userBooking : userBookings) {
-            if(userBooking.getSubProjects().size() == 0) continue;
-            boolean debug = (userBooking.getUsername().equals("hans.lassen"));
-            for (UserBooking subProject : userBooking.getSubProjects()) {
-                currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
-                for (int i = 0; i < monthsInFuture; i++) {
-                    if(debug) System.out.println("i = " + i);
-                    userBooking.addAmountItemsPerProjects(subProject.getAmountItemsPerProjects(i), i);
-                    userBooking.addAmountItemsPerPrebooking(subProject.getAmountItemsPerPrebooking(i), i);
-                    int workDaysInMonth = workService.getWorkDaysInMonth(userService.findByUsername(userBooking.getUsername()).getUuid(), currentDate);
-                    userBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
-                    subProject.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
-                    currentDate = currentDate.plusMonths(1);
-                }
-            }
-
-            for (int i = 0; i < monthsInFuture; i++) {
-                if(i < monthsInPast) {
-                    userBooking.setBookingPercentage(NumberUtils.round((userBooking.getAmountItemsPerPrebooking(i) / userBooking.getAmountItemsPerProjects(i)) * 100.0, 2), i);
-                } else {
-                    if (userBooking.getMonthNorm(i) > 0.0)
-                        userBooking.setBookingPercentage(NumberUtils.round((userBooking.getAmountItemsPerProjects(i) / (userBooking.getMonthNorm(i))) * 100.0, 2), i);
-                }
-            }
-        }
+        List<UserBooking> userBookings = statisticsService.getUserBooking(monthsInFuture, monthsInPast);
 
         currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
 
@@ -491,6 +350,8 @@ public class SalesHeatMap {
 
         return treeGrid;
     }
+
+
 
     private int createFutureColumns(TreeGrid<UserBooking> treeGrid, LocalDate currentDate, int key, Grid.Column<?, ?>[] headerCells, int colNumber) {
         headerCells[0] = treeGrid.addColumn(userBooking -> NumberUtils.round(userBooking.getAmountItemsPerProjects(colNumber),2))
