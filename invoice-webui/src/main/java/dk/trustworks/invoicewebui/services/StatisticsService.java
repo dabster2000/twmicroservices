@@ -150,7 +150,7 @@ public class StatisticsService {
         return earningsSeries;
     }
 
-    public List<UserBooking> getUserBooking(int monthsInFuture, int monthsInPast) {
+    public List<UserBooking> getUserBooking(int monthsInPast, int monthsInFuture) {
         List<UserBooking> userBookings = new ArrayList<>();
         Map<String, UserProjectBooking> userProjectBookingMap = new HashMap<>();
         LocalDate currentDate;
@@ -175,7 +175,7 @@ public class StatisticsService {
                                 userBooking.addSubProject(newUserProjectBooking);
                             }
                             UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
-
+                            System.out.println("currentDate = " + currentDate);
                             double workDaysInMonth = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate);
                             if(debug) System.out.println("workDaysInMonth = " + workDaysInMonth);
                             double weeks = (workDaysInMonth / 5.0);

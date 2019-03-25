@@ -305,7 +305,7 @@ public class SalesHeatMap {
 
         LocalDate currentDate;
 
-        List<UserBooking> userBookings = statisticsService.getUserBooking(monthsInFuture, monthsInPast);
+        List<UserBooking> userBookings = statisticsService.getUserBooking(monthsInPast, monthsInFuture);
 
         currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
 

@@ -44,6 +44,10 @@ public class UserBooking {
         return amountItemsPerProjects[i];
     }
 
+    public double[] getAmountItemsPerProjects() {
+        return amountItemsPerProjects;
+    }
+
     public void setAmountItemsPerProjects(double amountItemsPerProjects, int i) {
         this.amountItemsPerProjects[i] = amountItemsPerProjects;
     }
