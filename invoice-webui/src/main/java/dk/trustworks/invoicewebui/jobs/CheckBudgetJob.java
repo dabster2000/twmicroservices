@@ -11,18 +11,18 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -67,7 +67,7 @@ public class CheckBudgetJob {
         int[] businessDaysInMonth = new int[3];
 
         for (int i = 0; i < 3; i++) {
-            businessDaysInMonth[i] = getWorkingDaysBetweenTwoDates(localDateStart.plusMonths(i).toDate(), localDateStart.plusMonths(i+1).toDate());
+            businessDaysInMonth[i] = DateUtils.countWeekDays(DateUtils.getFirstDayOfMonth(localDateStart.plusMonths(i)).minusDays(1), DateUtils.getLastDayOfMonth(localDateStart.plusMonths(i)));
         }
 
         List<UserBooking> bookingList = statisticsService.getUserBooking(3, 0);
@@ -79,9 +79,9 @@ public class CheckBudgetJob {
             log.info("--- " + user + " ---");
             //if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
             String message = "*Here is a quick summary of your project allocation for the next three months*\n\n" +
-                    "According to my calculations there is "+businessDaysInMonth[0]+" work days in "+localDateStart.monthOfYear().getAsText()+", " +
-                    ""+businessDaysInMonth[1]+" days in "+localDateStart.plusMonths(1).monthOfYear().getAsText()+", " +
-                    "and "+businessDaysInMonth[1]+" in "+localDateStart.plusMonths(2).monthOfYear().getAsText()+".\n\n";
+                    "According to my calculations there is "+businessDaysInMonth[0]+" work days in "+localDateStart.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault())+", " +
+                    ""+businessDaysInMonth[1]+" days in "+localDateStart.plusMonths(1).getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault())+", " +
+                    "and "+businessDaysInMonth[1]+" in "+localDateStart.plusMonths(2).getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault())+".\n\n";
 
             List<UserBooking> userBookingList = bookingList.stream().filter(userBooking -> userBooking.getUsername().equals(user.getUsername())).flatMap(userBooking -> userBooking.getSubProjects().stream()).collect(Collectors.toList());
 
@@ -102,7 +102,7 @@ public class CheckBudgetJob {
                 attachments.add(attachment);
 
                 for (int i = 0; i < 3; i++) {
-                    attachment.addField(new Field("Budget for "+localDateStart.plusMonths(i).monthOfYear().getAsText(), (NumberUtils.round(userBooking.getAmountItemsPerProjects(i), 2)+" hours"), true));
+                    attachment.addField(new Field("Budget for "+localDateStart.plusMonths(i).getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()), (NumberUtils.round(userBooking.getAmountItemsPerProjects(i), 2)+" hours"), true));
                 }
             }
 
@@ -257,8 +257,8 @@ public class CheckBudgetJob {
         LocalDate currentDate = periodStart;
         int i = 0;
         while(currentDate.isBefore(periodEnd)) {
-            int capacityByMonth = userService.calculateCapacityByMonthByUser(userUUID, currentDate.toString("yyyy-MM-dd"));
-            log.info("capacityByMonth for "+currentDate.toString("yyyy-MM-dd")+" is " + capacityByMonth);
+            int capacityByMonth = userService.calculateCapacityByMonthByUser(userUUID, currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            log.info("capacityByMonth for "+ currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) +" is " + capacityByMonth);
             capacities[i++] = capacityByMonth;
             currentDate = currentDate.plusMonths(1);
         }
