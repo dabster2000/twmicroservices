@@ -110,6 +110,8 @@ public class CheckBudgetJob {
                 attachment.setColor("#fbb14d");
                 attachments.add(attachment);
 
+
+
                 for (int i = 0; i < 3; i++) {
                     attachment.addField(new Field("Budget for "+localDateStart.plusMonths(i).getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()), (NumberUtils.round(userBooking.getAmountItemsPerProjects(i), 2)+" hours"), true));
                     totalBudgetMonth[i] += userBooking.getAmountItemsPerProjects(i);
@@ -120,10 +122,9 @@ public class CheckBudgetJob {
             //ChatPostMessageMethod textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), message);
             textMessage.setAs_user(true);
             textMessage.setAttachments(attachments);
-            //if(user.getUsername().equalsIgnoreCase("hans.lassen")) {
-                log.info("Sending message to "+user.getUsername());
-                motherWebApiClient.postMessage(textMessage);
-            //}
+            log.info("Sending message to "+user.getUsername());
+            motherWebApiClient.postMessage(textMessage);
+
 
             int[] userCapacities = capacitypermonthbyuser(user.getUuid(), localDateStart, localDateEnd);
 
@@ -153,18 +154,15 @@ public class CheckBudgetJob {
             textMessage = new ChatPostMessageMethod(user.getSlackusername(), concludingMessage.toString());
             textMessage.setAs_user(true);
 
-            //if(user.getUsername().equalsIgnoreCase("hans.lassen")) {
-                log.info("Sending concluding message "+user.getUsername());
-                motherWebApiClient.postMessage(textMessage);
-            //}
-
+            log.info("Sending concluding message "+user.getUsername());
+            motherWebApiClient.postMessage(textMessage);
 
             ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", "User "+user.getUsername()+" has "+allocationPercent[0]+"% and "+allocationPercent[1]+"% and "+allocationPercent[2]+"% allocation.");
             textMessage2.setAs_user(true);
             log.info("Sending message to admin");
             motherWebApiClient.postMessage(textMessage2);
 
-/*
+            /*
             if(allocationPercentMonthOne < 75.0 || allocationPercentMonthOne > 100.0 || allocationPercentMonthTwo < 75.0 || allocationPercentMonthTwo > 100.0) {
                 ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@tobias_kjoelsen", "User " + user.username + " has " + allocationPercentMonthOne + "% and " + allocationPercentMonthTwo + "% allocation.");
                 textMessage3.setAs_user(true);
@@ -191,66 +189,6 @@ public class CheckBudgetJob {
 
         }
     }
-/*
-    public void execute() {
-
-        int businessDaysInNextMonth = getWorkingDaysBetweenTwoDates(startDate, endDate);
-        System.out.println("businessDaysInMonth = " + businessDaysInNextMonth);
-
-        int businessDaysInNextNextMonth = getWorkingDaysBetweenTwoDates(LocalDate.now().plusMonths(2).withDayOfMonth(1).minusDays(1).toDate(), LocalDate.now().plusMonths(3).withDayOfMonth(1).minusDays(1).toDate());
-        System.out.println("businessDaysInMonth = " + businessDaysInNextNextMonth);
-
-        for (User user : restClient.getUsers()) {
-
-            List<Capacity> userCapacities = restClient.getUserCapacities(user.uuid, LocalDate.now().withDayOfMonth(1), LocalDate.now().withDayOfMonth(1).plusMonths(2));
-            System.out.println("userCapacities.get(0).capacity = " + userCapacities.get(0).capacity);
-            System.out.println("userCapacities.get(1).capacity = " + userCapacities.get(1).capacity);
-            System.out.println("businessDaysInNextMonth = " + businessDaysInNextMonth);
-            System.out.println("totalBudgetMonthOne = " + totalBudgetMonthOne);
-
-
-            long allocationPercentMonthOne = Math.round((totalBudgetMonthOne / ((userCapacities.get(0).capacity / 5) * businessDaysInNextMonth)) * 100);
-            long allocationPercentMonthTwo = Math.round((totalBudgetMonthTwo / ((userCapacities.get(1).capacity / 5) * businessDaysInNextNextMonth)) * 100);
-            String concludingMessage = "";
-            //String concludingMessage += "This means you have a *"+allocationPercent+"%* allocation this coming month\n\n";
-
-            concludingMessage += "If this seems ok, do nothing. If this seems wrong, please contact your project leads and tell them to fix it!";
-
-            //textMessage = new ChatPostMessageMethod("@"+slackUser.getName(), concludingMessage);
-            textMessage = new ChatPostMessageMethod(user.slackusername, concludingMessage);
-            textMessage.setAs_user(true);
-            System.out.println("Sending concluding message");
-            //halWebApiClient.postMessage(textMessage);
-
-            ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", "User "+user.username+" has "+allocationPercentMonthOne+"% and "+allocationPercentMonthTwo+"% allocation.");
-            textMessage2.setAs_user(true);
-            System.out.println("Sending message");
-            halWebApiClient.postMessage(textMessage2);
-
-            if(allocationPercentMonthOne < 75.0 || allocationPercentMonthOne > 100.0 || allocationPercentMonthTwo < 75.0 || allocationPercentMonthTwo > 100.0) {
-                ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@tobias_kjoelsen", "User " + user.username + " has " + allocationPercentMonthOne + "% and " + allocationPercentMonthTwo + "% allocation.");
-                textMessage3.setAs_user(true);
-                System.out.println("Sending message");
-                halWebApiClient.postMessage(textMessage3);
-
-                ChatPostMessageMethod textMessage4 = new ChatPostMessageMethod("@peter", "User " + user.username + " has " + allocationPercentMonthOne + "% and " + allocationPercentMonthTwo + "% allocation.");
-                textMessage4.setAs_user(true);
-                System.out.println("Sending message");
-                halWebApiClient.postMessage(textMessage4);
-
-                ChatPostMessageMethod textMessage5 = new ChatPostMessageMethod("@thomasgammelvind", "User " + user.username + " has " + allocationPercentMonthOne + "% and " + allocationPercentMonthTwo + "% allocation.");
-                textMessage5.setAs_user(true);
-                System.out.println("Sending message");
-                halWebApiClient.postMessage(textMessage5);
-            }
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-*/
 
     public int[] capacitypermonthbyuser(String userUUID, LocalDate periodStart, LocalDate periodEnd) {
         int[] capacities = new int[3];
@@ -266,35 +204,4 @@ public class CheckBudgetJob {
         return capacities;
     }
 
-    public static int getWorkingDaysBetweenTwoDates(Date startDate, Date endDate) {
-        System.out.println("CheckTimeRegistrationJob.getWorkingDaysBetweenTwoDates");
-        System.out.println("startDate = [" + startDate + "], endDate = [" + endDate + "]");
-        Calendar startCal = Calendar.getInstance();
-        startCal.setTime(startDate);
-
-        Calendar endCal = Calendar.getInstance();
-        endCal.setTime(endDate);
-
-        int workDays = 0;
-
-        //Return 0 if start and end are the same
-        if (startCal.getTimeInMillis() == endCal.getTimeInMillis()) {
-            return 0;
-        }
-
-        if (startCal.getTimeInMillis() > endCal.getTimeInMillis()) {
-            startCal.setTime(endDate);
-            endCal.setTime(startDate);
-        }
-
-        do {
-            //excluding start date
-            startCal.add(Calendar.DAY_OF_MONTH, 1);
-            if (startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-                ++workDays;
-            }
-        } while (startCal.getTimeInMillis() < endCal.getTimeInMillis()); //excluding end date
-
-        return workDays;
-    }
 }
