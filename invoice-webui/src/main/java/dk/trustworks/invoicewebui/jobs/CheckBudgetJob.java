@@ -67,10 +67,7 @@ public class CheckBudgetJob {
         LocalDate localDateEnd = localDateStart.plusMonths(3);
         log.info("localDateEnd = " + localDateEnd);
 
-
-
         List<UserBooking> bookingList = statisticsService.getUserBooking(-1, 4);
-
 
         List<User> activeUsers = userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT);
 

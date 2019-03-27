@@ -50,7 +50,6 @@ public interface WorkRepository extends CrudRepository<Work, String> {
                                        @Param("todate") String todate,
                                        @Param("useruuid") String useruuid);
 
-    @Deprecated
     @Query(value = "SELECT * FROM " +
             "work as k " +
             "WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)

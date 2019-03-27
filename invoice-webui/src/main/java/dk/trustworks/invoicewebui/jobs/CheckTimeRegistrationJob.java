@@ -4,10 +4,11 @@ import allbegray.slack.SlackClientFactory;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.model.dto.UserBooking;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -34,15 +35,25 @@ public class CheckTimeRegistrationJob {
     private WorkService workService;
 
     @Autowired
+    private StatisticsService statisticsService;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
     private ContractService contractService;
 
-    @Value("${halSlackBotToken}")
-    private String slackToken;
+    //@Value("${halSlackBotToken}")
+    //private String slackToken;
+
+    @Value("${halOAuthAccessToken}")
+    private String halOAuthAccessToken;
+
+    @Value("${halBotUserOAuthAccessToken}")
+    private String halBotUserOAuthAccessToken;
 
     private SlackWebApiClient halWebApiClient;
+
 
     @Scheduled(cron = "0 20 11 * * MON-FRI")
     public void checkDuplicateEntries() {
@@ -72,8 +83,9 @@ public class CheckTimeRegistrationJob {
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
     //@Scheduled(cron = "0 30 11 * * MON-FRI")
+    @Scheduled(fixedDelay = 10000)
     public void checkTimeRegistrationJob() {
-        halWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
+        halWebApiClient = SlackClientFactory.createWebApiClient(halBotUserOAuthAccessToken);
         log.info("CheckTimeRegistrationJob.execute");
         LocalDate dateTime = LocalDate.now();
         log.info("dateTime = " + dateTime);
@@ -89,26 +101,34 @@ public class CheckTimeRegistrationJob {
         }
         log.info("dateTime = " + dateTime);
 
-        List<Work> allWork = workService.findByPeriod(dateTime.minusDays(1), dateTime);
+        List<Work> allWork = workService.findByPeriod(dateTime, LocalDate.now());
         log.info("workByYearMonthDay.size() = " + allWork.size());
 
-        for (User user : userService.findCurrentlyWorkingEmployees()) {
+        List<UserBooking> userBookingList = statisticsService.getUserBooking(0, 1);
+
+        for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
+            if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
             log.info("checking user = " + user);
-            //if(!user.getUsername().equals("hans.lassen")) continue;
-            Optional<UserStatus> userStatus = user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate));
-            if(!userStatus.isPresent()) continue;
-            if(!userStatus.get().getStatus().equals(StatusType.ACTIVE)) continue;
-            if(userStatus.get().getAllocation()==0) continue;
-            log.info("user is valid = " + user);
-            boolean hasWork = false;
+
+            boolean hasWork = allWork.stream().filter(work -> work.getUser().getUuid().equals(user.getUuid())).anyMatch(work -> work.getWorkduration()>0);
+            /*
             for (Work work : allWork) {
                 //if(!(work.getWorkduration()>0)) continue;
                 if(work.getUser().getUuid().equals(user.getUuid())) hasWork = true;
             }
+            */
             log.info("hasWork = " + hasWork);
 
             // Todo: Only send to people with budgets
-            if(contractService.findTimeActiveConsultantContracts(user, dateTime).size() > 0) hasWork = true;
+            Optional<UserBooking> booking = userBookingList.stream().filter(userBooking -> userBooking.getUsername().equals(user.getUsername())).findAny();
+            log.info("booking.isPresent(): "+booking.isPresent());
+            if(booking.isPresent()) {
+                System.out.println("booking.get().getAmountItemsPerProjects(0) = " + booking.get().getAmountItemsPerProjects(0));
+                if(booking.get().getAmountItemsPerProjects(0)<=0.0) hasWork = true;
+            }
+            log.info("hasWork = " + hasWork);
+
+            //if(contractService.findTimeActiveConsultantContracts(user, dateTime).size() > 0) hasWork = true;
             //if(budgetRepository.findByMonthAndYearAndUseruuid(dateTime.getMonthOfYear() - 1, dateTime.getYear(), user.getUuid()).stream().filter(e -> e.getBudget() > 0.0).count() == 0) hasWork = true;
 
             if(!hasWork) {
@@ -149,6 +169,7 @@ public class CheckTimeRegistrationJob {
                                 "1. having or showing a great lack of intelligence or common sense.\n \"_I was stupid enough to think you registered your hours_\""
                 };
                 ChatPostMessageMethod textMessage = new ChatPostMessageMethod(user.getSlackusername(), responses[new Random().nextInt(responses.length)]);
+                //ChatPostMessageMethod textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), responses[new Random().nextInt(responses.length)]);
                 textMessage.setAs_user(true);
                 log.info("Sending message to "+user);
                 halWebApiClient.postMessage(textMessage);
