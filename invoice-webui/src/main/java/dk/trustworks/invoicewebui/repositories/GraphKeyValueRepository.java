@@ -58,8 +58,8 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
             "and cc.rate > 0 " +
             "and u.uuid LIKE :useruuid " +
-            "GROUP BY w.month, w.year " +
-            "ORDER BY w.year, w.month ", nativeQuery = true)
+            "GROUP BY MONTH(w.registered), YEAR(w.registered) " +
+            "ORDER BY YEAR(w.registered), MONTH(w.registered) ", nativeQuery = true)
     List<GraphKeyValue> findBillableHoursByMonthByPeriod(@Param("useruuid") String useruuid, @Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
     @Cacheable("findConsultantRevenueByPeriod")
