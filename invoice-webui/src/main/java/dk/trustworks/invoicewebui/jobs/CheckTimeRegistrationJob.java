@@ -82,8 +82,8 @@ public class CheckTimeRegistrationJob {
     }
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
-    //@Scheduled(cron = "0 30 11 * * MON-FRI")
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "0 30 11 * * MON-FRI")
+    //@Scheduled(fixedDelay = 10000)
     public void checkTimeRegistrationJob() {
         halWebApiClient = SlackClientFactory.createWebApiClient(halBotUserOAuthAccessToken);
         log.info("CheckTimeRegistrationJob.execute");
@@ -107,7 +107,7 @@ public class CheckTimeRegistrationJob {
         List<UserBooking> userBookingList = statisticsService.getUserBooking(0, 1);
 
         for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
-            if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
+            //if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
             log.info("checking user = " + user);
 
             boolean hasWork = allWork.stream().filter(work -> work.getUser().getUuid().equals(user.getUuid())).anyMatch(work -> work.getWorkduration()>0);
