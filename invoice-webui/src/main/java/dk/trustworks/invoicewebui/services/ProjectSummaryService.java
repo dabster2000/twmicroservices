@@ -218,7 +218,7 @@ public class ProjectSummaryService {
         } else if (projectSummary.getProjectSummaryType().equals(ProjectSummaryType.CONTRACT)) {
             System.out.println("beginning...");
             //List<Work> workResources = workClient.findByYearAndMonth(year, month);
-            List<Work> workResources = workService.findByYearAndMonthAndProject(year, month, projectSummary.getProjectuuid());
+            List<Work> workResources = workService.findByYearAndMonthAndProject(year, month+1, projectSummary.getProjectuuid());
             System.out.println("workResources.size() = " + workResources.size());
             Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 
