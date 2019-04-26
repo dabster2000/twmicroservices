@@ -55,12 +55,10 @@ public class UserService {
         return userRepository.findBySlackusername(userId);
     }
 
-    @Cacheable(value = "user", key = "#root.methodName")
     public List<User> findAll() {
         return userRepository.findByOrderByUsername();
     }
 
-    @Cacheable(value = "user", key = "#root.methodName")
     public List<User> findCurrentlyWorkingEmployees() {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(
