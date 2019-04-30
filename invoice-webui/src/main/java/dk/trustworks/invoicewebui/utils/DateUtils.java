@@ -37,14 +37,14 @@ public class DateUtils {
     }
 
     public static int getWeekdaysInPeriod(LocalDate dateFrom, LocalDate dateTo) {
-        int offDays = getVacationDaysInPeriod(dateFrom, dateTo);
+        int weekDays = 0;
 
         LocalDate localDate = dateFrom;
         do {
-            if(!isWeekendDay(localDate)) offDays++;
+            if(!isWeekendDay(localDate)) weekDays++;
             localDate = localDate.plusDays(1);
         } while (localDate.isBefore(dateTo.plusDays(1)));
-        return offDays;
+        return weekDays - getVacationDaysInPeriod(dateFrom, dateTo);
     }
 
     public static boolean isWeekendDay(LocalDate localDate) {
