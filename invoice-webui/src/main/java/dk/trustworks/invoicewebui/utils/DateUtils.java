@@ -28,7 +28,7 @@ public class DateUtils {
 
         int countVacationDays = 0;
         for (LocalDate localDate : vacationDaysYear) {
-            if (isWeekday(localDate)) continue;
+            if (isWeekendDay(localDate)) continue;
             if(localDate.isAfter(dateFrom) && localDate.isBefore(dateTo)) countVacationDays++;
             if(localDate.isEqual(dateFrom) || localDate.isEqual(dateTo)) countVacationDays++;
         }
@@ -36,18 +36,18 @@ public class DateUtils {
         return countVacationDays;
     }
 
-    public static int getOffDaysInPeriod(LocalDate dateFrom, LocalDate dateTo) {
+    public static int getWeekdaysInPeriod(LocalDate dateFrom, LocalDate dateTo) {
         int offDays = getVacationDaysInPeriod(dateFrom, dateTo);
 
         LocalDate localDate = dateFrom;
         do {
-            if(isWeekday(localDate)) offDays++;
+            if(!isWeekendDay(localDate)) offDays++;
             localDate = localDate.plusDays(1);
         } while (localDate.isBefore(dateTo.plusDays(1)));
         return offDays;
     }
 
-    public static boolean isWeekday(LocalDate localDate) {
+    public static boolean isWeekendDay(LocalDate localDate) {
         if(localDate.getDayOfWeek().equals(DayOfWeek.SATURDAY) || localDate.getDayOfWeek().equals(DayOfWeek.SUNDAY))
             return true;
         return false;
