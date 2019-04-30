@@ -435,6 +435,10 @@ $v-focus-color: #00BCD4;
     border-bottom: 1px solid black;
   }
 
+  .grey-box-border {
+    border-bottom: 1px solid $color-grey-3;
+  }
+
   .invoice-details {
     padding: 20px;
   }

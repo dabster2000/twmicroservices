@@ -2,8 +2,13 @@
 @import "addons.scss";
 @import "designs.scss";
 
+@import "../../../VAADIN/themes/wtpdfviewer/wtpdfviewer.scss";
 
 .invoice {
   @include invoice;
   @include addons;
 }
+
+
+@include wtPdfViewerMedia2dppx;
+@include wtPdfViewerPrintSupport;

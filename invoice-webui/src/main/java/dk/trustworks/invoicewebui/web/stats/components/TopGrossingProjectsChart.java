@@ -26,7 +26,7 @@ public class TopGrossingProjectsChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findProjectRevenueByPeriod(periodStart.toString("yyyyMMdd"), periodEnd.toString("yyyyMMdd"));
+        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findProjectRevenueByPeriod(periodStart.stringIt("yyyyMMdd"), periodEnd.stringIt("yyyyMMdd"));
         System.out.println("amountPerItemList.size() = " + amountPerItemList.size());
         String[] categories = new String[amountPerItemList.size()];
         DataSeries listSeries = new DataSeries("Revenue");
@@ -41,7 +41,7 @@ public class TopGrossingProjectsChart {
                 int subLength = s[0].length()<3?s[0].length():3;
                 shortname.append(s[0], 0, subLength);
                 //}
-                categories[i] = shortname.toString();
+                categories[i] = shortname.stringIt();
             } else {
                 sumOfRemainingProjects += amountPerItem.getValue();
                 categories[10] = "Rest";

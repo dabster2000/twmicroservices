@@ -126,8 +126,8 @@ public class ConsultantsBudgetRealizationChart {
             for (String s2 : s.split(" ")) {
                 shortname.append(s2.charAt(0));
             }
-            System.out.println("shortname = " + shortname.toString());
-            categories[j++] = shortname.toString();
+            System.out.println("shortname = " + shortname.stringIt());
+            categories[j++] = shortname.stringIt();
         }
         */
 

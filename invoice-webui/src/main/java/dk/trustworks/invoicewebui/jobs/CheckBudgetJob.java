@@ -147,7 +147,7 @@ public class CheckBudgetJob {
 
             concludingMessage.append("\nIf this seems ok, do nothing. If this seems incorrect due to vacation or similar, please contact your customer account manager and tell them to fix it!");
 
-            //textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), concludingMessage.toString());
+            //textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), concludingMessage.stringIt());
             textMessage = new ChatPostMessageMethod(user.getSlackusername(), concludingMessage.toString());
             textMessage.setAs_user(true);
 

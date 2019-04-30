@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 
 @Component
 public class CollectCurrencies {
@@ -31,15 +30,15 @@ public class CollectCurrencies {
 
         RestTemplate restTemplate = new RestTemplate();
         CryptoCompare ether = restTemplate.getForObject("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR", CryptoCompare.class);
-        log.debug(ether.toString());
+        log.debug(ether.stringIt());
         currencyRepository.save(new Currency("ETH", ether.getUsd()));
 
         CryptoCompare bitcoin = restTemplate.getForObject("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=BTC,USD,EUR", CryptoCompare.class);
-        log.debug(bitcoin.toString());
+        log.debug(bitcoin.stringIt());
         currencyRepository.save(new Currency("BTC", bitcoin.getUsd()));
 
         CryptoCompare bitcoinCash = restTemplate.getForObject("https://min-api.cryptocompare.com/data/price?fsym=BCH&tsyms=BTC,USD,EUR", CryptoCompare.class);
-        log.debug(bitcoinCash.toString());
+        log.debug(bitcoinCash.stringIt());
         currencyRepository.save(new Currency("BCH", bitcoinCash.getUsd()));
     }
 
@@ -47,7 +46,7 @@ public class CollectCurrencies {
     public void collect2() {
         RestTemplate restTemplate = new RestTemplate();
         CryptoCompare ether = restTemplate.getForObject("https://www.quandl.com/api/v3/datasets/WIKI/FB/data.json", CryptoCompare.class);
-        log.debug(ether.toString());
+        log.debug(ether.stringIt());
     }
 
     //@Scheduled(fixedRate = 1000)

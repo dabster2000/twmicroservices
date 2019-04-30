@@ -91,6 +91,22 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and cc.rate > 0.0 ", nativeQuery = true)
     List<Work> findBillableWorkByUser(@Param("useruuid") String useruuid);
 
+    @Cacheable("billableWorkByUserInPeriod")
+    @Query(value = "select w.* from " +
+            "work as w " +
+            "inner join task t on w.taskuuid = t.uuid " +
+            "inner join project p on t.projectuuid = p.uuid " +
+            "inner join user u on w.useruuid = u.uuid " +
+            "inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "inner join contracts c on cp.contractuuid = c.uuid " +
+            "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
+            "where c.activefrom <= registered and c.activeto >= registered " +
+            "and  w.registered >= :fromdate AND w.registered < :todate " +
+            "and w.useruuid LIKE :useruuid " +
+            "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
+            "and cc.rate > 0.0 ", nativeQuery = true)
+    List<Work> findBillableWorkByUserInPeriod(@Param("useruuid") String useruuid, @Param("fromdate") String fromdate, @Param("todate") String todate);
+
     @Query(value = "select w.* from " +
             "work as w " +
             "inner join task t on w.taskuuid = t.uuid " +

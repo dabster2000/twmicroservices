@@ -379,7 +379,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
         //log.info("Text Weeknumber = " + currentDate.getWeekOfWeekyear());
         //getTxtYear().setValue(currentDate.withDayOfWeek(7).getYear()+"");
         //log.info("Text Year = " + currentDate.withDayOfWeek(7).getYear());
-        //getLblCurrentDate().setValue(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy"));
-        //log.info("Top Dates = "+(currentDate.toString("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).toString("dd. MMM yyyy")));
+        //getLblCurrentDate().setValue(currentDate.stringIt("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).stringIt("dd. MMM yyyy"));
+        //log.info("Top Dates = "+(currentDate.stringIt("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).stringIt("dd. MMM yyyy")));
     }
 }

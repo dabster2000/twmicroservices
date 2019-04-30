@@ -313,15 +313,13 @@ public class SalesHeatMap {
 
         HeaderRow topHeader = treeGrid.prependHeaderRow();
 
-        treeGrid.addComponentColumn(userBooking -> {
-                return new MHorizontalLayout(
-                        photoService.getRoundImage(
-                                userBooking.getUuid(),
-                                false,
-                                30,
-                                Sizeable.Unit.PIXELS),
-                        new Label(userBooking.getUsername()));
-                }).setCaption("Name").setId("name-column");
+        treeGrid.addComponentColumn(userBooking -> new MHorizontalLayout(
+                photoService.getRoundImage(
+                        userBooking.getUuid(),
+                        false,
+                        30,
+                        Sizeable.Unit.PIXELS),
+                new Label(userBooking.getUsername()))).setCaption("Name").setId("name-column");
         //treeGrid.addColumn(UserBooking::getUsername).setCaption("Name").setId("name-column");
         treeGrid.setFrozenColumnCount(1);
 

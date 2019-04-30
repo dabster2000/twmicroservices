@@ -53,15 +53,8 @@ public class InvoiceService {
     }
 
     public double invoicedAmountByMonth(LocalDate date) {
-        System.out.println("InvoiceService.invoicedAmountByMonth");
-        System.out.println("date = [" + date + "]");
         double invoiceSum = invoiceClient.invoicedAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        System.out.println("invoiceSum = " + invoiceSum);
         double creditNoteSum = invoiceClient.creditNoteAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        System.out.println("creditNoteSum = " + creditNoteSum);
-        System.out.println();
-        //double invoiceSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.INVOICE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
-        //double creditNoteSum = invoiceClient.findByYearAndMonth(month.getYear(), month.getMonthValue()-1).parallelStream().filter(invoice -> invoice.type.equals(InvoiceType.CREDIT_NOTE)).mapToDouble(value -> value.getInvoiceitems().stream().mapToDouble(value1 -> value1.hours * value1.rate).sum()).sum();
         return invoiceSum - creditNoteSum;
     }
 

@@ -1,8 +1,10 @@
 package dk.trustworks;
 
 import com.vaadin.spring.annotation.EnableVaadin;
+import dk.trustworks.invoicewebui.events.WorkNotificationConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -14,10 +16,15 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
+import reactor.Environment;
+import reactor.bus.EventBus;
 
+import javax.annotation.PostConstruct;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
+
+import static reactor.bus.selector.Selectors.$;
 
 /**
  * Created by hans on 02/07/2017.
@@ -29,11 +36,16 @@ import java.util.concurrent.Executor;
 @EnableCaching
 @EnableVaadin
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-//@ComponentScan("dk.trustworks.invoicewebui")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class InvoiceWebUIApplication {
 
     private static final Logger log = LoggerFactory.getLogger(InvoiceWebUIApplication.class);
+
+    @Autowired
+    private EventBus eventBus;
+
+    @Autowired
+    private WorkNotificationConsumer workNotificationConsumer;
 
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
@@ -57,6 +69,22 @@ public class InvoiceWebUIApplication {
         }
         */
         SpringApplication.run(InvoiceWebUIApplication.class);
+    }
+
+    @PostConstruct
+    private void init() {
+        log.info("InitDemoApplication initialization logic ...");
+        eventBus.on($("notificationConsumer"), workNotificationConsumer);
+    }
+
+    @Bean
+    Environment env() {
+        return Environment.initializeIfEmpty().assignErrorJournal();
+    }
+
+    @Bean
+    EventBus createEventBus(Environment env) {
+        return EventBus.create(env, Environment.THREAD_POOL);
     }
 
     @Bean

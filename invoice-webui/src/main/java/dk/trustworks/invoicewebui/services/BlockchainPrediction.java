@@ -35,7 +35,7 @@ public class BlockchainPrediction {
         System.out.println("ARFF created = " + (begin - System.currentTimeMillis()));
         System.out.println("sb = " + sb);
 /*
-        Instances data = new Instances(new BufferedReader(new StringReader(sb.toString())));
+        Instances data = new Instances(new BufferedReader(new StringReader(sb.stringIt())));
         if (data.classIndex() == -1)  data.setClassIndex(data.numAttributes() - 1);
 
 
