@@ -36,6 +36,7 @@ import org.vaadin.addons.producttour.step.StepBuilder;
 import org.vaadin.addons.producttour.tour.Tour;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
@@ -281,8 +282,9 @@ public class InvoiceListImpl extends InvoiceListDesign
 
             WTPdfViewer p = new WTPdfViewer();
             p.setResource(resource);
+            p.setPage(1);
 
-            Window window = new Window("Preview Invoice", p);
+            Window window = new Window("Preview Invoice", new MVerticalLayout(p).withWidth(400, PIXELS).withHeight(400, PIXELS));
             window.setModal(true);
             UI.getCurrent().addWindow(window);
         });

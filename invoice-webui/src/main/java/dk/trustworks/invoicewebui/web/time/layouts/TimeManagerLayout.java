@@ -432,17 +432,12 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private void createTimesheet(User user) {
         sumHours = 0.0;
         weekDaySums = new WeekValues();
-        System.out.println("currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()) = " + currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()));
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user);
         LocalDate startOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
-        System.out.println("startOfWeek = " + startOfWeek);
         LocalDate endOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
-        System.out.println("endOfWeek = " + endOfWeek);
         List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
         for (Work workResource : workResources) {
             if(weeks.stream().noneMatch(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid()))) {
-                System.out.println("WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear() = " + WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-                System.out.println("currentDate.getYear() = " + currentDate.getYear());
                 Week week = new Week(UUID.randomUUID().toString(),
                         currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
                         currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
@@ -807,7 +802,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         if(!onContract) return mTextField.withEnabled(false);
 
         // check if item is last month and user is not project manager. Project managers should be able to edit old timesheets
-        boolean isLastMonth = weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday).withDayOfMonth(1).isBefore(LocalDate.now().withDayOfMonth(1));
+        boolean isLastMonth = weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday).withDayOfMonth(1).isBefore(LocalDate.now().withDayOfMonth(2));
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         System.out.println("weekItem.getTask() = " + weekItem.getTask());
         System.out.println("weekItem.getTask().getProject() = " + weekItem.getTask().getProject());

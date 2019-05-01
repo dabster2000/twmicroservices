@@ -8,6 +8,7 @@ import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.invoice.components.NewInvoiceImpl;
+import dk.trustworks.invoicewebui.web.invoice.components.NewInvoiceImpl2;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.slf4j.Logger;
@@ -35,6 +36,9 @@ public class NewInvoiceView extends VerticalLayout implements View {
     private NewInvoiceImpl newInvoiceComponent;
 
     @Autowired
+    private NewInvoiceImpl2 newInvoiceImpl2;
+
+    @Autowired
     private TopMenu topMenu;
 
     @Autowired
@@ -47,7 +51,7 @@ public class NewInvoiceView extends VerticalLayout implements View {
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
 
-        mainTemplate.setMainContent(newInvoiceComponent.init(), VIEW_ICON, MENU_NAME, "Primed for billing", VIEW_BREADCRUMB);
+        mainTemplate.setMainContent(newInvoiceImpl2.init(), VIEW_ICON, MENU_NAME, "Primed for billing", VIEW_BREADCRUMB);
     }
 
     public void receiveBroadcast(String message) {
@@ -68,7 +72,7 @@ public class NewInvoiceView extends VerticalLayout implements View {
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         System.out.println("NewInvoiceView.enter");
         //Authorizer.authorize(this);
-        newInvoiceComponent.reloadData();
+        newInvoiceImpl2.reloadData();
         //leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
     }
 }

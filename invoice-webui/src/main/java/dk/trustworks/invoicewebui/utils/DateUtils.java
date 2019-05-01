@@ -53,6 +53,11 @@ public class DateUtils {
         return false;
     }
 
+    public static boolean isWeekday(LocalDate localDate) {
+        if(isWeekendDay(localDate)) return false;
+        return true;
+    }
+
     private static List<LocalDate> getVacationDayArray(int year) {
         int a = year % 19;
         int b = (int) Math.round(year/100.0);
