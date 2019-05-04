@@ -50,6 +50,7 @@ public class InvoiceWebUIApplication {
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         Locale.setDefault(new Locale("da", "DK"));
+
         /*
         System.out.println("1 = " + 1);
         Trello trelloApi = new TrelloImpl("667f15f00708bc0486898e6b6c48e528", "96f9f88e22ba9d229e2699877496006c1a203c880823cbd21d10453b70d87622", new ApacheHttpClient());

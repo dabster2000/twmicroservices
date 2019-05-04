@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 06/07/2017.
@@ -95,15 +96,23 @@ public class ProjectSummaryService {
                     }
                 }
 
+                List<Invoice> relatedDraftInvoices = invoices.stream().filter(invoice ->
+                        invoice.projectuuid.equals(project.getUuid()) &&
+                                invoice.getContractuuid().equals("receipt") && (
+                                invoice.status.equals(InvoiceStatus.DRAFT))
+                ).collect(Collectors.toList());
+
 
                 ProjectSummary projectSummary = new ProjectSummary(
                         "receipt", project.getUuid(),
                         project.getName(),
+                        client,
                         client.getName(),
                         project.getCustomerreference(),
                         0,
                         invoicedamount, numberOfInvoicesRelatedToProject, ProjectSummaryType.RECEIPT);
                 projectSummary.setInvoiceList(relatedInvoices);
+                projectSummary.setDraftInvoiceList(relatedDraftInvoices);
                 projectSummaryMap.put(project.getUuid()+"_receipt", projectSummary);
                 logger.info("Created new projectSummary: " + projectSummary);
             }
@@ -128,8 +137,9 @@ public class ProjectSummaryService {
 
                 List<Invoice> relatedInvoices = new ArrayList<>();
                 for (Invoice invoice : invoices) {
+                    System.out.println("invoice = " + invoice);
                     if(invoice.projectuuid.equals(project.getUuid()) &&
-                            invoice.getContractuuid().equals(contract.getUuid()) && (
+                            invoice.getContractuuid().equals(contractuuid) && (
                             invoice.status.equals(InvoiceStatus.CREATED)
                             || invoice.status.equals(InvoiceStatus.SUBMITTED)
                             || invoice.status.equals(InvoiceStatus.PAID)
@@ -144,14 +154,22 @@ public class ProjectSummaryService {
                     }
                 }
 
+                List<Invoice> relatedDraftInvoices = invoices.stream().filter(invoice ->
+                    invoice.projectuuid.equals(project.getUuid()) &&
+                            invoice.getContractuuid().equals(contractuuid) && (
+                            invoice.status.equals(InvoiceStatus.DRAFT))
+                ).collect(Collectors.toList());
+
                 ProjectSummary projectSummary = new ProjectSummary(
                         contractuuid, project.getUuid(),
                         project.getName(),
+                        client,
                         client.getName(),
                         project.getCustomerreference(),
                         0,
                         invoicedamount, numberOfInvoicesRelatedToProject, ProjectSummaryType.CONTRACT);
                 projectSummary.setInvoiceList(relatedInvoices);
+                projectSummary.setDraftInvoiceList(relatedDraftInvoices);
                 projectSummaryMap.put(contractuuid+project.getUuid(), projectSummary);
                 logger.info("Created new projectSummary: " + projectSummary);
             }
@@ -172,7 +190,7 @@ public class ProjectSummaryService {
         return Lists.newArrayList(projectSummaryMap.values());
     }
 
-    public void createInvoiceFromProject(ProjectSummary projectSummary, int year, int month) {
+    public Invoice createInvoiceFromProject(ProjectSummary projectSummary, int year, int month) {
         logger.info("InvoiceController.createInvoiceFromProject");
         logger.info("projectuuid = [" + projectSummary.getProjectuuid() + "], year = [" + year + "], month = [" + month + "]");
         logger.info("type = "+projectSummary.getProjectSummaryType().name());
@@ -276,7 +294,7 @@ public class ProjectSummaryService {
                                     "on the project \"" + project.getName() + "\". " +
                                     "Please fix this on project page.",
                             Notification.Type.ERROR_MESSAGE);
-                    return;
+                    return null;
                 }
                 if (!invoiceItemMap.containsKey(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid())) {
                     InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
@@ -293,6 +311,6 @@ public class ProjectSummaryService {
             }
         }
         System.out.println("invoice = " + invoice);
-        invoiceClient.save(invoice);
+        return invoiceClient.save(invoice);
     }
 }

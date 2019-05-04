@@ -53,8 +53,11 @@ public class DateUtils {
         return false;
     }
 
-    public static boolean isWeekday(LocalDate localDate) {
+    public static boolean isWorkday(LocalDate localDate) {
         if(isWeekendDay(localDate)) return false;
+        for (LocalDate vacationDate : getVacationDayArray(localDate.getYear())) {
+            if(localDate.isEqual(vacationDate)) return false;
+        }
         return true;
     }
 

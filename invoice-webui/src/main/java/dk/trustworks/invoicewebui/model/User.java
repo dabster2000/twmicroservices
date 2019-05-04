@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
+import org.apache.commons.text.WordUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -183,6 +184,10 @@ public class User {
 
     public void setProjects(List<Project> projects) {
         this.projects = projects;
+    }
+
+    public String getInitials() {
+        return WordUtils.initials(firstname + " " + lastname);
     }
 
     @Override

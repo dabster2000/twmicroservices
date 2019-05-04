@@ -15,7 +15,6 @@ import dk.trustworks.invoicewebui.web.dashboard.DashboardView;
 import dk.trustworks.invoicewebui.web.economy.ExpenseView;
 import dk.trustworks.invoicewebui.web.employee.EmployeeView;
 import dk.trustworks.invoicewebui.web.faq.FaqView;
-import dk.trustworks.invoicewebui.web.invoice.views.DraftListView;
 import dk.trustworks.invoicewebui.web.invoice.views.InvoiceListView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.knowledge.KnowledgeView;
@@ -117,8 +116,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("Invoice", invoice);
         MenuItemContainer newInvoice = new MenuItemContainer(order++).createItem(NewInvoiceView.MENU_NAME, false, NewInvoiceView.VIEW_ICON, NewInvoiceView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(NewInvoiceView.VIEW_NAME, newInvoice);
-        MenuItemContainer drafts = new MenuItemContainer(order++).createItem(DraftListView.MENU_NAME, false, DraftListView.VIEW_ICON, DraftListView.VIEW_NAME, false, RoleType.ACCOUNTING);
-        menuItems.put(DraftListView.VIEW_NAME, drafts);
+        //MenuItemContainer drafts = new MenuItemContainer(order++).createItem(DraftListView.MENU_NAME, false, DraftListView.VIEW_ICON, DraftListView.VIEW_NAME, false, RoleType.ACCOUNTING);
+        //menuItems.put(DraftListView.VIEW_NAME, drafts);
         MenuItemContainer invoices = new MenuItemContainer(order++).createItem(InvoiceListView.MENU_NAME, false, InvoiceListView.VIEW_ICON, InvoiceListView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(InvoiceListView.VIEW_NAME, invoices);
 

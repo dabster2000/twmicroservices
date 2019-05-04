@@ -14,10 +14,12 @@ import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,20 +45,20 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
     private final ProjectService projectService;
 
-    private final ChartCacheJob chartCache;
+    private final UserService userService;
 
-    private final MainTemplate mainTemplate;
+    private final ChartCacheJob chartCache;
 
     ResponsiveLayout responsiveLayout;
 
     @Autowired
-    public ClientManagerImpl(ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, ProjectService projectService, ChartCacheJob chartCache, MainTemplate mainTemplate) {
+    public ClientManagerImpl(ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, ProjectService projectService, ChartCacheJob chartCache, MainTemplate mainTemplate, UserService userService) {
         this.clientRepository = clientRepository;
         this.clientdataRepository = clientdataRepository;
         this.photoRepository = photoRepository;
         this.projectService = projectService;
         this.chartCache = chartCache;
-        this.mainTemplate = mainTemplate;
+        this.userService = userService;
     }
 
     public ClientManagerImpl init() {
@@ -85,7 +87,6 @@ public class ClientManagerImpl extends ClientManagerDesign {
                 if(client.isActive()) {
                     clientCard.getBtnDelete().setCaption("DEACTIVATE");
                     clientCard.getBtnDelete().setStyleName("danger");
-                    //clientCard.getBtnDelete().setStyleName("flat", true);
                 }
                 if(!client.isActive()) {
                     clientCard.getBtnDelete().setCaption("ACTIVATE");
@@ -104,27 +105,11 @@ public class ClientManagerImpl extends ClientManagerDesign {
     }
 
     protected void createClientDetailsView(Client client) {
-        System.out.println("ClientManagerImpl.createClientDetailsView");
-        System.out.println("client = [" + client + "]");
         if(responsiveLayout!=null) removeComponent(responsiveLayout);
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
-        //VerticalLayout verticalLayout = new VerticalLayout(responsiveLayout);
-/*
-        final Window window2 = new Window("Window");
-        window2.setWidth(400.0f, Unit.PIXELS);
-        window2.setHeight("700px");
-        window2.setModal(true);
-        window2.addCloseListener(e -> {
-            ResponsiveLayout newBoard = new ResponsiveLayout();
-            fillBoard(client, newBoard, window2);
-            verticalLayout.removeAllComponents();
-            verticalLayout.addComponent(newBoard);
-        });
-*/
-        fillBoard(client);
 
-        //mainTemplate.setMainContent(verticalLayout, ClientManagerView.VIEW_ICON, client.getName(), "Our best friends", ClientManagerView.VIEW_BREADCRUMB + " / "+client.getName());
+        fillBoard(client);
     }
 
     private void fillBoard(Client client) {
@@ -175,8 +160,6 @@ public class ClientManagerImpl extends ClientManagerDesign {
             }
         }
         if(rowItemCount > columns) {
-            System.out.println("new row");
-            System.out.println("rowItemCount = " + rowItemCount);
             clientDataRow = responsiveLayout.addRow();
             rowItemCount = 1;
         }
@@ -185,8 +168,6 @@ public class ClientManagerImpl extends ClientManagerDesign {
         rowItemCount++;
 
         while (rowItemCount <= columns) {
-            System.out.println("add label");
-            System.out.println("rowItemCount = " + rowItemCount);
             clientDataRow.addColumn().withDisplayRules(12, 8, 8, 4).withComponent(new Label());
             rowItemCount++;
         }
@@ -211,6 +192,13 @@ public class ClientManagerImpl extends ClientManagerDesign {
         clientComponent.getTxtName().setValue(client.getName());
         clientComponent.getTxtName().addValueChangeListener(event -> {
             client.setName(event.getValue());
+            saveClient(client);
+        });
+        clientComponent.getCbClientManager().setItems(userService.findAll());
+        clientComponent.getCbClientManager().setItemCaptionGenerator(User::getUsername);
+        clientComponent.getCbClientManager().setSelectedItem(client.getAccountmanager());
+        clientComponent.getCbClientManager().addValueChangeListener(event -> {
+            client.setAccountmanager(event.getValue());
             saveClient(client);
         });
         return clientComponent;

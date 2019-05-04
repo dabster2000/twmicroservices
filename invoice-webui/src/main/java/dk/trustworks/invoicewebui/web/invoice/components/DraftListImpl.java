@@ -118,7 +118,7 @@ public class DraftListImpl extends DraftListDesign
                     }
                 });
 
-                invoiceEdit.btnSave.addClickListener(clickEvent -> {
+                invoiceEdit.btnDelete.addClickListener(clickEvent -> {
                     try {
                         saveFormToInvoiceBean(invoice, invoiceEdit);
                         invoiceRepository.save(invoice);

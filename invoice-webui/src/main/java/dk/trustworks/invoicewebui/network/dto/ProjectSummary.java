@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.network.dto;
 
+import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.network.dto.enums.ProjectSummaryType;
 
@@ -17,21 +18,24 @@ public class ProjectSummary {
     private String contractuuid;
     private String projectuuid;
     private String projectname;
+    private Client client;
     private String clientname;
     private String description;
     private double registeredamount;
     private double invoicedamount;
     private int invoices;
     private List<Invoice> invoiceList = new ArrayList<>();
+    private List<Invoice> draftInvoiceList = new ArrayList<>();
     private HashMap<String, String> errors = new HashMap<>();
 
     public ProjectSummary() {
     }
 
-    public ProjectSummary(String contractuuid, String projectuuid, String projectname, String clientname, String description, double registeredamount, double invoicedamount, int invoices, ProjectSummaryType projectSummaryType) {
+    public ProjectSummary(String contractuuid, String projectuuid, String projectname, Client client, String clientname, String description, double registeredamount, double invoicedamount, int invoices, ProjectSummaryType projectSummaryType) {
         this.contractuuid = contractuuid;
         this.projectuuid = projectuuid;
         this.projectname = projectname;
+        this.client = client;
         this.clientname = clientname;
         this.description = description;
         this.registeredamount = registeredamount;
@@ -62,6 +66,14 @@ public class ProjectSummary {
 
     public void setProjectname(String projectname) {
         this.projectname = projectname;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public String getClientname() {
@@ -122,6 +134,14 @@ public class ProjectSummary {
 
     public void setInvoiceList(List<Invoice> invoiceList) {
         this.invoiceList = invoiceList;
+    }
+
+    public List<Invoice> getDraftInvoiceList() {
+        return draftInvoiceList;
+    }
+
+    public void setDraftInvoiceList(List<Invoice> draftInvoiceList) {
+        this.draftInvoiceList = draftInvoiceList;
     }
 
     public ProjectSummaryType getProjectSummaryType() {

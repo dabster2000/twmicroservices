@@ -7,8 +7,10 @@ import com.dropbox.core.v2.DbxTeamClientV2;
 import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
+import com.vaadin.server.StreamResource;
 import dk.trustworks.invoicewebui.network.clients.model.DropboxFile;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -128,6 +132,21 @@ public class DropboxAPI {
         }
         log.debug("no text file will be shown");
         return "";
+    }
+
+    public void uploadInvoice(StreamResource resource, LocalDate invoicedate) {
+        // /Shared/Administration/Fakturering/2019/201904 April
+
+        DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
+        try {
+            files.uploadBuilder("/Shared/Administration/Fakturering/" +
+                    invoicedate.getYear() + "/" +
+                    invoicedate.format(DateTimeFormatter.ofPattern("yyyyMM")) + " " +
+                    WordUtils.capitalize(invoicedate.format(DateTimeFormatter.ofPattern("MMMM"))) + "/" +
+                    resource.getFilename()).uploadAndFinish(resource.getStreamSource().getStream());
+        } catch (DbxException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getFileURL(String filePath) {

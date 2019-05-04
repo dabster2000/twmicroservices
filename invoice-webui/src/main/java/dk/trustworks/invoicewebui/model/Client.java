@@ -16,6 +16,9 @@ public class Client {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
     private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountmanager")
+    private User accountmanager;
     private Double latitude;
     private Double longitude;
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
@@ -125,13 +128,23 @@ public class Client {
         this.contracts = contracts;
     }
 
+    public User getAccountmanager() {
+        return accountmanager;
+    }
+
+    public void setAccountmanager(User accountmanager) {
+        this.accountmanager = accountmanager;
+    }
+
     @Override
     public String toString() {
-        return "Client{" + "uuid='" + uuid + '\'' +
+        return "Client{" +
+                "uuid='" + uuid + '\'' +
                 ", active=" + active +
                 ", contactname='" + contactname + '\'' +
                 ", created=" + created +
                 ", name='" + name + '\'' +
+                ", accountmanager=" + accountmanager +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';

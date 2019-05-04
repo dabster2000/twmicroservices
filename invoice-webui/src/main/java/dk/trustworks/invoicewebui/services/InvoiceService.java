@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 /**
  * Created by hans on 20/07/2017.
@@ -31,30 +30,31 @@ public class InvoiceService {
     private InvoiceAPI invoiceAPI;
 
     @Autowired
-    private InvoiceRepository invoiceClient;
+    private InvoiceRepository invoiceRepository;
 
-    public void createCreditNota(@RequestBody Invoice invoice) {
+    public Invoice createCreditNota(@RequestBody Invoice invoice) {
         log.info("InvoiceController.createCreditNota");
         log.info("invoice = [" + invoice + "]");
         invoice.status = InvoiceStatus.CREDIT_NOTE;
-        invoiceClient.save(invoice);
+        invoiceRepository.save(invoice);
 
-        invoice.uuid = UUID.randomUUID().toString();
-        invoice.errors = false;
-        invoice.invoicedate = LocalDate.now();
-        invoice.type = InvoiceType.CREDIT_NOTE;
-        invoice.status = InvoiceStatus.DRAFT;
-        invoice.specificdescription = "Kreditnota til faktura " + StringUtils.convertInvoiceNumberToString(invoice.invoicenumber);
-        invoice.invoicenumber = 0;
+        Invoice creditNote = new Invoice(InvoiceType.CREDIT_NOTE, invoice.getContractuuid(), invoice.getProjectuuid(),
+                invoice.getProjectname(), invoice.getYear(), invoice.getMonth(), invoice.getClientname(),
+                invoice.getClientaddresse(), invoice.getOtheraddressinfo(), invoice.getZipcity(),
+                invoice.getEan(), invoice.getCvr(), invoice.getAttention(), LocalDate.now(),
+                invoice.getProjectref(), invoice.getContractref(),
+                "Kreditnota til faktura " + StringUtils.convertInvoiceNumberToString(invoice.invoicenumber));
+
+        creditNote.invoicenumber = 0;
         for (InvoiceItem invoiceitem : invoice.invoiceitems) {
-            invoiceitem.uuid = UUID.randomUUID().toString();
+            creditNote.getInvoiceitems().add(new InvoiceItem(invoiceitem.getItemname(), invoiceitem.getDescription(), invoiceitem.getRate(), invoiceitem.getHours()));
         }
-        invoiceClient.save(invoice);
+        return invoiceRepository.save(creditNote);
     }
 
     public double invoicedAmountByMonth(LocalDate date) {
-        double invoiceSum = invoiceClient.invoicedAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        double creditNoteSum = invoiceClient.creditNoteAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        double invoiceSum = invoiceRepository.invoicedAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        double creditNoteSum = invoiceRepository.creditNoteAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         return invoiceSum - creditNoteSum;
     }
 
@@ -77,6 +77,24 @@ public class InvoiceService {
                 "",
                 ""
         );
-        invoiceClient.save(invoice);
+        invoiceRepository.save(invoice);
+    }
+
+    @Transactional
+    public void delete(String uuid) {
+        invoiceRepository.delete(uuid);
+    }
+
+    @Transactional
+    public Invoice save(Invoice invoice) {
+        return invoiceRepository.save(invoice);
+    }
+
+    public int getMaxInvoiceNumber() {
+        return invoiceRepository.getMaxInvoiceNumber();
+    }
+
+    public Invoice findByLatestInvoiceByProjectuuid(String projectuuid) {
+        return invoiceRepository.findByLatestInvoiceByProjectuuid(projectuuid);
     }
 }

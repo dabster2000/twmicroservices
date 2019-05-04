@@ -6,6 +6,12 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
+import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
+import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.utils.StringUtils;
+import org.vaadin.alump.materialicons.MaterialIcons;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.label.MLabel;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -16,9 +22,46 @@ import java.util.*;
  */
 public class DraftEditImpl extends DraftEditDesign {
 
+    private InvoiceService invoiceService;
     Map<Binder<InvoiceItem>, InvoiceItem> binders = new HashMap<>();
     Binder<Invoice> invoiceBinder;
     private Invoice invoice;
+
+    DraftEditImpl(Invoice invoice, InvoiceService invoiceService) {
+        this(invoice);
+        this.invoiceService = invoiceService;
+
+        btnDropbox.setIcon(MaterialIcons.CLOUD_UPLOAD);
+        btnDelete.setIcon(MaterialIcons.DELETE_FOREVER);
+        btnCreateCreditNote.setIcon(MaterialIcons.RESTORE_PAGE);
+        btnDownload.setIcon(MaterialIcons.SAVE);
+        btnCreatePhantom.setIcon(MaterialIcons.WORK);
+        btnCreateInvoice.setIcon(MaterialIcons.PUBLISH);
+
+        if(!invoice.getStatus().equals(InvoiceStatus.DRAFT)) {
+            btnCreateInvoice.setVisible(false);
+            btnCreatePhantom.setVisible(false);
+            btnDelete.setVisible(false);
+            btnCopyDescription.setVisible(false);
+
+            btnCreateCreditNote.setVisible(true);
+            btnDownload.setVisible(true);
+            btnDropbox.setVisible(true);
+
+            txtAttention.setReadOnly(true);
+            txtClientname.setReadOnly(true);
+            txtCvr.setReadOnly(true);
+            txtEan.setReadOnly(true);
+            txtSpecificDescription.setReadOnly(true);
+            txtStreetname.setReadOnly(true);
+            txtZipCity.setReadOnly(true);
+            dfInvoiceDate.setReadOnly(true);
+
+            lblInvoiceNumber.setValue(StringUtils.convertInvoiceNumberToString(invoice.getInvoicenumber()));
+        } else {
+
+        }
+    }
 
     public DraftEditImpl(Invoice invoice) {
         this.invoice = invoice;
@@ -36,6 +79,16 @@ public class DraftEditImpl extends DraftEditDesign {
         invoiceBinder.forField(dfInvoiceDate).bind(Invoice::getInvoicedate, Invoice::setInvoicedate);
         invoiceBinder.forField(txtSpecificDescription).bind(Invoice::getSpecificdescription, Invoice::setSpecificdescription);
         invoiceBinder.readBean(invoice);
+
+        txtAttention.addBlurListener(event -> saveInvoice());
+        txtClientname.addBlurListener(event -> saveInvoice());
+        txtCvr.addBlurListener(event -> saveInvoice());
+        txtEan.addBlurListener(event -> saveInvoice());
+        txtStreetname.addBlurListener(event -> saveInvoice());
+        txtZipCity.addBlurListener(event -> saveInvoice());
+        dfInvoiceDate.addValueChangeListener(event -> saveInvoice());
+        txtSpecificDescription.addBlurListener(event -> saveInvoice());
+
         createInvoiceItems();
     }
 
@@ -52,21 +105,25 @@ public class DraftEditImpl extends DraftEditDesign {
         for (InvoiceItem invoiceItem : invoiceItems) {
             createInvoiceLine(invoiceItem, atRow++);
         }
+        if(invoice.getStatus().equals(InvoiceStatus.DRAFT)) {
+            Button btnAddInvoiceItem = new Button("add row");
+            btnAddInvoiceItem.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+            btnAddInvoiceItem.setIcon(FontAwesome.PLUS_SQUARE);
+            gridInvoiceItems.addComponent(new MLabel(""));
+            gridInvoiceItems.addComponent(btnAddInvoiceItem);
 
-        Button btnAddInvoiceItem = new Button("add row");
-        btnAddInvoiceItem.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        btnAddInvoiceItem.setIcon(FontAwesome.PLUS_SQUARE);
-        gridInvoiceItems.addComponent(btnAddInvoiceItem);
 
-        btnAddInvoiceItem.addClickListener(event -> {
-            int row = gridInvoiceItems.getRows() - 1;
-            InvoiceItem invoiceItem = new InvoiceItem("", "", 0.0, 0);
-            invoiceItem.uuid = UUID.randomUUID().toString();
-            invoiceItems.add(invoiceItem);
-            gridInvoiceItems.insertRow(row);
-            createInvoiceLine(invoiceItem, row);
-            calcSums(invoiceItems);
-        });
+            btnAddInvoiceItem.addClickListener(event -> {
+                int row = gridInvoiceItems.getRows() - 1;
+                InvoiceItem invoiceItem = new InvoiceItem("", "", 0.0, 0);
+                invoiceItem.uuid = UUID.randomUUID().toString();
+                invoiceItems.add(invoiceItem);
+                gridInvoiceItems.insertRow(row);
+                createInvoiceLine(invoiceItem, row);
+                calcSums(invoiceItems);
+                saveInvoice();
+            });
+        }
 
         calcSums(invoiceItems);
     }
@@ -86,13 +143,25 @@ public class DraftEditImpl extends DraftEditDesign {
     private void createInvoiceLine(InvoiceItem invoiceItem, int atRow) {
         Binder<InvoiceItem> binder = new Binder<>();
         binders.put(binder, invoiceItem);
+
+        Button btnDeleteItem = new MButton(MaterialIcons.DELETE).withStyleName("icon_only flat").addClickListener(() -> {
+            binders.remove(binder);
+            gridInvoiceItems.removeRow(atRow);
+            invoice.getInvoiceitems().remove(invoiceItem);
+            saveInvoice();
+        });
+
         TextField lblItemname = new TextField();
+        lblItemname.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
+        lblItemname.addBlurListener(event -> saveInvoice());
         lblItemname.setId(UUID.randomUUID().toString());
         lblItemname.addStyleName("tiny");
         lblItemname.setWidth(100.0f, Unit.PERCENTAGE);
         binder.forField(lblItemname).bind(InvoiceItem::getItemname, InvoiceItem::setItemname);
 
         TextField lblDescription = new TextField();
+        lblDescription.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
+        lblDescription.addBlurListener(event -> saveInvoice());
         lblDescription.addStyleName("tiny");
         lblDescription.setWidth(100.0f, Unit.PERCENTAGE);
         binder.forField(lblDescription).bind(InvoiceItem::getDescription, InvoiceItem::setDescription);
@@ -106,6 +175,8 @@ public class DraftEditImpl extends DraftEditDesign {
         lblAmount.setWidthUndefined();
 
         TextField lblRate = new TextField();
+        lblRate.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
+        lblRate.addBlurListener(event -> saveInvoice());
         lblRate.addStyleName("tiny");
         lblRate.setWidth(100.0f, Unit.PERCENTAGE);
 
@@ -114,6 +185,8 @@ public class DraftEditImpl extends DraftEditDesign {
                 .bind(InvoiceItem::getRate, InvoiceItem::setRate);
 
         TextField lblHours = new TextField();
+        lblHours.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
+        lblHours.addBlurListener(event -> saveInvoice());
         lblHours.addStyleName("tiny");
         lblHours.setWidth(100.0f, Unit.PERCENTAGE);
 
@@ -122,11 +195,12 @@ public class DraftEditImpl extends DraftEditDesign {
                 //.withConverter(new StringToDoubleConverter("Must enter a number"))
                 .bind(InvoiceItem::getHours, InvoiceItem::setHours);
 
-        gridInvoiceItems.addComponent(lblItemname, 0, atRow);
-        gridInvoiceItems.addComponent(lblDescription, 1, atRow);
-        gridInvoiceItems.addComponent(lblRate, 2, atRow);
-        gridInvoiceItems.addComponent(lblHours, 3, atRow);
-        gridInvoiceItems.addComponent(lblAmount, 4, atRow);
+        if(invoice.getStatus().equals(InvoiceStatus.DRAFT)) gridInvoiceItems.addComponent(btnDeleteItem, 0, atRow);
+        gridInvoiceItems.addComponent(lblItemname, 1, atRow);
+        gridInvoiceItems.addComponent(lblDescription, 2, atRow);
+        gridInvoiceItems.addComponent(lblRate, 3, atRow);
+        gridInvoiceItems.addComponent(lblHours, 4, atRow);
+        gridInvoiceItems.addComponent(lblAmount, 5, atRow);
         gridInvoiceItems.setComponentAlignment(lblAmount, Alignment.MIDDLE_RIGHT);
         binder.readBean(invoiceItem);
 
@@ -154,6 +228,21 @@ public class DraftEditImpl extends DraftEditDesign {
                 lblHours.setValue(event.getOldValue());
             }
         });
+    }
+
+    public void saveInvoice() {
+        try {
+            for (Binder<InvoiceItem> binder : binders.keySet()) {
+                binder.writeBean(binders.get(binder));
+            }
+            invoiceBinder.writeBean(invoice);
+            //invoice.getInvoiceitems().removeIf(invoiceItem -> invoiceItem.itemname.trim().length() == 0);
+            invoice = invoiceService.save(invoice);
+            Notification.show("Saved", Notification.Type.TRAY_NOTIFICATION);
+        } catch (ValidationException e) {
+            Notification.show("Invoice could not be saved, " +
+                    "please check error messages for each field.", Notification.Type.ERROR_MESSAGE);
+        }
     }
 
     public class MyConverter implements Converter<String, Double> {

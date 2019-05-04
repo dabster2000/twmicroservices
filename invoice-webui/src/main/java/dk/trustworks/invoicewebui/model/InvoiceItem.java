@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 /**
  * Created by hans on 08/07/2017.
@@ -25,6 +26,7 @@ public class InvoiceItem {
 
     public InvoiceItem(String itemname, String description, double rate, double hours) {
         this();
+        uuid = UUID.randomUUID().toString();
         this.itemname = itemname;
         this.description = description;
         this.rate = rate;

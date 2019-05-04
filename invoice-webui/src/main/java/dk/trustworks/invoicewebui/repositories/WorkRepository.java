@@ -144,7 +144,7 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "inner join contracts c on cp.contractuuid = c.uuid " +
             "inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
             "where c.activefrom <= w.registered and c.activeto >= w.registered " +
-            "and  w.registered >= :fromdate AND w.registered < :todate " +
+            "and  w.registered >= :fromdate AND w.registered <= :todate " +
             "and c.uuid like :contractuuid " +
             "and w.workduration > 0 " +
             "and u.uuid LIKE :useruuid " +

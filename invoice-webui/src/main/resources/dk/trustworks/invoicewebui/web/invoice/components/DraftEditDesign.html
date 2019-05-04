@@ -8,23 +8,34 @@
  <body>
   <vaadin-vertical-layout>
    <vaadin-css-layout size-full>
+    <vaadin-horizontal-layout width-full>
+     <vaadin-button width="220px" height="70px" plain-text _id="btnDelete" :middle :center>
+       Delete Draft 
+     </vaadin-button>
+     <vaadin-button width="220px" height="70px" plain-text _id="btnCreatePhantom" :middle :center>
+       Create Phantom Invoice 
+     </vaadin-button>
+     <vaadin-button width="220px" height="70px" plain-text _id="btnCreateInvoice" :middle :center>
+       Create Invoice 
+     </vaadin-button>
+     <vaadin-button visible="false" width="220px" height="70px" plain-text _id="btnCreateCreditNote" :middle :center>
+       Create Credit Note 
+     </vaadin-button>
+     <vaadin-button visible="false" width="220px" height="70px" plain-text _id="btnDropbox" :middle :center>
+       Dropbox 
+     </vaadin-button>
+     <vaadin-button visible="false" width="220px" height="70px" plain-text _id="btnDownload" :middle :center>
+       Download 
+     </vaadin-button>
+    </vaadin-horizontal-layout>
     <vaadin-horizontal-layout style-name="box-border" width-full height="100px">
      <vaadin-label style-name="h2" plain-text _id="lblInvoiceHeadline" :middle>
        FAKTURA 
      </vaadin-label>
      <vaadin-horizontal-layout height-full :middle :right :expand>
       <vaadin-css-layout width-full :middle :center>
-       <vaadin-button plain-text _id="btnCreatePhantom">
-         Phantom Invoice 
-       </vaadin-button>
        <vaadin-label width="5px" plain-text></vaadin-label>
-       <vaadin-button style-name="danger" plain-text _id="btnCreateInvoice">
-         Create invoice 
-       </vaadin-button>
        <vaadin-label width="5px" plain-text></vaadin-label>
-       <vaadin-button style-name="primary" width-full plain-text _id="btnSave">
-         Save 
-       </vaadin-button>
       </vaadin-css-layout>
      </vaadin-horizontal-layout>
     </vaadin-horizontal-layout>
@@ -50,9 +61,14 @@
        <br>
        <br> CVR-nr.: 35648941 
       </vaadin-label>
-      <vaadin-label plain-text>
-        Faktura nr: XX-XXX 
-      </vaadin-label>
+      <vaadin-horizontal-layout>
+       <vaadin-label plain-text>
+         Faktura nr: 
+       </vaadin-label>
+       <vaadin-label plain-text _id="lblInvoiceNumber">
+         XX-XXX 
+       </vaadin-label>
+      </vaadin-horizontal-layout>
       <vaadin-date-field range-start="2014-02-01" caption="Dato:" show-iso-week-numbers date-format="yyyy/MM/dd" _id="dfInvoiceDate"></vaadin-date-field>
      </vaadin-vertical-layout>
     </vaadin-horizontal-layout>
@@ -82,6 +98,9 @@
       <vaadin-grid-layout spacing width-full _id="gridInvoiceItems">
        <row>
         <column>
+         <vaadin-label style-name="bold" plain-text></vaadin-label>
+        </column>
+        <column>
          <vaadin-label style-name="bold" width="139px" plain-text>
            Varenr. 
          </vaadin-label>
@@ -109,7 +128,9 @@
        </row>
        <row>
         <column>
-         <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
+         <vaadin-label plain-text>
+           X 
+         </vaadin-label>
         </column>
         <column>
          <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
@@ -121,7 +142,10 @@
          <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
         </column>
         <column>
-         <vaadin-label plain-text :middle :right>
+         <vaadin-text-field style-name="tiny" width-full></vaadin-text-field>
+        </column>
+        <column>
+         <vaadin-label plain-text>
            Label 
          </vaadin-label>
         </column>

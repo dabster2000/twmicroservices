@@ -22,9 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static java.time.DayOfWeek.MONDAY;
-import static java.time.DayOfWeek.TUESDAY;
-
 
 @Component
 public class CheckTimeRegistrationJob {
@@ -89,6 +86,8 @@ public class CheckTimeRegistrationJob {
         log.info("CheckTimeRegistrationJob.execute");
         LocalDate dateTime = LocalDate.now();
         log.info("dateTime = " + dateTime);
+
+        /*
         if(dateTime.getDayOfWeek().getValue() > 5) return; // do not check in weekends
         log.info("This is not in the weekend");
 
@@ -100,6 +99,15 @@ public class CheckTimeRegistrationJob {
             dateTime = dateTime.minusDays(2);
         }
         log.info("dateTime = " + dateTime);
+        */
+        int count = 0;
+        do {
+            if(DateUtils.isWorkday(dateTime)) {
+                count++;
+            }
+            dateTime = dateTime.minusDays(1);
+        } while (count<4);
+        log.info("datefrom: "+dateTime);
 
         List<Work> allWork = workService.findByPeriod(dateTime, LocalDate.now());
         log.info("workByYearMonthDay.size() = " + allWork.size());
@@ -111,12 +119,6 @@ public class CheckTimeRegistrationJob {
             log.info("checking user = " + user);
 
             boolean hasWork = allWork.stream().filter(work -> work.getUser().getUuid().equals(user.getUuid())).anyMatch(work -> work.getWorkduration()>0);
-            /*
-            for (Work work : allWork) {
-                //if(!(work.getWorkduration()>0)) continue;
-                if(work.getUser().getUuid().equals(user.getUuid())) hasWork = true;
-            }
-            */
             log.info("hasWork = " + hasWork);
 
             // Todo: Only send to people with budgets
@@ -172,7 +174,7 @@ public class CheckTimeRegistrationJob {
                 //ChatPostMessageMethod textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), responses[new Random().nextInt(responses.length)]);
                 textMessage.setAs_user(true);
                 log.info("Sending message to "+user);
-                halWebApiClient.postMessage(textMessage);
+                //halWebApiClient.postMessage(textMessage);
 
 
                 ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", "Notification sent to: "+ user.getUsername() +" at "+user.getSlackusername());

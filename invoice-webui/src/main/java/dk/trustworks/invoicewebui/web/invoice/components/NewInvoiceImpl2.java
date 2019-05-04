@@ -3,10 +3,18 @@ package dk.trustworks.invoicewebui.web.invoice.components;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.annotations.Push;
+import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
+import dk.trustworks.invoicewebui.model.enums.InvoiceType;
+import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.PhotoService;
@@ -20,10 +28,11 @@ import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.label.MLabel;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.simplefiledownloader.SimpleFileDownloader;
+import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -48,9 +57,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
 
     private final InvoiceService invoiceService;
 
-    private final PhotoService photoService;
-
-    private final ProjectService projectService;
+    private final DropboxAPI dropboxAPI;
 
     private ResponsiveRow statsRow;
     private ResponsiveRow invoicesRow;
@@ -60,11 +67,10 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     private InvoiceListItem selectedItem;
 
     @Autowired
-    public NewInvoiceImpl2(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService, PhotoService photoService, ProjectService projectService) {
+    public NewInvoiceImpl2(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService, PhotoService photoService, ProjectService projectService, DropboxAPI dropboxAPI) {
         this.projectSummaryClient = projectSummaryClient;
         this.invoiceService = invoiceService;
-        this.photoService = photoService;
-        this.projectService = projectService;
+        this.dropboxAPI = dropboxAPI;
     }
 
 
@@ -87,23 +93,28 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     public void reloadData() {
         logger.info("NewInvoiceImpl.reloadData");
 
-        createStatCards();
-
         List<ProjectSummary> projectSummaries = projectSummaryClient.loadProjectSummaryByYearAndMonth(yearMonthSelectComboBox.getValue().getDate().getYear(), yearMonthSelectComboBox.getValue().getDate().getMonthValue());
 
         ResponsiveLayout invoiceListItemsResponsiveLayout = new ResponsiveLayout();
         VerticalLayout invoiceListLayout = new MVerticalLayout(new MVerticalLayout().withStyleName("card-1").with(invoiceListItemsResponsiveLayout));
         ResponsiveRow invoiceListItemsResponsiveRow = invoiceListItemsResponsiveLayout.addRow();
-        VerticalLayout invoiceListVerticalLayout = new MVerticalLayout();
+        VerticalLayout invoiceListVerticalLayout = new MVerticalLayout().withSpacing(false);
+        Accordion accordion = new Accordion();
         invoiceListItemsResponsiveRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
-                .withComponent(new MVerticalLayout().withHeight(500, Unit.PIXELS).withStyleName("v-scrollable").withComponent(invoiceListVerticalLayout));
-
-        //
+                .withComponent(accordion);
 
         TabSheet tabSheet = new TabSheet();
+        tabSheet.setStyleName("small");
 
-        String clientName = "";
+        Client client = new Client();
+        InvoiceListItem lastInvoiceListItem = null;
+        TabSheet.Tab tab = null;
+
+        double invoicedThisMonth = 0.0;
+        double registeredThisMonth = 0.0;
+        double registeredByClient = 0.0;
+        double invoicedByClient = 0.0;
 
         for (ProjectSummary projectSummary : projectSummaries.stream().sorted(Comparator.comparing(ProjectSummary::getClientname)).collect(Collectors.toList())) {
             InvoiceListItem invoiceListItem = new InvoiceListItem();
@@ -111,20 +122,27 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
             invoiceListItem.getLblDescription().setValue(projectSummary.getDescription());
             invoiceListItem.getLblAmount().setValue(NumberConverter.formatCurrency(projectSummary.getRegisteredamount()));
             invoiceListItem.getLblInvoicedAmount().setValue(NumberConverter.formatCurrency(projectSummary.getInvoicedamount()));
-            //invoiceListItem.getImgLogo().setSource(photoService.getRelatedPhoto(projectService.findOne(projectSummary.getProjectuuid()).getClient().getUuid()));
-            //invoiceListItem.getImgLogo().setVisible(true);
+            invoiceListItem.addStyleName("grey-box-border");
 
-            if(!projectSummary.getClientname().equals(clientName)) {
-                Image clientLogo = new Image(null, photoService.getRelatedPhoto(projectService.findOne(projectSummary.getProjectuuid()).getClient().getUuid()));
-                clientLogo.setWidth(80, PIXELS);
-                clientLogo.setHeight(40, PIXELS);
-                invoiceListVerticalLayout.addComponent(new MHorizontalLayout(clientLogo, new MLabel(projectSummary.getClientname())).withDefaultComponentAlignment(Alignment.MIDDLE_LEFT).withStyleName("light-grey").withFullWidth());
-                //invoiceListVerticalLayout.setComponentAlignment(clientLogo, Alignment.MIDDLE_LEFT);
-                clientName = projectSummary.getClientname();
+            if(!projectSummary.getClient().getUuid().equals(client.getUuid())) {
+                invoiceListVerticalLayout = new MVerticalLayout().withSpacing(false);
+                if(tab!=null) tab.setCaption(client.getName() +
+                        ((client.getAccountmanager()!=null)?(" - "+ client.getAccountmanager().getInitials()):"") +
+                        " ("+NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%)");
+                tab = accordion.addTab(invoiceListVerticalLayout, projectSummary.getClientname());
+                if(lastInvoiceListItem!=null) lastInvoiceListItem.removeStyleName("grey-box-border");
+                client = projectSummary.getClient();
+                registeredByClient = 0.0;
+                invoicedByClient = 0.0;
             }
 
+            registeredByClient += projectSummary.getRegisteredamount();
+            invoicedByClient += projectSummary.getInvoicedamount();
+
+            registeredThisMonth += projectSummary.getRegisteredamount();
+            invoicedThisMonth += projectSummary.getInvoicedamount();
+
             invoiceListItem.addLayoutClickListener(event -> {
-                System.out.println("event = " + event);
                 if(selectedItem!=null) {
                     if(selectedItem.equals(invoiceListItem)) return;
                     selectedItem.removeStyleName("light-blue");
@@ -132,18 +150,29 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 invoiceListItem.addStyleName("light-blue");
                 selectedItem = invoiceListItem;
 
-                tabSheet.removeAllComponents();
-                for (Invoice invoice : projectSummary.getInvoiceList().stream().sorted(Comparator.comparingInt(o -> o.invoicenumber)).collect(Collectors.toList())) {
-                    DraftEditDesign invoiceEditDesign = new DraftEditImpl(invoice);
-                    tabSheet.addTab(invoiceEditDesign, StringUtils.convertInvoiceNumberToString(invoice.invoicenumber));
-                }
+                refreshTabs(tabSheet, projectSummary);
             });
-            //invoiceListItem.getImgLogo().setSource(photoService.getRelatedPhoto(projectSummary.get));
+
+            if(projectSummary.getRegisteredamount()*0.2>projectSummary.getInvoicedamount()) {
+                invoiceListItem.getTrafficLight().addStyleName("bg-secondary-1-2"); // red
+            } else if(projectSummary.getRegisteredamount()*0.95<=projectSummary.getInvoicedamount()) {
+                invoiceListItem.getTrafficLight().addStyleName("dark-green"); // dark-green
+            } else {
+                invoiceListItem.getTrafficLight().addStyleName("yellow"); // yellow
+            }
+
+            lastInvoiceListItem = invoiceListItem;
             invoiceListVerticalLayout.addComponent(invoiceListItem);
         }
 
-        invoicesRow.removeAllComponents();
+        if(tab!=null) tab.setCaption(client.getName() +
+                ((client.getAccountmanager()!=null)?(" - "+ client.getAccountmanager().getInitials()):"") +
+                " (" + NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%)");
+        if(lastInvoiceListItem!=null) lastInvoiceListItem.removeStyleName("grey-box-border");
 
+        createStatCards(NumberConverter.convertDoubleToInt(invoicedThisMonth), NumberConverter.convertDoubleToInt(registeredThisMonth-invoicedThisMonth), 0, 0);
+
+        invoicesRow.removeAllComponents();
 
         ResponsiveLayout invoiceResponsiveLayout = new ResponsiveLayout();
 
@@ -165,11 +194,105 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
         invoicesRow.addColumn().withDisplayRules(12, 12,12, 12).withComponent(invoiceResponsiveLayout);
     }
 
-    private void createStatCards() {
-        TopCardImpl invoicedTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Invoiced", "This month", "kr 2.301.200", "dark-blue"));
-        TopCardImpl notInvoicedTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Not invoiced", "This month", "kr 2.301.200", "dark-blue"));
-        TopCardImpl soTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "SO Hours", "This month", "kr 2.301.200", "dark-blue"));
-        TopCardImpl otherTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Other count", "This month", "kr 2.301.200", "dark-blue"));
+    public void refreshTabs(TabSheet tabSheet, ProjectSummary projectSummary) {
+        tabSheet.removeAllComponents();
+        for (Invoice invoice : projectSummary.getInvoiceList().stream().sorted(Comparator.comparingInt(Invoice::getInvoicenumber).reversed()).collect(Collectors.toList())) {
+            DraftEditDesign invoiceEditDesign = new DraftEditImpl(invoice, invoiceService);
+            tabSheet.addTab(invoiceEditDesign, (invoice.getInvoicenumber()==0)?"Phantom":invoice.getType().name().substring(0,2)+"-"+StringUtils.convertInvoiceNumberToString(invoice.invoicenumber));
+
+            invoiceEditDesign.btnDownload.addClickListener(event -> {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+                final StreamResource resource = new StreamResource(() ->
+                        new ByteArrayInputStream(invoice.getPdf()),
+                        StringUtils.convertInvoiceNumberToString(invoice.invoicenumber) +
+                                "_" + invoice.type +
+                                "-" + invoice.clientname +
+                                "-" + dateTimeFormatter.format(invoice.invoicedate) +
+                                ".pdf"
+                );
+
+                SimpleFileDownloader downloader = new SimpleFileDownloader();
+                addExtension(downloader);
+                downloader.setFileDownloadResource(resource);
+                downloader.download();
+            });
+            invoiceEditDesign.btnDropbox.addClickListener(event -> {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+                final StreamResource resource = new StreamResource(() ->
+                        new ByteArrayInputStream(invoice.getPdf()),
+                        StringUtils.convertInvoiceNumberToString(invoice.invoicenumber) +
+                                "_" + invoice.type +
+                                "-" + invoice.clientname +
+                                "-" + dateTimeFormatter.format(invoice.invoicedate) +
+                                ".pdf"
+                );
+
+                dropboxAPI.uploadInvoice(resource, invoice.invoicedate);
+            });
+            invoiceEditDesign.btnCreateCreditNote.addClickListener(event -> {
+                if(invoice.uuid == null && invoice.uuid.trim().length() == 0) return;
+                Invoice creditNota = invoiceService.createCreditNota(invoice);
+                projectSummary.getDraftInvoiceList().add(creditNota);
+                refreshTabs(tabSheet, projectSummary);
+            });
+        }
+        for (Invoice invoice : projectSummary.getDraftInvoiceList().stream().sorted(Comparator.comparingInt(Invoice::getInvoicenumber).reversed()).collect(Collectors.toList())) {
+            DraftEditImpl invoiceEditDesign = new DraftEditImpl(invoice, invoiceService);
+            final TabSheet.Tab tab = tabSheet.addTab(invoiceEditDesign, "DRAFT");
+            invoiceEditDesign.btnDelete.addClickListener(event -> {
+                invoiceService.delete(invoice.getUuid());
+                projectSummary.getDraftInvoiceList().remove(invoice);
+                tabSheet.removeTab(tab);
+            });
+            invoiceEditDesign.btnCreateInvoice.addClickListener(event -> {
+                invoiceEditDesign.saveInvoice();
+
+                invoice.setStatus(InvoiceStatus.CREATED);
+                invoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
+                invoice.pdf = invoiceService.createInvoicePdf(invoice);
+                Invoice savedInvoice = invoiceService.save(invoice);
+                projectSummary.getInvoiceList().add(savedInvoice);
+                projectSummary.getDraftInvoiceList().remove(invoice);
+                refreshTabs(tabSheet, projectSummary);
+            });
+            invoiceEditDesign.btnCreatePhantom.addClickListener(event -> {
+                invoiceEditDesign.saveInvoice();
+
+                invoice.setStatus(InvoiceStatus.CREATED);
+                invoice.setType(InvoiceType.INVOICE);
+                invoice.invoicenumber = 0;
+                invoice.pdf = invoiceService.createInvoicePdf(invoice);
+                Invoice savedInvoice = invoiceService.save(invoice);
+                projectSummary.getInvoiceList().add(savedInvoice);
+                projectSummary.getDraftInvoiceList().remove(invoice);
+                refreshTabs(tabSheet, projectSummary);
+            });
+            invoiceEditDesign.btnCopyDescription.addClickListener(event -> {
+                Invoice latestInvoiceByProjectuuid = invoiceService.findByLatestInvoiceByProjectuuid(invoice.projectuuid);
+                invoiceEditDesign.setSpecificDescription(latestInvoiceByProjectuuid.specificdescription);
+                invoiceEditDesign.saveInvoice();
+            });
+        }
+        tabSheet.addTab(new MVerticalLayout()
+                .withFullWidth()
+                .withHeight(300, PIXELS)
+                .withComponent(
+                        new MButton("Add Draft", event1 -> {
+                            Invoice invoiceFromProject = projectSummaryClient.createInvoiceFromProject(projectSummary, yearMonthSelectComboBox.getValue().getDate().getYear(), yearMonthSelectComboBox.getValue().getDate().getMonthValue() - 1);
+                            projectSummary.getDraftInvoiceList().add(invoiceFromProject);
+                            refreshTabs(tabSheet, projectSummary);
+                        })
+                ), "NEW"
+        );
+    }
+
+    private void createStatCards(int value1, int value2, int value3, int value4) {
+        TopCardImpl invoicedTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Invoiced", "This month", NumberConverter.formatCurrency(value1), "dark-blue"));
+        TopCardImpl notInvoicedTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Not invoiced", "This month", NumberConverter.formatCurrency(value2), "dark-blue"));
+        TopCardImpl soTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "SO Hours", "This month", "kr ???", "dark-blue"));
+        TopCardImpl otherTopCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Other count", "This month", "kr ???", "dark-blue"));
 
         statsRow.removeAllComponents();
 
