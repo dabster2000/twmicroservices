@@ -77,6 +77,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
 
     public NewInvoiceImpl2 init() {
         logger.info("NewInvoiceImpl.init");
+        this.removeAllComponents();
 
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         this.addComponent(responsiveLayout);
