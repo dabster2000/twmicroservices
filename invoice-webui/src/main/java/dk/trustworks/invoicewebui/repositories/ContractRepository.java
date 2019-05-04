@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.repositories;
 
+import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,6 +41,8 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
 
     List<Contract> findByActiveFromBeforeAndActiveToAfterAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
     List<Contract> findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
+
+    List<Contract> findByClient(@Param("client") Client client);
 
     @Query(value = "select c.* from usermanager.contracts c " +
             "right join usermanager.contract_consultants cc on c.uuid = cc.contractuuid " +

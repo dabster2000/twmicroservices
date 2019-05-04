@@ -8,6 +8,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification;
+import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
@@ -380,15 +381,20 @@ public class ContractListLayout extends VerticalLayout {
                 contractFormDesign.getBtnUpdate().setVisible(false);
 
                 contractFormDesign.getBtnCreate().addClickListener(event3 -> {
-                    Contract contract = contractService.createContract(new Contract(
-                            contractFormDesign.getCbType().getValue(),
-                            contractFormDesign.getCbStatus().getValue(),
-                            contractFormDesign.getTxtNote().getValue(),
-                            contractFormDesign.getTxtRefid().getValue(),
-                            contractFormDesign.getDfFrom().getValue().withDayOfMonth(1),
-                            contractFormDesign.getDfTo().getValue().withDayOfMonth(contractFormDesign.getDfTo().getValue().lengthOfMonth()),
-                            NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
-                            client));
+                    Contract contract = null;
+                    try {
+                        contract = contractService.createContract(new Contract(
+                                contractFormDesign.getCbType().getValue(),
+                                contractFormDesign.getCbStatus().getValue(),
+                                contractFormDesign.getTxtNote().getValue(),
+                                contractFormDesign.getTxtRefid().getValue(),
+                                contractFormDesign.getDfFrom().getValue().withDayOfMonth(1),
+                                contractFormDesign.getDfTo().getValue().withDayOfMonth(contractFormDesign.getDfTo().getValue().lengthOfMonth()),
+                                NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
+                                client));
+                    } catch (ContractValidationException e) {
+                        e.printStackTrace();
+                    }
                     this.removeComponent(contractResponsiveLayout);
                     NavigationBar navigationBar = new NavigationBar();
                     navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
@@ -422,7 +428,7 @@ public class ContractListLayout extends VerticalLayout {
                     if(contract.getParentuuid()==null || contract.getParentuuid().equals("")) contract.setName(RandomWord.getNewWord(8));
                     else contract.setName(contractService.findOne(contract.getParentuuid()).getName());
                     contractService.updateContract(contract);
-                } catch (WordLengthException e) {
+                } catch (WordLengthException | ContractValidationException e) {
                     e.printStackTrace();
                 }
             }
@@ -477,7 +483,12 @@ public class ContractListLayout extends VerticalLayout {
 
             contractDesign.getBtnExtendContract().setIcon(MaterialIcons.PLAYLIST_ADD);
             contractDesign.getBtnExtendContract().addClickListener(event1 -> {
-                Contract newContract = contractService.createContract(new Contract(contract));
+                Contract newContract = null;
+                try {
+                    newContract = contractService.createContract(new Contract(contract));
+                } catch (ContractValidationException e) {
+                    e.printStackTrace();
+                }
                 this.removeComponent(contractResponsiveLayout);
                 NavigationBar navigationBar = new NavigationBar();
                 navigationBar.getBtnBack().addClickListener(event -> this.createLayout());

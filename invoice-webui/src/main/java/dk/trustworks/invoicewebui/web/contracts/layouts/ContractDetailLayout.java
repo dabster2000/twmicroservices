@@ -260,7 +260,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
             contactInformationRow.getLblOther().setValue(clientdata.getOtheraddressinfo());
             contactInformationRow.getBtnAdd().addClickListener(event1 -> {
                 contract.setClientdata(clientdata);
-                Contract newContract = contractService.updateContract(contract);
+                Contract newContract = null;
+                try {
+                    newContract = contractService.updateContract(contract);
+                } catch (ContractValidationException e) {
+                    e.printStackTrace();
+                }
                 subWindow.close();
                 updateData(newContract);
             });
@@ -301,7 +306,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 contract.setAmount(NumberConverter.parseDouble(contractForm.getTxtAmount().getValue()));
                 contractService.updateContract(contract);
                 updateData(contract);
-            } catch (ValidationException e) {
+            } catch (ValidationException | ContractValidationException e) {
                 e.printStackTrace();
                 Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
@@ -515,7 +520,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
             projectRowDesign.getLblName().setValue(project.getName());
             projectRowDesign.getBtnIcon().setIcon(MaterialIcons.DATE_RANGE);
             projectRowDesign.getBtnDelete().setIcon(MaterialIcons.DELETE);
-            projectRowDesign.getBtnDelete().addClickListener(event -> removeProject(Contract, project));
+            projectRowDesign.getBtnDelete().addClickListener(event -> {
+                try {
+                    removeProject(Contract, project);
+                } catch (ContractValidationException e) {
+                    e.printStackTrace();
+                }
+            });
             projectsLayout.addComponent(projectRowDesign);
         }
 
@@ -650,7 +661,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> userComboBox.getOptionalValue().ifPresent(user -> {
                         //User user = userComboBox.getSelectedItem().get();
-                        createConsultant(contract, user, 0.0, 0.0);
+                        try {
+                            createConsultant(contract, user, 0.0, 0.0);
+                        } catch (ContractValidationException e) {
+                            e.printStackTrace();
+                        }
                         subWindow.close();
                     }));
                     subContent.addComponent(addButton);
@@ -712,11 +727,17 @@ public class ContractDetailLayout extends ResponsiveLayout {
         consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
         consultantRowDesign.getImgPhoto().setEnabled(false);
         consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
-        consultantRowDesign.getBtnDelete().addClickListener(event -> createConsultant(
-                Contract,
-                user,
-                NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
-                NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue())));
+        consultantRowDesign.getBtnDelete().addClickListener(event -> {
+            try {
+                createConsultant(
+                        Contract,
+                        user,
+                        NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
+                        NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue()));
+            } catch (ContractValidationException e) {
+                e.printStackTrace();
+            }
+        });
 
         responsiveRow.addColumn()
                 .withComponent(consultantRowDesign)
@@ -767,15 +788,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
         }
     }
 
-    private void removeProject(Contract contract, Project project) {
+    private void removeProject(Contract contract, Project project) throws ContractValidationException {
         contract = contractService.removeProject(contract, project);
         updateData(contract);
     }
 
-    private void createConsultant(Contract contract, User user, double hours, double rate) {
+    private void createConsultant(Contract contract, User user, double hours, double rate) throws ContractValidationException {
         ContractConsultant contractConsultant = new ContractConsultant(contract, user, rate, 0.0, hours);
-        contract.addConsultant(contractConsultant);
-        consultantRepository.save(contractConsultant);
+        contractService.addConsultant(contract, contractConsultant);
         updateData(contract);
     }
 }

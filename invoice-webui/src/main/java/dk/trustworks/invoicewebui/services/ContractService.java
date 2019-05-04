@@ -5,6 +5,7 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
@@ -26,21 +27,25 @@ public class ContractService {
 
     private final ContractRepository contractRepository;
 
+    private final ContractConsultantRepository consultantRepository;
+
     private final ClientRepository clientRepository;
 
     private final WorkService workService;
 
     @Autowired
-    public ContractService(ProjectService projectService, ContractRepository contractRepository, ClientRepository clientRepository, WorkService workService) {
+    public ContractService(ProjectService projectService, ContractRepository contractRepository, ContractConsultantRepository consultantRepository, ClientRepository clientRepository, WorkService workService) {
         this.projectService = projectService;
         this.contractRepository = contractRepository;
+        this.consultantRepository = consultantRepository;
         this.clientRepository = clientRepository;
         this.workService = workService;
     }
 
     @Transactional
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract createContract(Contract contract) {
+    public Contract createContract(Contract contract) throws ContractValidationException {
+        if(!isValidContract(contract)) throw new ContractValidationException("Contract not valid");
         Contract savedContract = contractRepository.save(contract);
         Client client = savedContract.getClient();
         client.setActive(true);
@@ -48,9 +53,46 @@ public class ContractService {
         return contract;
     }
 
+    private boolean isValidContract(Contract contract) {
+        boolean isValid = true;
+        for (Contract contractTest : contractRepository.findByClient(contract.getClient())) {
+            boolean isOverlapped = false;
+            if((contract.getActiveFrom().isBefore(contractTest.getActiveTo()) || contract.getActiveFrom().isEqual(contractTest.getActiveTo())) &&
+                    (contract.getActiveTo().isAfter(contractTest.getActiveFrom()) || contract.getActiveTo().isEqual(contractTest.getActiveFrom()))) {
+                isOverlapped = true;
+            }
+
+            boolean hasProject = false;
+            for (Project project : contract.getProjects()) {
+                for (Project contractTestProject : contractTest.getProjects()) {
+                    if(project.getUuid().equals(contractTestProject.getUuid())) {
+                        hasProject = true;
+                        break;
+                    }
+                }
+                if(hasProject) break;
+            }
+
+            boolean hasConsultant = false;
+            for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                for (ContractConsultant contractTestConsultant : contractTest.getContractConsultants()) {
+                    if(contractConsultant.getUser().getUuid().equals(contractTestConsultant.getUser().getUuid())) {
+                        hasConsultant = true;
+                        break;
+                    }
+                }
+                if(hasConsultant) break;
+            }
+            if(isOverlapped && hasProject && hasConsultant) isValid = false;
+        }
+
+        return isValid;
+    }
+
     @Transactional
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract updateContract(Contract contract) {
+    public Contract updateContract(Contract contract) throws ContractValidationException {
+        if(!isValidContract(contract)) throw new ContractValidationException("Contract not valid");
         return contractRepository.save(contract);
     }
 
@@ -84,26 +126,26 @@ public class ContractService {
 
     @Transactional
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract addProject(Contract Contract, Project project) throws ContractValidationException {
-        // validate
-        for (Contract contract : project.getContracts()) {
-            Set<Object> userUUIDs = contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
-            if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), Contract.getActiveFrom(), Contract.getActiveTo()) &&
-                    userUUIDs.contains(Contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
-                throw new ContractValidationException("Overlapping another contract with same consultants");
+    public Contract addProject(Contract contract, Project project) throws ContractValidationException {
+        contract.addProject(project);
+        if(!isValidContract(contract)) {
+            contract.getProjects().remove(project);
+            throw new ContractValidationException("Contract not valid");
         }
 
         // execute
-        Contract = contractRepository.findOne(Contract.getUuid());
+        contract = contractRepository.findOne(contract.getUuid());
         project = projectService.findOne(project.getUuid());
-        project.addContract(Contract);
+        project.addContract(contract);
         //project = projectRepository.save(project);
-        Contract.addProject(project);
-        contractRepository.save(Contract);
-        return Contract;
+        contract.addProject(project);
+        contractRepository.save(contract);
+        return contract;
     }
 
     public Double findConsultantRateByWork(Work work, ContractStatus... statusList) {
+        System.out.println("ContractService.findConsultantRateByWork");
+        System.out.println("work = [" + work + "], statusList = [" + statusList + "]");
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
         if(work.getWorkas()==null) {
@@ -114,6 +156,8 @@ public class ContractService {
     }
 
     public Contract findContractByWork(Work work, ContractStatus... statusList) {
+        System.out.println("ContractService.findContractByWork");
+        System.out.println("work = [" + work + "], statusList = [" + statusList + "]");
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
         if(work.getWorkas()==null) {
             return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
@@ -144,7 +188,7 @@ public class ContractService {
 
     @Transactional
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract removeProject(Contract contract, Project project) {
+    public Contract removeProject(Contract contract, Project project) throws ContractValidationException {
         contract = contractRepository.findOne(contract.getUuid());
         contract.getProjects().remove(project);
         return updateContract(contract);
@@ -265,5 +309,17 @@ public class ContractService {
 
     public Contract findOne(String contractuuid) {
         return contractRepository.findOne(contractuuid);
+    }
+
+    public Contract addConsultant(Contract contract, ContractConsultant contractConsultant) throws ContractValidationException {
+        contract.addConsultant(contractConsultant);
+        if(!isValidContract(contract)) {
+            contract.getContractConsultants().remove(contractConsultant);
+            throw new ContractValidationException("Contract not valid");
+        }
+
+        consultantRepository.save(contractConsultant);
+
+        return contract;
     }
 }
