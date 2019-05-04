@@ -60,14 +60,11 @@ public class DashboardBoxCreator {
         LocalDate lastStartDate = startDate.minusYears(1);
         LocalDate lastEndDate = endDate.minusYears(1);
         Map<String, Project> currentProjectSet = new HashMap<>();
-        //Map<String, Project> noProjectSet = new HashMap<>();
         for (Work work : workService.findByPeriod(startDate, endDate)) {
             Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            } /*else {
-                noProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            }*/
+            }
         }
 
         Map<String, Project> lastProjectSet = new HashMap<>();

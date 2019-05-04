@@ -264,7 +264,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 try {
                     newContract = contractService.updateContract(contract);
                 } catch (ContractValidationException e) {
-                    e.printStackTrace();
+                    Notification.show("Contract period not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                 }
                 subWindow.close();
                 updateData(newContract);
@@ -306,9 +306,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 contract.setAmount(NumberConverter.parseDouble(contractForm.getTxtAmount().getValue()));
                 contractService.updateContract(contract);
                 updateData(contract);
-            } catch (ValidationException | ContractValidationException e) {
-                e.printStackTrace();
+            } catch (ValidationException e) {
                 Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            } catch (ContractValidationException e) {
+                Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
             }
         });
     }
@@ -524,7 +525,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 try {
                     removeProject(Contract, project);
                 } catch (ContractValidationException e) {
-                    e.printStackTrace();
+                    Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                 }
             });
             projectsLayout.addComponent(projectRowDesign);
@@ -664,7 +665,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                         try {
                             createConsultant(contract, user, 0.0, 0.0);
                         } catch (ContractValidationException e) {
-                            e.printStackTrace();
+                            Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                         }
                         subWindow.close();
                     }));
@@ -735,7 +736,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                         NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
                         NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue()));
             } catch (ContractValidationException e) {
-                e.printStackTrace();
+                Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
             }
         });
 
@@ -750,8 +751,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         try {
             Contract = contractService.addProject(Contract, project);
         } catch (ContractValidationException e) {
-            e.printStackTrace();
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
         }
         updateData(Contract);
     }

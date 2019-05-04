@@ -393,7 +393,7 @@ public class ContractListLayout extends VerticalLayout {
                                 NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
                                 client));
                     } catch (ContractValidationException e) {
-                        e.printStackTrace();
+                        Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                     }
                     this.removeComponent(contractResponsiveLayout);
                     NavigationBar navigationBar = new NavigationBar();
@@ -429,7 +429,7 @@ public class ContractListLayout extends VerticalLayout {
                     else contract.setName(contractService.findOne(contract.getParentuuid()).getName());
                     contractService.updateContract(contract);
                 } catch (WordLengthException | ContractValidationException e) {
-                    e.printStackTrace();
+                    Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                 }
             }
 
@@ -487,7 +487,7 @@ public class ContractListLayout extends VerticalLayout {
                 try {
                     newContract = contractService.createContract(new Contract(contract));
                 } catch (ContractValidationException e) {
-                    e.printStackTrace();
+                    Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                 }
                 this.removeComponent(contractResponsiveLayout);
                 NavigationBar navigationBar = new NavigationBar();
