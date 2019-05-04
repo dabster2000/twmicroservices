@@ -79,7 +79,7 @@ public class CheckTimeRegistrationJob {
     }
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
-    //@Scheduled(cron = "0 30 11 * * MON-FRI")
+    @Scheduled(cron = "0 30 11 * * MON-FRI")
     //@Scheduled(fixedDelay = 10000)
     public void checkTimeRegistrationJob() {
         halWebApiClient = SlackClientFactory.createWebApiClient(halBotUserOAuthAccessToken);
@@ -87,19 +87,6 @@ public class CheckTimeRegistrationJob {
         LocalDate dateTime = LocalDate.now();
         log.info("dateTime = " + dateTime);
 
-        /*
-        if(dateTime.getDayOfWeek().getValue() > 5) return; // do not check in weekends
-        log.info("This is not in the weekend");
-
-        if(dateTime.getDayOfWeek() == MONDAY) {
-            dateTime = dateTime.minusDays(3);
-        } else if (dateTime.getDayOfWeek() == TUESDAY) {
-            dateTime = dateTime.minusDays(4);
-        } else {
-            dateTime = dateTime.minusDays(2);
-        }
-        log.info("dateTime = " + dateTime);
-        */
         int count = 0;
         do {
             if(DateUtils.isWorkday(dateTime)) {
@@ -115,7 +102,7 @@ public class CheckTimeRegistrationJob {
         List<UserBooking> userBookingList = statisticsService.getUserBooking(0, 1);
 
         for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
-            //if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
+            if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
             log.info("checking user = " + user);
 
             boolean hasWork = allWork.stream().filter(work -> work.getUser().getUuid().equals(user.getUuid())).anyMatch(work -> work.getWorkduration()>0);
