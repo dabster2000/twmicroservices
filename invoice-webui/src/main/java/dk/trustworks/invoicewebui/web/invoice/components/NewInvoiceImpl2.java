@@ -2,11 +2,9 @@ package dk.trustworks.invoicewebui.web.invoice.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.annotations.Push;
 import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
@@ -46,7 +44,6 @@ import static com.vaadin.server.Sizeable.Unit.PIXELS;
 /**
  * Created by hans on 12/07/2017.
  */
-@Push
 @SpringComponent
 @UIScope
 public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
@@ -56,6 +53,8 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     private final ProjectSummaryService projectSummaryClient;
 
     private final InvoiceService invoiceService;
+
+    private final PhotoService photoService;
 
     private final DropboxAPI dropboxAPI;
 
@@ -67,13 +66,12 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     private InvoiceListItem selectedItem;
 
     @Autowired
-    public NewInvoiceImpl2(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService, PhotoService photoService, ProjectService projectService, DropboxAPI dropboxAPI) {
+    public NewInvoiceImpl2(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService, PhotoService photoService, ProjectService projectService, PhotoService photoService1, DropboxAPI dropboxAPI) {
         this.projectSummaryClient = projectSummaryClient;
         this.invoiceService = invoiceService;
+        this.photoService = photoService1;
         this.dropboxAPI = dropboxAPI;
     }
-
-
 
     public NewInvoiceImpl2 init() {
         logger.info("NewInvoiceImpl.init");
@@ -100,17 +98,19 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
         VerticalLayout invoiceListLayout = new MVerticalLayout(new MVerticalLayout().withStyleName("card-1").with(invoiceListItemsResponsiveLayout));
         ResponsiveRow invoiceListItemsResponsiveRow = invoiceListItemsResponsiveLayout.addRow();
         VerticalLayout invoiceListVerticalLayout = new MVerticalLayout().withSpacing(false);
-        Accordion accordion = new Accordion();
+        //Accordion accordion = new Accordion();
+        VerticalLayout accordion = new MVerticalLayout().withSpacing(false).withMargin(false);
         invoiceListItemsResponsiveRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(accordion);
 
+
         TabSheet tabSheet = new TabSheet();
-        tabSheet.setStyleName("small");
+
 
         Client client = new Client();
         InvoiceListItem lastInvoiceListItem = null;
-        TabSheet.Tab tab = null;
+        List<InvoiceTab> tabList = new ArrayList<>();
 
         double invoicedThisMonth = 0.0;
         double registeredThisMonth = 0.0;
@@ -127,10 +127,23 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
 
             if(!projectSummary.getClient().getUuid().equals(client.getUuid())) {
                 invoiceListVerticalLayout = new MVerticalLayout().withSpacing(false);
-                if(tab!=null) tab.setCaption(client.getName() +
-                        ((client.getAccountmanager()!=null)?(" - "+ client.getAccountmanager().getInitials()):"") +
-                        " ("+NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%)");
-                tab = accordion.addTab(invoiceListVerticalLayout, projectSummary.getClientname());
+                if(!tabList.isEmpty()) {
+                    InvoiceTab invoiceTab = tabList.get(tabList.size() - 1);
+                    invoiceTab.getLblClientName().setValue(client.getName());
+                    if(client.getAccountmanager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), false, 40, PIXELS));
+                    invoiceTab.getLblPercent().setValue(NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%");
+                            /*.setCaption(client.getName() +
+                            ((client.getAccountmanager()!=null)?(" - "+ client.getAccountmanager().getInitials()):"") +
+                            " ("+NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%)");*/
+                }
+                //tab = accordion.addTab(invoiceListVerticalLayout, projectSummary.getClientname());
+                final InvoiceTab tab = new InvoiceTab();
+                tab.getVlContent().addComponent(invoiceListVerticalLayout);
+                tab.getHlTab().addLayoutClickListener(event -> {
+                    tab.getVlContent().setVisible(!tab.getVlContent().isVisible());
+                });
+                accordion.addComponent(tab);
+                tabList.add(tab);
                 if(lastInvoiceListItem!=null) lastInvoiceListItem.removeStyleName("grey-box-border");
                 client = projectSummary.getClient();
                 registeredByClient = 0.0;
@@ -166,9 +179,12 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
             invoiceListVerticalLayout.addComponent(invoiceListItem);
         }
 
-        if(tab!=null) tab.setCaption(client.getName() +
-                ((client.getAccountmanager()!=null)?(" - "+ client.getAccountmanager().getInitials()):"") +
-                " (" + NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%)");
+        if(!tabList.isEmpty()) {
+            InvoiceTab invoiceTab = tabList.get(tabList.size() - 1);
+            invoiceTab.getLblClientName().setValue(client.getName());
+            if(client.getAccountmanager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), false, 40, PIXELS));
+            invoiceTab.getLblPercent().setValue(NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%");
+        }
         if(lastInvoiceListItem!=null) lastInvoiceListItem.removeStyleName("grey-box-border");
 
         createStatCards(NumberConverter.convertDoubleToInt(invoicedThisMonth), NumberConverter.convertDoubleToInt(registeredThisMonth-invoicedThisMonth), 0, 0);

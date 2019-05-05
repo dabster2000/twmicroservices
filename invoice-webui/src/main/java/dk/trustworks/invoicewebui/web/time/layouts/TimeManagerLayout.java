@@ -131,7 +131,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
         });
 
-        footerButtons.getBtnEdit().setIcon(MaterialIcons.EDIT);
+        footerButtons.getBtnEdit().setIcon(MaterialIcons.DELETE);
         footerButtons.getBtnEdit().addClickListener(event -> {
             for (TaskTitle weekRowTaskTitle : weekRowTaskTitles) {
                 weekRowTaskTitle.getImgLogo().setVisible(!weekRowTaskTitle.getImgLogo().isVisible());

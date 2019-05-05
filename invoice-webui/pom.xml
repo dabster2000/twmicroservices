@@ -184,15 +184,6 @@
             <artifactId>AdvancedTokenField</artifactId>
             <version>0.5.1</version>
         </dependency>
-
-
-        <!--
-        <dependency>
-            <groupId>pl.pdfviewer</groupId>
-            <artifactId>pdfviewer</artifactId>
-            <version>1.3.6</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.whitestein.vaadin.widgets</groupId>
             <artifactId>wt-pdf-viewer</artifactId>
