@@ -44,7 +44,7 @@ public class InvoiceDTO {
     String payment_terms; //Payment terms summary (i.e. NET 30)	null
     String due_date; //Invoice due date	null
     List<InvoiceItemDTO> items = new ArrayList<>();
-    String discounts; //Subtotal discounts - numbers only	0
+    double discounts; //Subtotal discounts - numbers only	0
     int tax; //Tax - numbers only	0
     int shipping; //Shipping - numbers only	0
     double amount_paid; //Amount paid - numbers only	0
@@ -67,11 +67,12 @@ public class InvoiceDTO {
         this.items = items;
     }
 
-    private InvoiceDTO(String header, InvoiceFieldsDTO invoiceFieldsDTO, String from, String to, String number, String date, String dueDate, String notes) {
+    private InvoiceDTO(String header, InvoiceFieldsDTO invoiceFieldsDTO, String from, String to, String number, String date, String dueDate, double discounts, String notes) {
         this(from, to, date, dueDate);
         this.header = header;
         this.fields = invoiceFieldsDTO;
         this.number = number;
+        this.discounts = discounts;
         this.notes = notes;
     }
 
@@ -85,7 +86,7 @@ public class InvoiceDTO {
 
     public InvoiceDTO(Invoice invoice) {
         this(invoice.getType().name(),
-                new InvoiceFieldsDTO(),
+                new InvoiceFieldsDTO((invoice.getDiscount()>0.0?"%":"false"), false),
                 "Trustworks A/S\n" +
                         "Amagertorv 29a, 3rd floor\n" +
                         "1160 Copenhagen K, Denmark\n" +
@@ -100,6 +101,7 @@ public class InvoiceDTO {
                 StringUtils.convertInvoiceNumberToString(invoice.invoicenumber),
                 invoice.getInvoicedate().format(DateTimeFormatter.ofPattern("dd. MMM yyyy")),
                 invoice.getInvoicedate().plusMonths(1).format(DateTimeFormatter.ofPattern("dd. MMM yyyy")),
+                invoice.getDiscount(),
                 ((invoice.contractref!=null && !invoice.contractref.equals(""))?invoice.getContractref()+"\n":"")+
                         ((invoice.projectref!=null && !invoice.projectref.equals(""))?invoice.getProjectref()+"\n":"")+
                         ((invoice.specificdescription!=null && !invoice.specificdescription.equals(""))?invoice.getSpecificdescription():""));
@@ -204,11 +206,11 @@ public class InvoiceDTO {
         this.items = items;
     }
 
-    public String getDiscounts() {
+    public double getDiscounts() {
         return discounts;
     }
 
-    public void setDiscounts(String discounts) {
+    public void setDiscounts(double discounts) {
         this.discounts = discounts;
     }
 
@@ -250,5 +252,29 @@ public class InvoiceDTO {
 
     public void setTerms(String terms) {
         this.terms = terms;
+    }
+
+    @Override
+    public String toString() {
+        return "InvoiceDTO{" +
+                "header='" + header + '\'' +
+                ", fields=" + fields.discounts +
+                ", currency='" + currency + '\'' +
+                ", logo='" + logo + '\'' +
+                ", from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", number='" + number + '\'' +
+                ", purchase_order='" + purchase_order + '\'' +
+                ", date='" + date + '\'' +
+                ", payment_terms='" + payment_terms + '\'' +
+                ", due_date='" + due_date + '\'' +
+                ", items=" + items +
+                ", discounts=" + discounts +
+                ", tax=" + tax +
+                ", shipping=" + shipping +
+                ", amount_paid=" + amount_paid +
+                ", notes='" + notes + '\'' +
+                ", terms='" + terms + '\'' +
+                '}';
     }
 }

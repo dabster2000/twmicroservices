@@ -41,6 +41,8 @@ public class DraftEditDesign extends VerticalLayout {
     protected Label lblBalanceDue;
     protected GridLayout gridInvoiceItems;
     protected Label lblSumNoTax;
+    protected Button btnSetSKIDiscount;
+    protected TextField txtDiscount;
     protected Label lblTax;
     protected Label lblSumWithTax;
     protected Label lblContractReference;

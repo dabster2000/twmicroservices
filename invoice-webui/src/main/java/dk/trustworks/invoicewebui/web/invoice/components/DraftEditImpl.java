@@ -8,6 +8,7 @@ import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -77,8 +78,10 @@ public class DraftEditImpl extends DraftEditDesign {
         invoiceBinder.forField(txtStreetname).bind(Invoice::getClientaddresse, Invoice::setClientaddresse);
         invoiceBinder.forField(txtZipCity).bind(Invoice::getZipcity, Invoice::setZipcity);
         invoiceBinder.forField(dfInvoiceDate).bind(Invoice::getInvoicedate, Invoice::setInvoicedate);
+        invoiceBinder.forField(txtDiscount).withConverter(new MyConverter()).bind(Invoice::getDiscount, Invoice::setDiscount);
         invoiceBinder.forField(txtSpecificDescription).bind(Invoice::getSpecificdescription, Invoice::setSpecificdescription);
         invoiceBinder.readBean(invoice);
+        dfInvoiceDueDate.setValue(invoice.getInvoicedate().plusMonths(1));
 
         txtAttention.addBlurListener(event -> saveInvoice());
         txtClientname.addBlurListener(event -> saveInvoice());
@@ -86,6 +89,15 @@ public class DraftEditImpl extends DraftEditDesign {
         txtEan.addBlurListener(event -> saveInvoice());
         txtStreetname.addBlurListener(event -> saveInvoice());
         txtZipCity.addBlurListener(event -> saveInvoice());
+        txtDiscount.addBlurListener(event -> {
+            saveInvoice();
+            calcSums(invoice.invoiceitems);
+        });
+        btnSetSKIDiscount.addClickListener(event -> {
+            txtDiscount.setValue("2.0");
+            saveInvoice();
+            calcSums(invoice.invoiceitems);
+        });
         dfInvoiceDate.addValueChangeListener(event -> saveInvoice());
         txtSpecificDescription.addBlurListener(event -> saveInvoice());
 
@@ -136,9 +148,9 @@ public class DraftEditImpl extends DraftEditDesign {
         currencyFormatter.setMinimumFractionDigits(2);
 
         lblSumNoTax.setValue(currencyFormatter.format(sumWithoutTax));
-        lblTax.setValue(currencyFormatter.format(sumWithoutTax*0.25));
-        lblSumWithTax.setValue(currencyFormatter.format(sumWithoutTax*1.25));
-        lblBalanceDue.setValue(currencyFormatter.format(sumWithoutTax*1.25));
+        lblTax.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*0.25));
+        lblSumWithTax.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*1.25));
+        lblBalanceDue.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*1.25));
     }
 
     private void createInvoiceLine(InvoiceItem invoiceItem, int atRow) {

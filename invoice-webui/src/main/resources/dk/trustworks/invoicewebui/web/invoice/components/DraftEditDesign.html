@@ -161,14 +161,19 @@
       </row>
       <row>
        <column>
-        <vaadin-label plain-text :middle :right>
-          Discounts 
-        </vaadin-label>
+        <vaadin-horizontal-layout :middle :right>
+         <vaadin-button style-name="small" plain-text _id="btnSetSKIDiscount">
+           SKI 
+         </vaadin-button>
+         <vaadin-label style-name="align-right" plain-text :middle>
+           Discounts 
+         </vaadin-label>
+        </vaadin-horizontal-layout>
        </column>
        <column>
         <vaadin-horizontal-layout spacing="false" :middle>
-         <vaadin-text-field style-name="small" width="40px" :middle></vaadin-text-field>
-         <vaadin-combo-box empty-selection-allowed="false" style-name="small" width="50px" data-item-type="java.lang.String" :middle>
+         <vaadin-text-field style-name="small align-right" width="60px" value="0" _id="txtDiscount" :middle></vaadin-text-field>
+         <vaadin-combo-box empty-selection-allowed="false" style-name="small" empty-selection-caption="%" width="55px" data-item-type="java.lang.String" :middle>
           <option item="percentage">%</option>
           <option item="flat">Kr</option>
          </vaadin-combo-box>
