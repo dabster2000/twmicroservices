@@ -28,6 +28,7 @@ public class Invoice {
     public String projectname;
     public int year;
     public int month;
+    public double discount;
     public String clientname;
     public String clientaddresse;
     public String otheraddressinfo;
@@ -61,10 +62,11 @@ public class Invoice {
         this.errors = false;
     }
 
-    public Invoice(InvoiceType type, String contractuuid, String projectuuid, String projectname, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
+    public Invoice(InvoiceType type, String contractuuid, String projectuuid, String projectname, double discount, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
         this();
         this.type = type;
         this.contractuuid = contractuuid;
+        this.discount = discount;
         this.otheraddressinfo = otheraddressinfo;
         this.ean = ean;
         this.cvr = cvr;
@@ -312,5 +314,13 @@ public class Invoice {
 
     public void setSumWithTax(double sumWithTax) {
         this.sumWithTax = sumWithTax;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
     }
 }

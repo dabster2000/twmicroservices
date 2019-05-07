@@ -138,6 +138,7 @@ public class DraftEditImpl extends DraftEditDesign {
         lblSumNoTax.setValue(currencyFormatter.format(sumWithoutTax));
         lblTax.setValue(currencyFormatter.format(sumWithoutTax*0.25));
         lblSumWithTax.setValue(currencyFormatter.format(sumWithoutTax*1.25));
+        lblBalanceDue.setValue(currencyFormatter.format(sumWithoutTax*1.25));
     }
 
     private void createInvoiceLine(InvoiceItem invoiceItem, int atRow) {
@@ -236,7 +237,7 @@ public class DraftEditImpl extends DraftEditDesign {
                 binder.writeBean(binders.get(binder));
             }
             invoiceBinder.writeBean(invoice);
-            //invoice.getInvoiceitems().removeIf(invoiceItem -> invoiceItem.itemname.trim().length() == 0);
+            dfInvoiceDueDate.setValue(invoice.invoicedate.plusMonths(1));
             invoice = invoiceService.save(invoice);
             Notification.show("Saved", Notification.Type.TRAY_NOTIFICATION);
         } catch (ValidationException e) {

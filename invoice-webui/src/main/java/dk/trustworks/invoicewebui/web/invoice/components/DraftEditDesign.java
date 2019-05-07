@@ -28,23 +28,25 @@ public class DraftEditDesign extends VerticalLayout {
     protected Button btnCreateCreditNote;
     protected Button btnDropbox;
     protected Button btnDownload;
-    protected Label lblInvoiceHeadline;
     protected TextField txtClientname;
     protected TextField txtStreetname;
     protected TextField txtZipCity;
     protected TextField txtCvr;
     protected TextField txtEan;
     protected TextField txtAttention;
+    protected Label lblInvoiceHeadline;
     protected Label lblInvoiceNumber;
     protected DateField dfInvoiceDate;
-    protected Label lblContractReference;
-    protected Label lblProjectReference;
-    protected TextField txtSpecificDescription;
-    protected Button btnCopyDescription;
+    protected DateField dfInvoiceDueDate;
+    protected Label lblBalanceDue;
     protected GridLayout gridInvoiceItems;
     protected Label lblSumNoTax;
     protected Label lblTax;
     protected Label lblSumWithTax;
+    protected Label lblContractReference;
+    protected Label lblProjectReference;
+    protected TextField txtSpecificDescription;
+    protected Button btnCopyDescription;
 
     public DraftEditDesign() {
         Design.read(this);
