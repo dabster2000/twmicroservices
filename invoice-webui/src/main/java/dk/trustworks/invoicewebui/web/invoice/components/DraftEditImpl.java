@@ -44,6 +44,7 @@ public class DraftEditImpl extends DraftEditDesign {
             btnCreatePhantom.setVisible(false);
             btnDelete.setVisible(false);
             btnCopyDescription.setVisible(false);
+            btnSetSKIDiscount.setEnabled(false);
 
             btnCreateCreditNote.setVisible(true);
             btnDownload.setVisible(true);
@@ -56,6 +57,7 @@ public class DraftEditImpl extends DraftEditDesign {
             txtSpecificDescription.setReadOnly(true);
             txtStreetname.setReadOnly(true);
             txtZipCity.setReadOnly(true);
+            txtDiscount.setReadOnly(true);
             dfInvoiceDate.setReadOnly(true);
 
             lblInvoiceNumber.setValue(StringUtils.convertInvoiceNumberToString(invoice.getInvoicenumber()));
@@ -244,6 +246,7 @@ public class DraftEditImpl extends DraftEditDesign {
     }
 
     public void saveInvoice() {
+        if(!invoice.getStatus().equals(InvoiceStatus.DRAFT)) return;
         try {
             for (Binder<InvoiceItem> binder : binders.keySet()) {
                 binder.writeBean(binders.get(binder));
