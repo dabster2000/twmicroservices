@@ -10,11 +10,14 @@ import dk.trustworks.invoicewebui.model.dto.UserProjectBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
+import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class StatisticsService {
+
+    private final static Logger log = LoggerFactory.getLogger(StatisticsService.class.getName());
 
     private final GraphKeyValueRepository graphKeyValueRepository;
 
@@ -55,6 +60,8 @@ public class StatisticsService {
 
     @Cacheable("calcRevenuePerMonth")
     public DataSeries calcRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
+        log.info("StatisticsService.calcRevenuePerMonth");
+        long start = System.currentTimeMillis();
         DataSeries revenueSeries = new DataSeries("Revenue");
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -70,11 +77,14 @@ public class StatisticsService {
                 if(amountPerItem!=null) revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
             }
         }
+        log.info("performance: "+(System.currentTimeMillis()-start));
         return revenueSeries;
     }
 
     @Cacheable("calcBillableHoursRevenuePerMonth")
     public DataSeries calcBillableHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
+        log.info("StatisticsService.calcBillableHoursRevenuePerMonth");
+        long start = System.currentTimeMillis();
         DataSeries revenueSeries = new DataSeries("Billable Hours Revenue");
 
         PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
@@ -90,11 +100,14 @@ public class StatisticsService {
             GraphKeyValue amountPerItem = amountPerItemList.get(i);
             if(amountPerItem!=null) revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), amountPerItem.getValue()));
         }
+        log.info("performance: "+(System.currentTimeMillis()-start));
         return revenueSeries;
     }
 
     @Cacheable("calcBudgetPerMonth")
     public DataSeries calcBudgetPerMonth(LocalDate periodStart, LocalDate periodEnd) {
+        log.info("StatisticsService.calcBudgetPerMonth");
+        long start = System.currentTimeMillis();
         DataSeries budgetSeries = new DataSeries("Budget");
 
         PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
@@ -131,11 +144,14 @@ public class StatisticsService {
             budgetSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(budgetSum)));
         }
 
+        log.info("performance: "+(System.currentTimeMillis()-start));
         return budgetSeries;
     }
 
     @Cacheable("calcEarningsPerMonth")
     public DataSeries calcEarningsPerMonth(LocalDate periodStart, LocalDate periodEnd) {
+        log.info("StatisticsService.calcEarningsPerMonth");
+        long start = System.currentTimeMillis();
         DataSeries earningsSeries = new DataSeries("Earnings");
 
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -143,18 +159,21 @@ public class StatisticsService {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
-            System.out.println("invoicedAmountByMonth = " + invoicedAmountByMonth);
+            log.info("invoicedAmountByMonth = " + invoicedAmountByMonth);
             double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }
+        log.info("performance: "+(System.currentTimeMillis()-start));
         return earningsSeries;
     }
 
     public List<UserBooking> getUserBooking(int monthsInPast, int monthsInFuture) {
+        log.info("StatisticsService.getUserBooking");
+        long start = System.currentTimeMillis();
         List<UserBooking> userBookings = new ArrayList<>();
         Map<String, UserProjectBooking> userProjectBookingMap = new HashMap<>();
         LocalDate currentDate;
-        for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
             UserBooking userBooking = new UserBooking(user.getUsername(),user.getUuid(), monthsInFuture, true);
             userBookings.add(userBooking);
@@ -164,10 +183,10 @@ public class StatisticsService {
             for (int i = 0; i < monthsInFuture; i++) {
                 List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
                 for (Contract contract : contracts) {
-                    if(debug) System.out.println("contract = " + contract);
+                    if(debug) log.info("contract = " + contract);
                     if(contract.getContractType().equals(ContractType.PERIOD)) {
                         for (ContractConsultant contractConsultant : contract.getContractConsultants().stream().filter(c -> c.getUser().getUsername().equals(user.getUsername())).collect(Collectors.toList())) {
-                            if(debug) System.out.println("contractConsultant = " + contractConsultant);
+                            if(debug) log.info("contractConsultant = " + contractConsultant);
                             String key = contractConsultant.getUser().getUuid()+contractConsultant.getContract().getClient().getUuid();
                             if(!userProjectBookingMap.containsKey(key)) {
                                 UserProjectBooking newUserProjectBooking = new UserProjectBooking(contractConsultant.getContract().getClient().getName(), contractConsultant.getContract().getClient().getUuid(), monthsInFuture, false);
@@ -175,50 +194,50 @@ public class StatisticsService {
                                 userBooking.addSubProject(newUserProjectBooking);
                             }
                             UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
-                            System.out.println("currentDate = " + currentDate);
+                            log.info("currentDate = " + currentDate);
                             double workDaysInMonth = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate);
-                            if(debug) System.out.println("workDaysInMonth = " + workDaysInMonth);
+                            if(debug) log.info("workDaysInMonth = " + workDaysInMonth);
                             double weeks = (workDaysInMonth / 5.0);
-                            if(debug) System.out.println("weeks = " + weeks);
+                            if(debug) log.info("weeks = " + weeks);
                             double preBooking = 0.0;
                             double budget = 0.0;
                             double booking;
                             if(i < monthsInPast) {
-                                if(debug) System.out.println("PAST");
+                                if(debug) log.info("PAST");
                                 budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                if(debug) System.out.println("budget = " + budget);
+                                if(debug) log.info("budget = " + budget);
                                 //preBooking = Optional.ofNullable(workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate), DateUtils.getLastDayOfMonth(currentDate))).orElse(0.0);
                                 Double preBookingObj = workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), DateUtils.getFirstDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(currentDate).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                                if(debug) System.out.println("preBookingObj = " + preBookingObj);
+                                if(debug) log.info("preBookingObj = " + preBookingObj);
                                 if(preBookingObj != null) preBooking = preBookingObj;
-                                if(debug) System.out.println("preBooking = " + preBooking);
-                                if(debug) System.out.println("contract.getUuid() = " + contract.getUuid());
-                                if(debug) System.out.println("user.getUuid() = " + user.getUuid());
-                                if(debug) System.out.println("DateUtils.getFirstDayOfMonth(currentDate) = " + DateUtils.getFirstDayOfMonth(currentDate));
-                                if(debug) System.out.println("DateUtils.getLastDayOfMonth(currentDate) = " + DateUtils.getLastDayOfMonth(currentDate));
-                                if(debug) System.out.println("preBooking = " + preBooking);
+                                if(debug) log.info("preBooking = " + preBooking);
+                                if(debug) log.info("contract.getUuid() = " + contract.getUuid());
+                                if(debug) log.info("user.getUuid() = " + user.getUuid());
+                                if(debug) log.info("DateUtils.getFirstDayOfMonth(currentDate) = " + DateUtils.getFirstDayOfMonth(currentDate));
+                                if(debug) log.info("DateUtils.getLastDayOfMonth(currentDate) = " + DateUtils.getLastDayOfMonth(currentDate));
+                                if(debug) log.info("preBooking = " + preBooking);
                                 booking = NumberUtils.round((preBooking / budget) * 100.0, 2);
-                                if(debug) System.out.println("booking = " + booking);
+                                if(debug) log.info("booking = " + booking);
                             } else {
-                                if(debug) System.out.println("FUTURE");
+                                if(debug) log.info("FUTURE");
                                 if (contract.getStatus().equals(ContractStatus.BUDGET)) {
-                                    if(debug) System.out.println("BUDGET");
+                                    if(debug) log.info("BUDGET");
                                     preBooking = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                    if(debug) System.out.println("preBooking = " + preBooking);
+                                    if(debug) log.info("preBooking = " + preBooking);
                                 } else {
-                                    if(debug) System.out.println("TIME");
+                                    if(debug) log.info("TIME");
                                     budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                    if(debug) System.out.println("budget = " + budget);
+                                    if(debug) log.info("budget = " + budget);
                                 }
                                 booking = NumberUtils.round((budget / (workDaysInMonth * 7)) * 100.0, 2);
-                                if(debug) System.out.println("booking = " + booking);
+                                if(debug) log.info("booking = " + booking);
                             }
 
                             userProjectBooking.setAmountItemsPerProjects(budget, i);
                             userProjectBooking.setAmountItemsPerPrebooking(preBooking, i);
                             userProjectBooking.setBookingPercentage(booking, i);
                             //userProjectBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
-                            if(debug) System.out.println("(workDaysInMonth * 7) = " + (workDaysInMonth * 7));
+                            if(debug) log.info("(workDaysInMonth * 7) = " + (workDaysInMonth * 7));
                         }
                     }
                 }
@@ -263,14 +282,14 @@ public class StatisticsService {
             }
         }
 
-        System.out.println("SUM PROJECTS");
+        log.info("SUM PROJECTS");
         for(UserBooking userBooking : userBookings) {
             if(userBooking.getSubProjects().size() == 0) continue;
             boolean debug = (userBooking.getUsername().equals("hans.lassen"));
             for (UserBooking subProject : userBooking.getSubProjects()) {
                 currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
                 for (int i = 0; i < monthsInFuture; i++) {
-                    if(debug) System.out.println("i = " + i);
+                    if(debug) log.info("i = " + i);
                     userBooking.addAmountItemsPerProjects(subProject.getAmountItemsPerProjects(i), i);
                     userBooking.addAmountItemsPerPrebooking(subProject.getAmountItemsPerPrebooking(i), i);
                     int workDaysInMonth = workService.getWorkDaysInMonth(userService.findByUsername(userBooking.getUsername()).getUuid(), currentDate);
@@ -289,7 +308,48 @@ public class StatisticsService {
                 }
             }
         }
+        log.info("performance: "+(System.currentTimeMillis()-start));
         return userBookings;
+    }
+
+    @Cacheable("calculateConsultantRevenue")
+    public Map<LocalDate, Double> calculateConsultantRevenue(User user, LocalDate periodStart, LocalDate periodEnd, int interval) {
+        int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
+        double revenueSum = 0.0;
+        int count = 1;
+        Map<LocalDate, Double> resultMap = new HashMap<>();
+        for (int i = 0; i < months; i++) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+
+            if(userService.isActive(user, currentDate, ConsultantType.CONSULTANT)) {
+                int consultantCount = userService.findWorkingUsersByDate(currentDate, ConsultantType.CONSULTANT).size();
+                double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
+
+                if (expense == 0) {
+                    count = 1;
+                    revenueSum = 0.0;
+                    continue;
+                }
+
+                double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
+                int userSalary = userService.getUserSalary(user, currentDate);
+                int consultantSalaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
+                double expenseSalaries = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum();
+                double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
+
+                revenueSum += (revenue - userSalary - expense - staffSalaries);
+            }
+
+            if(count == interval) {
+                resultMap.put(currentDate, revenueSum / interval);
+                revenueSum = 0.0;
+                count = 1;
+                continue;
+            }
+
+            count++;
+        }
+        return resultMap;
     }
 
     public String[] getCategories(LocalDate periodStart, LocalDate periodEnd) {

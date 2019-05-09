@@ -16,18 +16,7 @@ import java.util.List;
 
 @RepositoryRestResource(collectionResourceRel = "graphkeyvalues", path="graphkeyvalues")
 public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, String> {
-/*
-    @Cacheable("findProjectRevenueByPeriod")
-    @Query(value = "SELECT p.name description, p.uuid uuid, ROUND(SUM(w.workduration * twc.price)) value " +
-            "                FROM work w " +
-            "                INNER JOIN user u ON w.useruuid = u.uuid " +
-            "                INNER JOIN taskworkerconstraint twc ON twc.taskuuid = w.taskuuid AND twc.useruuid = u.uuid " +
-            "                INNER JOIN task t ON t.uuid = twc.taskuuid " +
-            "                INNER JOIN project p ON p.uuid = t.projectuuid " +
-            "                WHERE ((w.year*10000)+((w.month+1)*100)+w.day) between :periodStart and :periodEnd " +
-            "                GROUP BY p.uuid ORDER BY value DESC;", nativeQuery = true)
-    List<GraphKeyValue> findProjectRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
-*/
+
     @Cacheable("findRevenueByMonthByPeriod")
     @Query(value = "select w.id as uuid, DATE_FORMAT(w.registered, '%Y-%m-%d') as description, ROUND(SUM(w.workduration*cc.rate)) value from " +
             "work as w " +

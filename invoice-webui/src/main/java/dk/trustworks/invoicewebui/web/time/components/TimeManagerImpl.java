@@ -220,7 +220,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
         System.out.println("userSession = " + userSession);
         if(userSession == null) return this;
 
-        List<User> users = userService.findCurrentlyWorkingEmployees();
+        List<User> users = userService.findCurrentlyEmployedUsers();
         getSelActiveUser().setItemCaptionGenerator(User::getUsername);
         getSelActiveUser().setItems(users);
 

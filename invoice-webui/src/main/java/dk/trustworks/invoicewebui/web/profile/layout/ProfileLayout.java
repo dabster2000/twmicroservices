@@ -59,7 +59,7 @@ public class ProfileLayout extends VerticalLayout {
     }
 
     private Component createSelectorRow() {
-        List<User> users = userService.findCurrentlyWorkingEmployees(CONSULTANT, STAFF);
+        List<User> users = userService.findCurrentlyEmployedUsers(CONSULTANT, STAFF);
         ComboBox<User> userComboBox = new ComboBox<>("Select employee: ", users);
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setEmptySelectionAllowed(false);
@@ -71,7 +71,7 @@ public class ProfileLayout extends VerticalLayout {
     }
 
     private void createDefaultViewRow() {
-        for (User employee : userService.findCurrentlyWorkingEmployees(CONSULTANT)) {
+        for (User employee : userService.findCurrentlyEmployedUsers(CONSULTANT)) {
             Image memberImage = photoService.getRoundMemberImage(employee, false, 100, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 createUserViewRow(employee);

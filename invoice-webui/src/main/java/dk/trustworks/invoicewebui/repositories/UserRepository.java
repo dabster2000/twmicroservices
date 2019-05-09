@@ -24,8 +24,8 @@ public interface UserRepository extends CrudRepository<User, String> {
             "LEFT JOIN " +
             "(SELECT yt.uuid, yt.useruuid, yt.status, yt.statusdate, yt.allocation, yt.type FROM userstatus yt " +
             "INNER JOIN " +
-            "(SELECT uuid, useruuid, max(statusdate) created FROM userstatus WHERE statusdate < :date GROUP BY useruuid) " +
-            "ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid) kk on u.uuid = kk.useruuid WHERE kk.status IN :consultantStatusList AND kk.type IN :consultantTypes ORDER BY u.username ;", nativeQuery = true)
+            "(SELECT uuid, useruuid, max(statusdate) created FROM userstatus WHERE statusdate <= :date GROUP BY useruuid) " +
+            "ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid) kk on u.uuid = kk.useruuid WHERE kk.status IN :consultantStatusList AND kk.type IN :consultantTypes ORDER BY u.username;", nativeQuery = true)
     List<User> findUsersByDateAndStatusListAndTypes(@Param("date") String date, @Param("consultantStatusList") String[] consultantStatusList, @Param("consultantTypes") String... consultantTypes);
 
     @Query(value = "SELECT allocation FROM user u RIGHT JOIN ( " +
@@ -39,7 +39,6 @@ public interface UserRepository extends CrudRepository<User, String> {
             "tm on t.useruuid = tm.useruuid and t.statusdate = tm.MaxDate " +
             ") usi ON u.uuid = usi.useruuid WHERE u.uuid LIKE :useruuid ;", nativeQuery = true)
     int calculateCapacityByMonthByUser(@Param("useruuid") String useruuid, @Param("statusdate") String statusdate);
-
 
     @Override
     @CacheEvict("user")

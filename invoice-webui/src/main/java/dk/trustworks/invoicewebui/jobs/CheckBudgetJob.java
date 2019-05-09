@@ -69,7 +69,7 @@ public class CheckBudgetJob {
 
         List<UserBooking> bookingList = statisticsService.getUserBooking(-1, 4);
 
-        List<User> activeUsers = userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT);
+        List<User> activeUsers = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT);
 
         for (User user : activeUsers) {
             log.info("--- " + user + " ---");
