@@ -149,6 +149,7 @@ public class DraftEditImpl extends DraftEditDesign {
             gridInvoiceItems.removeRow(atRow);
             invoice.getInvoiceitems().remove(invoiceItem);
             saveInvoice();
+            calcSums(invoice.invoiceitems);
         });
 
         TextField lblItemname = new TextField();
@@ -176,7 +177,18 @@ public class DraftEditImpl extends DraftEditDesign {
 
         TextField lblRate = new TextField();
         lblRate.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
-        lblRate.addBlurListener(event -> saveInvoice());
+        lblRate.addBlurListener(event -> {
+            try {
+                binder.writeBean(invoiceItem);
+                saveInvoice();
+                calcSums(invoice.invoiceitems);
+                danishNumberFormatter.setMaximumFractionDigits(2);
+                danishNumberFormatter.setMinimumFractionDigits(2);
+                lblAmount.setValue(String.valueOf(danishNumberFormatter.format((invoiceItem.hours * invoiceItem.rate))));
+            } catch (ValidationException e) {
+                e.printStackTrace();
+            }
+        });
         lblRate.addStyleName("tiny");
         lblRate.setWidth(100.0f, Unit.PERCENTAGE);
 
@@ -186,7 +198,18 @@ public class DraftEditImpl extends DraftEditDesign {
 
         TextField lblHours = new TextField();
         lblHours.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
-        lblHours.addBlurListener(event -> saveInvoice());
+        lblHours.addBlurListener(event -> {
+            try {
+                binder.writeBean(invoiceItem);
+                saveInvoice();
+                calcSums(invoice.invoiceitems);
+                danishNumberFormatter.setMaximumFractionDigits(2);
+                danishNumberFormatter.setMinimumFractionDigits(2);
+                lblAmount.setValue(String.valueOf(danishNumberFormatter.format((invoiceItem.hours * invoiceItem.rate))));
+            } catch (ValidationException e) {
+                e.printStackTrace();
+            }
+        });
         lblHours.addStyleName("tiny");
         lblHours.setWidth(100.0f, Unit.PERCENTAGE);
 
@@ -204,9 +227,11 @@ public class DraftEditImpl extends DraftEditDesign {
         gridInvoiceItems.setComponentAlignment(lblAmount, Alignment.MIDDLE_RIGHT);
         binder.readBean(invoiceItem);
 
+        /*
         lblRate.addValueChangeListener(event -> {
             try {
                 binder.writeBean(invoiceItem);
+                saveInvoice();
                 calcSums(invoice.invoiceitems);
                 danishNumberFormatter.setMaximumFractionDigits(2);
                 danishNumberFormatter.setMinimumFractionDigits(2);
@@ -219,6 +244,7 @@ public class DraftEditImpl extends DraftEditDesign {
         lblHours.addValueChangeListener(event -> {
             try {
                 binder.writeBean(invoiceItem);
+                saveInvoice();
                 calcSums(invoice.invoiceitems);
                 danishNumberFormatter.setMaximumFractionDigits(2);
                 danishNumberFormatter.setMinimumFractionDigits(2);
@@ -228,6 +254,8 @@ public class DraftEditImpl extends DraftEditDesign {
                 lblHours.setValue(event.getOldValue());
             }
         });
+        */
+
     }
 
     public void saveInvoice() {
@@ -236,8 +264,8 @@ public class DraftEditImpl extends DraftEditDesign {
                 binder.writeBean(binders.get(binder));
             }
             invoiceBinder.writeBean(invoice);
-            //invoice.getInvoiceitems().removeIf(invoiceItem -> invoiceItem.itemname.trim().length() == 0);
             invoice = invoiceService.save(invoice);
+            //calcSums(invoice.invoiceitems);
             Notification.show("Saved", Notification.Type.TRAY_NOTIFICATION);
         } catch (ValidationException e) {
             Notification.show("Invoice could not be saved, " +
