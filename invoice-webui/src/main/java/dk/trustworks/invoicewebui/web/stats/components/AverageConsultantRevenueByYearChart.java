@@ -78,15 +78,18 @@ public class AverageConsultantRevenueByYearChart {
                 OptionalDouble average = resultMap.values().stream().filter(aDouble -> aDouble != 0.0).mapToDouble(value -> value).average();
                 if(average.isPresent()) {
                     //averagePerYearMap.put(currentDate, averagePerYearMap.getOrDefault(currentDate, 0.0) + average.getAsDouble());
-                    sum += averagePerYearMap.getOrDefault(currentDate, 0.0) + average.getAsDouble();
+                    sum += average.getAsDouble();
                     countUsers++;
                 }
             }
-            averagePerYearMap.put(currentDate, averagePerYearMap.getOrDefault(currentDate, 0.0)/countUsers);
+            if(!(sum == 0.0 || countUsers == 0.0))
+                averagePerYearMap.put(currentDate, sum / countUsers);
             currentDate = currentDate.plusYears(1);
         } while (currentDate.isBefore(LocalDate.now()));
 
+
         for (LocalDate date : averagePerYearMap.keySet().stream().sorted().collect(Collectors.toList())) {
+            System.out.println("averagePerYearMap.get(date) = " + averagePerYearMap.get(date));
             revenueSeries.add(new DataSeriesItem(date.format(DateTimeFormatter.ofPattern("MMM-yyyy")), averagePerYearMap.get(date)));
             chart.getConfiguration().getxAxis().addCategory(date.format(DateTimeFormatter.ofPattern("MMM-yyyy")));
         }
