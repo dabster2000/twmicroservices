@@ -155,7 +155,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         System.out.println("timeMillis 4 = " + (System.currentTimeMillis() - timeMillis));
         */
         Card averageConsultantRevenueByYearCard = new Card();
-        averageConsultantRevenueByYearCard.getLblTitle().setValue("Consultant Hours Per Month");
+        averageConsultantRevenueByYearCard.getLblTitle().setValue("Average Revenue Per Consultant");
         averageConsultantRevenueByYearCard.getContent().addComponent(averageConsultantRevenueByYearChart.createRevenuePerConsultantChart());
         notification.setDescription("4 out of 10 charts created!");
         System.out.println("timeMillis 4 = " + (System.currentTimeMillis() - timeMillis));

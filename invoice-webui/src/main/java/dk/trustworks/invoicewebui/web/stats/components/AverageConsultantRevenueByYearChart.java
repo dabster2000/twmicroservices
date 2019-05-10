@@ -31,25 +31,19 @@ public class AverageConsultantRevenueByYearChart {
 
     private final StatisticsService statisticsService;
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-
     private final UserService userService;
-
-    private final ExpenseRepository expenseRepository;
 
     @Autowired
     public AverageConsultantRevenueByYearChart(StatisticsService statisticsService, GraphKeyValueRepository graphKeyValueRepository, UserService userService, ExpenseRepository expenseRepository, CountEmployeesJob countEmployeesJob) {
         this.statisticsService = statisticsService;
-        this.graphKeyValueRepository = graphKeyValueRepository;
         this.userService = userService;
-        this.expenseRepository = expenseRepository;
     }
 
     public Chart createRevenuePerConsultantChart() {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption("Gross profit for ");
+        chart.setCaption("Average Revenue Per Consultant");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
