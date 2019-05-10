@@ -63,7 +63,7 @@ public class NewsImpl extends NewsDesign implements Box {
 
         Set<News> newsList = new TreeSet<>(Comparator.comparing(News::getNewstype).thenComparing(News::getNewsdate).thenComparing(News::getSha512));
 
-        for (User user : userService.findCurrentlyWorkingEmployees()) {
+        for (User user : userService.findCurrentlyEmployedUsers()) {
             LocalDate birthday = new LocalDate(user.getBirthday().getYear(), user.getBirthday().getMonthValue(), user.getBirthday().getDayOfMonth());
             Date nextBirthday = birthday.withYear(LocalDate.now().getYear()).toDate();
             if(!isBetweenInclusive(LocalDate.now(), LocalDate.now().plusWeeks(2), LocalDate.fromDateFields(nextBirthday))) continue;

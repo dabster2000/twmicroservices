@@ -80,11 +80,10 @@ public class RevenuePerMonthEmployeeAvgChart {
                 LocalDate javaDate = LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd"));
                 if(javaDate.isAfter(LocalDate.now())) continue;
 
-                int consultants = userService.findWorkingEmployeesByDate(javaDate, ConsultantType.CONSULTANT).size();
-                //for (User user : employeesJob.getUsersByLocalDate(javaDate)) {
-                //    if(user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).get().getAllocation()>0) consultants++;
-                //}
+                int consultants = userService.findEmployedUsersByDate(javaDate, ConsultantType.CONSULTANT).size();
+
                 revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), (amountPerItem.getValue() / consultants)));
+
                 double expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                 if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), ((amountPerItem.getValue() - expense) / consultants)));
 

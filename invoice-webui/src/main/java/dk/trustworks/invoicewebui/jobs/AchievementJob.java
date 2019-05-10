@@ -60,7 +60,7 @@ public class AchievementJob {
     public void achievementCollector() {
         log.debug("AchievementJob.achievementCollector");
 
-        for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             if(userService.isExternal(user)) continue;
 
             List<Achievement> achievementList = achievementRepository.findByUser(user);

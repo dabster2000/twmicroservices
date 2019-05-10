@@ -59,7 +59,7 @@ public class UserService {
         return userRepository.findByOrderByUsername();
     }
 
-    public List<User> findCurrentlyWorkingEmployees() {
+    public List<User> findCurrentlyEmployedUsers() {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -67,8 +67,16 @@ public class UserService {
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
+    public List<User> findCurrentlyWorkingUsers() {
+        String[] statusList = {ACTIVE.toString()};
+        return userRepository.findUsersByDateAndStatusListAndTypes(
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                statusList,
+                CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
+    }
+
     @Cacheable(value = "user")
-    public List<User> findWorkingEmployeesByDate(LocalDate date, ConsultantType... consultantType) {
+    public List<User> findEmployedUsersByDate(LocalDate date, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -76,8 +84,17 @@ public class UserService {
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
     }
 
+    @Cacheable(value = "user")
+    public List<User> findWorkingUsersByDate(LocalDate date, ConsultantType... consultantType) {
+        String[] statusList = {ACTIVE.toString()};
+        return userRepository.findUsersByDateAndStatusListAndTypes(
+                date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                statusList,
+                Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
+    }
+
     @Cacheable("user")
-    public List<User> findCurrentlyWorkingEmployees(ConsultantType... consultantType) {
+    public List<User> findCurrentlyEmployedUsers(ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -135,12 +152,14 @@ public class UserService {
     public boolean isEmployed(User user) {
         System.out.println("UserService.isEmployed");
         System.out.println("user = [" + user + "]");
-        return findCurrentlyWorkingEmployees().stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
-        /*
-        List<UserStatus> statuses = user.getStatuses();
-        UserStatus userStatus = statuses.stream().max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus());
-        return !userStatus.getStatus().equals(StatusType.TERMINATED);
-        */
+        return findCurrentlyEmployedUsers().stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
+    }
+
+    public boolean isActive(User user, LocalDate onDate, ConsultantType... consultantTypes) {
+        List<User> currentlyWorkingUsers = findWorkingUsersByDate(onDate, consultantTypes);
+
+        boolean anyMatch = currentlyWorkingUsers.stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
+        return anyMatch;
     }
 
     @Transactional

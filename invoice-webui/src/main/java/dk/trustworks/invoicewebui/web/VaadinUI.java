@@ -28,7 +28,7 @@ import java.util.UUID;
 @Theme("invoice")
 public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewDisplay {
 
-    protected static Logger logger = LoggerFactory.getLogger(VaadinUI.class.getName());
+    protected final static Logger logger = LoggerFactory.getLogger(VaadinUI.class.getName());
 
     //DefaultNotificationHolder notifications = new DefaultNotificationHolder();
     //DefaultBadgeHolder badge = new DefaultBadgeHolder();

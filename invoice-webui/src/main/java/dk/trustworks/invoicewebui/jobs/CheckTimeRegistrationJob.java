@@ -101,7 +101,7 @@ public class CheckTimeRegistrationJob {
 
         List<UserBooking> userBookingList = statisticsService.getUserBooking(0, 1);
 
-        for (User user : userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
             log.info("checking user = " + user);
 

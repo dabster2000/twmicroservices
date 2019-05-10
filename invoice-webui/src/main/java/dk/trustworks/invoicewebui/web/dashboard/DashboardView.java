@@ -142,7 +142,7 @@ public class   DashboardView extends VerticalLayout implements View {
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
-        CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyWorkingEmployees(), emailSender,3, 4, "cateringCard");
+        CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyEmployedUsers(), emailSender,3, 4, "cateringCard");
         cateringCard.init();
         //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");

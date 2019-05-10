@@ -85,7 +85,7 @@ public class ExpensesPerMonthChart {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            int consultantCount = userService.findWorkingEmployeesByDate(currentDate, ConsultantType.CONSULTANT).size();
+            int consultantCount = userService.findEmployedUsersByDate(currentDate, ConsultantType.CONSULTANT).size();
 
             double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
             int consultantSalaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString()) / consultantCount;
