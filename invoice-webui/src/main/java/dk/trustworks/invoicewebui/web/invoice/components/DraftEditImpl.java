@@ -58,8 +58,13 @@ public class DraftEditImpl extends DraftEditDesign {
             dfInvoiceDate.setReadOnly(true);
 
             lblInvoiceNumber.setValue(StringUtils.convertInvoiceNumberToString(invoice.getInvoicenumber()));
-        } else {
 
+            if(invoice.invoicenumber == 0) {
+                btnCreateInvoice.setVisible(false);
+                btnDownload.setVisible(false);
+                btnDropbox.setVisible(false);
+                btnDelete.setVisible(true);
+            }
         }
     }
 
