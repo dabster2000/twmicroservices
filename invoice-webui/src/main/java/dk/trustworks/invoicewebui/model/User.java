@@ -1,7 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import com.google.common.base.Objects;
+import org.apache.commons.text.WordUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,7 +17,6 @@ import java.util.UUID;
  * Created by hans on 23/06/2017.
  */
 
-@Data
 @Entity
 public class User {
 
@@ -50,8 +50,6 @@ public class User {
         created = new Date();
     }
 
-
-    /*
     public String getUuid() {
         return uuid;
     }
@@ -221,5 +219,5 @@ public class User {
         return Objects.hashCode(getUuid());
     }
 
-     */
+
 }

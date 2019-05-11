@@ -42,6 +42,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private AverageConsultantRevenueByYearChart averageConsultantRevenueByYearChart;
 
     @Autowired
+    private AverageConsultantRevenueChart averageConsultantRevenueChart;
+
+    @Autowired
     private RevenuePerMonthEmployeeAvgChart revenuePerMonthEmployeeAvgChart;
 
     //@Autowired
@@ -160,6 +163,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("4 out of 10 charts created!");
         System.out.println("timeMillis 4 = " + (System.currentTimeMillis() - timeMillis));
 
+        Card averageConsultantRevenueCard = new Card();
+        averageConsultantRevenueCard.getLblTitle().setValue("Average Revenue Per Consultant");
+        averageConsultantRevenueCard.getContent().addComponent(averageConsultantRevenueChart.createRevenuePerConsultantChart());
+        notification.setDescription("5 out of 10 charts created!");
+        System.out.println("timeMillis 5 = " + (System.currentTimeMillis() - timeMillis));
+
         /*
         Card cumulativePredictiveRevenuePerMonthCard = new Card();
         cumulativePredictiveRevenuePerMonthCard.getLblTitle().setValue("Cumulative Predicted Revenue");
@@ -232,6 +241,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(averageConsultantRevenueByYearCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(averageConsultantRevenueCard);
         /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
