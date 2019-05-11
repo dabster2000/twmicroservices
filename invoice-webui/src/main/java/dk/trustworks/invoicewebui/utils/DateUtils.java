@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -12,6 +14,7 @@ import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
+@UtilityClass
 public class DateUtils {
 
     /**
