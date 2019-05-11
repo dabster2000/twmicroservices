@@ -5,7 +5,6 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.WorkWithRate;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -76,7 +75,6 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and cc.rate > 0.0 ", nativeQuery = true)
     List<Work> findBillableWorkByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
 
-    @Cacheable("billableWorkByUser")
     @Query(value = "select w.* from " +
             "work as w " +
             "inner join task t on w.taskuuid = t.uuid " +
@@ -91,7 +89,6 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and cc.rate > 0.0 ", nativeQuery = true)
     List<Work> findBillableWorkByUser(@Param("useruuid") String useruuid);
 
-    @Cacheable("billableWorkByUserInPeriod")
     @Query(value = "select w.* from " +
             "work as w " +
             "inner join task t on w.taskuuid = t.uuid " +
@@ -106,6 +103,21 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
             "and cc.rate > 0.0 ", nativeQuery = true)
     List<Work> findBillableWorkByUserInPeriod(@Param("useruuid") String useruuid, @Param("fromdate") String fromdate, @Param("todate") String todate);
+
+    @Query(value = "select COALESCE(SUM(w.workduration),0) as sum from " +
+            "            work as w " +
+            "            inner join task t on w.taskuuid = t.uuid " +
+            "            inner join project p on t.projectuuid = p.uuid " +
+            "            inner join user u on w.useruuid = u.uuid " +
+            "            inner join contract_project cp on p.uuid = cp.projectuuid " +
+            "            inner join contracts c on cp.contractuuid = c.uuid " +
+            "            inner join contract_consultants cc on c.uuid = cc.contractuuid and u.uuid = cc.useruuid " +
+            "            where c.activefrom <= registered and c.activeto >= registered " +
+            "            and  w.registered >= :fromdate AND w.registered <= :todate " +
+            "            and w.useruuid LIKE :useruuid " +
+            "            and w.workduration > 0 and c.status in ('TIME', 'SIGNED', 'CLOSED') " +
+            "            and cc.rate > 0.0;", nativeQuery = true)
+    Double countBillableWorkByUserInPeriod(@Param("useruuid") String useruuid, @Param("fromdate") String fromdate, @Param("todate") String todate);
 
     @Query(value = "select w.* from " +
             "work as w " +
@@ -162,6 +174,9 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
 
+    @Query(value = "SELECT COALESCE(SUM(w.workduration),0) as sum FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
+    double countByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
+
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w " +
             "WHERE w.registered >= :fromdate AND w.registered <= :todate AND w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByPeriodAndUserAndTasks(@Param("fromdate") String fromdate, @Param("todate") String todate, @Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
@@ -194,4 +209,6 @@ public interface WorkRepository extends CrudRepository<Work, String> {
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Work entity);
+
+
 }

@@ -57,6 +57,10 @@ public class WorkService {
         return workRepository.findByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
     }
 
+    public double countVacationByUser(User user) {
+        return workRepository.countByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
+    }
+
     //@Cacheable("work")
     public List<Work> findByPeriod(LocalDate fromDate, LocalDate toDate) {
         return workRepository.findByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -110,6 +114,10 @@ public class WorkService {
         return null;
     }
     */
+
+    public double countBillableWorkByUserInPeriod(String useruuid, String fromdate, String todate) {
+        return workRepository.countBillableWorkByUserInPeriod(useruuid, fromdate, todate);
+    }
 
     public List<Work> findByActiveClients() {
         return workRepository.findByActiveClients();
