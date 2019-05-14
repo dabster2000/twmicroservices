@@ -2,6 +2,7 @@ package dk.trustworks;
 
 import com.vaadin.spring.annotation.EnableVaadin;
 import dk.trustworks.invoicewebui.events.WorkNotificationConsumer;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public class InvoiceWebUIApplication {
     @Autowired
     private WorkNotificationConsumer workNotificationConsumer;
 
+    @Autowired
+    private StatisticsService statisticsService;
+
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         Locale.setDefault(new Locale("da", "DK"));
@@ -74,6 +78,9 @@ public class InvoiceWebUIApplication {
 
     @PostConstruct
     private void init() {
+        statisticsService.run();
+        //System.exit(0);
+
         log.info("InitDemoApplication initialization logic ...");
         eventBus.on($("notificationConsumer"), workNotificationConsumer);
     }

@@ -57,6 +57,10 @@ public class WorkService {
         return workRepository.findByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
     }
 
+    public List<Work> findSicknessByUser(User user) {
+        return workRepository.findByUserAndTasks(user.getUuid(), "02bf71c5-f588-46cf-9695-5864020eb1c4");
+    }
+
     public double countVacationByUser(User user) {
         return workRepository.countByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
     }
@@ -103,8 +107,8 @@ public class WorkService {
         return workRepository.findAmountUsedByContract(contractUUID);
     }
 
-    public Double findHoursRegisteredOnContractByPeriod(String contractUUID, String useruuid, String fromdate, String todate) {
-        return workRepository.findHoursRegisteredOnContractByPeriod(contractUUID, useruuid, fromdate, todate);
+    public Double findHoursRegisteredOnContractByPeriod(String contractUUID, String useruuid, LocalDate fromdate, LocalDate todate) {
+        return workRepository.findHoursRegisteredOnContractByPeriod(contractUUID, useruuid, stringIt(fromdate), stringIt(todate));
     }
 
     /*

@@ -1,21 +1,20 @@
 package dk.trustworks.invoicewebui.model.dto;
 
+import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.User;
+import lombok.Data;
+
 import java.time.LocalDate;
 
+@Data
 public class BudgetDocument {
 
     private final LocalDate month;
-    private final String taskId;
-    private final String userId;
-    private final double[] budgetHours;
-    private final double[] rate;
+    private final Client client;
+    private final User user;
+    private final Contract contract;
+    private final double budgetHours;
+    private final double rate;
 
-    public BudgetDocument(LocalDate localDate, String taskId, String userId) {
-        this.month = localDate.withDayOfMonth(1);
-        this.taskId = taskId;
-        this.userId = userId;
-
-        budgetHours = new double[31];
-        rate = new double[31];
-    }
 }

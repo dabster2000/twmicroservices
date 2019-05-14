@@ -10,9 +10,10 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import lombok.NonNull;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,15 +34,17 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private final UserStatusRepository userStatusRepository;
+
+    public UserService(UserRepository userRepository, UserStatusRepository userStatusRepository) {
         this.userRepository = userRepository;
+        this.userStatusRepository = userStatusRepository;
     }
 
     public Optional<User> getLoggedInUser() {
         return Optional.of(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser());
     }
 
-    @Cacheable(value = "user")
     public User findByUUID(String uuid) {
         return userRepository.findOne(uuid);
     }
@@ -50,7 +53,6 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    @Cacheable("user")
     public User findBySlackusername(String userId) {
         return userRepository.findBySlackusername(userId);
     }
@@ -75,7 +77,6 @@ public class UserService {
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
-    @Cacheable(value = "user")
     public List<User> findEmployedUsersByDate(LocalDate date, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(
@@ -84,7 +85,6 @@ public class UserService {
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
     }
 
-    @Cacheable(value = "user")
     public List<User> findWorkingUsersByDate(LocalDate date, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(
@@ -93,7 +93,6 @@ public class UserService {
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
     }
 
-    @Cacheable("user")
     public List<User> findCurrentlyEmployedUsers(ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(
@@ -110,21 +109,26 @@ public class UserService {
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
-    @Cacheable("salary")
     public int getUserSalary(User user, LocalDate date) {
         Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, user));
         return salary.getSalary();
     }
 
-    @Cacheable("salary")
+    public UserStatus getUserStatus(User user, LocalDate date) {
+        return user.getStatuses().stream().filter(value -> value.getStatusdate().isBefore(date)).max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(user, ConsultantType.STAFF, StatusType.TERMINATED, date, 0));
+    }
+
     public int getMonthSalaries(LocalDate date, String... consultantTypes) {
         String[] statusList = {ACTIVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes).stream().mapToInt(value -> value.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(LocalDate.now(), 0, null)).getSalary()).sum();
     }
 
-    @Cacheable("user")
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
         return userRepository.calculateCapacityByMonthByUser(useruuid, statusdate);
+    }
+
+    public LocalDate findEmployedDate(@NonNull User user) {
+        return userStatusRepository.findByUserAndTypeAndStatusOrderByStatusdateAsc(user, CONSULTANT, ACTIVE).get(0).getStatusdate();
     }
 
     public boolean isExternal(User user) {

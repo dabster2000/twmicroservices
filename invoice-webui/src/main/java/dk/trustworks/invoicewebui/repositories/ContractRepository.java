@@ -50,6 +50,8 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
             "and c.status in ('TIME','SIGNED','CLOSED')", nativeQuery = true)
     List<Contract> findTimeActiveConsultantContracts(@Param("useruuid") String useruuid, @Param("activeon") String activeon);
 
+    List<Contract> findAll();
+
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Contract entity);
 }

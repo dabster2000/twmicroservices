@@ -1,6 +1,9 @@
 package dk.trustworks.invoicewebui.repositories;
 
+import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -49,6 +52,8 @@ public interface UserStatusRepository extends CrudRepository<UserStatus, String>
     List<UserStatus> findAllActiveByDate(@Param("actualdate") String actualdate);
 
     List<UserStatus> findAllByOrderByUserAscStatusdateAsc();
+
+    List<UserStatus> findByUserAndTypeAndStatusOrderByStatusdateAsc(@Param("user") User user, @Param("type") ConsultantType type, @Param("status") StatusType status);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(UserStatus entity);

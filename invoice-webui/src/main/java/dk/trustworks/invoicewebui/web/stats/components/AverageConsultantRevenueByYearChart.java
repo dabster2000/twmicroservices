@@ -6,8 +6,6 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
@@ -18,7 +16,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 /**
@@ -61,31 +58,35 @@ public class AverageConsultantRevenueByYearChart {
         LocalDate currentDate = LocalDate.of(2014, 7, 1);
 
         Map<LocalDate, Double> averagePerYearMap = new HashMap<>();
+        LocalDate periodStart = currentDate;
         do {
-            double countUsers = 0.0;
             double sum = 0.0;
-            for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-                LocalDate periodStart = currentDate;//user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(user, ConsultantType.CONSULTANT, StatusType.ACTIVE, LocalDate.now(), 0)).getStatusdate();//LocalDate.of(2017, 07, 01);
-                LocalDate periodEnd = currentDate.plusYears(1); //LocalDate.now().withDayOfMonth(1);
-                Map<LocalDate, Double> resultMap = statisticsService.calculateConsultantRevenue(user, periodStart, periodEnd, 3);
 
-                OptionalDouble average = resultMap.values().stream().filter(aDouble -> aDouble != 0.0).mapToDouble(value -> value).average();
-                if(average.isPresent()) {
-                    //averagePerYearMap.put(currentDate, averagePerYearMap.getOrDefault(currentDate, 0.0) + average.getAsDouble());
-                    sum += average.getAsDouble();
-                    countUsers++;
-                }
+            averagePerYearMap.put(periodStart, 0.0);
+            int countMonthsWithExpenses = 0;
+
+            for (int m = 0; m < 12; m++) {
+                double expenses = statisticsService.getExpensesByMonth(periodStart);
+                if(expenses<=0.0) continue;
+                double revenue = statisticsService.getMonthRevenue(periodStart.plusMonths(m));
+                long countUsers = statisticsService.getActiveConsultantCountByMonth(periodStart.plusMonths(m));
+                sum += (revenue - expenses) / countUsers;
+                countMonthsWithExpenses++;
             }
-            if(!(sum == 0.0 || countUsers == 0.0))
-                averagePerYearMap.put(currentDate, sum / countUsers);
-            currentDate = currentDate.plusYears(1);
-        } while (currentDate.isBefore(LocalDate.now()));
+
+            if(sum<=0.0) {
+                periodStart = periodStart.plusYears(1);
+                continue;
+            }
+
+            averagePerYearMap.put(periodStart, sum / countMonthsWithExpenses);
+            periodStart = periodStart.plusYears(1);
+        } while (periodStart.isBefore(LocalDate.now()));
 
 
         for (LocalDate date : averagePerYearMap.keySet().stream().sorted().collect(Collectors.toList())) {
-            System.out.println("averagePerYearMap.get(date) = " + averagePerYearMap.get(date));
-            revenueSeries.add(new DataSeriesItem(date.format(DateTimeFormatter.ofPattern("MMM-yyyy")), averagePerYearMap.get(date)));
-            chart.getConfiguration().getxAxis().addCategory(date.format(DateTimeFormatter.ofPattern("MMM-yyyy")));
+            revenueSeries.add(new DataSeriesItem(date.format(DateTimeFormatter.ofPattern("yyyy")), averagePerYearMap.get(date)));
+            chart.getConfiguration().getxAxis().addCategory(date.format(DateTimeFormatter.ofPattern("yyyy")));
         }
 
         chart.getConfiguration().addSeries(revenueSeries);

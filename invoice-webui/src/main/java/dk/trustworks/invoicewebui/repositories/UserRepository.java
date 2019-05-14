@@ -28,12 +28,12 @@ public interface UserRepository extends CrudRepository<User, String> {
             "ss ON yt.statusdate = ss.created AND yt.useruuid = ss.useruuid) kk on u.uuid = kk.useruuid WHERE kk.status IN :consultantStatusList AND kk.type IN :consultantTypes ORDER BY u.username;", nativeQuery = true)
     List<User> findUsersByDateAndStatusListAndTypes(@Param("date") String date, @Param("consultantStatusList") String[] consultantStatusList, @Param("consultantTypes") String... consultantTypes);
 
-    @Query(value = "SELECT allocation FROM user u RIGHT JOIN ( " +
+    @Query(value = "SELECT COALESCE(sum(allocation), 0) FROM user u RIGHT JOIN ( " +
             "select t.useruuid, t.status, t.statusdate, t.allocation " +
             "from userstatus t " +
             "inner join ( " +
             "select useruuid, status, max(statusdate) as MaxDate " +
-            "from userstatus  WHERE statusdate < :statusdate " +
+            "from userstatus  WHERE statusdate <= :statusdate " +
             "group by useruuid " +
             ") " +
             "tm on t.useruuid = tm.useruuid and t.statusdate = tm.MaxDate " +

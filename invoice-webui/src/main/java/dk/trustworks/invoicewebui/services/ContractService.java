@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static dk.trustworks.invoicewebui.utils.DateUtils.isBetween;
+
 @Service
 public class ContractService {
 
@@ -303,7 +305,7 @@ public class ContractService {
 
     }
 
-    public Iterable<Contract> findAll() {
+    public List<Contract> findAll() {
         return contractRepository.findAll();
     }
 
@@ -321,5 +323,17 @@ public class ContractService {
         consultantRepository.save(contractConsultant);
 
         return contract;
+    }
+
+    public static List<Contract> getContractsByDate(List<Contract> contracts, User user, LocalDate date) {
+        return contracts.stream()
+                .filter(contract -> isBetween(date, contract.getActiveFrom(), contract.getActiveTo()) &&
+                        (
+                                contract.getStatus().equals(ContractStatus.CLOSED) ||
+                                        contract.getStatus().equals(ContractStatus.TIME) ||
+                                        contract.getStatus().equals(ContractStatus.SIGNED) ||
+                                        contract.getStatus().equals(ContractStatus.BUDGET)
+                        ) && contract.findByUser(user)!=null)
+                .collect(Collectors.toList());
     }
 }

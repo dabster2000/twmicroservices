@@ -53,8 +53,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
     //@Autowired
     //private CumulativePredictiveRevenuePerMonthChart cumulativePredictiveRevenuePerMonthChart;
 
-    @Autowired
-    private CumulativePredictiveRevenuePerYearChart cumulativePredictiveRevenuePerYearChart;
+    //@Autowired
+    //private CumulativePredictiveRevenuePerYearChart cumulativePredictiveRevenuePerYearChart;
 
     @Autowired
     private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
@@ -185,13 +185,13 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("5 out of 10 charts created!");
         System.out.println("timeMillis 5 = " + (System.currentTimeMillis() - timeMillis));
          */
-
+/*
         Card cumulativePredictiveRevenuePerYearCard = new Card();
         cumulativePredictiveRevenuePerYearCard.getLblTitle().setValue("Cumulative Predicted Revenue");
         cumulativePredictiveRevenuePerYearCard.getContent().addComponent(cumulativePredictiveRevenuePerYearChart.createCumulativePredictiveRevenuePerYearChart());
         notification.setDescription("7 out of 10 charts created!");
         System.out.println("timeMillis 7 = " + (System.currentTimeMillis() - timeMillis));
-
+*/
         Card revenuePerMonthEmployeeAvgCard = new Card();
         revenuePerMonthEmployeeAvgCard.getLblTitle().setValue("Average Revenue per Consultant");
         revenuePerMonthEmployeeAvgCard.getContent().addComponent(revenuePerMonthEmployeeAvgChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
@@ -235,9 +235,11 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthEmployeeAvgCard);
+        /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(cumulativePredictiveRevenuePerYearCard);
+                */
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsBudgetRealizationCard);

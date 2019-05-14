@@ -6,10 +6,10 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
-import static java.time.temporal.ChronoUnit.DAYS;
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 /**
  * Created by hans on 20/09/2017.
@@ -29,14 +29,14 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @SpringUI
 public class AverageConsultantAllocationChart {
 
-    private final WorkService workService;
+    private final StatisticsService statisticsService;
 
     private final UserService userService;
 
     @Autowired
-    public AverageConsultantAllocationChart(UserService userService, WorkService workService) {
+    public AverageConsultantAllocationChart(StatisticsService statisticsService, UserService userService) {
+        this.statisticsService = statisticsService;
         this.userService = userService;
-        this.workService = workService;
     }
 
     public Chart createChart() {
@@ -66,51 +66,48 @@ public class AverageConsultantAllocationChart {
         plotOptionsColumn.setColorByPoint(true);
         revenueSeries.setPlotOptions(plotOptionsColumn);
 
-        LocalDate startDate = LocalDate.of(2014, 7, 1);
-        Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
+        LocalDate startDate;
+        Map<User, Map<LocalDate, Double>> averagePerUserPerMonth = new HashMap<>();
+        Map<User, Double> averagePerUser = new HashMap<>();
 
-        do {
-            for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-                LocalDate endDate = startDate.plusYears(1).minusDays(1);
-                if(endDate.isAfter(LocalDate.now())) {
-                    endDate = LocalDate.now().withDayOfMonth(1).minusDays(1);
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+            startDate = userService.findEmployedDate(user);
+            double allocation = 0.0;
+            int count = 0;
+            do {
+                double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
+                AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
+                if(availability==null) {
+                    startDate = startDate.plusMonths(1);
+                    continue;
                 }
-                double workdaysInPeriod = DateUtils.getWeekdaysInPeriod(startDate, endDate);
-                System.out.println("workdaysInPeriod before vacation = " + workdaysInPeriod);
-                double vacationByUser = workService.countVacationByUser(user);
-                System.out.println("vacationByUser = " + vacationByUser);
-                workdaysInPeriod = (workdaysInPeriod - (vacationByUser / 7.4));
-                System.out.println("workdaysInPeriod after vacation = " + workdaysInPeriod);
-                double weeksInPeriod = DAYS.between(startDate, endDate) / 7.0;
-                System.out.println("weeksInPeriod = " + weeksInPeriod);
-                double avgWorkHoursPerWeek = (workdaysInPeriod / weeksInPeriod * 7.0);
-                System.out.println("avgWorkHoursPerWeek = " + avgWorkHoursPerWeek);
+                double monthAllocation = 0.0;
+                if(billableWorkHours>0.0 && availability.getAvailableHours()>0.0) {
+                    monthAllocation = (billableWorkHours / availability.getAvailableHours()) * 100.0;
+                    count++;
+                }
 
-                double billableWorkHours = workService.countBillableWorkByUserInPeriod(user.getUuid(), DateUtils.stringIt(startDate), DateUtils.stringIt(endDate));
-                System.out.println("billableWorkHours = " + billableWorkHours);
-                double antalTimerPerUge = billableWorkHours / weeksInPeriod;
-                System.out.println("antalTimerPerUge = " + antalTimerPerUge);
+                allocation += monthAllocation;
 
-                double allocation = (antalTimerPerUge / avgWorkHoursPerWeek) * 100.0;
+                Map<LocalDate, Double> averagePerYearMap = averagePerUserPerMonth.getOrDefault(user, new HashMap<>());
+                averagePerUserPerMonth.putIfAbsent(user, averagePerYearMap);
+                averagePerYearMap = averagePerUserPerMonth.get(user);
+                averagePerYearMap.put(startDate, averagePerYearMap.getOrDefault(startDate, 0.0) + monthAllocation);
 
-                System.out.println(user.getUsername()+" ("+startDate.getYear()+"): "+billableWorkHours);
+                startDate = startDate.plusMonths(1);
+            } while (startDate.isBefore(LocalDate.now()));
+            averagePerUser.putIfAbsent(user, (allocation / count));
+        }
 
-                Map<LocalDate, Double> averagePerYearMap = averagePerUserPerYear.getOrDefault(user, new HashMap<>());
-                averagePerUserPerYear.putIfAbsent(user, averagePerYearMap);
-                averagePerYearMap.put(startDate, averagePerYearMap.getOrDefault(startDate, 0.0) + allocation);
-            }
-            startDate = startDate.plusYears(1);
-        } while (startDate.isBefore(LocalDate.now()));
-
-        for (User user : averagePerUserPerYear.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
-            Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerYear.get(user);
+        for (User user : averagePerUserPerMonth.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
+            Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerMonth.get(user);
             OptionalDouble result = userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value > 0.0).average();
             if(!result.isPresent()) continue;
-            DataSeriesItem item = new DataSeriesItem(user.getUsername(), result.getAsDouble());
+            DataSeriesItem item = new DataSeriesItem(user.getUsername(), averagePerUser.get(user));
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");
             drillSeries.setId(user.getUsername());
 
-            String[] categories = userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).map(localDate -> Integer.toString(localDate.getYear())).toArray(String[]::new);
+            String[] categories = userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).map(localDate -> stringIt(localDate, "MMM yyyy")).toArray(String[]::new);
             Number[] values = new Number[userAverageByYearMap.size()];
             int i = 0;
             for (LocalDate localDate : userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {

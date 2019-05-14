@@ -2,7 +2,6 @@ package dk.trustworks.invoicewebui.utils;
 
 import lombok.experimental.UtilityClass;
 
-import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -37,6 +36,20 @@ public class DateUtils {
         }
 
         return countVacationDays;
+    }
+
+    /**
+     * Both date inclusive
+     * @param testDate
+     * @param from
+     * @param to
+     * @return
+     */
+    public static boolean isBetween(LocalDate testDate, LocalDate from, LocalDate to) {
+        if(testDate.isEqual(from)) return true;
+        if(testDate.isEqual(to)) return true;
+        if(testDate.isAfter(from) && testDate.isBefore(to)) return true;
+        return false;
     }
 
     public static int getWeekdaysInPeriod(LocalDate dateFrom, LocalDate dateTo) {
@@ -130,10 +143,6 @@ public class DateUtils {
         return localDate.withDayOfMonth(localDate.lengthOfMonth());
     }
 
-    public static LocalDate convertDateToLocalDate(Timestamp date) {
-        return date.toLocalDateTime().toLocalDate();//.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
     public static LocalDate getFirstDayOfMonth(LocalDate localDate) {
         YearMonth month = YearMonth.from(localDate);
         return month.atDay(1);
@@ -204,5 +213,9 @@ public class DateUtils {
 
     public static String stringIt(LocalDate date) {
         return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    public static String stringIt(LocalDate date, String format) {
+        return date.format(DateTimeFormatter.ofPattern(format));
     }
 }

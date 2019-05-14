@@ -9,18 +9,11 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
-import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.Consultant;
-import dk.trustworks.invoicewebui.model.Contract;
-import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
-import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -43,41 +36,29 @@ import java.util.stream.Collectors;
 @SpringUI
 public class SalesHeatMap {
 
-    private final BudgetNewRepository budgetNewRepository;
-
-    private final ConsultantRepository consultantRepository;
-
     private final ClientRepository clientRepository;
-
-    private final ContractService contractService;
-
-    private final WorkService workService;
 
     private final PhotoService photoService;
 
     private final StatisticsService statisticsService;
 
+    private final UserService userService;
+
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, ClientRepository clientRepository, ContractService contractService, WorkService workService, UserService userService, PhotoService photoService, StatisticsService statisticsService) {
-        this.budgetNewRepository = budgetNewRepository;
-        this.consultantRepository = consultantRepository;
+    public SalesHeatMap(ClientRepository clientRepository, PhotoService photoService, StatisticsService statisticsService, UserService userService1) {
         this.clientRepository = clientRepository;
-        this.contractService = contractService;
-        this.workService = workService;
         this.photoService = photoService;
         this.statisticsService = statisticsService;
+        this.userService = userService1;
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
-
-        List<Consultant> consultantList = consultantRepository.findByStatus(StatusType.ACTIVE).stream().filter(consultant -> consultant.getType().equals(ConsultantType.CONSULTANT)).collect(Collectors.toList());
-
 
         String[] monthNames = getMonthNames(localDateStart, localDateEnd);
 
@@ -107,61 +88,35 @@ public class SalesHeatMap {
         HeatSeries rs = new HeatSeries("% availability");
         int userNumber = 0;
 
-        Map<String, double[]> budgetRowList = new HashMap<>();
+
         Map<String, Map<String, double[]>> userAllocationPerAssignmentMap = new HashMap<>();
+        List<User> users = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
         for (int i = 0; i < 12; i++) {
-            LocalDate currentDate = localDateStart.plusMonths(i);
+            LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);
 
-            List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
-            for (Contract contract : contracts) {
-                if(contract.getContractType().equals(ContractType.PERIOD)) {
-                    for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                        double weeks = (workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0);
-                        budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
-                        budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (contractConsultant.getHours() * weeks) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
+            for (User user : users) {
+                List<BudgetDocument> budgets = statisticsService.getCachedBudgedData()
+                        .stream()
+                        .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(currentDate.withDayOfMonth(1)))
+                        .collect(Collectors.toList());
 
-                        userAllocationPerAssignmentMap.putIfAbsent(contractConsultant.getUser().getUuid(), new HashMap<>());
-                        userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).putIfAbsent(contract.getClient().getUuid(), new double[12]);
-                        userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).get(contract.getClient().getUuid())[i] +=  (contractConsultant.getHours() * weeks);
-                    }
+                for (BudgetDocument budget : budgets) {
+                    userAllocationPerAssignmentMap.putIfAbsent(user.getUuid(), new HashMap<>());
+                    userAllocationPerAssignmentMap.get(user.getUuid()).putIfAbsent(budget.getClient().getUuid(), new double[12]);
+                    userAllocationPerAssignmentMap.get(user.getUuid()).get(budget.getClient().getUuid())[i] +=  (budget.getBudgetHours());
                 }
             }
-            List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
-            List<BudgetNew> budgetsWithNoValidContract = new ArrayList<>();
-            for (BudgetNew budget : budgets) {
-                ContractConsultant contractConsultant = budget.getContractConsultant();
-                LocalDate localDate = LocalDate.of(budget.getYear(), budget.getMonth()+1, 15);
-                if(localDate.isAfter(contractConsultant.getContract().getActiveFrom()) && localDate.isBefore(contractConsultant.getContract().getActiveTo())) {
-                    budgetRowList.putIfAbsent(contractConsultant.getUser().getUuid(), new double[12]);
-                    budgetRowList.get(contractConsultant.getUser().getUuid())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getUser().getUuid())[i];
 
-                    userAllocationPerAssignmentMap.putIfAbsent(contractConsultant.getUser().getUuid(), new HashMap<>());
-                    userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).putIfAbsent(budget.getProject().getClient().getUuid(), new double[12]);
-                    userAllocationPerAssignmentMap.get(contractConsultant.getUser().getUuid()).get(budget.getProject().getClient().getUuid())[i] += (budget.getBudget() / budget.getContractConsultant().getRate());
-                } else {
-                    budgetsWithNoValidContract.add(budget);
-                }
-            }
-            budgetNewRepository.delete(budgetsWithNoValidContract);
         }
-
-        for (Consultant user : consultantList) {
-            budgetRowList.putIfAbsent(user.getUuid(), new double[12]);
-
+        for (User user : users) {
             LocalDate localDate = localDateStart;
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
-
-                int workDaysInMonth = workService.getWorkDaysInMonth(user.getUuid(), localDate);
-                double budget = Math.round((workDaysInMonth * (user.getAllocation()/5.0)) - budgetRowList.get(user.getUuid())[m]);
-                if(budget < 0.0) budget = 0.0;
-                budget = Math.round(budget / Math.round(workDaysInMonth * (user.getAllocation()/5.0)) * 100.0);
-
-                monthAvailabilites[m] += Math.round(budget);
-                monthTotalAvailabilites[m] += 100;
-
-                rs.addHeatPoint(m, userNumber, Math.round(budget));
-
+                double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate.withDayOfMonth(1));
+                monthAvailabilites[m] += budget;
+                double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate.withDayOfMonth(1)).getAvailableHours();
+                monthTotalAvailabilites[m] += availability;
+                rs.addHeatPoint(m, userNumber, Math.round(100 - (budget / availability)*100.0));
                 localDate = localDate.plusMonths(1);
                 m++;
             }
@@ -170,12 +125,12 @@ public class SalesHeatMap {
 
         config.getxAxis().setCategories(monthNames);
 
-        String[] consultants = consultantList.stream().map(Consultant::getUsername).toArray(String[]::new);
+        String[] consultants = users.stream().map(User::getUsername).toArray(String[]::new);
         config.getyAxis().setCategories(consultants);
 
         chart.addPointClickListener(event -> {
             int intValue = new Double(Math.floor(event.getPointIndex() / 12.0)).intValue();
-            Consultant user = consultantList.get(intValue);
+            User user = users.get(intValue);
 
 
             final Window window = new Window("Window");
@@ -234,6 +189,7 @@ public class SalesHeatMap {
         chart.drawChart(config);
         chart.setHeight("700px");
 
+        System.out.println("----------------------------------------------------");
         return chart;
     }
 
@@ -278,7 +234,7 @@ public class SalesHeatMap {
 
         ListSeries listSeries = new ListSeries();
         for (int j = 0; j < monthPeriod; j++) {
-            listSeries.addData(Math.round(monthAvailabilites[j] / monthTotalAvailabilites[j] * 100.0));
+            listSeries.addData(Math.round(100 - ((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0)));
         }
 
         conf.addSeries(listSeries);
