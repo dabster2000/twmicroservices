@@ -98,7 +98,7 @@ public class StatisticsCachedService {
 
                         double budget = userContract.getBudgets().stream()
                                 .filter(budgetNew -> budgetNew.getYear() == finalStartDate.getYear() &&
-                                        budgetNew.getMonth() == (finalStartDate.getMonthValue()+1))
+                                        (budgetNew.getMonth()+1) == finalStartDate.getMonthValue())
                                 .mapToDouble(budgetNew -> budgetNew.getBudget() / userContract.getRate()).sum();
 
                         BudgetDocument budgetDocument = new BudgetDocument(startDate, contract.getClient(), user, contract, budget, contract.findByUser(user).getRate());
