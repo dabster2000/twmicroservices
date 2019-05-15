@@ -43,27 +43,27 @@ public class StatisticsCachedService {
         this.userService = userService;
     }
 
-    @Getter(lazy=true) private final List<BudgetDocument> cachedBudgedData = createBudgetData();
+    @Getter private List<BudgetDocument> cachedBudgedData = createBudgetData();
 
-    @Getter(lazy=true) private final List<AvailabilityDocument> cachedAvailabilityData = createAvailabilityData();
+    @Getter private List<AvailabilityDocument> cachedAvailabilityData = createAvailabilityData();
 
-    @Getter(lazy=true) private final List<ExpenseDocument> cachedExpenseData = createExpenseData();
+    @Getter private List<ExpenseDocument> cachedExpenseData = createExpenseData();
 
-    @Getter(lazy=true) private final List<WorkDocument> cachedIncomeData = createIncomeData();
+    @Getter private List<WorkDocument> cachedIncomeData = createIncomeData();
 
     @Scheduled(cron = "0 0 6,12,18 * * *")
     void refreshCache() {
-        getCachedBudgedData().clear();
-        getCachedBudgedData().addAll(createBudgetData());
+        cachedBudgedData.clear();
+        cachedBudgedData.addAll(createBudgetData());
 
-        getCachedAvailabilityData().clear();
-        getCachedAvailabilityData().addAll(createAvailabilityData());
+        cachedAvailabilityData.clear();
+        cachedAvailabilityData.addAll(createAvailabilityData());
 
-        getCachedExpenseData().clear();
-        getCachedExpenseData().addAll(createExpenseData());
+        cachedExpenseData.clear();
+        cachedExpenseData.addAll(createExpenseData());
 
-        getCachedIncomeData().clear();
-        getCachedIncomeData().addAll(createIncomeData());
+        cachedIncomeData.clear();
+        cachedIncomeData.addAll(createIncomeData());
     }
 
     private List<BudgetDocument> createBudgetData() {
