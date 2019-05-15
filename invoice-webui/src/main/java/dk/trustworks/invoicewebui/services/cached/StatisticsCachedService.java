@@ -13,7 +13,6 @@ import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,27 +42,40 @@ public class StatisticsCachedService {
         this.userService = userService;
     }
 
-    @Getter private List<BudgetDocument> cachedBudgedData = createBudgetData();
+    private List<BudgetDocument> cachedBudgetData;
 
-    @Getter private List<AvailabilityDocument> cachedAvailabilityData = createAvailabilityData();
+    public List<BudgetDocument> getBudgetData() {
+        if(cachedBudgetData.isEmpty()) cachedBudgetData = createBudgetData();
+        return cachedBudgetData;
+    }
 
-    @Getter private List<ExpenseDocument> cachedExpenseData = createExpenseData();
+    private List<AvailabilityDocument> cachedAvailabilityData;
 
-    @Getter private List<WorkDocument> cachedIncomeData = createIncomeData();
+    public List<AvailabilityDocument> getAvailabilityData() {
+        if(cachedAvailabilityData.isEmpty()) cachedAvailabilityData = createAvailabilityData();
+        return cachedAvailabilityData;
+    }
+
+   private List<ExpenseDocument> cachedExpenseData;
+
+    public List<ExpenseDocument> getExpenseData() {
+        if(cachedExpenseData.isEmpty()) cachedExpenseData = createExpenseData();
+        return cachedExpenseData;
+    }
+
+    private List<WorkDocument> cachedIncomeData;
+
+    public List<WorkDocument> getIncomeData() {
+        if(cachedIncomeData.isEmpty()) cachedIncomeData = createIncomeData();
+        return cachedIncomeData;
+    }
 
     @Scheduled(cron = "0 0 6,12,18 * * *")
     void refreshCache() {
-        cachedBudgedData.clear();
-        cachedBudgedData.addAll(createBudgetData());
-
-        cachedAvailabilityData.clear();
-        cachedAvailabilityData.addAll(createAvailabilityData());
-
-        cachedExpenseData.clear();
-        cachedExpenseData.addAll(createExpenseData());
-
-        cachedIncomeData.clear();
-        cachedIncomeData.addAll(createIncomeData());
+        cachedBudgetData = createBudgetData();
+        cachedAvailabilityData = createAvailabilityData();
+        cachedExpenseData = createExpenseData();
+        cachedIncomeData = createIncomeData();
     }
 
     private List<BudgetDocument> createBudgetData() {
@@ -200,7 +212,7 @@ public class StatisticsCachedService {
 
 
     public long getActiveEmployeeCountByMonth(LocalDate month) {
-        List<AvailabilityDocument> availabilityData = getCachedAvailabilityData();
+        List<AvailabilityDocument> availabilityData = getAvailabilityData();
         return availabilityData.stream()
                 .filter(
                         availabilityDocument -> availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)) &&
@@ -209,7 +221,7 @@ public class StatisticsCachedService {
     }
 
     public long getActiveConsultantCountByMonth(LocalDate month) {
-        List<AvailabilityDocument> availabilityData = getCachedAvailabilityData();
+        List<AvailabilityDocument> availabilityData = getAvailabilityData();
         return availabilityData.stream()
                 .filter(
                         availabilityDocument -> availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)) &&
@@ -220,35 +232,35 @@ public class StatisticsCachedService {
     }
 
     public double getConsultantRevenueByMonth(User user, LocalDate month) {
-        List<WorkDocument> incomeData = getCachedIncomeData();
+        List<WorkDocument> incomeData = getIncomeData();
         return incomeData.stream()
                 .filter(workDocument -> (workDocument.getUser().getUuid().equals(user.getUuid()) && workDocument.getMonth().isEqual(month.withDayOfMonth(1))))
                 .mapToDouble(workDocument -> workDocument.getRate() * workDocument.getWorkHours()).sum();
     }
 
     public double getConsultantRevenueHoursByMonth(User user, LocalDate month) {
-        List<WorkDocument> incomeData = getCachedIncomeData();
+        List<WorkDocument> incomeData = getIncomeData();
         return incomeData.stream()
                 .filter(workDocument -> (workDocument.getUser().getUuid().equals(user.getUuid()) && workDocument.getMonth().isEqual(month.withDayOfMonth(1))))
                 .mapToDouble(WorkDocument::getWorkHours).sum();
     }
 
     public double getConsultantBudgetByMonth(User user, LocalDate month) {
-        List<BudgetDocument> budgetData = getCachedBudgedData();
+        List<BudgetDocument> budgetData = getBudgetData();
         return budgetData.stream()
                 .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(budgetDocument -> budgetDocument.getBudgetHours() * budgetDocument.getRate()).sum();
     }
 
     public double getConsultantBudgetHoursByMonth(User user, LocalDate month) {
-        List<BudgetDocument> budgetData = getCachedBudgedData();
+        List<BudgetDocument> budgetData = getBudgetData();
         return budgetData.stream()
                 .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(BudgetDocument::getBudgetHours).sum();
     }
 
     public AvailabilityDocument getConsultantAvailabilityByMonth(User user, LocalDate month) {
-        List<AvailabilityDocument> availabilityData = getCachedAvailabilityData();
+        List<AvailabilityDocument> availabilityData = getAvailabilityData();
         return availabilityData.stream()
                 .filter(
                         availabilityDocument -> availabilityDocument.getUser().getUuid().equals(user.getUuid()) &&
@@ -257,14 +269,14 @@ public class StatisticsCachedService {
     }
 
     public double getExpensesByMonth(LocalDate month) {
-        List<ExpenseDocument> expenseData = getCachedExpenseData();
+        List<ExpenseDocument> expenseData = getExpenseData();
         return expenseData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(ExpenseDocument::getExpenseSum).sum();
     }
 
     public ExpenseDocument getConsultantExpensesByMonth(User user, LocalDate month) {
-        List<ExpenseDocument> expenceData = getCachedExpenseData();
+        List<ExpenseDocument> expenceData = getExpenseData();
         return expenceData.stream()
                 .filter(
                         expenseDocument -> expenseDocument.getUser().getUuid().equals(user.getUuid())

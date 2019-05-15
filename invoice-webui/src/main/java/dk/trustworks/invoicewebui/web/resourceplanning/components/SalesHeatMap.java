@@ -95,7 +95,7 @@ public class SalesHeatMap {
             LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);
 
             for (User user : users) {
-                List<BudgetDocument> budgets = statisticsService.getCachedBudgedData()
+                List<BudgetDocument> budgets = statisticsService.getBudgetData()
                         .stream()
                         .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(currentDate.withDayOfMonth(1)))
                         .collect(Collectors.toList());
