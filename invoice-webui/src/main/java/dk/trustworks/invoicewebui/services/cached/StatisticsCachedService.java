@@ -42,28 +42,28 @@ public class StatisticsCachedService {
         this.userService = userService;
     }
 
-    private List<BudgetDocument> cachedBudgetData;
+    private List<BudgetDocument> cachedBudgetData = new ArrayList<>();
 
     public List<BudgetDocument> getBudgetData() {
         if(cachedBudgetData.isEmpty()) cachedBudgetData = createBudgetData();
         return cachedBudgetData;
     }
 
-    private List<AvailabilityDocument> cachedAvailabilityData;
+    private List<AvailabilityDocument> cachedAvailabilityData = new ArrayList<>();
 
     public List<AvailabilityDocument> getAvailabilityData() {
         if(cachedAvailabilityData.isEmpty()) cachedAvailabilityData = createAvailabilityData();
         return cachedAvailabilityData;
     }
 
-   private List<ExpenseDocument> cachedExpenseData;
+   private List<ExpenseDocument> cachedExpenseData = new ArrayList<>();
 
     public List<ExpenseDocument> getExpenseData() {
         if(cachedExpenseData.isEmpty()) cachedExpenseData = createExpenseData();
         return cachedExpenseData;
     }
 
-    private List<WorkDocument> cachedIncomeData;
+    private List<WorkDocument> cachedIncomeData = new ArrayList<>();
 
     public List<WorkDocument> getIncomeData() {
         if(cachedIncomeData.isEmpty()) cachedIncomeData = createIncomeData();
