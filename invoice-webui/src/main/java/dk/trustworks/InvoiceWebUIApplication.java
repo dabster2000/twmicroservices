@@ -78,7 +78,7 @@ public class InvoiceWebUIApplication {
 
     @PostConstruct
     private void init() {
-        statisticsService.run();
+        //statisticsService.run();
         //System.exit(0);
 
         log.info("InitDemoApplication initialization logic ...");
