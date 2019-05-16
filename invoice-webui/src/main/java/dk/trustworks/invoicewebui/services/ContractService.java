@@ -59,6 +59,7 @@ public class ContractService {
         boolean isValid = true;
         for (Contract contractTest : contractRepository.findByClient(contract.getClient())) {
             boolean isOverlapped = false;
+            if(contract.getUuid().equals(contractTest.getUuid())) continue;
             if((contract.getActiveFrom().isBefore(contractTest.getActiveTo()) || contract.getActiveFrom().isEqual(contractTest.getActiveTo())) &&
                     (contract.getActiveTo().isAfter(contractTest.getActiveFrom()) || contract.getActiveTo().isEqual(contractTest.getActiveFrom()))) {
                 isOverlapped = true;
