@@ -85,28 +85,6 @@ public class StatisticsService extends StatisticsCachedService {
         return result;
     }
 
-    public Map<String, double[]> getBudgetsAndRevenueHours(User user) {
-        LocalDate fromDate = LocalDate.of(2014, 7, 1);
-        LocalDate toDate = LocalDate.now().withDayOfMonth(1);
-
-        int months = (int) ChronoUnit.MONTHS.between(fromDate, toDate);
-
-        double[] revenue = new double[months];
-        double[] budget = new double[months];
-
-        for (int m = 0; m < months; m++) {
-            revenue[m] = getConsultantRevenueHoursByMonth(user, fromDate.plusMonths(m));
-            budget[m] = getConsultantBudgetHoursByMonth(user, fromDate.plusMonths(m));
-            if(budget[m]>200) System.out.println("budget[m] = " + budget[m]);
-        }
-
-        HashMap<String, double[]> result = new HashMap<>();
-        result.put("revenue", revenue);
-        result.put("budget", budget);
-
-        return result;
-    }
-
     public double getMonthRevenue(LocalDate month) {
         double result = 0.0;
         for (User user : userService.findAll()) {
@@ -122,20 +100,7 @@ public class StatisticsService extends StatisticsCachedService {
         }
         return result;
     }
-/*
-    public void run() {
-        Map<String, double[]> result = getBudgetsAndRevenue(userService.findByUsername("hans.lassen"));
 
-        System.out.println("revenue = " + Arrays.toString(result.get("revenue")));
-        System.out.println("budget = " + Arrays.toString(result.get("budget")));
-        System.out.println("expenses = " + Arrays.toString(result.get("expenses")));
-
-        result = getBudgetsAndRevenueHours(userService.findByUsername("hans.lassen"));
-
-        System.out.println("revenue = " + Arrays.toString(result.get("revenue")));
-        System.out.println("budget = " + Arrays.toString(result.get("budget")));
-    }
-*/
     public DataSeries calcRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries revenueSeries = new DataSeries("Revenue");
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
