@@ -56,7 +56,7 @@ public class StatisticsCachedService {
         return cachedAvailabilityData;
     }
 
-   private List<ExpenseDocument> cachedExpenseData = new ArrayList<>();
+    private List<ExpenseDocument> cachedExpenseData = new ArrayList<>();
 
     public List<ExpenseDocument> getExpenseData() {
         if(cachedExpenseData.isEmpty()) cachedExpenseData = createExpenseData();
