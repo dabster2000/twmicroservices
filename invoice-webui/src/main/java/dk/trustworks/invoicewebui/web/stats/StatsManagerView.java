@@ -9,7 +9,6 @@ import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
-import dk.trustworks.invoicewebui.web.stats.components.LayoutManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,6 @@ public class  StatsManagerView extends VerticalLayout implements View {
     @Autowired
     private MainTemplate mainTemplate;
 
-    @Autowired
-    private LayoutManager layoutManager;
-
     public static final String VIEW_NAME = "project_stats";
     public static final String MENU_NAME = "Projects Stats";
     public static final String VIEW_BREADCRUMB = "Projects Statistics";
@@ -46,7 +42,6 @@ public class  StatsManagerView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        //mainTemplate.setMainContent(layoutManager.init(), VIEW_ICON, MENU_NAME, "Great statistics!", VIEW_BREADCRUMB);
     }
 
     @Override

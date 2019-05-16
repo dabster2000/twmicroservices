@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.services.ContractService.getContractsByDate;
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
@@ -250,6 +251,13 @@ public class StatisticsCachedService {
         return budgetData.stream()
                 .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(budgetDocument -> budgetDocument.getBudgetHours() * budgetDocument.getRate()).sum();
+    }
+
+    public List<BudgetDocument> getConsultantBudgetDataByMonth(User user, LocalDate month) {
+        List<BudgetDocument> budgetData = getBudgetData();
+        return budgetData.stream()
+                .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(month.withDayOfMonth(1)))
+                .collect(Collectors.toList());
     }
 
     public double getConsultantBudgetHoursByMonth(User user, LocalDate month) {
