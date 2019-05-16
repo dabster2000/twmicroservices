@@ -270,31 +270,6 @@ public class Invoice {
         this.pdf = pdf;
     }
 
-    @Override
-    public String toString() {
-        return "Invoice{" + "uuid='" + uuid + '\'' +
-                ", projectuuid='" + projectuuid + '\'' +
-                ", projectname='" + projectname + '\'' +
-                ", year=" + year +
-                ", month=" + month +
-                ", clientname='" + clientname + '\'' +
-                ", clientaddresse='" + clientaddresse + '\'' +
-                ", otheraddressinfo='" + otheraddressinfo + '\'' +
-                ", zipcity='" + zipcity + '\'' +
-                ", cvr='" + cvr + '\'' +
-                ", ean='" + ean + '\'' +
-                ", attention='" + attention + '\'' +
-                ", invoicenumber=" + invoicenumber +
-                ", invoicedate=" + invoicedate +
-                ", contractref='" + contractref + '\'' +
-                ", projectref='" + projectref + '\'' +
-                ", invoiceitems=" + invoiceitems +
-                ", errors=" + errors +
-                ", type=" + type +
-                ", status=" + status +
-                '}';
-    }
-
     public double getSumNoTax() {
         return sumNoTax;
     }
@@ -322,5 +297,35 @@ public class Invoice {
 
     public void setDiscount(double discount) {
         this.discount = discount;
+    }
+
+    @Override
+    public String toString() {
+        return "Invoice{" +
+                "uuid='" + uuid + '\'' +
+                ", contractuuid='" + contractuuid + '\'' +
+                ", projectuuid='" + projectuuid + '\'' +
+                ", projectname='" + projectname + '\'' +
+                ", year=" + year +
+                ", month=" + month +
+                ", discount=" + discount +
+                ", clientname='" + clientname + '\'' +
+                ", clientaddresse='" + clientaddresse + '\'' +
+                ", otheraddressinfo='" + otheraddressinfo + '\'' +
+                ", zipcity='" + zipcity + '\'' +
+                ", cvr='" + cvr + '\'' +
+                ", ean='" + ean + '\'' +
+                ", attention='" + attention + '\'' +
+                ", invoicenumber=" + invoicenumber +
+                ", invoicedate=" + invoicedate +
+                ", projectref='" + projectref + '\'' +
+                ", contractref='" + contractref + '\'' +
+                ", specificdescription='" + specificdescription + '\'' +
+                ", errors=" + errors +
+                ", type=" + type +
+                ", status=" + status +
+                ", sumNoTax=" + sumNoTax +
+                ", sumWithTax=" + sumWithTax +
+                '}';
     }
 }

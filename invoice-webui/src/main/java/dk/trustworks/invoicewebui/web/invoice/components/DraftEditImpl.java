@@ -96,7 +96,7 @@ public class DraftEditImpl extends DraftEditDesign {
             calcSums(invoice.invoiceitems);
         });
         btnSetSKIDiscount.addClickListener(event -> {
-            txtDiscount.setValue("2.0");
+            txtDiscount.setValue("2,0");
             saveInvoice();
             calcSums(invoice.invoiceitems);
         });
@@ -245,8 +245,8 @@ public class DraftEditImpl extends DraftEditDesign {
         });
     }
 
-    public void saveInvoice() {
-        if(!invoice.getStatus().equals(InvoiceStatus.DRAFT)) return;
+    public Invoice saveInvoice() {
+        if(!invoice.getStatus().equals(InvoiceStatus.DRAFT)) return invoice;
         try {
             for (Binder<InvoiceItem> binder : binders.keySet()) {
                 binder.writeBean(binders.get(binder));
@@ -259,35 +259,27 @@ public class DraftEditImpl extends DraftEditDesign {
             Notification.show("Invoice could not be saved, " +
                     "please check error messages for each field.", Notification.Type.ERROR_MESSAGE);
         }
+        return invoice;
     }
 
     public class MyConverter implements Converter<String, Double> {
         @Override
         public Result<Double> convertToModel(String fieldValue, ValueContext context) {
-            System.out.println("MyConverter.convertToModel");
-            System.out.println("fieldValue = [" + fieldValue + "], context = [" + context + "]");
-            // Produces a converted value or an error
             try {
-                // ok is a static helper method that creates a Result
                 NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
                 return Result.ok(formatter.parse(fieldValue).doubleValue());
             } catch (NumberFormatException | ParseException e) {
                 e.printStackTrace();
-                // error is a static helper method that creates a Result
                 return Result.error("Please enter a number");
             }
         }
 
         @Override
         public String convertToPresentation(Double aDouble, ValueContext context) {
-            System.out.println("MyConverter.convertToPresentation");
-            System.out.println("aDouble = [" + aDouble + "], context = [" + context + "]");
-            // Converting to the field type should always succeed,
-            // so there is no support for returning an error Result.
             NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
             formatter.setMaximumFractionDigits(2);
             formatter.setMinimumFractionDigits(2);
-            return String.valueOf(formatter.format(aDouble));
+            return formatter.format(aDouble);
         }
     }
 

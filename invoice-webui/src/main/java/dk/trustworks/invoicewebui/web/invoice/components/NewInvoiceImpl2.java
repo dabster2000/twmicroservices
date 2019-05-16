@@ -98,7 +98,6 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
         VerticalLayout invoiceListLayout = new MVerticalLayout(new MVerticalLayout().withStyleName("card-1").with(invoiceListItemsResponsiveLayout));
         ResponsiveRow invoiceListItemsResponsiveRow = invoiceListItemsResponsiveLayout.addRow();
         VerticalLayout invoiceListVerticalLayout = new MVerticalLayout().withSpacing(false);
-        //Accordion accordion = new Accordion();
         VerticalLayout accordion = new MVerticalLayout().withSpacing(false).withMargin(false);
         invoiceListItemsResponsiveRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
@@ -132,11 +131,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                     invoiceTab.getLblClientName().setValue(client.getName());
                     if(client.getAccountmanager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), false, 40, PIXELS));
                     invoiceTab.getLblPercent().setValue(NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%");
-                            /*.setCaption(client.getName() +
-                            ((client.getAccountmanager()!=null)?(" - "+ client.getAccountmanager().getInitials()):"") +
-                            " ("+NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%)");*/
                 }
-                //tab = accordion.addTab(invoiceListVerticalLayout, projectSummary.getClientname());
                 final InvoiceTab tab = new InvoiceTab();
                 tab.getVlContent().addComponent(invoiceListVerticalLayout);
                 tab.getHlTab().addLayoutClickListener(event -> {
@@ -264,24 +259,24 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 tabSheet.removeTab(tab);
             });
             invoiceEditDesign.btnCreateInvoice.addClickListener(event -> {
-                invoiceEditDesign.saveInvoice();
+                Invoice savedInvoice = invoiceEditDesign.saveInvoice();
 
-                invoice.setStatus(InvoiceStatus.CREATED);
-                invoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
-                invoice.pdf = invoiceService.createInvoicePdf(invoice);
-                Invoice savedInvoice = invoiceService.save(invoice);
+                savedInvoice.setStatus(InvoiceStatus.CREATED);
+                savedInvoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
+                savedInvoice.pdf = invoiceService.createInvoicePdf(savedInvoice);
+                savedInvoice = invoiceService.save(savedInvoice);
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);
                 refreshTabs(tabSheet, projectSummary);
             });
             invoiceEditDesign.btnCreatePhantom.addClickListener(event -> {
-                invoiceEditDesign.saveInvoice();
+                Invoice savedInvoice = invoiceEditDesign.saveInvoice();
 
-                invoice.setStatus(InvoiceStatus.CREATED);
-                invoice.setType(InvoiceType.INVOICE);
-                invoice.invoicenumber = 0;
-                invoice.pdf = invoiceService.createInvoicePdf(invoice);
-                Invoice savedInvoice = invoiceService.save(invoice);
+                savedInvoice.setStatus(InvoiceStatus.CREATED);
+                savedInvoice.setType(InvoiceType.INVOICE);
+                savedInvoice.invoicenumber = 0;
+                savedInvoice.pdf = invoiceService.createInvoicePdf(savedInvoice);
+                savedInvoice = invoiceService.save(savedInvoice);
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);
                 refreshTabs(tabSheet, projectSummary);
@@ -289,7 +284,9 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
             invoiceEditDesign.btnCopyDescription.addClickListener(event -> {
                 Invoice latestInvoiceByProjectuuid = invoiceService.findByLatestInvoiceByProjectuuid(invoice.projectuuid);
                 invoiceEditDesign.setSpecificDescription(latestInvoiceByProjectuuid.specificdescription);
-                invoiceEditDesign.saveInvoice();
+                Invoice savedInvoice = invoiceEditDesign.saveInvoice();
+                projectSummary.getDraftInvoiceList().remove(invoice);
+                projectSummary.getDraftInvoiceList().add(savedInvoice);
             });
         }
         tabSheet.addTab(new MVerticalLayout()
