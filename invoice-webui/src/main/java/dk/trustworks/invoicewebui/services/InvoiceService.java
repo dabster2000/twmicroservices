@@ -39,7 +39,7 @@ public class InvoiceService {
         invoiceRepository.save(invoice);
 
         Invoice creditNote = new Invoice(InvoiceType.CREDIT_NOTE, invoice.getContractuuid(), invoice.getProjectuuid(),
-                invoice.getProjectname(), invoice.getYear(), invoice.getMonth(), invoice.getClientname(),
+                invoice.getProjectname(), invoice.getDiscount(), invoice.getYear(), invoice.getMonth(), invoice.getClientname(),
                 invoice.getClientaddresse(), invoice.getOtheraddressinfo(), invoice.getZipcity(),
                 invoice.getEan(), invoice.getCvr(), invoice.getAttention(), LocalDate.now(),
                 invoice.getProjectref(), invoice.getContractref(),
@@ -69,6 +69,7 @@ public class InvoiceService {
                 "",
                 "",
                 "Blank invoice",
+                0.0,
                 year,
                 month,
                 "Blank invoice", "", "", "", "", "", "",

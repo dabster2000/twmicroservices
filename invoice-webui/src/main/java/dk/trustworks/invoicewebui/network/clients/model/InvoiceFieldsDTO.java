@@ -3,16 +3,16 @@ package dk.trustworks.invoicewebui.network.clients.model;
 public class InvoiceFieldsDTO {
 
     String tax;
-    boolean discounts;
+    String discounts;
     boolean shipping;
 
     public InvoiceFieldsDTO() {
         this.tax = "%";
-        discounts = false;
+        discounts = "false";
         shipping = false;
     }
 
-    public InvoiceFieldsDTO(boolean discounts, boolean shipping) {
+    public InvoiceFieldsDTO(String discounts, boolean shipping) {
         this.tax = "%";
         this.discounts = discounts;
         this.shipping = shipping;
@@ -26,11 +26,11 @@ public class InvoiceFieldsDTO {
         this.tax = tax;
     }
 
-    public boolean isDiscounts() {
+    public String getDiscounts() {
         return discounts;
     }
 
-    public void setDiscounts(boolean discounts) {
+    public void setDiscounts(String discounts) {
         this.discounts = discounts;
     }
 

@@ -8,6 +8,7 @@ import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -43,6 +44,7 @@ public class DraftEditImpl extends DraftEditDesign {
             btnCreatePhantom.setVisible(false);
             btnDelete.setVisible(false);
             btnCopyDescription.setVisible(false);
+            btnSetSKIDiscount.setEnabled(false);
 
             btnCreateCreditNote.setVisible(true);
             btnDownload.setVisible(true);
@@ -55,16 +57,12 @@ public class DraftEditImpl extends DraftEditDesign {
             txtSpecificDescription.setReadOnly(true);
             txtStreetname.setReadOnly(true);
             txtZipCity.setReadOnly(true);
+            txtDiscount.setReadOnly(true);
             dfInvoiceDate.setReadOnly(true);
 
             lblInvoiceNumber.setValue(StringUtils.convertInvoiceNumberToString(invoice.getInvoicenumber()));
+        } else {
 
-            if(invoice.invoicenumber == 0) {
-                btnCreateInvoice.setVisible(false);
-                btnDownload.setVisible(false);
-                btnDropbox.setVisible(false);
-                btnDelete.setVisible(true);
-            }
         }
     }
 
@@ -82,8 +80,10 @@ public class DraftEditImpl extends DraftEditDesign {
         invoiceBinder.forField(txtStreetname).bind(Invoice::getClientaddresse, Invoice::setClientaddresse);
         invoiceBinder.forField(txtZipCity).bind(Invoice::getZipcity, Invoice::setZipcity);
         invoiceBinder.forField(dfInvoiceDate).bind(Invoice::getInvoicedate, Invoice::setInvoicedate);
+        invoiceBinder.forField(txtDiscount).withConverter(new MyConverter()).bind(Invoice::getDiscount, Invoice::setDiscount);
         invoiceBinder.forField(txtSpecificDescription).bind(Invoice::getSpecificdescription, Invoice::setSpecificdescription);
         invoiceBinder.readBean(invoice);
+        dfInvoiceDueDate.setValue(invoice.getInvoicedate().plusMonths(1));
 
         txtAttention.addBlurListener(event -> saveInvoice());
         txtClientname.addBlurListener(event -> saveInvoice());
@@ -91,6 +91,15 @@ public class DraftEditImpl extends DraftEditDesign {
         txtEan.addBlurListener(event -> saveInvoice());
         txtStreetname.addBlurListener(event -> saveInvoice());
         txtZipCity.addBlurListener(event -> saveInvoice());
+        txtDiscount.addBlurListener(event -> {
+            saveInvoice();
+            calcSums(invoice.invoiceitems);
+        });
+        btnSetSKIDiscount.addClickListener(event -> {
+            txtDiscount.setValue("2,0");
+            saveInvoice();
+            calcSums(invoice.invoiceitems);
+        });
         dfInvoiceDate.addValueChangeListener(event -> saveInvoice());
         txtSpecificDescription.addBlurListener(event -> saveInvoice());
 
@@ -141,8 +150,9 @@ public class DraftEditImpl extends DraftEditDesign {
         currencyFormatter.setMinimumFractionDigits(2);
 
         lblSumNoTax.setValue(currencyFormatter.format(sumWithoutTax));
-        lblTax.setValue(currencyFormatter.format(sumWithoutTax*0.25));
-        lblSumWithTax.setValue(currencyFormatter.format(sumWithoutTax*1.25));
+        lblTax.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*0.25));
+        lblSumWithTax.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*1.25));
+        lblBalanceDue.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*1.25));
     }
 
     private void createInvoiceLine(InvoiceItem invoiceItem, int atRow) {
@@ -154,7 +164,6 @@ public class DraftEditImpl extends DraftEditDesign {
             gridInvoiceItems.removeRow(atRow);
             invoice.getInvoiceitems().remove(invoiceItem);
             saveInvoice();
-            calcSums(invoice.invoiceitems);
         });
 
         TextField lblItemname = new TextField();
@@ -182,18 +191,7 @@ public class DraftEditImpl extends DraftEditDesign {
 
         TextField lblRate = new TextField();
         lblRate.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
-        lblRate.addBlurListener(event -> {
-            try {
-                binder.writeBean(invoiceItem);
-                saveInvoice();
-                calcSums(invoice.invoiceitems);
-                danishNumberFormatter.setMaximumFractionDigits(2);
-                danishNumberFormatter.setMinimumFractionDigits(2);
-                lblAmount.setValue(String.valueOf(danishNumberFormatter.format((invoiceItem.hours * invoiceItem.rate))));
-            } catch (ValidationException e) {
-                e.printStackTrace();
-            }
-        });
+        lblRate.addBlurListener(event -> saveInvoice());
         lblRate.addStyleName("tiny");
         lblRate.setWidth(100.0f, Unit.PERCENTAGE);
 
@@ -203,18 +201,7 @@ public class DraftEditImpl extends DraftEditDesign {
 
         TextField lblHours = new TextField();
         lblHours.setReadOnly(!invoice.getStatus().equals(InvoiceStatus.DRAFT));
-        lblHours.addBlurListener(event -> {
-            try {
-                binder.writeBean(invoiceItem);
-                saveInvoice();
-                calcSums(invoice.invoiceitems);
-                danishNumberFormatter.setMaximumFractionDigits(2);
-                danishNumberFormatter.setMinimumFractionDigits(2);
-                lblAmount.setValue(String.valueOf(danishNumberFormatter.format((invoiceItem.hours * invoiceItem.rate))));
-            } catch (ValidationException e) {
-                e.printStackTrace();
-            }
-        });
+        lblHours.addBlurListener(event -> saveInvoice());
         lblHours.addStyleName("tiny");
         lblHours.setWidth(100.0f, Unit.PERCENTAGE);
 
@@ -232,11 +219,9 @@ public class DraftEditImpl extends DraftEditDesign {
         gridInvoiceItems.setComponentAlignment(lblAmount, Alignment.MIDDLE_RIGHT);
         binder.readBean(invoiceItem);
 
-        /*
         lblRate.addValueChangeListener(event -> {
             try {
                 binder.writeBean(invoiceItem);
-                saveInvoice();
                 calcSums(invoice.invoiceitems);
                 danishNumberFormatter.setMaximumFractionDigits(2);
                 danishNumberFormatter.setMinimumFractionDigits(2);
@@ -249,7 +234,6 @@ public class DraftEditImpl extends DraftEditDesign {
         lblHours.addValueChangeListener(event -> {
             try {
                 binder.writeBean(invoiceItem);
-                saveInvoice();
                 calcSums(invoice.invoiceitems);
                 danishNumberFormatter.setMaximumFractionDigits(2);
                 danishNumberFormatter.setMinimumFractionDigits(2);
@@ -259,52 +243,43 @@ public class DraftEditImpl extends DraftEditDesign {
                 lblHours.setValue(event.getOldValue());
             }
         });
-        */
-
     }
 
-    public void saveInvoice() {
+    public Invoice saveInvoice() {
+        if(!invoice.getStatus().equals(InvoiceStatus.DRAFT)) return invoice;
         try {
             for (Binder<InvoiceItem> binder : binders.keySet()) {
                 binder.writeBean(binders.get(binder));
             }
             invoiceBinder.writeBean(invoice);
+            dfInvoiceDueDate.setValue(invoice.invoicedate.plusMonths(1));
             invoice = invoiceService.save(invoice);
-            //calcSums(invoice.invoiceitems);
             Notification.show("Saved", Notification.Type.TRAY_NOTIFICATION);
         } catch (ValidationException e) {
             Notification.show("Invoice could not be saved, " +
                     "please check error messages for each field.", Notification.Type.ERROR_MESSAGE);
         }
+        return invoice;
     }
 
     public class MyConverter implements Converter<String, Double> {
         @Override
         public Result<Double> convertToModel(String fieldValue, ValueContext context) {
-            System.out.println("MyConverter.convertToModel");
-            System.out.println("fieldValue = [" + fieldValue + "], context = [" + context + "]");
-            // Produces a converted value or an error
             try {
-                // ok is a static helper method that creates a Result
                 NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
                 return Result.ok(formatter.parse(fieldValue).doubleValue());
             } catch (NumberFormatException | ParseException e) {
                 e.printStackTrace();
-                // error is a static helper method that creates a Result
                 return Result.error("Please enter a number");
             }
         }
 
         @Override
         public String convertToPresentation(Double aDouble, ValueContext context) {
-            System.out.println("MyConverter.convertToPresentation");
-            System.out.println("aDouble = [" + aDouble + "], context = [" + context + "]");
-            // Converting to the field type should always succeed,
-            // so there is no support for returning an error Result.
             NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
             formatter.setMaximumFractionDigits(2);
             formatter.setMinimumFractionDigits(2);
-            return String.valueOf(formatter.format(aDouble));
+            return formatter.format(aDouble);
         }
     }
 

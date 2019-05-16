@@ -19,7 +19,11 @@ public class InvoiceAPI {
     RestTemplate restTemplate;
 
     public byte[] createInvoicePDF(Invoice invoice) {
+        System.out.println("InvoiceAPI.createInvoicePDF");
+        System.out.println("invoice = [" + invoice + "]");
         InvoiceDTO invoiceDTO = new InvoiceDTO(invoice);
+        System.out.println("invoiceDTO = " + invoiceDTO);
+
 
         MappingJackson2HttpMessageConverter jsonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
         jsonHttpMessageConverter.getObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

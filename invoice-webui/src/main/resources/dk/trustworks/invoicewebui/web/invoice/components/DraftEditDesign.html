@@ -9,50 +9,30 @@
   <vaadin-vertical-layout>
    <vaadin-css-layout size-full>
     <vaadin-horizontal-layout width-full>
-     <vaadin-button style-name="large-icon icon-align-top light-blue" width="220px" height="100%" plain-text _id="btnDelete" :middle :center>
+     <vaadin-button style-name="large-icon icon-align-top light-blue" width="220px" height-full plain-text _id="btnDelete" :middle :center>
        Delete Draft 
      </vaadin-button>
-     <vaadin-button style-name="large-icon icon-align-top light-blue" width="220px" height="100%" plain-text _id="btnCreatePhantom" :middle :center>
+     <vaadin-button style-name="large-icon icon-align-top light-blue" width="220px" height-full plain-text _id="btnCreatePhantom" :middle :center>
        Create Phantom Invoice 
      </vaadin-button>
-     <vaadin-button style-name="large-icon icon-align-top light-blue" width="220px" height="100%" plain-text _id="btnCreateInvoice" :middle :center>
+     <vaadin-button style-name="large-icon icon-align-top light-blue" width="220px" height-full plain-text _id="btnCreateInvoice" :middle :center>
        Create Invoice 
      </vaadin-button>
-     <vaadin-button style-name="large-icon icon-align-top light-blue" visible="false" width="100%" height="150px" plain-text _id="btnCreateCreditNote" :middle :center>
+     <vaadin-button visible="false" style-name="large-icon icon-align-top light-blue" width-full height="150px" plain-text _id="btnCreateCreditNote" :middle :center>
        Create Credit Note 
      </vaadin-button>
-     <vaadin-button style-name="large-icon icon-align-top light-blue" visible="false" width="100%" height="150px" plain-text _id="btnDropbox" :middle :center>
+     <vaadin-button visible="false" style-name="large-icon icon-align-top light-blue" width-full height="150px" plain-text _id="btnDropbox" :middle :center>
        Dropbox 
      </vaadin-button>
-     <vaadin-button style-name="large-icon icon-align-top light-blue" visible="false" width="100%" height="150px" plain-text _id="btnDownload" :middle :center>
+     <vaadin-button visible="false" style-name="large-icon icon-align-top light-blue" width-full height="150px" plain-text _id="btnDownload" :middle :center>
        Download 
      </vaadin-button>
     </vaadin-horizontal-layout>
-    <vaadin-horizontal-layout style-name="box-border" width-full height="100px">
-     <vaadin-label style-name="h2" plain-text _id="lblInvoiceHeadline" :middle>
-       FAKTURA 
-     </vaadin-label>
-     <vaadin-horizontal-layout height-full :middle :right :expand>
-      <vaadin-css-layout width-full :middle :center>
-       <vaadin-label width="5px" plain-text></vaadin-label>
-       <vaadin-label width="5px" plain-text></vaadin-label>
-      </vaadin-css-layout>
-     </vaadin-horizontal-layout>
-    </vaadin-horizontal-layout>
-    <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
+    <vaadin-horizontal-layout style-name="box-border" width-full height="100px"></vaadin-horizontal-layout>
     <vaadin-horizontal-layout width-full>
-     <vaadin-vertical-layout spacing="false" margin="false" :middle :expand="0.6">
-      <vaadin-text-field style-name="bold" placeholder="Client name" width="270px" _id="txtClientname"></vaadin-text-field>
-      <vaadin-text-field placeholder="Street name" width="270px" _id="txtStreetname"></vaadin-text-field>
-      <vaadin-text-field placeholder="Zipcode and city" width="270px" _id="txtZipCity"></vaadin-text-field>
-      <vaadin-text-field placeholder="CVR" width="270px" _id="txtCvr"></vaadin-text-field>
-      <vaadin-text-field placeholder="EAN" width="270px" _id="txtEan"></vaadin-text-field>
-      <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
-      <vaadin-text-field placeholder="Attention" width="270px" _id="txtAttention"></vaadin-text-field>
-     </vaadin-vertical-layout>
-     <vaadin-vertical-layout spacing="false" margin="false" :expand="0.4">
-      <vaadin-label caption-as-html width-full>
-        TrustWorks ApS 
+     <vaadin-vertical-layout spacing="false" margin="false" :bottom :expand="0.6">
+      <vaadin-label caption-as-html width-full :expand>
+       <b>Trustworks A/S</b>
        <br> Amagertorv 29a, 3. sal 
        <br> 1160 København K 
        <br> Danmark 
@@ -61,7 +41,23 @@
        <br>
        <br> CVR-nr.: 35648941 
       </vaadin-label>
-      <vaadin-horizontal-layout>
+      <vaadin-label height="20px" plain-text></vaadin-label>
+      <vaadin-label plain-text>
+        Bill to: 
+      </vaadin-label>
+      <vaadin-text-field style-name="bold" placeholder="Client name" width="270px" _id="txtClientname"></vaadin-text-field>
+      <vaadin-text-field placeholder="Street name" width="270px" _id="txtStreetname"></vaadin-text-field>
+      <vaadin-text-field placeholder="Zipcode and city" width="270px" _id="txtZipCity"></vaadin-text-field>
+      <vaadin-text-field placeholder="CVR" width="270px" _id="txtCvr"></vaadin-text-field>
+      <vaadin-text-field placeholder="EAN" width="270px" _id="txtEan"></vaadin-text-field>
+      <vaadin-css-layout width-full height="1px"></vaadin-css-layout>
+      <vaadin-text-field placeholder="Attention" width="270px" _id="txtAttention"></vaadin-text-field>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout width-auto height-full margin="false" :right :expand="0.4">
+      <vaadin-label style-name="h1" height-full plain-text _id="lblInvoiceHeadline" :right :expand>
+        INVOICE 
+      </vaadin-label>
+      <vaadin-horizontal-layout :middle :right>
        <vaadin-label plain-text>
          Faktura nr: 
        </vaadin-label>
@@ -69,26 +65,20 @@
          XX-XXX 
        </vaadin-label>
       </vaadin-horizontal-layout>
-      <vaadin-date-field range-start="2014-02-01" caption="Dato:" show-iso-week-numbers date-format="yyyy/MM/dd" _id="dfInvoiceDate"></vaadin-date-field>
-     </vaadin-vertical-layout>
-    </vaadin-horizontal-layout>
-    <vaadin-css-layout width-full height="10px"></vaadin-css-layout>
-    <vaadin-horizontal-layout style-name="box-project-description" width-full margin>
-     <vaadin-label style-name="bold" plain-text :middle>
-       Beskrivelse: 
-     </vaadin-label>
-     <vaadin-vertical-layout spacing="false" margin="false" :expand>
-      <vaadin-label width-full _id="lblContractReference">
-        Projektnr.: 2016-03 For perioden: juni 2017 
-      </vaadin-label>
-      <vaadin-label width-full plain-text _id="lblProjectReference"></vaadin-label>
-      <vaadin-horizontal-layout width-full>
-       <vaadin-text-field description="description" width-full _id="txtSpecificDescription" :expand></vaadin-text-field>
-       <vaadin-button icon="fonticon://Vaadin-Icons/e7d4" description="Insert last invoice description" style-name="icon-only borderless" plain-text _id="btnCopyDescription"></vaadin-button>
+      <vaadin-date-field range-start="2014-02-01" caption="Date:" show-iso-week-numbers date-format="yyyy/MM/dd" _id="dfInvoiceDate" :middle :right></vaadin-date-field>
+      <vaadin-date-field range-start="2014-02-01" caption="Due Date:" show-iso-week-numbers date-format="yyyy/MM/dd" readonly _id="dfInvoiceDueDate" :middle :right></vaadin-date-field>
+      <vaadin-horizontal-layout style-name="bg-grey" margin>
+       <vaadin-label style-name="bold" plain-text>
+         Balance Due: 
+       </vaadin-label>
+       <vaadin-label style-name="bold" plain-text _id="lblBalanceDue">
+         kr. 235,100.00 
+       </vaadin-label>
       </vaadin-horizontal-layout>
      </vaadin-vertical-layout>
     </vaadin-horizontal-layout>
-    <vaadin-vertical-layout style-name="invoice-details">
+    <vaadin-css-layout width-full height="40px"></vaadin-css-layout>
+    <vaadin-vertical-layout style-name="invoice-details" margin="false">
      <vaadin-css-layout width-full>
       <vaadin-horizontal-layout width-full>
        <vaadin-label style-name="h3 bold" plain-text>
@@ -102,27 +92,27 @@
         </column>
         <column>
          <vaadin-label style-name="bold" width="139px" plain-text>
-           Varenr. 
+           Item 
          </vaadin-label>
         </column>
         <column>
          <vaadin-label style-name="bold" width="171px" plain-text>
-           Beskrivelse 
+           Description 
          </vaadin-label>
         </column>
         <column>
          <vaadin-label style-name="bold" width="90px" plain-text>
-           Pris 
+           Rate 
          </vaadin-label>
         </column>
         <column>
          <vaadin-label style-name="bold" width="100px" plain-text>
-           Antal (timer) 
+           Quantity 
          </vaadin-label>
         </column>
         <column>
          <vaadin-label style-name="bold" width="114px" plain-text :middle :right>
-           Beløb 
+           Amount 
          </vaadin-label>
         </column>
        </row>
@@ -153,31 +143,92 @@
       </vaadin-grid-layout>
      </vaadin-css-layout>
     </vaadin-vertical-layout>
+    <vaadin-css-layout width-full height="40px"></vaadin-css-layout>
     <vaadin-horizontal-layout style-name="box-project-description" width-full>
      <vaadin-css-layout width-full :expand></vaadin-css-layout>
-     <vaadin-vertical-layout spacing="false" width="200px" margin="false">
-      <vaadin-label plain-text>
-        I alt 
-      </vaadin-label>
-      <vaadin-label plain-text>
-        + 25% Moms 
-      </vaadin-label>
-      <vaadin-label style-name="bold" plain-text>
-        Total inkl. moms DKK 
-      </vaadin-label>
-     </vaadin-vertical-layout>
-     <vaadin-vertical-layout spacing="false" size-auto margin="false">
-      <vaadin-label plain-text _id="lblSumNoTax" :right>
-        91.250,00 
-      </vaadin-label>
-      <vaadin-label plain-text _id="lblTax" :right>
-        22.812,50 
-      </vaadin-label>
-      <vaadin-label style-name="bold" plain-text _id="lblSumWithTax" :right>
-        114.062,50 
-      </vaadin-label>
-     </vaadin-vertical-layout>
+     <vaadin-grid-layout spacing>
+      <row>
+       <column>
+        <vaadin-label style-name="align-right" plain-text :middle :right>
+          Subtotal 
+        </vaadin-label>
+       </column>
+       <column>
+        <vaadin-label plain-text _id="lblSumNoTax" :middle>
+          91.250,00 
+        </vaadin-label>
+       </column>
+      </row>
+      <row>
+       <column>
+        <vaadin-horizontal-layout :middle :right>
+         <vaadin-button style-name="small" plain-text _id="btnSetSKIDiscount">
+           SKI 
+         </vaadin-button>
+         <vaadin-label style-name="align-right" plain-text :middle>
+           Discounts 
+         </vaadin-label>
+        </vaadin-horizontal-layout>
+       </column>
+       <column>
+        <vaadin-horizontal-layout spacing="false" :middle>
+         <vaadin-text-field style-name="small align-right" width="60px" value="0" _id="txtDiscount" :middle></vaadin-text-field>
+         <vaadin-combo-box empty-selection-allowed="false" style-name="small" empty-selection-caption="%" width="55px" data-item-type="java.lang.String" :middle>
+          <option item="percentage">%</option>
+          <option item="flat">Kr</option>
+         </vaadin-combo-box>
+        </vaadin-horizontal-layout>
+       </column>
+      </row>
+      <row>
+       <column>
+        <vaadin-label style-name="align-right" plain-text :middle :right>
+          Tax 
+        </vaadin-label>
+       </column>
+       <column>
+        <vaadin-label plain-text _id="lblTax" :middle>
+          22.812,50 
+        </vaadin-label>
+       </column>
+      </row>
+      <row>
+       <column>
+        <vaadin-label style-name="bold align-right" plain-text :middle :right>
+          Total 
+        </vaadin-label>
+       </column>
+       <column>
+        <vaadin-label style-name="bold" plain-text _id="lblSumWithTax" :middle>
+          114.062,50 
+        </vaadin-label>
+       </column>
+      </row>
+     </vaadin-grid-layout>
     </vaadin-horizontal-layout>
+    <vaadin-css-layout width-full height="40px"></vaadin-css-layout>
+    <vaadin-vertical-layout spacing="false" margin="false">
+     <vaadin-label style-name="bold" plain-text>
+       Notes: 
+     </vaadin-label>
+     <vaadin-label width-full _id="lblContractReference">
+       Projektnr.: 2016-03 For perioden: juni 2017 
+     </vaadin-label>
+     <vaadin-label width-full plain-text _id="lblProjectReference"></vaadin-label>
+     <vaadin-horizontal-layout width-full>
+      <vaadin-text-field description="description" width-full _id="txtSpecificDescription" :expand></vaadin-text-field>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e7d4" description="Insert last invoice description" style-name="icon-only borderless" plain-text _id="btnCopyDescription"></vaadin-button>
+     </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
+    <vaadin-css-layout width-full height="40px"></vaadin-css-layout>
+    <vaadin-vertical-layout spacing="false" margin="false">
+     <vaadin-label style-name="bold" plain-text>
+       Terms: 
+     </vaadin-label>
+     <vaadin-label width-full plain-text>
+       Payment via bank transfer to the following account: Danske Bank, reg.nr. 3409, account number 11397603 Payment due in 1 month 
+     </vaadin-label>
+    </vaadin-vertical-layout>
    </vaadin-css-layout>
   </vaadin-vertical-layout>
  </body>
