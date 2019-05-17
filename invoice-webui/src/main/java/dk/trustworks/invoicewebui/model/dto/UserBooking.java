@@ -118,7 +118,7 @@ public class UserBooking {
                 ", amountItemsPerPrebooking=" + Arrays.toString(amountItemsPerPrebooking) +
                 ", bookingPercentage=" + Arrays.toString(bookingPercentage) +
                 ", monthNorm=" + Arrays.toString(monthNorm) +
-                ", subProjects=" + subProjects.stream().map(UserBooking::toString).collect(Collectors.joining(", ")) +
+                ", clients=" + subProjects.stream().map(UserBooking::toString).collect(Collectors.joining(", ")) +
                 '}';
     }
 }

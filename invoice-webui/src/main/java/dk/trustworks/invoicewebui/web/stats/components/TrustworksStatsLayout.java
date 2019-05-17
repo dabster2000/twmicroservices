@@ -7,11 +7,14 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.button.MButton;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -55,6 +58,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     //@Autowired
     //private CumulativePredictiveRevenuePerYearChart cumulativePredictiveRevenuePerYearChart;
+
+    @Autowired
+    private BudgetTable budgetTable;
 
     @Autowired
     private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
@@ -223,6 +229,16 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("11 out of 11 charts created!");
         System.out.println("timeMillis 11 = " + (System.currentTimeMillis() - timeMillis));
 
+        Card budgetTableCard = new Card();
+        budgetTableCard.getLblTitle().setValue("Average Historical Economic Overview per Employee");
+        TreeGrid<BudgetItem> table = budgetTable.createRevenuePerConsultantChart();
+        budgetTableCard.getContent().addComponents(new MButton("content", event -> {
+            table.getTreeData().getRootItems().stream().map(BudgetItem::changeValue);
+            table.getDataProvider().refreshAll();
+        }), table);
+        notification.setDescription("12 out of 12 charts created!");
+        System.out.println("timeMillis 12 = " + (System.currentTimeMillis() - timeMillis));
+
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthCard);
@@ -258,6 +274,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(averageConsultantAllocationCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(budgetTableCard);
         /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
