@@ -98,7 +98,7 @@ public class UserService {
         return userRepository.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
-                Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
+                Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new)).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
     }
 
     public List<User> countCurrentlyWorkingEmployees() {
