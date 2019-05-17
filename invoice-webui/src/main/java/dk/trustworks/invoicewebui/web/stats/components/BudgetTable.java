@@ -70,9 +70,9 @@ public class BudgetTable {
                     clientHoursArray.getBudgetAmount()[countMonths] += NumberUtils.round(budgetAmount, 0);
                 }
 
-                countMonths++;
                 userList.get(user.getUsername()).getBudgetAmount()[countMonths] = NumberUtils.round(budgetAmountSum, 0);
                 userList.get(user.getUsername()).getBudgetHours()[countMonths] = NumberUtils.round(budgetHoursSum, 0);
+                countMonths++;
                 startDate = startDate.plusMonths(1);
             } while (startDate.isBefore(LocalDate.now()));
         }

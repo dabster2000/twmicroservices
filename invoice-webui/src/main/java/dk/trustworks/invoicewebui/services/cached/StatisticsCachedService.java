@@ -99,7 +99,9 @@ public class StatisticsCachedService {
                         if(budget == 0.0) continue;
 
                         AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
-                        double monthBudget = (budget * availability.getWeeks()) - availability.getVacation();
+                        double monthBudget = budget * availability.getWeeks();
+                        //if(monthBudget > availability.getAvailableHours()) monthBudget = availability.getAvailableHours();
+
 
                         BudgetDocument budgetDocument = new BudgetDocument(startDate, contract.getClient(), user, contract, monthBudget, userContract.getRate());
                         budgetDocumentList.add(budgetDocument);
@@ -121,6 +123,32 @@ public class StatisticsCachedService {
                 startDate = startDate.plusMonths(1);
             } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
         }
+
+        // Adjust for availability
+        for (User user : userService.findAll()) {
+            LocalDate startDate = LocalDate.of(2014, 7, 1);
+            do {
+                LocalDate finalStartDate = startDate;
+                List<BudgetDocument> budgetDocuments = budgetDocumentList.stream()
+                        .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(finalStartDate.withDayOfMonth(1)))
+                        .collect(Collectors.toList());
+
+                AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
+
+                double sum = budgetDocuments.stream().mapToDouble(BudgetDocument::getBudgetHours).sum();
+                if(sum > availability.getAvailableHours()) {
+                    for (BudgetDocument budgetDocument : budgetDocuments) {
+                        double factor = budgetDocument.getBudgetHours() / sum;
+                        budgetDocument.setBudgetHours(factor * availability.getAvailableHours());
+                    }
+                }
+
+                startDate = startDate.plusMonths(1);
+            } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
+        }
+
+
+
         return budgetDocumentList;
     }
 

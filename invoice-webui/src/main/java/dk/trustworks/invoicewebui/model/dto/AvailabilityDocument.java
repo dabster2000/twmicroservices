@@ -25,8 +25,6 @@ public class AvailabilityDocument {
     public AvailabilityDocument(User user, LocalDate month, double workWeek, double vacation, double sickdays, ConsultantType consultantType, StatusType statusType) {
         this.consultantType = consultantType;
         this.statusType = statusType;
-        if(user.getUsername().equals("hans.lassen"))
-        System.out.println("user = [" + user + "], month = [" + month + "], workWeek = [" + workWeek + "], vacation = [" + vacation + "], sickdays = [" + sickdays + "]");
         this.user = user;
         this.vacation = vacation;
         this.month = month;
@@ -35,7 +33,5 @@ public class AvailabilityDocument {
         weeks = weekdaysInPeriod / 5.0;
         double result = ((workWeek - 2) * weeks) - vacation;
         availableHours = (result<0.0)?0.0:result;
-        if(user.getUsername().equals("hans.lassen"))
-            System.out.println(toString());
     }
 }
