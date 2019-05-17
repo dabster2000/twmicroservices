@@ -100,8 +100,6 @@ public class StatisticsCachedService {
 
                         AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
                         double monthBudget = budget * availability.getWeeks();
-                        //if(monthBudget > availability.getAvailableHours()) monthBudget = availability.getAvailableHours();
-
 
                         BudgetDocument budgetDocument = new BudgetDocument(startDate, contract.getClient(), user, contract, monthBudget, userContract.getRate());
                         budgetDocumentList.add(budgetDocument);
@@ -109,7 +107,7 @@ public class StatisticsCachedService {
                         LocalDate finalStartDate = startDate;
 
                         ContractConsultant userContract = contract.findByUser(user);
-                        if(userContract == null) continue;
+                        if(userContract == null || userContract.getRate() == 0.0) continue;
 
                         double budget = userContract.getBudgets().stream()
                                 .filter(budgetNew -> budgetNew.getYear() == finalStartDate.getYear() &&
