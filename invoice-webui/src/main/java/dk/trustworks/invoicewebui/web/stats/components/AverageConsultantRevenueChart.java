@@ -78,7 +78,8 @@ public class AverageConsultantRevenueChart {
             do {
 
                 double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
-                if(revenue > 0) map.put(currentDate, revenue - statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum());
+                double expenseSum = statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum();
+                if(revenue > 0) map.put(currentDate, revenue - expenseSum);
 
                 currentDate = currentDate.plusMonths(1);
             } while (currentDate.isBefore(LocalDate.now().withDayOfMonth(1).minusDays(1)));
@@ -94,7 +95,7 @@ public class AverageConsultantRevenueChart {
             String[] categories = userAverageByYearMap.keySet().stream().sorted(LocalDate::compareTo).map(localDate -> DateUtils.stringIt(localDate, "MMM yy")).toArray(String[]::new);
             Number[] values = new Number[userAverageByYearMap.size()];
             int i = 0;
-            for (LocalDate localDate : userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
+            for (LocalDate localDate : userAverageByYearMap.keySet().stream().sorted(LocalDate::compareTo).collect(Collectors.toList())) {
                 values[i++] = userAverageByYearMap.get(localDate);
             }
             drillSeries.setData(categories, values);
