@@ -77,7 +77,7 @@ public class AverageConsultantRevenueChart {
 
             do {
 
-                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate) / statisticsService.getActiveConsultantCountByMonth(currentDate);
+                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
                 if(revenue > 0) map.put(currentDate, revenue - statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum());
 
                 currentDate = currentDate.plusMonths(1);
