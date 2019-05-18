@@ -5,10 +5,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,19 +22,10 @@ import java.util.Map;
 @SpringUI
 public class ExpensesPerMonthChart {
 
-    private final ExpenseRepository expenseRepository;
-
-    private final UserService userService;
-
-    private final InvoiceService invoiceService;
-
     private final StatisticsService statisticsService;
 
     @Autowired
-    public ExpensesPerMonthChart(ExpenseRepository expenseRepository, UserService userService, InvoiceService invoiceService, StatisticsService statisticsService) {
-        this.expenseRepository = expenseRepository;
-        this.userService = userService;
-        this.invoiceService = invoiceService;
+    public ExpensesPerMonthChart(StatisticsService statisticsService) {
         this.statisticsService = statisticsService;
     }
 
@@ -78,7 +66,7 @@ public class ExpensesPerMonthChart {
 
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            int consultantCount = (int) statisticsService.getActiveEmployeeCountByMonth(currentDate);
+            int consultantCount = (int) statisticsService.getActiveConsultantCountByMonth(currentDate);
             double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);
             double consultantSalariesByMonth = NumberUtils.round((statisticsService.getAllExpensesByMonth(currentDate) - sharedExpensesAndStaffSalariesByMonth) / consultantCount, 0);
             double revenue = NumberUtils.round(revenuePerMonth.get(currentDate) / consultantCount, 0);
@@ -91,15 +79,15 @@ public class ExpensesPerMonthChart {
                 continue;
             }
 
-            if(sharedExpensesAndStaffSalariesByMonth > 0.0) expensesSum += (sharedExpensesAndStaffSalariesByMonth);
+            expensesSum += (sharedExpensesAndStaffSalariesByMonth);
             salariesSum += consultantSalariesByMonth;
             revenueSum += revenue;
 
             if(count == average) {
-                expensesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), expensesSum / average));
-                salariesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), salariesSum / average));
-                revenueSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), revenueSum / average));
-                chart.getConfiguration().getxAxis().addCategory(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
+                expensesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("QQQ/yy")), expensesSum / average));
+                salariesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("QQQ/yy")), salariesSum / average));
+                revenueSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("QQQ/yy")), revenueSum / average));
+                chart.getConfiguration().getxAxis().addCategory(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("QQQ/yy")));
                 expensesSum = 0.0;
                 salariesSum = 0.0;
                 revenueSum = 0.0;

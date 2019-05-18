@@ -210,6 +210,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("9 out of 10 charts created!");
         System.out.println("timeMillis 9 = " + (System.currentTimeMillis() - timeMillis));
 
+
         Card expensesPerEmployee = new Card();
         expensesPerEmployee.getLblTitle().setValue("Average Historical Economic Overview per Employee");
         expensesPerEmployee.getContent().addComponent(expensesPerMonthChart.createExpensesPerMonthChart());
