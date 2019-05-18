@@ -8,6 +8,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
@@ -66,17 +67,13 @@ public class AverageConsultantRevenueChart {
         plotOptionsColumn.setColorByPoint(true);
         revenueSeries.setPlotOptions(plotOptionsColumn);
 
-        LocalDate startDate = LocalDate.of(2014, 7, 1);
-
         Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
-        //Map<LocalDate, Double> revenuePerMonth = statisticsService.calcActualRevenuePerMonth(startDate, LocalDate.now().withDayOfMonth(1));
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-            LocalDate currentDate = startDate;
+            LocalDate currentDate = userService.getStatus(user, true, StatusType.ACTIVE).getStatusdate();
             HashMap<LocalDate, Double> map = new HashMap<>();
             averagePerUserPerYear.put(user, map);
 
             do {
-
                 double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
                 double expenseSum = statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum();
                 if(revenue > 0) map.put(currentDate, revenue - expenseSum);
