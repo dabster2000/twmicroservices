@@ -5,15 +5,8 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.Contract;
-import dk.trustworks.invoicewebui.model.ContractConsultant;
-import dk.trustworks.invoicewebui.model.Expense;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
@@ -23,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 /**
  * Created by hans on 20/09/2017.
@@ -32,8 +24,6 @@ import java.util.List;
 @SpringComponent
 @SpringUI
 public class CumulativeRevenuePerMonthChart {
-
-    private final GraphKeyValueRepository graphKeyValueRepository;
 
     private final StatisticsService statisticsService;
 
@@ -48,8 +38,7 @@ public class CumulativeRevenuePerMonthChart {
     private final InvoiceService invoiceService;
 
     @Autowired
-    public CumulativeRevenuePerMonthChart(GraphKeyValueRepository graphKeyValueRepository, StatisticsService statisticsService, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, InvoiceService invoiceService) {
-        this.graphKeyValueRepository = graphKeyValueRepository;
+    public CumulativeRevenuePerMonthChart(StatisticsService statisticsService, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, InvoiceService invoiceService) {
         this.statisticsService = statisticsService;
         this.expenseRepository = expenseRepository;
         this.contractService = contractService;
@@ -113,24 +102,24 @@ public class CumulativeRevenuePerMonthChart {
         double cumulativeExpensePerMonth = 0.0;
         for (int i = 0; i < period; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            double expense = 0.0;
+
+            double expense;
 
             double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+                expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));//expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             } else {
-                //if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
-                    cumulativeRevenuePerMonth += statisticsService.getMonthRevenue(currentDate);//amountPerItemList.get(i).getValue();
-                    expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
-                    cumulativeExpensePerMonth += expense;
-                //}
+                cumulativeRevenuePerMonth += statisticsService.getMonthRevenue(currentDate);//amountPerItemList.get(i).getValue();
+                expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));//expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+                cumulativeExpensePerMonth += expense;
             }
 
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
+            /*
             List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
@@ -144,6 +133,9 @@ public class CumulativeRevenuePerMonthChart {
             for (BudgetNew budget : budgets) {
                 cumulativeBudgetPerMonth += budget.getBudget();
             }
+
+             */
+            cumulativeBudgetPerMonth += statisticsService.getMonthBudget(periodStart.plusMonths(i).withDayOfMonth(1));
 
             budgetSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeBudgetPerMonth)));
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));

@@ -302,11 +302,18 @@ public class StatisticsCachedService {
                 .findAny().orElse(null);
     }
 
-    public double getExpensesByMonth(LocalDate month) {
+    public double getAllExpensesByMonth(LocalDate month) {
         List<ExpenseDocument> expenseData = getExpenseData();
         return expenseData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(ExpenseDocument::getExpenseSum).sum();
+    }
+
+    public double getSharedExpensesAndStaffSalariesByMonth(LocalDate month) {
+        List<ExpenseDocument> expenseData = getExpenseData();
+        return expenseData.stream()
+                .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
+                .mapToDouble(expenseDocument1 -> (expenseDocument1.getSharedExpense()+expenseDocument1.getStaffSalaries())).sum();
     }
 
     public ExpenseDocument getConsultantExpensesByMonth(User user, LocalDate month) {

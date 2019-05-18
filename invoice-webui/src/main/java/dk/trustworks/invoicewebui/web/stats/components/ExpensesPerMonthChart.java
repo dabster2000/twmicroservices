@@ -5,22 +5,17 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.Expense;
-import dk.trustworks.invoicewebui.model.GraphKeyValue;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * Created by hans on 20/09/2017.
@@ -34,16 +29,16 @@ public class ExpensesPerMonthChart {
 
     private final UserService userService;
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-
     private final InvoiceService invoiceService;
 
+    private final StatisticsService statisticsService;
+
     @Autowired
-    public ExpensesPerMonthChart(ExpenseRepository expenseRepository, UserService userService, GraphKeyValueRepository graphKeyValueRepository, InvoiceService invoiceService) {
+    public ExpensesPerMonthChart(ExpenseRepository expenseRepository, UserService userService, InvoiceService invoiceService, StatisticsService statisticsService) {
         this.expenseRepository = expenseRepository;
         this.userService = userService;
-        this.graphKeyValueRepository = graphKeyValueRepository;
         this.invoiceService = invoiceService;
+        this.statisticsService = statisticsService;
     }
 
     public Chart createExpensesPerMonthChart() {
@@ -51,7 +46,7 @@ public class ExpensesPerMonthChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        LocalDate periodStart = LocalDate.of(2014, 03, 01);
+        LocalDate periodStart = LocalDate.of(2014, 07, 01);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1);
 
         chart.setCaption("Expenses, Salaries and Revenue per Employee");
@@ -78,30 +73,27 @@ public class ExpensesPerMonthChart {
 
         int average = 3;
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
+        //List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        //amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
+        Map<LocalDate, Double> revenuePerMonth = statisticsService.calcRevenuePerMonth(periodStart, periodEnd.plusMonths(2));
+
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-
-            int consultantCount = userService.findEmployedUsersByDate(currentDate, ConsultantType.CONSULTANT).size();
-
-            double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
-            int consultantSalaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString()) / consultantCount;
-            double expenseSalaries = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
-            double staffSalaries = (expenseSalaries - consultantSalaries);
-            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
-            double revenue;
-            if(invoicedAmountByMonth > 0.0) {
-                revenue = invoicedAmountByMonth / consultantCount;
-            } else {
-                if(amountPerItemList.size() <= i) continue;
-                revenue = ((amountPerItemList.get(i) != null) ? amountPerItemList.get(i).getValue() : 0.0) / consultantCount;
-            }
+            System.out.println("currentDate = " + currentDate);
+            int consultantCount = (int) statisticsService.getActiveEmployeeCountByMonth(currentDate);
+            System.out.println("consultantCount = " + consultantCount);
+            double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);
+            System.out.println("sharedExpensesAndStaffSalariesByMonth = " + sharedExpensesAndStaffSalariesByMonth);
+            double consultantSalariesByMonth = NumberUtils.round((statisticsService.getAllExpensesByMonth(currentDate) - sharedExpensesAndStaffSalariesByMonth) / consultantCount, 0);
+            System.out.println("consultantSalariesByMonth = " + consultantSalariesByMonth);
+            double revenue = NumberUtils.round(revenuePerMonth.get(currentDate) / consultantCount, 0);
+            System.out.println("revenue = " + revenue);
 
 
-            if(revenue == 0.0) {
+
+            if(revenue == 0.0 || sharedExpensesAndStaffSalariesByMonth == 0.0 || consultantSalariesByMonth == 0.0) {
                 count = 1;
                 revenueSum = 0.0;
                 expensesSum = 0.0;
@@ -109,15 +101,20 @@ public class ExpensesPerMonthChart {
                 continue;
             }
 
-            if(expense > 0.0) expensesSum += (expense + staffSalaries);
-            salariesSum += consultantSalaries;
+            if(sharedExpensesAndStaffSalariesByMonth > 0.0) expensesSum += (sharedExpensesAndStaffSalariesByMonth);
+            salariesSum += consultantSalariesByMonth;
             revenueSum += revenue;
 
+
+            System.out.println("revenueSum = " + revenueSum);
+            System.out.println("salariesSum = " + salariesSum);
+            System.out.println("revenueSum = " + revenueSum);
             if(count == average) {
-                expensesSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), expensesSum / average));
-                salariesSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), salariesSum / average));
-                revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), revenueSum / average));
-                chart.getConfiguration().getxAxis().addCategory(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")));
+                System.out.println(count);
+                expensesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), expensesSum / average));
+                salariesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), salariesSum / average));
+                revenueSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), revenueSum / average));
+                chart.getConfiguration().getxAxis().addCategory(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
                 expensesSum = 0.0;
                 salariesSum = 0.0;
                 revenueSum = 0.0;

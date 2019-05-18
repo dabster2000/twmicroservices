@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 
+import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
+
 /**
  * Created by hans on 20/09/2017.
  */
@@ -53,7 +55,7 @@ public class RevenuePerMonthChart {
         chart.getConfiguration().addSeries(statisticsService.calcBudgetPerMonth(periodStart, periodEnd));
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, periodEnd));
         chart.getConfiguration().addSeries(statisticsService.calcBillableHoursRevenuePerMonth(periodStart, periodEnd));
-        if(showEarnings) chart.getConfiguration().addSeries(statisticsService.calcRevenuePerMonth(periodStart, periodEnd));
+        if(showEarnings) chart.getConfiguration().addSeries(createDataSeries(statisticsService.calcRevenuePerMonth(periodStart, periodEnd)));
         if(showEarnings) chart.getConfiguration().addSeries(statisticsService.calcEarningsPerMonth(periodStart, periodEnd));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);

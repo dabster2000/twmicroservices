@@ -6,12 +6,17 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
+import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
+import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 20/09/2017.
@@ -23,9 +28,15 @@ public class TopGrossingConsultantsChart {
 
     private final GraphKeyValueRepository graphKeyValueRepository;
 
+    private final StatisticsService statisticsService;
+
+    private final UserService userService;
+
     @Autowired
-    public TopGrossingConsultantsChart(GraphKeyValueRepository graphKeyValueRepository) {
+    public TopGrossingConsultantsChart(GraphKeyValueRepository graphKeyValueRepository, StatisticsService statisticsService, UserService userService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
+        this.statisticsService = statisticsService;
+        this.userService = userService;
     }
 
     public Chart createTopGrossingConsultantsChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -41,7 +52,20 @@ public class TopGrossingConsultantsChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        List<GraphKeyValue> amountPerItemList = new ArrayList<>();//graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+
+        for (User user : userService.findAll()) {
+            LocalDate currentDate = periodStart;
+            GraphKeyValue gkv = new GraphKeyValue(user.getUuid(), user.getInitials(), 0);
+            do {
+                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
+                gkv.addValue((int) Math.round(revenue));
+                currentDate = currentDate.plusMonths(1);
+            } while (currentDate.isBefore(periodEnd.plusMonths(1)));
+            if(gkv.getValue()>0) amountPerItemList.add(gkv);
+        }
+
+
         double sumRevenue = 0.0;
         for (GraphKeyValue amountPerItem : amountPerItemList) {
             sumRevenue += amountPerItem.getValue();
@@ -57,14 +81,10 @@ public class TopGrossingConsultantsChart {
         avgRevenueList.setPlotOptions(options2);
 
         int i = 0;
-        for (GraphKeyValue amountPerItem : amountPerItemList) {
+        for (GraphKeyValue amountPerItem : amountPerItemList.stream().sorted(Comparator.comparing(GraphKeyValue::getValue)).collect(Collectors.toList())) {
             revenueList.add(new DataSeriesItem(amountPerItem.getDescription(), amountPerItem.getValue()));
             avgRevenueList.add(new DataSeriesItem("Average revenue", avgRevenue));
-            StringBuilder shortname = new StringBuilder();
-            for (String s : amountPerItem.getDescription().split(" ")) {
-                shortname.append(s.charAt(0));
-            }
-            categories[i++] = shortname.toString();
+            categories[i++] = amountPerItem.getDescription();
         }
         chart.getConfiguration().getxAxis().setCategories(categories);
         chart.getConfiguration().addSeries(revenueList);

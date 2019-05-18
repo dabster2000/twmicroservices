@@ -101,19 +101,22 @@ public class StatisticsService extends StatisticsCachedService {
         return result;
     }
 
-    public DataSeries calcRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        DataSeries revenueSeries = new DataSeries("Revenue");
+    public Map<LocalDate, Double> calcRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
+        //DataSeries revenueSeries = new DataSeries("Revenue");
+        Map<LocalDate, Double> result = new HashMap<>();
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
-                revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth));
+                result.put(currentDate, invoicedAmountByMonth);
+                //revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth));
             } else {
-                revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), getMonthRevenue(currentDate)));
+                //revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), getMonthRevenue(currentDate)));
+                result.put(currentDate, getMonthRevenue(currentDate));
             }
         }
-        return revenueSeries;
+        return result;
     }
 
     public DataSeries calcBillableHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {

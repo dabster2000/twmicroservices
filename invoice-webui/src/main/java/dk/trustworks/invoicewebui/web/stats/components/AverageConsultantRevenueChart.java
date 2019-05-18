@@ -7,18 +7,17 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 /**
@@ -69,6 +68,21 @@ public class AverageConsultantRevenueChart {
         LocalDate startDate = LocalDate.of(2014, 7, 1);
 
         Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
+        for (User user : userService.findCurrentlyEmployedUsers()) {
+            LocalDate currentDate = startDate;
+            HashMap<LocalDate, Double> map = new HashMap<>();
+            averagePerUserPerYear.put(user, map);
+
+            do {
+                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
+                if(revenue > 0) map.put(currentDate, revenue - statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum());
+
+                currentDate = currentDate.plusMonths(1);
+            } while (currentDate.isBefore(LocalDate.now()));
+        }
+
+        /*
+        Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
         do {
             for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
                 LocalDate periodEnd = startDate.plusYears(1).minusDays(1);
@@ -84,13 +98,15 @@ public class AverageConsultantRevenueChart {
             startDate = startDate.plusYears(1);
         } while (startDate.isBefore(LocalDate.now()));
 
+         */
+
         for (User user : averagePerUserPerYear.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
             Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerYear.get(user);
-            DataSeriesItem item = new DataSeriesItem(user.getUsername(), userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).average().getAsDouble());
+            DataSeriesItem item = new DataSeriesItem(user.getUsername(), userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");
             drillSeries.setId(user.getUsername());
 
-            String[] categories = userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).map(localDate -> Integer.toString(localDate.getYear())).toArray(String[]::new);
+            String[] categories = userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).map(localDate -> DateUtils.stringIt(localDate, "MMM yy")).toArray(String[]::new);
             Number[] values = new Number[userAverageByYearMap.size()];
             int i = 0;
             for (LocalDate localDate : userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
