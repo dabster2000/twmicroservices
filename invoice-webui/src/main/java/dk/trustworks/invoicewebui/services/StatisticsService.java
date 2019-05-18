@@ -61,30 +61,6 @@ public class StatisticsService extends StatisticsCachedService {
         this.userService = userService;
     }
 
-    public Map<String, double[]> getBudgetsAndRevenue(User user) {
-        LocalDate fromDate = LocalDate.of(2014, 7, 1);
-        LocalDate toDate = LocalDate.now().withDayOfMonth(1);
-
-        int months = (int) ChronoUnit.MONTHS.between(fromDate, toDate);
-
-        double[] revenue = new double[months];
-        double[] budget = new double[months];
-        double[] expenses = new double[months];
-
-        for (int m = 0; m < months; m++) {
-            revenue[m] = getConsultantRevenueByMonth(user, fromDate.plusMonths(m));
-            budget[m] = getConsultantBudgetByMonth(user, fromDate.plusMonths(m));
-            expenses[m] = getConsultantExpensesByMonth(user, fromDate.plusMonths(m)).getExpenseSum();
-        }
-
-        HashMap<String, double[]> result = new HashMap<>();
-        result.put("revenue", revenue);
-        result.put("budget", budget);
-        result.put("expenses", expenses);
-
-        return result;
-    }
-
     public double getMonthRevenue(LocalDate month) {
         double result = 0.0;
         for (User user : userService.findAll()) {
@@ -101,8 +77,13 @@ public class StatisticsService extends StatisticsCachedService {
         return result;
     }
 
-    public Map<LocalDate, Double> calcRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        //DataSeries revenueSeries = new DataSeries("Revenue");
+    /**
+     * Calculates actual invoiced revenue per month. Uses registered hours if no invoices exists.
+     * @param periodStart
+     * @param periodEnd
+     * @return
+     */
+    public Map<LocalDate, Double> calcActualRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
         Map<LocalDate, Double> result = new HashMap<>();
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
@@ -110,16 +91,20 @@ public class StatisticsService extends StatisticsCachedService {
             double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 result.put(currentDate, invoicedAmountByMonth);
-                //revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth));
             } else {
-                //revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), getMonthRevenue(currentDate)));
                 result.put(currentDate, getMonthRevenue(currentDate));
             }
         }
         return result;
     }
 
-    public DataSeries calcBillableHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
+    /**
+     * Calculates revenue from registered hours, not actual invoices.
+     * @param periodStart
+     * @param periodEnd
+     * @return
+     */
+    public DataSeries calcRegisteredHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries revenueSeries = new DataSeries("Billable Hours Revenue");
 
         PlotOptionsArea plotOptionsArea = new PlotOptionsArea();

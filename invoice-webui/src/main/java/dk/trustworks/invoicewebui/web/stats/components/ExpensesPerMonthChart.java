@@ -73,25 +73,15 @@ public class ExpensesPerMonthChart {
 
         int average = 3;
 
-        //List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        //amountPerItemList = amountPerItemList.stream().sorted(Comparator.comparing(o -> LocalDate.parse(o.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")))).collect(Collectors.toList());
-
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
-        Map<LocalDate, Double> revenuePerMonth = statisticsService.calcRevenuePerMonth(periodStart, periodEnd.plusMonths(2));
+        Map<LocalDate, Double> revenuePerMonth = statisticsService.calcActualRevenuePerMonth(periodStart, periodEnd.plusMonths(2));
 
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            System.out.println("currentDate = " + currentDate);
             int consultantCount = (int) statisticsService.getActiveEmployeeCountByMonth(currentDate);
-            System.out.println("consultantCount = " + consultantCount);
             double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);
-            System.out.println("sharedExpensesAndStaffSalariesByMonth = " + sharedExpensesAndStaffSalariesByMonth);
             double consultantSalariesByMonth = NumberUtils.round((statisticsService.getAllExpensesByMonth(currentDate) - sharedExpensesAndStaffSalariesByMonth) / consultantCount, 0);
-            System.out.println("consultantSalariesByMonth = " + consultantSalariesByMonth);
             double revenue = NumberUtils.round(revenuePerMonth.get(currentDate) / consultantCount, 0);
-            System.out.println("revenue = " + revenue);
-
-
 
             if(revenue == 0.0 || sharedExpensesAndStaffSalariesByMonth == 0.0 || consultantSalariesByMonth == 0.0) {
                 count = 1;
@@ -105,12 +95,7 @@ public class ExpensesPerMonthChart {
             salariesSum += consultantSalariesByMonth;
             revenueSum += revenue;
 
-
-            System.out.println("revenueSum = " + revenueSum);
-            System.out.println("salariesSum = " + salariesSum);
-            System.out.println("revenueSum = " + revenueSum);
             if(count == average) {
-                System.out.println(count);
                 expensesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), expensesSum / average));
                 salariesSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), salariesSum / average));
                 revenueSeries.add(new DataSeriesItem(currentDate.minusMonths(2).format(DateTimeFormatter.ofPattern("MMM-yyyy")), revenueSum / average));

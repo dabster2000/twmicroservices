@@ -119,22 +119,7 @@ public class CumulativeRevenuePerMonthChart {
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
-            /*
-            List<Contract> contracts = contractService.findActiveContractsByDate(currentDate, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
-            for (Contract contract : contracts) {
-                if(contract.getContractType().equals(ContractType.PERIOD)) {
-                    for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                        double weeks = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0;
-                        cumulativeBudgetPerMonth += (contractConsultant.getHours() * weeks) * contractConsultant.getRate();
-                    }
-                }
-            }
-            List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
-            for (BudgetNew budget : budgets) {
-                cumulativeBudgetPerMonth += budget.getBudget();
-            }
 
-             */
             cumulativeBudgetPerMonth += statisticsService.getMonthBudget(periodStart.plusMonths(i).withDayOfMonth(1));
 
             budgetSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeBudgetPerMonth)));

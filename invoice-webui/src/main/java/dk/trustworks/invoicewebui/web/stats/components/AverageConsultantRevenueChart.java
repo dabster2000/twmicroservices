@@ -7,6 +7,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
@@ -68,37 +69,20 @@ public class AverageConsultantRevenueChart {
         LocalDate startDate = LocalDate.of(2014, 7, 1);
 
         Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
-        for (User user : userService.findCurrentlyEmployedUsers()) {
+        Map<LocalDate, Double> revenuePerMonth = statisticsService.calcActualRevenuePerMonth(startDate, LocalDate.now().withDayOfMonth(1));
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             LocalDate currentDate = startDate;
             HashMap<LocalDate, Double> map = new HashMap<>();
             averagePerUserPerYear.put(user, map);
 
             do {
-                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
+                double revenue = revenuePerMonth.get(currentDate) / statisticsService.getActiveConsultantCountByMonth(currentDate);
                 if(revenue > 0) map.put(currentDate, revenue - statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum());
 
                 currentDate = currentDate.plusMonths(1);
-            } while (currentDate.isBefore(LocalDate.now()));
+            } while (currentDate.isBefore(LocalDate.now().withDayOfMonth(1).minusDays(1)));
         }
 
-        /*
-        Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
-        do {
-            for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-                LocalDate periodEnd = startDate.plusYears(1).minusDays(1);
-                Map<LocalDate, Double> resultMap = statisticsService.calculateConsultantRevenue(user, startDate, periodEnd, 3);
-
-                OptionalDouble averagePerYear = resultMap.values().stream().filter(aDouble -> aDouble != 0.0).mapToDouble(value -> value).average();
-                if(averagePerYear.isPresent()) {
-                    Map<LocalDate, Double> averagePerYearMap = averagePerUserPerYear.getOrDefault(user, new HashMap<>());
-                    averagePerUserPerYear.putIfAbsent(user, averagePerYearMap);
-                    averagePerYearMap.put(startDate, averagePerYearMap.getOrDefault(startDate, 0.0) + averagePerYear.getAsDouble());
-                }
-            }
-            startDate = startDate.plusYears(1);
-        } while (startDate.isBefore(LocalDate.now()));
-
-         */
 
         for (User user : averagePerUserPerYear.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
             Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerYear.get(user);
