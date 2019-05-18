@@ -84,7 +84,7 @@ public class AverageConsultantRevenueByYearChart {
         } while (periodStart.isBefore(LocalDate.now()));
 
 
-        for (LocalDate date : averagePerYearMap.keySet().stream().sorted().collect(Collectors.toList())) {
+        for (LocalDate date : averagePerYearMap.keySet().stream().sorted(LocalDate::compareTo).collect(Collectors.toList())) {
             revenueSeries.add(new DataSeriesItem(date.format(DateTimeFormatter.ofPattern("yyyy")), averagePerYearMap.get(date)));
             chart.getConfiguration().getxAxis().addCategory(date.format(DateTimeFormatter.ofPattern("yyyy")));
         }

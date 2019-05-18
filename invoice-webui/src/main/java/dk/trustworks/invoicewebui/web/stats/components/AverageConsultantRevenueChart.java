@@ -69,14 +69,15 @@ public class AverageConsultantRevenueChart {
         LocalDate startDate = LocalDate.of(2014, 7, 1);
 
         Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
-        Map<LocalDate, Double> revenuePerMonth = statisticsService.calcActualRevenuePerMonth(startDate, LocalDate.now().withDayOfMonth(1));
+        //Map<LocalDate, Double> revenuePerMonth = statisticsService.calcActualRevenuePerMonth(startDate, LocalDate.now().withDayOfMonth(1));
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             LocalDate currentDate = startDate;
             HashMap<LocalDate, Double> map = new HashMap<>();
             averagePerUserPerYear.put(user, map);
 
             do {
-                double revenue = revenuePerMonth.get(currentDate) / statisticsService.getActiveConsultantCountByMonth(currentDate);
+
+                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate) / statisticsService.getActiveConsultantCountByMonth(currentDate);
                 if(revenue > 0) map.put(currentDate, revenue - statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum());
 
                 currentDate = currentDate.plusMonths(1);
@@ -90,7 +91,7 @@ public class AverageConsultantRevenueChart {
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");
             drillSeries.setId(user.getUsername());
 
-            String[] categories = userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).map(localDate -> DateUtils.stringIt(localDate, "MMM yy")).toArray(String[]::new);
+            String[] categories = userAverageByYearMap.keySet().stream().sorted(LocalDate::compareTo).map(localDate -> DateUtils.stringIt(localDate, "MMM yy")).toArray(String[]::new);
             Number[] values = new Number[userAverageByYearMap.size()];
             int i = 0;
             for (LocalDate localDate : userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {

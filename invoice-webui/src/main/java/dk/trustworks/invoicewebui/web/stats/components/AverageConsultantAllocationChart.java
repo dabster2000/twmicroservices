@@ -107,10 +107,10 @@ public class AverageConsultantAllocationChart {
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");
             drillSeries.setId(user.getUsername());
 
-            String[] categories = userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).map(localDate -> stringIt(localDate, "MMM yyyy")).toArray(String[]::new);
+            String[] categories = userAverageByYearMap.keySet().stream().sorted(LocalDate::compareTo).map(localDate -> stringIt(localDate, "MMM yyyy")).toArray(String[]::new);
             Number[] values = new Number[userAverageByYearMap.size()];
             int i = 0;
-            for (LocalDate localDate : userAverageByYearMap.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
+            for (LocalDate localDate : userAverageByYearMap.keySet().stream().sorted(LocalDate::compareTo).collect(Collectors.toList())) {
                 values[i++] = userAverageByYearMap.get(localDate);
             }
             drillSeries.setData(categories, values);
