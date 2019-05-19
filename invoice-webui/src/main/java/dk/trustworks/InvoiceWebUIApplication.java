@@ -2,8 +2,6 @@ package dk.trustworks;
 
 import com.vaadin.spring.annotation.EnableVaadin;
 import dk.trustworks.invoicewebui.events.WorkNotificationConsumer;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.slf4j.Logger;
@@ -24,8 +22,6 @@ import reactor.Environment;
 import reactor.bus.EventBus;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
@@ -87,20 +83,6 @@ public class InvoiceWebUIApplication {
     @PostConstruct
     private void init() {
         //statisticsService.run();
-
-        User user = userService.findByUsername("jeanette.hansen");
-        int s1 = userService.getUserSalary(user, LocalDate.of(2015, 1, 1));
-        System.out.println("s1 = " + s1);
-        int s2 = userService.getUserSalary(user, LocalDate.of(2016, 1, 1));
-        System.out.println("s2 = " + s2);
-        int s3 = userService.getUserSalary(user, LocalDate.of(2017, 1, 1));
-        System.out.println("s3 = " + s3);
-        int s4 = userService.getUserSalary(user, LocalDate.of(2018, 1, 1));
-        System.out.println("s4 = " + s4);
-        int s5 = userService.getUserSalary(user, LocalDate.of(2019, 1, 1));
-        System.out.println("s5 = " + s5);
-        List<ExpenseDocument> expensesByMonth = statisticsService.getExpensesByMonth(LocalDate.of(2016, 7, 1));
-        System.out.println("expensesByMonth = " + expensesByMonth);
         //System.exit(0);
 
 
