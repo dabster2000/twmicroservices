@@ -68,7 +68,7 @@ public class ExpensesPerMonthChart {
             LocalDate currentDate = periodStart.plusMonths(i);
             int consultantCount = (int) statisticsService.getActiveConsultantCountByMonth(currentDate);
             double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);
-            double consultantSalariesByMonth = NumberUtils.round((statisticsService.getAllExpensesByMonth(currentDate) - sharedExpensesAndStaffSalariesByMonth) / consultantCount, 0);
+            double consultantSalariesByMonth = NumberUtils.round(((statisticsService.getAllExpensesByMonth(currentDate) / consultantCount) - sharedExpensesAndStaffSalariesByMonth) , 0);
             double revenue = NumberUtils.round(revenuePerMonth.get(currentDate) / consultantCount, 0);
 
             if(revenue == 0.0 || sharedExpensesAndStaffSalariesByMonth == 0.0 || consultantSalariesByMonth == 0.0) {

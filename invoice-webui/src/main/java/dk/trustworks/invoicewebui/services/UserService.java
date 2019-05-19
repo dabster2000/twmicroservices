@@ -119,8 +119,17 @@ public class UserService {
     }
 
     public int getMonthSalaries(LocalDate date, String... consultantTypes) {
+        System.out.println("date = [" + date + "], consultantTypes = [" + consultantTypes + "]");
         String[] statusList = {ACTIVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes).stream().mapToInt(value -> value.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(LocalDate.now(), 0, null)).getSalary()).sum();
+        for (User users : userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)) {
+            Salary salary1 = users.getSalaries().stream().filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, null));
+            System.out.println(users.getUsername()+": "+salary1.getSalary());
+        }
+
+        return userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
+                .stream().mapToInt(value ->
+                        value.getSalaries().stream().filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, null)).getSalary()
+                ).sum();
     }
 
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {

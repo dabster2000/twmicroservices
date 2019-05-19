@@ -6,12 +6,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
 import dk.trustworks.invoicewebui.model.Expense;
 import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -78,7 +78,8 @@ public class ExpenseTable {
             //double sharedExpenses = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate), 0);
             expenseItemList.get("3_SHARED_EXP").getExpenses()[i] = sharedExpenses;
             expenseItemList.get("3_SHARED_SAL").getExpenses()[i] = staffSalaries;
-            double salaries = NumberUtils.round((statisticsService.getAllExpensesByMonth(currentDate) - sharedExpenses - staffSalaries), 0);
+            //long salaries = Math.round((statisticsService.getAllExpensesByMonth(currentDate) - sharedExpenses - staffSalaries));
+            int salaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
             expenseItemList.get("3_SALARIES").getExpenses()[i] = salaries;
             double sum = sharedExpenses + staffSalaries + salaries;
             expenseItemList.get("4_SUM").getExpenses()[i] = sum;
@@ -93,7 +94,7 @@ public class ExpenseTable {
         int c = 0;
         for (int i = 24; i < months; i++) {
             int finalI = i;
-            treeGrid.addColumn(expenseItem -> NumberUtils.round(expenseItem.getExpenses()[finalI], 0)).setCaption(DateUtils.stringIt(LocalDate.of(2014,7,1).plusMonths(i), "MMM/yy")).setId(c+"");
+            treeGrid.addColumn(expenseItem -> Math.round(expenseItem.getExpenses()[finalI])).setCaption(DateUtils.stringIt(LocalDate.of(2014,7,1).plusMonths(i), "MMM/yy")).setId("date_"+c);
             c++;
         }
 
