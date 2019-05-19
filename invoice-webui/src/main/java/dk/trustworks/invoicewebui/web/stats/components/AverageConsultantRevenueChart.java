@@ -85,7 +85,7 @@ public class AverageConsultantRevenueChart {
 
         for (User user : averagePerUserPerYear.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
             Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerYear.get(user);
-            DataSeriesItem item = new DataSeriesItem(user.getUsername(), userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value > 0).average().orElse(0.0));
+            DataSeriesItem item = new DataSeriesItem(user.getUsername(), userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value != 0.0).average().orElse(0.0));
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");
             drillSeries.setId(user.getUsername());
 

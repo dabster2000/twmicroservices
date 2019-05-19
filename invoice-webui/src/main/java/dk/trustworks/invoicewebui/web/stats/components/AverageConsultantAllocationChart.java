@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
@@ -103,8 +102,8 @@ public class AverageConsultantAllocationChart {
 
         for (User user : averagePerUserPerMonth.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
             Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerMonth.get(user);
-            OptionalDouble result = userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value > 0.0).filter(value -> value > 0.0).average();
-            if(!result.isPresent()) continue;
+            //OptionalDouble result = userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value > -1.0).average();
+            //if(!result.isPresent()) continue;
             DataSeriesItem item = new DataSeriesItem(user.getUsername(), averagePerUser.get(user));
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");
             drillSeries.setId(user.getUsername());
