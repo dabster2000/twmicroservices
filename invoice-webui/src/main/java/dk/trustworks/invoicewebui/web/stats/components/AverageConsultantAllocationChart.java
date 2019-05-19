@@ -8,6 +8,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,15 +72,16 @@ public class AverageConsultantAllocationChart {
         Map<User, Double> averagePerUser = new HashMap<>();
 
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-            startDate = userService.findEmployedDate(user);
+            startDate = LocalDate.of(2014,7,1);//userService.findEmployedDate(user);
             double allocation = 0.0;
             int count = 0;
             do {
                 double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
                 AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
                 if(availability==null) {
-                    startDate = startDate.plusMonths(1);
-                    continue;
+                    //startDate = startDate.plusMonths(1);
+                    //continue;
+                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
                 double monthAllocation = 0.0;
                 if(billableWorkHours>0.0 && availability.getAvailableHours()>0.0) {
@@ -101,7 +103,7 @@ public class AverageConsultantAllocationChart {
 
         for (User user : averagePerUserPerMonth.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
             Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerMonth.get(user);
-            OptionalDouble result = userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value > 0.0).average();
+            OptionalDouble result = userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value > 0.0).filter(value -> value > 0.0).average();
             if(!result.isPresent()) continue;
             DataSeriesItem item = new DataSeriesItem(user.getUsername(), averagePerUser.get(user));
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");

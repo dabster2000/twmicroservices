@@ -8,7 +8,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
@@ -69,14 +68,15 @@ public class AverageConsultantRevenueChart {
 
         Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-            LocalDate currentDate = userService.getStatus(user, true, StatusType.ACTIVE).getStatusdate();
+            LocalDate currentDate = LocalDate.of(2014,7,1);//userService.getStatus(user, true, StatusType.ACTIVE).getStatusdate();
             HashMap<LocalDate, Double> map = new HashMap<>();
             averagePerUserPerYear.put(user, map);
 
             do {
                 double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
                 double expenseSum = statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum();
-                if(revenue > 0) map.put(currentDate, revenue - expenseSum);
+                //if(revenue > 0)
+                    map.put(currentDate, revenue - expenseSum);
 
                 currentDate = currentDate.plusMonths(1);
             } while (currentDate.isBefore(LocalDate.now().withDayOfMonth(1).minusDays(1)));
@@ -85,7 +85,7 @@ public class AverageConsultantRevenueChart {
 
         for (User user : averagePerUserPerYear.keySet().stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList())) {
             Map<LocalDate, Double> userAverageByYearMap = averagePerUserPerYear.get(user);
-            DataSeriesItem item = new DataSeriesItem(user.getUsername(), userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+            DataSeriesItem item = new DataSeriesItem(user.getUsername(), userAverageByYearMap.values().stream().mapToDouble(Double::doubleValue).filter(value -> value > 0).average().orElse(0.0));
             DataSeries drillSeries = new DataSeries(user.getUsername()+" by year");
             drillSeries.setId(user.getUsername());
 
