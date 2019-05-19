@@ -254,6 +254,19 @@
             <artifactId>gantt-addon</artifactId>
             <version>1.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.haijian</groupId>
+            <artifactId>exporter</artifactId>
+            <version>2.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
 
         <!-- Data types -->
         <dependency>
@@ -386,6 +399,7 @@
         </dependency>
 
         <!-- Logging -->
+        <!--
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -396,6 +410,7 @@
             <artifactId>logback-core</artifactId>
             <version>1.2.3</version>
         </dependency>
+-->
 
         <!-- Utils -->
         <dependency>
@@ -636,6 +651,8 @@
             <artifactId>assertj-core</artifactId>
         </dependency>
     </dependencies>
+
+
 
     <dependencyManagement>
         <dependencies>

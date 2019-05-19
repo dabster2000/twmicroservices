@@ -2,18 +2,19 @@ package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TreeGrid;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
+import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
 
 import java.time.LocalDate;
@@ -61,6 +62,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     @Autowired
     private BudgetTable budgetTable;
+
+    @Autowired
+    private ExpenseTable expenseTable;
 
     @Autowired
     private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
@@ -240,6 +244,24 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("12 out of 12 charts created!");
         System.out.println("timeMillis 12 = " + (System.currentTimeMillis() - timeMillis));
 
+        Card expenseTableCard = new Card();
+        expenseTableCard.getLblTitle().setValue("Expenses");
+        Grid<ExpenseItem> table2 = expenseTable.createRevenuePerConsultantChart();
+        Button b = new MButton("content");
+        expenseTableCard.getContent().addComponents(b, table2);
+        StreamResource excelStreamResource = new StreamResource((StreamResource.StreamSource) () -> Exporter.exportAsExcel(table2), "my-excel.xlsx");
+        FileDownloader excelFileDownloader = new FileDownloader(excelStreamResource);
+        excelFileDownloader.extend(b);
+        notification.setDescription("13 out of 13 charts created!");
+        System.out.println("timeMillis 13 = " + (System.currentTimeMillis() - timeMillis));
+
+        /*
+        Button downloadAsExcel = new Button("Download As Excel");
+StreamResource excelStreamResource = new StreamResource((StreamResource.StreamSource) () -> Exporter.exportAsExcel(grid), "my-excel.xlsx");
+FileDownloader excelFileDownloader = new FileDownloader(excelStreamResource);
+excelFileDownloader.extend(downloadAsExcel);
+         */
+
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthCard);
@@ -278,6 +300,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(budgetTableCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(expenseTableCard);
         /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)

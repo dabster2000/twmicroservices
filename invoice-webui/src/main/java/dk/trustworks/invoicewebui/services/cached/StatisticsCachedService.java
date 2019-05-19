@@ -325,4 +325,10 @@ public class StatisticsCachedService {
                 .findAny().orElse(new ExpenseDocument(month, user, 0.0, 0.0, 0.0));
     }
 
+    public List<ExpenseDocument> getExpensesByMonth(LocalDate month) {
+        List<ExpenseDocument> expenceData = getExpenseData();
+        return expenceData.stream()
+                .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1))).collect(Collectors.toList());
+    }
+
 }
