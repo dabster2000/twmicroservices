@@ -54,6 +54,7 @@ public class AchievementCardController {
                 Image image = new Image(null, spriteSheet.getSprite(achievementType.getNumber()));
                 image.setWidth(100, PIXELS);
                 image.setHeight(100, PIXELS);
+                image.setDescription(achievementType.getDescription());
                 vl.addComponent(image);
                 vl.addComponent(new MLabel(achievementType.toString())
                         .withWidth(85, PIXELS)

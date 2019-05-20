@@ -4,6 +4,7 @@ package dk.trustworks.invoicewebui.jobs;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.*;
 import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.slf4j.Logger;
@@ -36,10 +37,11 @@ public class AchievementJob {
     private final LogEventRepository logEventRepository;
     private final AmbitionRepository ambitionRepository;
     private final UserAmbitionDTORepository userAmbitionDTORepository;
+    private final StatisticsService statisticsService;
 
 
     @Autowired
-    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository) {
+    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, StatisticsService statisticsService) {
         this.achievementRepository = achievementRepository;
         this.userService = userService;
         this.workService = workService;
@@ -49,6 +51,7 @@ public class AchievementJob {
         this.logEventRepository = logEventRepository;
         this.ambitionRepository = ambitionRepository;
         this.userAmbitionDTORepository = userAmbitionDTORepository;
+        this.statisticsService = statisticsService;
     }
 
     @PostConstruct
@@ -96,6 +99,10 @@ public class AchievementJob {
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY3, isWorthyOfAnniversary(user, 3));
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY5, isWorthyOfAnniversary(user, 5));
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY10, isWorthyOfAnniversary(user, 10));
+
+            testAchievement(user, achievementList, AchievementType.BUDGETBEATER5, isWorthyOfBudgetBeatersAchievement(user, 5));
+            testAchievement(user, achievementList, AchievementType.BUDGETBEATER15, isWorthyOfBudgetBeatersAchievement(user, 15));
+            testAchievement(user, achievementList, AchievementType.BUDGETBEATER30, isWorthyOfBudgetBeatersAchievement(user, 30));
         }
     }
 
@@ -147,6 +154,20 @@ public class AchievementJob {
             if(month == 0) return false;
         }
         return true;
+    }
+
+    private boolean isWorthyOfBudgetBeatersAchievement(User user, int minMonths) {
+        LocalDate employedDate = userService.findEmployedDate(user);
+
+        int count = 0;
+        do {
+            double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, employedDate);
+            double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, employedDate);
+            if(revenueHoursByMonth>budgetHoursByMonth) count++;
+            employedDate = employedDate.plusMonths(1);
+        } while (employedDate.isBefore(LocalDate.now().withDayOfMonth(1)));
+
+        return count >= minMonths;
     }
 
     private boolean isWorthyOfAnniversary(User user, int years) {
