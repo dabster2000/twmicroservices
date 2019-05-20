@@ -157,7 +157,7 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfBudgetBeatersAchievement(User user, int minMonths) {
-        LocalDate employedDate = userService.findEmployedDate(user);
+        LocalDate employedDate = userService.findEmployedDate(user).orElse(LocalDate.now());
 
         int count = 0;
         do {
