@@ -55,7 +55,7 @@ public class FaqBoard extends VerticalLayout {
         ResponsiveColumn column;
         VerticalLayout vl = null;
         boolean firstGroup = true;
-        for (Faq faq : faqRepository.findByOrderByFaqgroup()) {
+        for (Faq faq : faqRepository.findByOrderByFaqgroupAscTitleAsc()) {
             if(!faq.getFaqgroup().equals(group)) {
                 if(!firstGroup) {
                     if(user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EDITOR)))
@@ -70,7 +70,7 @@ public class FaqBoard extends VerticalLayout {
 
                 //scrollLayout.addComponent(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth());
             }
-            vl.addComponent(createLabelButton(faq, faqRepository.findByOrderByFaqgroup().stream().map(Faq::getFaqgroup).distinct().collect(Collectors.toList())));
+            vl.addComponent(createLabelButton(faq, faqRepository.findByOrderByFaqgroupAscTitleAsc().stream().map(Faq::getFaqgroup).distinct().collect(Collectors.toList())));
         }
         if(user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EDITOR)))
             createAddQuestionButton(vl, group);

@@ -14,7 +14,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "faq", path="faq")
 public interface FaqRepository extends CrudRepository<Faq, String> {
 
-    List<Faq> findByOrderByFaqgroup();
+    List<Faq> findByOrderByFaqgroupAscTitleAsc();
     List<Faq> findByOrderByTitleAsc();
 
     @Override @RestResource(exported = false) void delete(String id);
