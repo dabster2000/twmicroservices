@@ -43,11 +43,12 @@ public class AllRevenuePerMonthChart {
         chart.setTimeline(true);
 
         Configuration configuration = chart.getConfiguration();
-/*
+
         Tooltip tooltip = new Tooltip();
-        tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
-        chart.getConfiguration().setTooltip(tooltip);
-*/
+        //tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
+        tooltip.setFormatter( "function() { if (this.series.name == 'Actual Revenue') { return this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'; } }");
+        //chart.getConfiguration().setTooltip(tooltip);
+
         //DataSeries dataSeries = createDataSeries(, "Actual revenue");
 
         DataSeries dataSeries = new DataSeries("Actual Revenue");
@@ -56,17 +57,18 @@ public class AllRevenuePerMonthChart {
         for (LocalDate localDate : revenuePerMonth.keySet().stream().sorted(LocalDate::compareTo).collect(Collectors.toList())) {
             DataSeriesItem item = new DataSeriesItem();
             item.setX(DateUtils.convertLocalDateToDate(localDate));
-            item.setY(revenuePerMonth.get(localDate));
+            item.setY(Math.round(revenuePerMonth.get(localDate)));
             dataSeries.add(item);
         }
 
         DataSeries expensesDataSeries = new DataSeries("Expenses");
+        //expensesDataSeries.getConfiguration().setTooltip(tooltip);
         LocalDate currentDate = periodStart;
         do {
             double allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
             DataSeriesItem item = new DataSeriesItem();
             item.setX(DateUtils.convertLocalDateToDate(currentDate));
-            item.setY(allExpensesByMonth);
+            item.setY(Math.round(allExpensesByMonth));
             expensesDataSeries.add(item);
             currentDate = currentDate.plusMonths(1);
         } while (currentDate.isBefore(periodEnd));
@@ -77,11 +79,9 @@ public class AllRevenuePerMonthChart {
         plotOptionsFlags.setOnSeries("Revenue");
         usersEmployedSeries.setPlotOptions(plotOptionsFlags);
         for (User user : userService.findAll()) {
-            System.out.println("user.getUsername() = " + user.getUsername());
             Optional<LocalDate> employedDate = userService.findEmployedDate(user);
             if(!employedDate.isPresent()) continue;
             int between = (int) ChronoUnit.MONTHS.between(periodStart, employedDate.get());
-            System.out.println("between = " + between);
             usersEmployedSeries.add(new FlagItem(dataSeries.get(between).getX(), user.getFirstname(), user.getFirstname()+" "+user.getLastname()+" was empployed"));
         }
 
