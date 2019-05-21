@@ -110,7 +110,7 @@ public class AchievementJob {
         if (achievementList.stream().noneMatch(achievement -> (achievement.getAchievement().equals(achievementType)))) {
             if (worthyOfVacationAchievement) {
                 log.info("user = " + user.getUsername() + ", achivement = " + achievementType, user.getUuid());
-                notificationRepository.save(new Notification(user, LocalDate.now(), LocalDate.now().plusMonths(3), "New Achievement", "You've made it: "+achievementType.toString(), "", achievementType.getNumber()+"", NotificationType.ACHIEVEMENT));
+                notificationRepository.save(new Notification(user, LocalDate.now(), LocalDate.now().plusMonths(3), "New Achievement", "You've made it: "+achievementType.toString(), achievementType.getDescription(), achievementType.getNumber()+"", NotificationType.ACHIEVEMENT));
                 achievementRepository.save(new Achievement(user, LocalDate.now(), achievementType));
             }
         }

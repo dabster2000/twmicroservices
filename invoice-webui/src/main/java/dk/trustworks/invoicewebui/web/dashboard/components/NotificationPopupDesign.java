@@ -23,6 +23,7 @@ public class NotificationPopupDesign extends VerticalLayout {
     private VerticalLayout cardHolder;
     private Image imgNotification;
     private Label lblDescription;
+    private Label lblDetails;
     private Button btndismiss;
 
     public NotificationPopupDesign() {
@@ -39,6 +40,10 @@ public class NotificationPopupDesign extends VerticalLayout {
 
     public Label getLblDescription() {
         return lblDescription;
+    }
+
+    public Label getLblDetails() {
+        return lblDetails;
     }
 
     public Button getBtndismiss() {

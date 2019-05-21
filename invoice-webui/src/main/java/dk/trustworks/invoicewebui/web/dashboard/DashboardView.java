@@ -254,6 +254,7 @@ public class   DashboardView extends VerticalLayout implements View {
                 notificationDesign.getImgNotification().setSource(spriteSheet.getSprite(Integer.parseInt(notification.getThemeimage())));
                 notificationDesign.getImgNotification().setHeight(100, PIXELS);
                 notificationDesign.getImgNotification().setWidth(100, PIXELS);
+                notificationDesign.getLblDetails().setValue(notification.getLink());
                 notificationDesign.getLblDescription().setValue(notification.getContent());
                 notificationDesign.getBtndismiss().addClickListener(event -> {
                     window.close();
