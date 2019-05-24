@@ -27,6 +27,7 @@ import dk.trustworks.invoicewebui.web.employee.components.parts.*;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.DocumentTab;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.ItBudgetTab;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
+import dk.trustworks.invoicewebui.web.stats.components.YourTrustworksForecastChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -72,6 +73,8 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart;
 
+    private final YourTrustworksForecastChart yourTrustworksForecastChart;
+
     private final ItBudgetTab itBudgetTab;
 
     private final DocumentTab documentTab;
@@ -91,7 +94,7 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
@@ -108,6 +111,7 @@ public class EmployeeLayout extends VerticalLayout {
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
+        this.yourTrustworksForecastChart = yourTrustworksForecastChart;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
         this.employeeContactInfoCardController = employeeContactInfoCardController;
@@ -169,12 +173,13 @@ public class EmployeeLayout extends VerticalLayout {
         workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign"));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseImpl(user, notesRepository, reminderRepository));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, consultantRepository));
-        workContentRow.addColumn().withDisplayRules(12, 12, 5, 5).withComponent(monthReport);
         int adjustStartYear = 0;
         if(LocalDate.now().getMonthValue() >= 1 && LocalDate.now().getMonthValue() <=6)  adjustStartYear = 1;
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
-        workContentRow.addColumn().withDisplayRules(12, 12, 5, 5).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
+        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
+        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(yourTrustworksForecastChart.createChart(localDateStart, localDateEnd)));
+        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthReport);
 
         for (Note note : notesRepository.findByUserOrderByNotedateDesc(user)) {
             purpContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new KeyPurposeNoteImpl(note));

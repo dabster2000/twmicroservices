@@ -52,46 +52,37 @@ public class YourTrustworksForecastChart {
         chart.getConfiguration().addxAxis(x);
 
         YAxis y = new YAxis();
-        y.setTitle("Allocation");
+        y.setTitle("Payout Factor");
         chart.getConfiguration().addyAxis(y);
 
-        DataSeries revenueSeries = new DataSeries("Percentage of salary");
-        PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
-        plotOptionsColumn.setColorByPoint(true);
-        revenueSeries.setPlotOptions(plotOptionsColumn);
-
-        String[] categories = new String[period];
+        DataSeries payoutSeries = new DataSeries("Payout Factor");
 
         double forecastedExpenses = 33000;
         double forecastedSalaries = 60000;
         double forecastedConsultants = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT, ConsultantType.STAFF).size();
         double totalForecastedExpenses = (forecastedExpenses + forecastedSalaries) * forecastedConsultants;
 
-
-
         double totalCumulativeRevenue = 0.0;
         Number[] payout = new Number[period];
+        String[] categories = new String[period];
 
         for (int i = 0; i < period; i++) {
+            System.out.println("------------------------");
             LocalDate currentDate = periodStart.plusMonths(i);
+            System.out.println("currentDate = " + currentDate);
 
             totalCumulativeRevenue += statisticsService.getMonthRevenue(currentDate);
             double grossMargin = totalCumulativeRevenue - totalForecastedExpenses;
             double grossMarginPerConsultant = grossMargin / forecastedConsultants;
             double consultantPayout = grossMarginPerConsultant * 0.1;
-            payout[i] = NumberUtils.round(consultantPayout / forecastedSalaries, 2);
+            payout[i] = NumberUtils.round((consultantPayout / forecastedSalaries) * 100.0 - 100.0, 2);
 
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
 
-        DataSeries payoutSeries = new DataSeries("Payout Factor");
         payoutSeries.setData(categories, payout);
 
-        //chart.getConfiguration().getxAxis().setCategories(categories);
-        chart.getConfiguration().addSeries(revenueSeries);
-
-
-        chart.getConfiguration().addSeries(revenueSeries);
+        chart.getConfiguration().addSeries(payoutSeries);
 
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
