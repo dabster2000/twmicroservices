@@ -130,8 +130,10 @@ public class UserService {
         return userRepository.calculateCapacityByMonthByUser(useruuid, statusdate);
     }
 
-    public LocalDate findEmployedDate(@NonNull User user) {
-        return userStatusRepository.findByUserAndTypeAndStatusOrderByStatusdateAsc(user, CONSULTANT, ACTIVE).get(0).getStatusdate();
+    public Optional<LocalDate> findEmployedDate(@NonNull User user) {
+        List<UserStatus> statusdateAsc = userStatusRepository.findByUserAndTypeAndStatusOrderByStatusdateAsc(user, CONSULTANT, ACTIVE);
+        if(statusdateAsc.size()==0) return Optional.empty();
+        return Optional.ofNullable(statusdateAsc.get(0).getStatusdate());
     }
 
     public boolean isExternal(User user) {

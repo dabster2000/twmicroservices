@@ -34,6 +34,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private RevenuePerMonthChart revenuePerMonthChart;
 
     @Autowired
+    private AllRevenuePerMonthChart allRevenuePerMonthChart;
+
+    @Autowired
     private CumulativeRevenuePerMonthChart cumulativeRevenuePerMonthChart;
 
     @Autowired
@@ -151,6 +154,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("1 out of 10 charts created!");
         System.out.println("timeMillis 1 = " + (System.currentTimeMillis() - timeMillis));
 
+        Card allRevenuePerMonthCard = new Card();
+        allRevenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
+        allRevenuePerMonthCard.getContent().addComponent(allRevenuePerMonthChart.createRevenuePerMonthChart());
+        notification.setDescription("1a out of 13 charts created!");
+        System.out.println("timeMillis 1a = " + (System.currentTimeMillis() - timeMillis));
+
         Card cumulativeRevenuePerMonthCard = new Card();
         cumulativeRevenuePerMonthCard.getLblTitle().setValue("Cumulative Revenue Per Month");
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
@@ -265,6 +274,9 @@ excelFileDownloader.extend(downloadAsExcel);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(allRevenuePerMonthCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(cumulativeRevenuePerMonthCard);
