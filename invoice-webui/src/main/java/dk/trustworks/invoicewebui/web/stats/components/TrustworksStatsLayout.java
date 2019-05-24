@@ -64,6 +64,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     //private CumulativePredictiveRevenuePerYearChart cumulativePredictiveRevenuePerYearChart;
 
     @Autowired
+    private YourTrustworksForecastChart yourTrustworksForecastChart;
+
+    @Autowired
     private BudgetTable budgetTable;
 
     @Autowired
@@ -186,7 +189,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         System.out.println("timeMillis 4 = " + (System.currentTimeMillis() - timeMillis));
 
         Card averageConsultantRevenueCard = new Card();
-        averageConsultantRevenueCard.getLblTitle().setValue("Average Revenue Per Consultant");
+        averageConsultantRevenueCard.getLblTitle().setValue("Average Gross Margin Per Consultant");
         averageConsultantRevenueCard.getContent().addComponent(averageConsultantRevenueChart.createRevenuePerConsultantChart());
         notification.setDescription("5 out of 10 charts created!");
         System.out.println("timeMillis 5 = " + (System.currentTimeMillis() - timeMillis));
@@ -194,6 +197,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
         Card averageConsultantAllocationCard = new Card();
         averageConsultantAllocationCard.getLblTitle().setValue("Average Allocation Per Consultant");
         averageConsultantAllocationCard.getContent().addComponent(averageConsultantAllocationChart.createChart());
+        notification.setDescription("6 out of 10 charts created!");
+        System.out.println("timeMillis 6 = " + (System.currentTimeMillis() - timeMillis));
+
+        Card yourTrustworksForecastCard = new Card();
+        yourTrustworksForecastCard.getLblTitle().setValue("Your Trustworks Forecast");
+        yourTrustworksForecastCard.getContent().addComponent(yourTrustworksForecastChart.createChart(localDateStart, localDateEnd));
         notification.setDescription("6 out of 10 charts created!");
         System.out.println("timeMillis 6 = " + (System.currentTimeMillis() - timeMillis));
 
@@ -300,6 +309,9 @@ excelFileDownloader.extend(downloadAsExcel);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerEmployee);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(yourTrustworksForecastCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(averageConsultantRevenueByYearCard);

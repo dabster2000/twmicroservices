@@ -43,7 +43,7 @@ public class AverageConsultantRevenueChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption("Average Revenue Per Consultant");
+        chart.setCaption("Average Gross Margin Per Consultant");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);
         chart.getConfiguration().getLegend().setEnabled(false);
@@ -58,10 +58,10 @@ public class AverageConsultantRevenueChart {
         chart.getConfiguration().addxAxis(x);
 
         YAxis y = new YAxis();
-        y.setTitle("Revenue");
+        y.setTitle("Gross Margin");
         chart.getConfiguration().addyAxis(y);
 
-        DataSeries revenueSeries = new DataSeries("Revenue");
+        DataSeries revenueSeries = new DataSeries("Gross Margin");
         PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
         plotOptionsColumn.setColorByPoint(true);
         revenueSeries.setPlotOptions(plotOptionsColumn);

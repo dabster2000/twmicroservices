@@ -5,7 +5,6 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.Expense;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
@@ -31,23 +30,18 @@ public class RevenuePerMonthEmployeeAvgChart {
 
     private final GraphKeyValueRepository graphKeyValueRepository;
 
-    private final CountEmployeesJob employeesJob;
-
     private final ExpenseRepository expenseRepository;
 
     private final UserService userService;
 
     @Autowired
-    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, CountEmployeesJob employeesJob, ExpenseRepository expenseRepository, UserService userService) {
+    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, UserService userService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
-        this.employeesJob = employeesJob;
         this.expenseRepository = expenseRepository;
         this.userService = userService;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
-        System.out.println("createRevenuePerMonthChart.createRevenuePerMonthChart");
-        System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "]");
         Chart chart = new Chart();
         chart.setSizeFull();
         int period = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);

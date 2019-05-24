@@ -73,8 +73,6 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart;
 
-    private final YourTrustworksForecastChart yourTrustworksForecastChart;
-
     private final ItBudgetTab itBudgetTab;
 
     private final DocumentTab documentTab;
@@ -111,7 +109,6 @@ public class EmployeeLayout extends VerticalLayout {
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
-        this.yourTrustworksForecastChart = yourTrustworksForecastChart;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
         this.employeeContactInfoCardController = employeeContactInfoCardController;
@@ -178,7 +175,6 @@ public class EmployeeLayout extends VerticalLayout {
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(yourTrustworksForecastChart.createChart(localDateStart, localDateEnd)));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthReport);
 
         for (Note note : notesRepository.findByUserOrderByNotedateDesc(user)) {
