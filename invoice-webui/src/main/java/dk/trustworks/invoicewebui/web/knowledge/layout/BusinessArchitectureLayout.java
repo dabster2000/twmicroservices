@@ -7,29 +7,42 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
+import dk.trustworks.invoicewebui.web.knowledge.components.ArchitectureCell;
 import dk.trustworks.invoicewebui.web.knowledge.components.SideBannerDesign;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 @SpringComponent
 @SpringUI
 public class BusinessArchitectureLayout extends VerticalLayout {
 
+    @Autowired
+    private PhotoService photoService;
+
+    @Autowired
+    private ClientRepository clientRepository;
+
     private ResponsiveLayout mainLayout;
     private ResponsiveRow gridRow;
+    private Box mainBox;
 
     public BusinessArchitectureLayout init() {
 
         this.removeAllComponents();
 
         mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        Box mainBox = new Box();
-        mainBox.getCardHolder().setWidthUndefined();
-        mainBox.getContent().setWidthUndefined();
+        mainBox = new Box();
+        //mainBox.getCardHolder().setWidthUndefined();
+        //mainBox.getContent().setWidthUndefined();
         mainBox.getContent().addComponent(mainLayout);
         mainBox.getContent().setMargin(false);
         this.addComponent(mainBox);
@@ -133,6 +146,64 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
     private ImageCardDesign createCard(String type, int i, String title, String content) {
         ImageCardDesign box = new ImageCardDesign();
+        box.addLayoutClickListener(event -> {
+            mainBox.getContent().removeAllComponents();
+
+            ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+            mainBox.getContent().addComponent(responsiveLayout);
+
+            ResponsiveRow headerRow = responsiveLayout.addRow();
+            ResponsiveRow cardsRow = responsiveLayout.addRow();
+
+            ArchitectureCell architectureCell1 = new ArchitectureCell();
+            architectureCell1.getImgTop1().setSource(new ThemeResource("images/cards/architecture/applikation-1.png"));
+            architectureCell1.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(1).getUuid()));
+            ArchitectureCell architectureCell2 = new ArchitectureCell();
+            architectureCell2.getImgTop1().setSource(new ThemeResource("images/cards/architecture/applikation-2.png"));
+            architectureCell2.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(2).getUuid()));
+            ArchitectureCell architectureCell3 = new ArchitectureCell();
+            architectureCell3.getImgTop1().setSource(new ThemeResource("images/cards/architecture/applikation-3.png"));
+            architectureCell3.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(3).getUuid()));
+            ArchitectureCell architectureCell4 = new ArchitectureCell();
+            architectureCell4.getImgTop1().setSource(new ThemeResource("images/cards/architecture/information-1.png"));
+            architectureCell4.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(4).getUuid()));
+            Image image1 = new Image(null, new ThemeResource("images/icons/powerpoint.png"));
+            image1.setWidth(25, Unit.PIXELS);
+            image1.setHeight(25, Unit.PIXELS);
+            Image image2 = new Image(null, new ThemeResource("images/icons/word.png"));
+            image2.setWidth(25, Unit.PIXELS);
+            Image image3 = new Image(null, new ThemeResource("images/icons/powerpoint.png"));
+            image3.setWidth(25, Unit.PIXELS);
+            Label label1 = new MLabel("GCW-01.pptx").withFullWidth();
+            Label label2 = new MLabel("sad.docx").withFullWidth();
+            Label label3 = new MLabel("maalarkitetur.pptx").withFullWidth();
+            MHorizontalLayout horizontalLayout1 = new MHorizontalLayout(image1, label1).withExpand(label1, 1.0f).withMargin(false).withSpacing(true);
+            MHorizontalLayout horizontalLayout2 = new MHorizontalLayout(image2, label2).withExpand(label2, 1.0f).withMargin(false).withSpacing(true);
+            MHorizontalLayout horizontalLayout3 = new MHorizontalLayout(image3, label3).withExpand(label3, 1.0f).withMargin(false).withSpacing(true);
+            /*
+            GridLayout gridLayout = new MGridLayout(2, 3).withSpacing(true).withMargin(true).withFullWidth();
+            gridLayout.setRows(3);
+            gridLayout.addComponent(image1, 0, 0);
+            gridLayout.addComponent(new MLabel("GCW-01.pptx").withFullWidth(),1,0);
+            gridLayout.addComponent(image2, 0,1);
+            gridLayout.addComponent(new MLabel("testfile.docx").withFullWidth(), 1, 1);
+            gridLayout.addComponent(image3,0 ,2);
+            gridLayout.addComponent(new MLabel("maalarkitetur.pptx").withFullWidth(), 1, 2);
+            gridLayout.setColumnExpandRatio(1, 1.0f);
+            architectureCell1.getVlContent1().addComponent(gridLayout);
+            */
+            architectureCell1.getVlContent1().addComponent(new MVerticalLayout(horizontalLayout1, horizontalLayout2, horizontalLayout3).withSpacing(true).withMargin(true));
+            architectureCell1.getVlContent2().addComponent(new MLabel("test").withFullWidth());
+
+            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+                    .withComponent(architectureCell1);
+            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+                    .withComponent(architectureCell2);
+            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+                    .withComponent(architectureCell3);
+            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+                    .withComponent(architectureCell4);
+        });
         box.addStyleName("semi-white-bg");
         box.getImgTop().setSource(new ThemeResource("images/cards/architecture/"+type+"-"+i+".png"));
         box.getVlContent().addComponent(
