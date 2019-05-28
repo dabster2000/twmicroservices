@@ -8,25 +8,24 @@
  <body>
   <vaadin-vertical-layout>
    <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
-    <vaadin-grid-layout spacing width-full>
-     <row>
-      <column expand="0.5">
-       <vaadin-image width-full height="50%" _id="imgTop1"></vaadin-image>
-      </column>
-      <column expand="0.5">
-       <vaadin-image width-full height="50%" _id="imgTop2"></vaadin-image>
-      </column>
-     </row>
-     <row>
-      <column>
-       <vaadin-vertical-layout spacing="false" margin="false" _id="vlContent1"></vaadin-vertical-layout>
-      </column>
-      <column>
-       <vaadin-vertical-layout spacing="false" margin="false" _id="vlContent2"></vaadin-vertical-layout>
-      </column>
-     </row>
-    </vaadin-grid-layout>
-    <vaadin-vertical-layout spacing="false" margin="false" _id="contentHolder" :expand></vaadin-vertical-layout>
+    <vaadin-vertical-layout spacing="false" size-full margin="false" :expand>
+     <vaadin-horizontal-layout style-name="top-bar-grey1" spacing="false" width-full height="45px" _id="hlTitleBar">
+      <vaadin-button disable-on-click visible="false" icon="fonticon://Vaadin-Icons/e788" style-name="borderless icon-only quiet" plain-text :middle></vaadin-button>
+      <vaadin-label visible="false" plain-text _id="lblTitle" :middle :expand>
+        Consultant Location 
+      </vaadin-label>
+      <vaadin-button visible="false" style-name="borderless icon-only" plain-text _id="btnAlt1"></vaadin-button>
+      <vaadin-combo-box empty-selection-allowed="false" width-full data-item-type="dk.trustworks.invoicewebui.web.model.FileItem" _id="cbFileSelector" :right :expand></vaadin-combo-box>
+     </vaadin-horizontal-layout>
+     <vaadin-vertical-layout spacing="false" margin="false" :expand>
+      <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
+      <vaadin-vertical-layout spacing="false" height="200px" _id="content"></vaadin-vertical-layout>
+     </vaadin-vertical-layout>
+     <vaadin-horizontal-layout width-full>
+      <vaadin-horizontal-layout _id="vlConsultants" :middle></vaadin-horizontal-layout>
+      <vaadin-image height="35px" _id="imgCustomer" :middle :right></vaadin-image>
+     </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
    </vaadin-vertical-layout>
   </vaadin-vertical-layout>
  </body>

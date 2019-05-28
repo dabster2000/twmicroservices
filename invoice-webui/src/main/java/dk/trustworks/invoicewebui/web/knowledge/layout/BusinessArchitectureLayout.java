@@ -7,29 +7,41 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import dk.trustworks.invoicewebui.web.knowledge.components.ArchitectureCell;
 import dk.trustworks.invoicewebui.web.knowledge.components.SideBannerDesign;
+import dk.trustworks.invoicewebui.web.model.FileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
+
+import java.util.List;
+
+import static com.vaadin.ui.themes.ValoTheme.COMBOBOX_BORDERLESS;
 
 @SpringComponent
 @SpringUI
 public class BusinessArchitectureLayout extends VerticalLayout {
+
+    private static final ThemeResource PPTX = new ThemeResource("images/icons/powerpoint.png");
+    private static final ThemeResource DOCX = new ThemeResource("images/icons/word.png");
 
     @Autowired
     private PhotoService photoService;
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private UserService userService;
 
     private ResponsiveLayout mainLayout;
     private ResponsiveRow gridRow;
@@ -153,20 +165,76 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             mainBox.getContent().addComponent(responsiveLayout);
 
             ResponsiveRow headerRow = responsiveLayout.addRow();
+            headerRow.setStyleName("blue-bg", true);
+            headerRow.addColumn().withDisplayRules(12, 12, 6,6).withComponent(
+                    new MVerticalLayout(
+                            new MLabel("Forretningsstruktur".toUpperCase()).withFullSize().withStyleName("h4"),
+                            new MLabel("<b>Beskrivelse:</b> [Kort beskrivelse om området og evt. " +
+                                    "Dets sammenhæng ift. Niveau og område]").withContentMode(ContentMode.HTML)
+                            )
+                            .withFullWidth()
+                            .withMargin(true)
+                            .withSpacing(true)
+            );
+            headerRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(
+                    new MVerticalLayout(
+                            new MLabel("<b>Relevante kompetencer:</b>").withContentMode(ContentMode.HTML),
+                            new MLabel("- Proceskortlægning&nbsp;&nbsp;&nbsp;" +
+                                    "- Forretningsregler<br />" +
+                                    "<br />" +
+                                    "- User experience&nbsp;&nbsp;&nbsp;" +
+                                    "- Behovsafdækning").withContentMode(ContentMode.HTML)
+                            )
+                            .withFullWidth()
+                            .withMargin(true)
+                            .withSpacing(true)
+            );
+
             ResponsiveRow cardsRow = responsiveLayout.addRow();
 
             ArchitectureCell architectureCell1 = new ArchitectureCell();
-            architectureCell1.getImgTop1().setSource(new ThemeResource("images/cards/architecture/applikation-1.png"));
-            architectureCell1.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(1).getUuid()));
+            architectureCell1.getLblTitle().setValue("Forretningsstruktur");
+            architectureCell1.getCbFileSelector().setPlaceholder("");
+            architectureCell1.getCbFileSelector().addStyleName(COMBOBOX_BORDERLESS);
+            architectureCell1.getCbFileSelector().setItemCaptionGenerator(FileItem::getName);
+            architectureCell1.getCbFileSelector().setItemIconGenerator(FileItem::getIcon);
+            architectureCell1.getCbFileSelector().setEmptySelectionAllowed(false);
+            architectureCell1.getLblTitle().setVisible(false);
+            architectureCell1.getBtnAlt1().setVisible(false);
+            FileItem fileItem = new FileItem("GCW-01.pptx", PPTX);
+            architectureCell1.getCbFileSelector().setItems(
+                    fileItem,
+                    new FileItem("testfile.docx", DOCX),
+                    new FileItem("maalarkitetur.pptx", PPTX));
+            architectureCell1.getCbFileSelector().addValueChangeListener(event1 -> {
+                architectureCell1.getImgTop().setSource(new ThemeResource("images/cards/architecture/arc1.png"));
+                List<User> employees = userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT);
+                architectureCell1.getVlConsultants().removeAllComponents();
+                for (int j = 0; j < 2; j++) {
+                    architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(employees.get(j+4), false, 50, Unit.PIXELS));
+                }
+                architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(1).getUuid()));
+                architectureCell1.getImgCustomer().setHeight(50, Unit.PIXELS);
+                architectureCell1.getContent().removeAllComponents();
+                architectureCell1.getContent().addComponent(new MLabel("Jeannette lavede brugerrejser for RP " +
+                        "som gav et overblik over de snitflader RP har til deres brugere.Derudover s lavede brugerrejser " +
+                        "for RP som gav et overblik over de snitflader RP har til deres brugere.").withFullWidth());
+                //architectureCell1.getContent().setMargin(true);
+            });
+            architectureCell1.getCbFileSelector().setSelectedItem(fileItem);
+
+            /*
+            architectureCell1.getImgTop().setSource(new ThemeResource("images/cards/architecture/applikation-1.png"));
+            //architectureCell1.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(1).getUuid()));
             ArchitectureCell architectureCell2 = new ArchitectureCell();
-            architectureCell2.getImgTop1().setSource(new ThemeResource("images/cards/architecture/applikation-2.png"));
-            architectureCell2.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(2).getUuid()));
+            architectureCell2.getImgTop().setSource(new ThemeResource("images/cards/architecture/applikation-2.png"));
+            //architectureCell2.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(2).getUuid()));
             ArchitectureCell architectureCell3 = new ArchitectureCell();
-            architectureCell3.getImgTop1().setSource(new ThemeResource("images/cards/architecture/applikation-3.png"));
-            architectureCell3.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(3).getUuid()));
+            architectureCell3.getImgTop().setSource(new ThemeResource("images/cards/architecture/applikation-3.png"));
+            //architectureCell3.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(3).getUuid()));
             ArchitectureCell architectureCell4 = new ArchitectureCell();
-            architectureCell4.getImgTop1().setSource(new ThemeResource("images/cards/architecture/information-1.png"));
-            architectureCell4.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(4).getUuid()));
+            architectureCell4.getImgTop().setSource(new ThemeResource("images/cards/architecture/information-1.png"));
+            //architectureCell4.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(4).getUuid()));
             Image image1 = new Image(null, new ThemeResource("images/icons/powerpoint.png"));
             image1.setWidth(25, Unit.PIXELS);
             image1.setHeight(25, Unit.PIXELS);
@@ -180,6 +248,8 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             MHorizontalLayout horizontalLayout1 = new MHorizontalLayout(image1, label1).withExpand(label1, 1.0f).withMargin(false).withSpacing(true);
             MHorizontalLayout horizontalLayout2 = new MHorizontalLayout(image2, label2).withExpand(label2, 1.0f).withMargin(false).withSpacing(true);
             MHorizontalLayout horizontalLayout3 = new MHorizontalLayout(image3, label3).withExpand(label3, 1.0f).withMargin(false).withSpacing(true);
+
+             */
             /*
             GridLayout gridLayout = new MGridLayout(2, 3).withSpacing(true).withMargin(true).withFullWidth();
             gridLayout.setRows(3);
@@ -192,17 +262,20 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             gridLayout.setColumnExpandRatio(1, 1.0f);
             architectureCell1.getVlContent1().addComponent(gridLayout);
             */
-            architectureCell1.getVlContent1().addComponent(new MVerticalLayout(horizontalLayout1, horizontalLayout2, horizontalLayout3).withSpacing(true).withMargin(true));
-            architectureCell1.getVlContent2().addComponent(new MLabel("test").withFullWidth());
+            //architectureCell1.getContent().addComponent(new MVerticalLayout(horizontalLayout1, horizontalLayout2, horizontalLayout3).withSpacing(true).withMargin(true));
+            //architectureCell1.getVlContent2().addComponent(new MLabel("test").withFullWidth());
 
-            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+            cardsRow.addColumn().withDisplayRules(12, 12, 4, 4)
                     .withComponent(architectureCell1);
-            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+            /*
+            cardsRow.addColumn().withDisplayRules(12, 12, 4, 4)
                     .withComponent(architectureCell2);
-            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+            cardsRow.addColumn().withDisplayRules(12, 12, 4, 4)
                     .withComponent(architectureCell3);
-            cardsRow.addColumn().withDisplayRules(12, 12, 6, 6)
+            cardsRow.addColumn().withDisplayRules(12, 12, 4, 4)
                     .withComponent(architectureCell4);
+
+             */
         });
         box.addStyleName("semi-white-bg");
         box.getImgTop().setSource(new ThemeResource("images/cards/architecture/"+type+"-"+i+".png"));
