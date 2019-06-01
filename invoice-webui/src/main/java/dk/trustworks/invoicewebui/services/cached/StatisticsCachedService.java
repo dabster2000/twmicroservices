@@ -71,6 +71,11 @@ public class StatisticsCachedService {
     }
 
     public void refreshCache() {
+        cachedBudgetData = new ArrayList<>();
+        cachedAvailabilityData = new ArrayList<>();
+        cachedExpenseData = new ArrayList<>();
+        cachedIncomeData = new ArrayList<>();
+
         cachedBudgetData = createBudgetData();
         cachedAvailabilityData = createAvailabilityData();
         cachedExpenseData = createExpenseData();

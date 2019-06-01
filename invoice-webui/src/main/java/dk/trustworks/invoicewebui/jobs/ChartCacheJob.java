@@ -47,12 +47,13 @@ public class ChartCacheJob {
         burndownCache = new HashMap<>();
     }
 
-    @Scheduled(cron = "0 0 6,12,18 * * *")
+    @Scheduled(cron = "0 0 6,12,20 * * *")
     private void loadCachedData() {
         User user = userService.findByUsername("hans.lassen");
         slackAPI.sendSlackMessage(user, "Reloading cached data...");
+        long start = System.currentTimeMillis();
         statisticsService.refreshCache();
-        slackAPI.sendSlackMessage(user, "...done!");
+        slackAPI.sendSlackMessage(user, "...done! ("+(System.currentTimeMillis()-start)+" ms)");
     }
 
     @Scheduled(cron = "0 0 4 5 1/1 ?")
