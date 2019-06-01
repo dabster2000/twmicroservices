@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8081}
 
 spring:
   application:
@@ -20,6 +20,11 @@ spring:
       hibernate:
         enable_lazy_load_no_trans: true
         jdbc.time_zone: Europe/Berlin
+  rabbitmq:
+    host: ${RMQ_HOST:localhost}
+    port: ${RMQ_PORT:32785}
+    username: ${RMQ_USER:guest}
+    password: ${RMQ_PASS:guest}
   datasource:
     url: ${URL:jdbc:mysql://localhost:3306/usermanager?noDatetimeStringSync=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=true&serverTimezone=Europe/Berlin}
     username: ${USERNAME:root}
@@ -38,6 +43,8 @@ spring:
     properties.mail.smtp.auth: true
     properties.mail.smtp.starttls.enable: true
   jackson.property-naming-strategy: SNAKE_CASE
+  zipkin:
+    base-url: http://${ZIPKIN_HOST:localhost}:9411/
 
 activemq:
   broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
@@ -103,3 +110,28 @@ flyway:
   baseline-on-migrate: true # schemas to update
 
 management.security.enabled: false
+
+
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+  hystrix:
+    enabled: true
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: ${DISCOVERY_URI:http://localhost}:8761/eureka
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+
+ribbon:
+  eureka:
+    enabled: true

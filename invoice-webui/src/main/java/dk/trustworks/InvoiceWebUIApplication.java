@@ -3,7 +3,6 @@ package dk.trustworks;
 import com.vaadin.spring.annotation.EnableVaadin;
 import dk.trustworks.invoicewebui.events.WorkNotificationConsumer;
 import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -35,6 +36,8 @@ import static reactor.bus.selector.Selectors.$;
 @EnableJpaAuditing
 @SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "dk.trustworks"})
 @EnableAsync
+@EnableFeignClients
+@EnableEurekaClient
 @EnableCaching
 @EnableVaadin
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -50,14 +53,12 @@ public class InvoiceWebUIApplication {
     private WorkNotificationConsumer workNotificationConsumer;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     StatisticsService statisticsService;
 
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         Locale.setDefault(new Locale("da", "DK"));
+
 
         /*
         System.out.println("1 = " + 1);
@@ -79,10 +80,34 @@ public class InvoiceWebUIApplication {
         */
         SpringApplication.run(InvoiceWebUIApplication.class);
     }
-
+/*
+    @Bean
+    feign.Logger.Level feignLoggerLevel() {
+        return feign.Logger.Level.FULL;
+    }
+*/
     @PostConstruct
     private void init() {
         //statisticsService.run();
+/*
+        System.out.println("1");
+        Application application
+                = eurekaClient.getApplication("user-service");
+        System.out.println("2");
+        List<InstanceInfo> instanceInfo = application.getInstances();
+        System.out.println("3");
+        System.out.println("instanceInfo.size() = " + instanceInfo.size());
+
+        for (InstanceInfo info : instanceInfo) {
+            String hostname = info.getHostName();
+            System.out.println("hostname = " + hostname);
+            int port = info.getPort();
+            System.out.println("port = " + port);
+        }
+
+*/
+
+        //System.out.println("userServiceClient) = " + userServiceClient.findByUsername("hans.lassen"));
         //System.exit(0);
 
 
@@ -103,6 +128,11 @@ public class InvoiceWebUIApplication {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
+    }
+
+    @Bean
+    feign.Logger.Level feignLoggerLevel() {
+        return feign.Logger.Level.FULL;
     }
 
     @Bean

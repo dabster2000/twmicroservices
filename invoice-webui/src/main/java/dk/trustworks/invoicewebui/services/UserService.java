@@ -9,10 +9,12 @@ import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.network.rest.UserServiceClient;
 import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +36,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final UserServiceClient userServiceClient;
+
     private final UserStatusRepository userStatusRepository;
 
-    public UserService(UserRepository userRepository, UserStatusRepository userStatusRepository) {
+    @Autowired
+    public UserService(UserRepository userRepository, UserServiceClient userServiceClient, UserStatusRepository userStatusRepository) {
         this.userRepository = userRepository;
+        this.userServiceClient = userServiceClient;
         this.userStatusRepository = userStatusRepository;
     }
 
@@ -46,19 +52,19 @@ public class UserService {
     }
 
     public User findByUUID(String uuid) {
-        return userRepository.findOne(uuid);
+        return userServiceClient.findOne(uuid);
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userServiceClient.findByUsername(username);
     }
 
     public User findBySlackusername(String userId) {
-        return userRepository.findBySlackusername(userId);
+        return userServiceClient.findBySlackusername(userId);
     }
 
     public List<User> findAll() {
-        return userRepository.findByOrderByUsername();
+        return userServiceClient.findByOrderByUsername();
     }
 
     public List<User> findCurrentlyEmployedUsers() {
@@ -177,4 +183,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public void addRole(User user, Role role) {
+
+    }
 }

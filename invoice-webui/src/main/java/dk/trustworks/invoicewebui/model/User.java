@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.google.common.base.Objects;
 import org.apache.commons.text.WordUtils;
 
@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class User {
     private String email;
     private String firstname;
     private String lastname;
-    @JsonIgnore private String password;
+    private String password;
     private String username;
     private String slackusername;
     private LocalDate birthday;
@@ -38,8 +39,9 @@ public class User {
     private List<Week> weeks;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Work> workList;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Role> roleList;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonBackReference
+    private List<Role> roleList = new ArrayList<>();
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
     private List<Notification> notifications;
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)

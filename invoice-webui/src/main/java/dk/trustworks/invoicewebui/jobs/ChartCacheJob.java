@@ -35,7 +35,7 @@ public class ChartCacheJob {
     }
 
     @Scheduled(cron = "0 0 4 5 1/1 ?")
-    private void loadRevenuePerClientMap() {
+    public void loadRevenuePerClientMap() {
         revenueMap.clear();
         for (Work work : workService.findByActiveClients()) {
             String clientName = work.getTask().getProject().getClient().getName();
@@ -56,7 +56,7 @@ public class ChartCacheJob {
     }
 
     @Scheduled(cron = "0 0 4 5 1/1 ?")
-    private void loadBurndownDateForAllContract() {
+    public void loadBurndownDateForAllContract() {
         for (Contract contract : contractService.findAll()) {
             loadBurndownRateForSingleContract(contract);
         }
