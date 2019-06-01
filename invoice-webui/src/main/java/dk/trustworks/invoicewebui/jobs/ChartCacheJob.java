@@ -2,10 +2,14 @@ package dk.trustworks.invoicewebui.jobs;
 
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
+import dk.trustworks.invoicewebui.network.clients.SlackAPI;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,12 +30,29 @@ public class ChartCacheJob {
 
     private final Map<String, Map<LocalDate, Double>> burndownCache;
 
+    private final StatisticsService statisticsService;
+
+    private final SlackAPI slackAPI;
+
+    private final UserService userService;
+
     @Autowired
-    public ChartCacheJob(WorkService workService, ContractService contractService) {
+    public ChartCacheJob(WorkService workService, ContractService contractService, StatisticsService statisticsService, SlackAPI slackAPI, UserService userService) {
         this.workService = workService;
         this.contractService = contractService;
+        this.statisticsService = statisticsService;
+        this.slackAPI = slackAPI;
+        this.userService = userService;
         revenueMap = new TreeMap<>();
         burndownCache = new HashMap<>();
+    }
+
+    @Scheduled(cron = "0 0 6,12,18 * * *")
+    private void loadCachedData() {
+        User user = userService.findByUsername("hans.lassen");
+        slackAPI.sendSlackMessage(user, "Reloading cached data...");
+        statisticsService.refreshCache();
+        slackAPI.sendSlackMessage(user, "...done!");
     }
 
     @Scheduled(cron = "0 0 4 5 1/1 ?")

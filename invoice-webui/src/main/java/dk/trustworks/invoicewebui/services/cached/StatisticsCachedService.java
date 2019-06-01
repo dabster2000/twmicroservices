@@ -15,7 +15,6 @@ import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -71,8 +70,7 @@ public class StatisticsCachedService {
         return cachedIncomeData;
     }
 
-    @Scheduled(cron = "0 0 6,12,18 * * *")
-    void refreshCache() {
+    public void refreshCache() {
         cachedBudgetData = createBudgetData();
         cachedAvailabilityData = createAvailabilityData();
         cachedExpenseData = createExpenseData();
