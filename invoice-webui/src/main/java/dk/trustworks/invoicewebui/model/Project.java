@@ -20,6 +20,7 @@ public class Project {
     private Date created;
     private String customerreference;
     private String name;
+    private boolean locked;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -201,6 +202,14 @@ public class Project {
     }
 
     public void addContract(Contract Contract) {this.contracts.add(Contract); }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
 
     @Override
     public String toString() {

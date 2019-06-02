@@ -12,9 +12,9 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.*;
@@ -86,7 +86,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
     @PostConstruct
     public void init() {
         contractRow = this.addRow();
-        ResponsiveRow subContractRow = this.addRow();
     }
 
     public ResponsiveLayout loadContractDetails(Contract contract, NavigationBar navigationBar) {

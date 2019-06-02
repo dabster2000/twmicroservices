@@ -60,9 +60,9 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
         projectBinder.forField(getTxtBudget())
                 .withConverter(new MyConverter())
                 .bind(Project::getBudget, Project::setBudget);
-        //projectBinder.forField(getCbClientdatas()).bind(Project::getClientdata, Project::setClientdata);
         projectBinder.forField(getSelRelationManager()).bind(Project::getOwner, Project::setOwner);
         projectBinder.forField(getChkActive()).bind(Project::getActive, Project::setActive);
+        projectBinder.forField(getChkMonthLock()).bind(Project::isLocked, Project::setLocked);
         projectBinder.forField(getSelStartDate()).bind(Project::getStartdate, Project::setStartdate);
         projectBinder.forField(getSelEndDate()).bind(Project::getEnddate, Project::setEnddate);
         projectBinder.forField(getTxtDescription()).bind(Project::getCustomerreference, Project::setCustomerreference);
@@ -71,8 +71,6 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
 
         getSelRelationManager().setItems(users);
         getSelRelationManager().setItemCaptionGenerator(User::getUsername);
-
-
     }
 
     public void save() {

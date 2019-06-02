@@ -16,6 +16,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "projects",path="projects")
 public interface ProjectRepository extends CrudRepository<Project, String> {
 
+    List<Project> findByLockedTrue();
     List<Project> findAllByOrderByNameAsc();
     List<Project> findAllByActiveTrueOrderByNameAsc();
     List<Project> findByClientAndActiveTrueOrderByNameAsc(Client client);

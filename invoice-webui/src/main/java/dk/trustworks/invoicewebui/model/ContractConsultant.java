@@ -103,8 +103,10 @@ public class ContractConsultant {
 
     @Override
     public String toString() {
-        return "Consultant{" +
+        return "ContractConsultant{" +
                 "uuid='" + uuid + '\'' +
+                ", contract=" + contract.getUuid() +
+                ", user=" + user.getUsername() +
                 ", rate=" + rate +
                 ", budget=" + budget +
                 ", hours=" + hours +
