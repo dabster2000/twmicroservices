@@ -40,6 +40,7 @@ public class ProjectDetailCardDesign extends VerticalLayout {
     private DateField selEndDate;
     private TextField txtBudget;
     private CheckBox chkActive;
+    private CheckBox chkMonthLock;
     private Button btnUpdate;
     private Button btnDelete;
 
@@ -93,6 +94,10 @@ public class ProjectDetailCardDesign extends VerticalLayout {
 
     public CheckBox getChkActive() {
         return chkActive;
+    }
+
+    public CheckBox getChkMonthLock() {
+        return chkMonthLock;
     }
 
     public Button getBtnUpdate() {

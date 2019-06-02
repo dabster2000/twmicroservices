@@ -26,6 +26,7 @@ public class ConsultantRowDesign extends HorizontalLayout {
     private HorizontalLayout hlNameBackground;
     private CssLayout imgPhoto;
     private Label lblName;
+    private CssLayout imgLock;
     private TextField txtRate;
     private VerticalLayout vlHours;
     private TextField txtHours;
@@ -49,6 +50,10 @@ public class ConsultantRowDesign extends HorizontalLayout {
 
     public Label getLblName() {
         return lblName;
+    }
+
+    public CssLayout getImgLock() {
+        return imgLock;
     }
 
     public TextField getTxtRate() {

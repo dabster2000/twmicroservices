@@ -147,8 +147,6 @@ public class ContractService {
     }
 
     public Double findConsultantRateByWork(Work work, ContractStatus... statusList) {
-        //System.out.println("ContractService.findConsultantRateByWork");
-        //System.out.println("work = [" + work + "], statusList = [" + statusList + "]");
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
         if(work.getWorkas()==null) {
@@ -159,8 +157,6 @@ public class ContractService {
     }
 
     public Contract findContractByWork(Work work, ContractStatus... statusList) {
-        //System.out.println("ContractService.findContractByWork");
-        //System.out.println("work = [" + work + "], statusList = [" + statusList + "]");
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
         if(work.getWorkas()==null) {
             return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));

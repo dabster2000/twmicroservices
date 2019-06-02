@@ -65,8 +65,13 @@ public class ProjectService {
         return createDefaultTask(project);
     }
 
-    public Iterable<Project> findAll() {
-        return projectRepository.findAll();
+    @Transactional
+    public void saveAll(List<Project> projects) {
+        projectRepository.save(projects);
+    }
+
+    public List<Project> findByLockedTrue() {
+        return projectRepository.findByLockedTrue();
     }
 
     public Project findOne(String projectUUID) {

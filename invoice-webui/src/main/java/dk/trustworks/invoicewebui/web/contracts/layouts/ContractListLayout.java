@@ -85,7 +85,7 @@ public class ContractListLayout extends VerticalLayout {
         this.removeAllComponents();
         contractResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         createSearchBar();
-        showGantt();
+        //showGantt();
         createErrorBox();
         contractRow = contractResponsiveLayout.addRow();
         this.addComponent(contractResponsiveLayout);
@@ -125,7 +125,7 @@ public class ContractListLayout extends VerticalLayout {
 
     private void reloadContractView(Client client) {
         errorRow.setVisible(false);
-        ganttRow.setVisible(false);
+        //ganttRow.setVisible(false);
         contractRow.removeAllComponents();
         client = createContractView(client);
         createNewContractButton(client);

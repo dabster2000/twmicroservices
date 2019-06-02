@@ -798,19 +798,16 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private MTextField checkIfDisabled(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
         boolean onContract = isOnContract(weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday), workingAs, task);
-        System.out.println("onContract = " + onContract);
         if(!onContract) return mTextField.withEnabled(false);
 
         // check if item is last month and user is not project manager. Project managers should be able to edit old timesheets
         boolean isLastMonth = weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday).withDayOfMonth(2).isBefore(LocalDate.now().withDayOfMonth(2));
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
-        System.out.println("weekItem.getTask() = " + weekItem.getTask());
-        System.out.println("weekItem.getTask().getProject() = " + weekItem.getTask().getProject());
-        System.out.println("weekItem.getTask().getProject().getOwner() = " + weekItem.getTask().getProject().getOwner());
         User owner = Optional.ofNullable(weekItem.getTask().getProject().getOwner()).orElse(new User());
+        boolean isLocked = weekItem.getTask().getProject().isLocked();
+
         boolean isProjectOwner = owner.getUuid().equals(user.getUuid());
-        System.out.println("isLastMonth = " + isLastMonth);
-        System.out.println("isLastMonth = " + isLastMonth);
+        if(!isLocked) return mTextField.withEnabled(true);
         if(isLastMonth && !isProjectOwner) return mTextField.withEnabled(false);
 
         System.out.println("opened");
@@ -866,18 +863,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private boolean isOnContract(Week week) {
-        System.out.println("TimeManagerLayout.isOnContract");
-        System.out.println("week = [" + week + "]");
         boolean result = false;
-        System.out.println("LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()) = " + LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()));
         LocalDate localDateStart = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
-        System.out.println("localDateStart = " + localDateStart);
         LocalDate localDateEnd = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
-        System.out.println("localDateEnd = " + localDateEnd);
         if(isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
-        System.out.println("result = " + result);
         if(isOnContract(localDateEnd, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
-        System.out.println("result = " + result);
         return result;
     }
 
