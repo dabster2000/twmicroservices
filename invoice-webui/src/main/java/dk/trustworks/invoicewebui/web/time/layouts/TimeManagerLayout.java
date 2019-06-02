@@ -460,16 +460,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
-            /*
-            Double budgetLeftByTaskuuidAndUseruuid = 0.0;
-            try {
-                budgetLeftByTaskuuidAndUseruuid = 0.0; //budgetRepository.findBudgetLeftByTaskuuidAndUseruuid(task.getUuid(), user.getUuid());
-            } catch (Exception e) {
-                Notification.show("Error loading budget...", Notification.Type.TRAY_NOTIFICATION);
-                e.printStackTrace();
-            }
-            if(budgetLeftByTaskuuidAndUseruuid!=null) weekItem.setBudgetleft(budgetLeftByTaskuuidAndUseruuid<0?0:Math.round(budgetLeftByTaskuuidAndUseruuid));
-            */
+
             double sumTask = 0.0;
             for (Work work : workResources) {
                 if(!work.getTask().getUuid().equals(task.getUuid())) continue;
