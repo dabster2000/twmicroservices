@@ -7,8 +7,10 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.Color;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.themes.ValoLightTheme;
+import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Ambition;
 import dk.trustworks.invoicewebui.model.AmbitionCategory;
@@ -16,11 +18,10 @@ import dk.trustworks.invoicewebui.model.TaskOffering;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.AmbitionCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
-import dk.trustworks.invoicewebui.repositories.TaskOfferingRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.web.resourceplanning.components.Card;
-import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
+import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
+import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +36,8 @@ import java.util.*;
 @SpringUI
 public class SalesLayout extends VerticalLayout {
 
-    @Autowired
-    private TaskOfferingRepository taskOfferingRepository;
+    //@Autowired
+    //private TaskOfferingRepository taskOfferingRepository;
 
     @Autowired
     private AmbitionRepository ambitionRepository;
@@ -47,8 +48,11 @@ public class SalesLayout extends VerticalLayout {
     @Autowired
     private WorkRepository workRepository;
 
+    //@Autowired
+    //private SalesHeatMap salesHeatMap;
+
     @Autowired
-    private SalesHeatMap salesHeatMap;
+    private HoursPerConsultantChart hoursPerConsultantChart;
 
     @Autowired
     private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
@@ -67,26 +71,47 @@ public class SalesLayout extends VerticalLayout {
         LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
         LocalDate localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(11);
 
-        Card salesViewCard = new Card();
-        salesViewCard.getCardHolder().addComponent(salesHeatMap.getSalesOverview());
+        //Card salesViewCard = new Card();
+        //salesViewCard.getCardHolder().addComponent(salesHeatMap.getSalesOverview());
 
         Card consultantsBudgetRealizationCard = new Card();
         consultantsBudgetRealizationCard.getCardHolder().addComponent(consultantsBudgetRealizationChart.createConsultantsBudgetRealizationChart());
 
-        Card offeringCard = new Card();
-        offeringCard.getCardHolder().addComponent(createOfferingChart(2018));
+
+
+        //Card offeringCard = new Card();
+        //offeringCard.getCardHolder().addComponent(createOfferingChart(2018));
+
+        Card hoursPerConsultantCard = new Card();
+        DateTimeField field = new DateTimeField(event -> {
+            hoursPerConsultantCard.getContent().removeAllComponents();
+            hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(event.getValue().toLocalDate().withDayOfMonth(1)));
+        });
+        field.setResolution(DateTimeResolution.MONTH);
+        field.setValue(localDateStart.atStartOfDay());
+        field.setDateFormat("MMM yyyy");
+        hoursPerConsultantCard.getHlTitleBar().addComponent(field);
+        //hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(localDateStart));
+
+        row.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(hoursPerConsultantCard);
 
         row.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsBudgetRealizationCard);
-
+/*
         row.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(salesViewCard);
 
+
+
         row.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(offeringCard);
+
+ */
 
         this.addComponent(responsiveLayout);
 
