@@ -53,11 +53,11 @@ public class HoursPerConsultantChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        DataSeries hoursRegisteredSeries = new DataSeries("hours registered");
         PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
-        plotOptionsColumn.setColorByPoint(true);
-        hoursRegisteredSeries.setPlotOptions(plotOptionsColumn);
-
+        plotOptionsColumn.setStacking(Stacking.NORMAL);
+        //plotOptionsColumn.setColorByPoint(true);
+        chart.getConfiguration().setPlotOptions(plotOptionsColumn);
+/*
         DataSeries budgetHoursSeries = new DataSeries();
         PlotOptionsSpline splinePlotOptions = new PlotOptionsSpline();
         Marker marker = new Marker();
@@ -68,18 +68,29 @@ public class HoursPerConsultantChart {
         splinePlotOptions.setColor(new SolidColor("black"));
         budgetHoursSeries.setPlotOptions(splinePlotOptions);
         budgetHoursSeries.setName("budget hours");
-        chart.getConfiguration().addSeries(budgetHoursSeries);
-
+*/
         List<User> users = userService.findEmployedUsersByDate(month, ConsultantType.CONSULTANT);
         String[] categories = new String[users.size()];
+        Number[] revenueData = new Number[users.size()];
+        Number[] availableHours = new Number[users.size()];
+        Number[] budgetHours = new Number[users.size()];
 
         int i = 0;
         for (User user : users) {
-            double consultantRevenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, month);
+            double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, month);
             double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, month);
+            budgetHoursByMonth -= revenueHoursByMonth;
+            if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
+            double availableHoursByMonth = statisticsService.getConsultantAvailabilityByMonth(user, month).getAvailableHours();
+            availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth;
+            if(availableHoursByMonth < 0) availableHoursByMonth = 0;
+
+            revenueData[i] = revenueHoursByMonth;
+            budgetHours[i] = budgetHoursByMonth;
+            availableHours[i] = availableHoursByMonth;
+
             categories[i++] = user.getUsername();
-            hoursRegisteredSeries.add(new DataSeriesItem(user.getUsername(), consultantRevenueHoursByMonth));
-            budgetHoursSeries.add(new DataSeriesItem(user.getUsername(), budgetHoursByMonth));
+            //budgetHoursSeries.add(new DataSeriesItem(user.getUsername(), budgetHoursByMonth));
         }
 
         XAxis x = new XAxis();
@@ -87,13 +98,39 @@ public class HoursPerConsultantChart {
         x.setCategories(categories);
         chart.getConfiguration().addxAxis(x);
 
+        YAxis yAxis = new YAxis();
+        yAxis.setMin(0);
+        yAxis.setTitle(new AxisTitle("hours"));
+        StackLabels sLabels = new StackLabels(true);
+        yAxis.setStackLabels(sLabels);
+        chart.getConfiguration().addyAxis(yAxis);
+
+        ListSeries availableHoursSeries = new ListSeries("available hours", availableHours);
+        PlotOptionsColumn poc1 = new PlotOptionsColumn();
+        poc1.setColor(new SolidColor("#CFD6E3"));
+        availableHoursSeries.setPlotOptions(poc1);
+        chart.getConfiguration().addSeries(availableHoursSeries);
+
+        ListSeries budgetHoursSeries = new ListSeries("budget hours", budgetHours);
+        PlotOptionsColumn poc2 = new PlotOptionsColumn();
+        poc2.setColor(new SolidColor("#7084AC"));
+        budgetHoursSeries.setPlotOptions(poc2);
         chart.getConfiguration().addSeries(budgetHoursSeries);
+
+        ListSeries hoursRegisteredSeries = new ListSeries("hours registered", revenueData);
+        PlotOptionsColumn poc3 = new PlotOptionsColumn();
+        poc3.setColor(new SolidColor("#123375"));
+        hoursRegisteredSeries.setPlotOptions(poc3);
         chart.getConfiguration().addSeries(hoursRegisteredSeries);
+
+        //chart.getConfiguration().addSeries(budgetHoursSeries);
 
 
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;
+
+
     }
 
 }

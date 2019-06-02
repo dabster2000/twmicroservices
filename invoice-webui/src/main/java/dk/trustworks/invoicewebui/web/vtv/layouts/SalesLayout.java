@@ -91,10 +91,10 @@ public class SalesLayout extends VerticalLayout {
         field.setValue(localDateStart.atStartOfDay());
         field.setDateFormat("MMM yyyy");
         hoursPerConsultantCard.getHlTitleBar().addComponent(field);
-        hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(localDateStart));
+        //hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(localDateStart));
 
         row.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
+                .withDisplayRules(12, 12, 12, 12)
                 .withComponent(hoursPerConsultantCard);
 
         row.addColumn()
