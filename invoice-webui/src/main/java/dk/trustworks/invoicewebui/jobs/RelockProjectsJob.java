@@ -16,7 +16,7 @@ public class RelockProjectsJob {
 
     @Scheduled(cron = "0 0 6 * * *")
     private void execute() {
-        List<Project> allProjects = projectService.findByLockedTrue();
+        List<Project> allProjects = projectService.findByLocked(false);
         for (Project project : allProjects) {
             project.setLocked(true);
         }

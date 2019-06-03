@@ -70,8 +70,8 @@ public class ProjectService {
         projectRepository.save(projects);
     }
 
-    public List<Project> findByLockedTrue() {
-        return projectRepository.findByLockedTrue();
+    public List<Project> findByLocked(boolean isLocked) {
+        return projectRepository.findByLocked(isLocked);
     }
 
     public Project findOne(String projectUUID) {
