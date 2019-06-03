@@ -43,5 +43,7 @@ public interface InvoiceRepository extends CrudRepository<Invoice, String> {
     @Query(value = "SELECT MAX(i.invoicenumber) FROM invoices i", nativeQuery = true)
     Integer getMaxInvoiceNumber();
 
+    List<Invoice> findAll();
+
 }
 

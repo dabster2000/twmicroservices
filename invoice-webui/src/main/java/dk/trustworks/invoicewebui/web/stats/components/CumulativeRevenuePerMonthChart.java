@@ -5,12 +5,8 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -27,23 +23,11 @@ public class CumulativeRevenuePerMonthChart {
 
     private final StatisticsService statisticsService;
 
-    private final ExpenseRepository expenseRepository;
-
-    private final ContractService contractService;
-
-    private final BudgetNewRepository budgetNewRepository;
-
-    private final WorkService workService;
-
     private final InvoiceService invoiceService;
 
     @Autowired
-    public CumulativeRevenuePerMonthChart(StatisticsService statisticsService, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, InvoiceService invoiceService) {
+    public CumulativeRevenuePerMonthChart(StatisticsService statisticsService, InvoiceService invoiceService) {
         this.statisticsService = statisticsService;
-        this.expenseRepository = expenseRepository;
-        this.contractService = contractService;
-        this.budgetNewRepository = budgetNewRepository;
-        this.workService = workService;
         this.invoiceService = invoiceService;
     }
 

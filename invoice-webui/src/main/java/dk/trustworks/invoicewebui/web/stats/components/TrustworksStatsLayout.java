@@ -11,6 +11,9 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
+import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
 import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,17 +87,33 @@ public class TrustworksStatsLayout extends VerticalLayout {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private DashboardBoxCreator dashboardBoxCreator;
+
 
     public TrustworksStatsLayout init() {
         this.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         ResponsiveRow searchRow = responsiveLayout.addRow();
+
+        ResponsiveRow boxRow = responsiveLayout.addRow();
+        boxRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getGoodPeopleBox()));
+        boxRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getCumulativeGrossRevenue()));
+        boxRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getPayout()));
+
+
         final ResponsiveRow chartRow = responsiveLayout.addRow();
 
         LocalDate startFiscalPeriod = LocalDate.of(2014, 7, 1);
         ComboBox<LocalDate> fiscalPeriodStartComboBox = new ComboBox<>();
         ComboBox<LocalDate> fiscalPeriodEndComboBox = new ComboBox<>();
-        LocalDate currentFiscalYear = (LocalDate.now().getMonthValue()>6 && LocalDate.now().getMonthValue()<13)?LocalDate.now().withMonth(7).withDayOfMonth(1):LocalDate.now().minusYears(1).withMonth(7).withDayOfMonth(1);
+        LocalDate currentFiscalYear = DateUtils.getCurrentFiscalStartDate();
         List<LocalDate> fiscalPeriodList = new ArrayList<>();
         while(startFiscalPeriod.isBefore(currentFiscalYear) || startFiscalPeriod.isEqual(currentFiscalYear)) {
             fiscalPeriodList.add(startFiscalPeriod);

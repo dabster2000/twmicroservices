@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * Created by hans on 20/07/2017.
@@ -81,6 +82,10 @@ public class InvoiceService {
         invoiceRepository.save(invoice);
     }
 
+    public List<Invoice> findByMonth(LocalDate month) {
+        return invoiceRepository.findByYearAndMonth(month.getYear(), month.getMonthValue()-1);
+    }
+
     @Transactional
     public void delete(String uuid) {
         invoiceRepository.delete(uuid);
@@ -97,5 +102,13 @@ public class InvoiceService {
 
     public Invoice findByLatestInvoiceByProjectuuid(String projectuuid) {
         return invoiceRepository.findByLatestInvoiceByProjectuuid(projectuuid);
+    }
+
+    public List<Invoice> findByStatuses(InvoiceStatus... invoiceStatuses) {
+        return invoiceRepository.findByStatusIn(invoiceStatuses);
+    }
+
+    public List<Invoice> findAll() {
+        return invoiceRepository.findAll();
     }
 }

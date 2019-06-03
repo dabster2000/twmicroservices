@@ -4,10 +4,8 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -57,26 +55,10 @@ public class YourTrustworksForecastChart {
 
         DataSeries payoutSeries = new DataSeries("Payout Factor");
 
-        double forecastedExpenses = 33000;
-        double forecastedSalaries = 60000;
-        double forecastedConsultants = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT, ConsultantType.STAFF).size();
-        double totalForecastedExpenses = (forecastedExpenses + forecastedSalaries) * forecastedConsultants;
+        Number[] payout = statisticsService.getPayoutsByPeriod(periodStart);
 
-        double totalCumulativeRevenue = 0.0;
-        Number[] payout = new Number[period];
         String[] categories = new String[period];
-
         for (int i = 0; i < period; i++) {
-            System.out.println("------------------------");
-            LocalDate currentDate = periodStart.plusMonths(i);
-            System.out.println("currentDate = " + currentDate);
-
-            totalCumulativeRevenue += statisticsService.getMonthRevenue(currentDate);
-            double grossMargin = totalCumulativeRevenue - totalForecastedExpenses;
-            double grossMarginPerConsultant = grossMargin / forecastedConsultants;
-            double consultantPayout = grossMarginPerConsultant * 0.1;
-            payout[i] = NumberUtils.round((consultantPayout / forecastedSalaries) * 100.0 - 100.0, 2);
-
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
 

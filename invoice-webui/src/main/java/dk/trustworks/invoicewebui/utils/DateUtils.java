@@ -218,4 +218,8 @@ public class DateUtils {
     public static String stringIt(LocalDate date, String format) {
         return date.format(DateTimeFormatter.ofPattern(format));
     }
+
+    public static LocalDate getCurrentFiscalStartDate() {
+        return (LocalDate.now().getMonthValue()>6 && LocalDate.now().getMonthValue()<13)?LocalDate.now().withMonth(7).withDayOfMonth(1):LocalDate.now().minusYears(1).withMonth(7).withDayOfMonth(1);
+    }
 }

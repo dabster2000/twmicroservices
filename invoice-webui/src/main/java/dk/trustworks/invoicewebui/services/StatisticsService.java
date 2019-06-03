@@ -51,7 +51,7 @@ public class StatisticsService extends StatisticsCachedService {
 
     @Autowired
     public StatisticsService(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, ExpenseRepository expenseRepository, WorkService workService, InvoiceService invoiceService, UserService userService) {
-        super(contractService, expenseRepository, workService, userService);
+        super(contractService, expenseRepository, workService, userService, invoiceService);
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
@@ -75,6 +75,33 @@ public class StatisticsService extends StatisticsCachedService {
             result += getConsultantBudgetByMonth(user, month);
         }
         return result;
+    }
+
+    public double getInvoicedOrRegisteredRevenueByMonth(LocalDate month) {
+        double invoicedAmountByMonth = getTotalInvoiceSumByMonth(month);
+        return (invoicedAmountByMonth > 0.0)?invoicedAmountByMonth:getRegisteredRevenueByMonth(month);
+    }
+
+    public Number[] getPayoutsByPeriod(LocalDate periodStart) {
+        double forecastedExpenses = 33000;
+        double forecastedSalaries = 60000;
+        double forecastedConsultants = countActiveEmployeeTypesByMonth(LocalDate.now().withDayOfMonth(1), ConsultantType.CONSULTANT, ConsultantType.STAFF);
+        double totalForecastedExpenses = (forecastedExpenses + forecastedSalaries) * forecastedConsultants;
+
+        double totalCumulativeRevenue = 0.0;
+        Number[] payout = new Number[12];
+
+        for (int i = 0; i < 12; i++) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+            if(!currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) break;
+
+            totalCumulativeRevenue += getMonthRevenue(currentDate);
+            double grossMargin = totalCumulativeRevenue - totalForecastedExpenses;
+            double grossMarginPerConsultant = grossMargin / forecastedConsultants;
+            double consultantPayout = grossMarginPerConsultant * 0.1;
+            payout[i] = NumberUtils.round((consultantPayout / forecastedSalaries) * 100.0 - 100.0, 2);
+        }
+        return payout;
     }
 
     /**

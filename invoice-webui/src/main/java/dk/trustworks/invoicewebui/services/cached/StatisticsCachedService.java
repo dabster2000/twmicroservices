@@ -1,16 +1,11 @@
 package dk.trustworks.invoicewebui.services.cached;
 
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
-import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
-import dk.trustworks.invoicewebui.model.dto.WorkDocument;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.model.dto.*;
+import dk.trustworks.invoicewebui.model.enums.*;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.slf4j.Logger;
@@ -19,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,12 +30,14 @@ public class StatisticsCachedService {
     private final ExpenseRepository expenseRepository;
     private final WorkService workService;
     private final UserService userService;
+    private final InvoiceService invoiceService;
 
-    public StatisticsCachedService(ContractService contractService, ExpenseRepository expenseRepository, WorkService workService, UserService userService) {
+    public StatisticsCachedService(ContractService contractService, ExpenseRepository expenseRepository, WorkService workService, UserService userService, InvoiceService invoiceService) {
         this.contractService = contractService;
         this.expenseRepository = expenseRepository;
         this.workService = workService;
         this.userService = userService;
+        this.invoiceService = invoiceService;
     }
 
     private List<BudgetDocument> cachedBudgetData = new ArrayList<>();
@@ -70,16 +68,25 @@ public class StatisticsCachedService {
         return cachedIncomeData;
     }
 
+    private List<InvoicedDocument> cachedInvoiceData = new ArrayList<>();
+
+    public List<InvoicedDocument> getInvoiceData() {
+        if(cachedInvoiceData.isEmpty()) cachedInvoiceData = createInvoiceData();
+        return cachedInvoiceData;
+    }
+
     public void refreshCache() {
         cachedBudgetData = new ArrayList<>();
         cachedAvailabilityData = new ArrayList<>();
         cachedExpenseData = new ArrayList<>();
         cachedIncomeData = new ArrayList<>();
+        cachedInvoiceData = new ArrayList<>();
 
         cachedBudgetData = createBudgetData();
         cachedAvailabilityData = createAvailabilityData();
         cachedExpenseData = createExpenseData();
         cachedIncomeData = createIncomeData();
+        cachedInvoiceData = createInvoiceData();
     }
 
     private List<BudgetDocument> createBudgetData() {
@@ -148,8 +155,6 @@ public class StatisticsCachedService {
             } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
         }
 
-
-
         return budgetDocumentList;
     }
 
@@ -174,6 +179,17 @@ public class StatisticsCachedService {
             } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
         }
         return workDocumentList;
+    }
+
+    private List<InvoicedDocument> createInvoiceData() {
+        List<Invoice> invoices = invoiceService.findByStatuses(InvoiceStatus.CREATED, InvoiceStatus.CREDIT_NOTE, InvoiceStatus.SUBMITTED, InvoiceStatus.PAID);
+        List<InvoicedDocument> invoicedDocumentList = new ArrayList<>();
+        for (Invoice invoice : invoices) {
+            double sum = invoice.getInvoiceitems().stream().mapToDouble(value -> value.hours * value.rate).sum();
+            sum -= sum * (invoice.discount / 100.0);
+            invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getInvoicedate(), sum));
+        }
+        return invoicedDocumentList;
     }
 
     private List<AvailabilityDocument> createAvailabilityData() {
@@ -215,7 +231,7 @@ public class StatisticsCachedService {
                     .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
                     .mapToDouble(Expense::getAmount)
                     .sum();
-            long consultantCount = getActiveConsultantCountByMonth(finalStartDate);
+            long consultantCount = countActiveConsultantCountByMonth(finalStartDate);
             //System.out.println(finalStartDate);
             //System.out.println("getUsername;consultantSalaries;expenseSalaries;consultantCount;staffSalaries;sharedExpense;salary");
             double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
@@ -263,13 +279,24 @@ public class StatisticsCachedService {
                 .count();
     }
 
-    public long getActiveConsultantCountByMonth(LocalDate month) {
+    public long countActiveConsultantCountByMonth(LocalDate month) {
         List<AvailabilityDocument> availabilityData = getAvailabilityData();
         return availabilityData.stream()
                 .filter(
                         availabilityDocument -> availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)) &&
                                 availabilityDocument.getAvailableHours()>0.0 &&
                                 availabilityDocument.getConsultantType().equals(ConsultantType.CONSULTANT) &&
+                                availabilityDocument.getStatusType().equals(StatusType.ACTIVE))
+                .count();
+    }
+
+    public long countActiveEmployeeTypesByMonth(LocalDate month, ConsultantType... consultantTypes) {
+        List<AvailabilityDocument> availabilityData = getAvailabilityData();
+        return availabilityData.stream()
+                .filter(
+                        availabilityDocument -> availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)) &&
+                                availabilityDocument.getAvailableHours()>0.0 &&
+                                Arrays.asList(consultantTypes).contains(availabilityDocument.getConsultantType()) &&
                                 availabilityDocument.getStatusType().equals(StatusType.ACTIVE))
                 .count();
     }
@@ -281,11 +308,24 @@ public class StatisticsCachedService {
                 .mapToDouble(workDocument -> workDocument.getRate() * workDocument.getWorkHours()).sum();
     }
 
+    public double getRegisteredRevenueByMonth(LocalDate month) {
+        List<WorkDocument> incomeData = getIncomeData();
+        return incomeData.stream()
+                .filter(workDocument -> (workDocument.getMonth().withDayOfMonth(1).isEqual(month.withDayOfMonth(1))))
+                .mapToDouble(workDocument -> workDocument.getRate() * workDocument.getWorkHours()).sum();
+    }
+
     public double getConsultantRevenueHoursByMonth(User user, LocalDate month) {
         List<WorkDocument> incomeData = getIncomeData();
         return incomeData.stream()
                 .filter(workDocument -> (workDocument.getUser().getUuid().equals(user.getUuid()) && workDocument.getMonth().isEqual(month.withDayOfMonth(1))))
                 .mapToDouble(WorkDocument::getWorkHours).sum();
+    }
+
+    public double getTotalInvoiceSumByMonth(LocalDate month) {
+        return getInvoiceData().stream()
+                .filter(invoicedDocument -> invoicedDocument.getMonth().withDayOfMonth(1).isEqual(month.withDayOfMonth(1)))
+                .mapToDouble(value -> value.getInvoiceType().equals(InvoiceType.CREDIT_NOTE)?(-value.getInvoiced()):value.getInvoiced()).sum();
     }
 
     public double getConsultantBudgetByMonth(User user, LocalDate month) {
