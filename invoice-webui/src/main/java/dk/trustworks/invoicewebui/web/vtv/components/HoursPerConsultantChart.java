@@ -46,7 +46,7 @@ public class HoursPerConsultantChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption("Gross profit for ");
+        chart.setCaption("Consultant hours distribution");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -117,7 +117,7 @@ public class HoursPerConsultantChart {
         budgetHoursSeries.setPlotOptions(poc2);
         chart.getConfiguration().addSeries(budgetHoursSeries);
 
-        ListSeries hoursRegisteredSeries = new ListSeries("hours registered", revenueData);
+        ListSeries hoursRegisteredSeries = new ListSeries("registered hours", revenueData);
         PlotOptionsColumn poc3 = new PlotOptionsColumn();
         poc3.setColor(new SolidColor("#123375"));
         hoursRegisteredSeries.setPlotOptions(poc3);
