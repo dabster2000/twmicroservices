@@ -8,6 +8,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
@@ -56,25 +57,15 @@ public class HoursPerConsultantChart {
 
         PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
         plotOptionsColumn.setStacking(Stacking.NORMAL);
-        //plotOptionsColumn.setColorByPoint(true);
         chart.getConfiguration().setPlotOptions(plotOptionsColumn);
-/*
-        DataSeries budgetHoursSeries = new DataSeries();
-        PlotOptionsSpline splinePlotOptions = new PlotOptionsSpline();
-        Marker marker = new Marker();
-        marker.setLineWidth(2);
-        marker.setLineColor(new SolidColor("black"));
-        marker.setFillColor(new SolidColor("white"));
-        splinePlotOptions.setMarker(marker);
-        splinePlotOptions.setColor(new SolidColor("black"));
-        budgetHoursSeries.setPlotOptions(splinePlotOptions);
-        budgetHoursSeries.setName("budget hours");
-*/
+
         List<User> users = userService.findEmployedUsersByDate(month, ConsultantType.CONSULTANT);
         String[] categories = new String[users.size()];
         Number[] revenueData = new Number[users.size()];
         Number[] availableHours = new Number[users.size()];
         Number[] budgetHours = new Number[users.size()];
+        Number[] vacationHours = new Number[users.size()];
+        Number[] sickHours = new Number[users.size()];
 
         int i = 0;
         for (User user : users) {
@@ -82,13 +73,18 @@ public class HoursPerConsultantChart {
             double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, month);
             budgetHoursByMonth -= revenueHoursByMonth;
             if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
-            double availableHoursByMonth = statisticsService.getConsultantAvailabilityByMonth(user, month).getAvailableHours();
+            AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, month);
+            double availableHoursByMonth = availability.getAvailableHours();
             availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth;
             if(availableHoursByMonth < 0) availableHoursByMonth = 0;
+            double vacationHoursByMonth = availability.getVacation();
+            double sickHoursByMonth = availability.getSickdays();
 
             revenueData[i] = NumberUtils.round(revenueHoursByMonth, 0);
             budgetHours[i] = NumberUtils.round(budgetHoursByMonth, 0);
             availableHours[i] = NumberUtils.round(availableHoursByMonth, 0);
+            vacationHours[i] = NumberUtils.round(vacationHoursByMonth, 0);
+            sickHours[i] = NumberUtils.round(sickHoursByMonth, 0);
 
             categories[i++] = user.getUsername();
             //budgetHoursSeries.add(new DataSeriesItem(user.getUsername(), budgetHoursByMonth));
@@ -105,6 +101,18 @@ public class HoursPerConsultantChart {
         StackLabels sLabels = new StackLabels(true);
         yAxis.setStackLabels(sLabels);
         chart.getConfiguration().addyAxis(yAxis);
+
+        ListSeries sickHoursSeries = new ListSeries("sick hours", sickHours);
+        PlotOptionsColumn poc4 = new PlotOptionsColumn();
+        poc4.setColor(new SolidColor("#FD5F5B"));
+        sickHoursSeries.setPlotOptions(poc4);
+        chart.getConfiguration().addSeries(sickHoursSeries);
+
+        ListSeries vacationHoursSeries = new ListSeries("vacation hours", vacationHours);
+        PlotOptionsColumn poc5 = new PlotOptionsColumn();
+        poc5.setColor(new SolidColor("#FFD864"));
+        vacationHoursSeries.setPlotOptions(poc5);
+        chart.getConfiguration().addSeries(vacationHoursSeries);
 
         ListSeries availableHoursSeries = new ListSeries("available hours", availableHours);
         PlotOptionsColumn poc1 = new PlotOptionsColumn();
