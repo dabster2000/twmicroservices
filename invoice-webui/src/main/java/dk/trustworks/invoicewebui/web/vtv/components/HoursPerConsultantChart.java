@@ -13,6 +13,7 @@ import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -85,9 +86,9 @@ public class HoursPerConsultantChart {
             availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth;
             if(availableHoursByMonth < 0) availableHoursByMonth = 0;
 
-            revenueData[i] = revenueHoursByMonth;
-            budgetHours[i] = budgetHoursByMonth;
-            availableHours[i] = availableHoursByMonth;
+            revenueData[i] = NumberUtils.round(revenueHoursByMonth, 0);
+            budgetHours[i] = NumberUtils.round(budgetHoursByMonth, 0);
+            availableHours[i] = NumberUtils.round(availableHoursByMonth, 0);
 
             categories[i++] = user.getUsername();
             //budgetHoursSeries.add(new DataSeriesItem(user.getUsername(), budgetHoursByMonth));
