@@ -73,7 +73,7 @@ public class AverageConsultantAllocationChart {
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             startDate = LocalDate.of(2014,7,1);//userService.findEmployedDate(user);
             double allocation = 0.0;
-            int count = 0;
+            double count = 0.0;
             do {
                 double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
                 AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);

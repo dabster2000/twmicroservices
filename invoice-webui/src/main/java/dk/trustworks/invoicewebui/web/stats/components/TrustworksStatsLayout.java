@@ -106,6 +106,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         boxRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getPayout()));
+        boxRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getUserAllocationBox()));
 
 
         final ResponsiveRow chartRow = responsiveLayout.addRow();
