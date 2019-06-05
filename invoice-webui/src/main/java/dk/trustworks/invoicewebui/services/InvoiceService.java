@@ -98,7 +98,7 @@ public class InvoiceService {
     @Transactional
     public Invoice save(Invoice invoice) {
         invoice = invoiceRepository.save(invoice);
-        entityManager.refresh(invoice);
+        //entityManager.refresh(invoice);
         return invoice;
     }
 

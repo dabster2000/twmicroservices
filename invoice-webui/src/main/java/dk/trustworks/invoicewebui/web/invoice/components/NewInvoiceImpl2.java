@@ -259,15 +259,13 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
             });
             invoiceEditDesign.btnCreateInvoice.addClickListener(event -> {
                 System.out.println("createInvoice: invoice = " + invoice);
-                Invoice savedInvoice = invoiceEditDesign.createInvoice();
-                System.out.println("after createInvoice: savedInvoice = " + savedInvoice);
+                //Invoice savedInvoice = invoiceEditDesign.createInvoice();
+                //System.out.println("after createInvoice: savedInvoice = " + savedInvoice);
 
-                /*
-                savedInvoice.setStatus(InvoiceStatus.CREATED);
-                savedInvoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
-                savedInvoice.pdf = invoiceService.createInvoicePdf(savedInvoice);
-                savedInvoice = invoiceService.save(savedInvoice);
-                */
+                invoice.setStatus(InvoiceStatus.CREATED);
+                invoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
+                invoice.pdf = invoiceService.createInvoicePdf(invoice);
+                Invoice savedInvoice = invoiceService.save(invoice);
 
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);

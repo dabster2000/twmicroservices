@@ -107,7 +107,7 @@ public class DraftEditImpl extends DraftEditDesign {
     }
 
     private void createInvoiceItems() {
-        List<InvoiceItem> invoiceItems = invoice.invoiceitems;
+        Set<InvoiceItem> invoiceItems = invoice.invoiceitems;
         binders.clear();
         for (int i = 1; i < gridInvoiceItems.getRows(); i++) {
             gridInvoiceItems.removeRow(i);
@@ -142,7 +142,7 @@ public class DraftEditImpl extends DraftEditDesign {
         calcSums(invoiceItems);
     }
 
-    private void calcSums(List<InvoiceItem> invoiceItems) {
+    private void calcSums(Set<InvoiceItem> invoiceItems) {
         double sumWithoutTax = invoiceItems.stream().mapToDouble(o -> o.hours * o.rate).sum();
 
         NumberFormat currencyFormatter = NumberFormat.getInstance(Locale.getDefault());
@@ -254,7 +254,8 @@ public class DraftEditImpl extends DraftEditDesign {
             invoiceBinder.writeBean(invoice);
             System.out.println("writebean: invoice = " + invoice);
             dfInvoiceDueDate.setValue(invoice.invoicedate.plusMonths(1));
-            invoice = invoiceService.save(invoice);
+            invoiceService.save(invoice);
+            System.out.println("after save: invoice = " + invoice);
             Notification.show("Saved", Notification.Type.TRAY_NOTIFICATION);
         } catch (ValidationException e) {
             Notification.show("Invoice could not be saved, " +
@@ -267,6 +268,7 @@ public class DraftEditImpl extends DraftEditDesign {
         invoice.setStatus(InvoiceStatus.CREATED);
         invoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
         invoice.pdf = invoiceService.createInvoicePdf(invoice);
+        System.out.println("after pdf: invoice = " + invoice);
         invoice = saveInvoice();
         return invoice;
     }

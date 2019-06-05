@@ -10,9 +10,7 @@ import dk.trustworks.invoicewebui.model.enums.InvoiceType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by hans on 08/07/2017.
@@ -45,7 +43,7 @@ public class Invoice {
     public String specificdescription;
     @OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="invoiceuuid")
-    public List<InvoiceItem> invoiceitems;
+    public Set<InvoiceItem> invoiceitems;
     @Transient
     public boolean errors;
     public InvoiceType type;
@@ -58,7 +56,7 @@ public class Invoice {
     @JsonIgnore @Transient private double sumWithTax;
 
     public Invoice() {
-        this.invoiceitems = new ArrayList<>();
+        this.invoiceitems = new HashSet<>();
         this.errors = false;
     }
 
@@ -230,11 +228,11 @@ public class Invoice {
         this.specificdescription = specificdescription;
     }
 
-    public List<InvoiceItem> getInvoiceitems() {
+    public Set<InvoiceItem> getInvoiceitems() {
         return invoiceitems;
     }
 
-    public void setInvoiceitems(List<InvoiceItem> invoiceitems) {
+    public void setInvoiceitems(Set<InvoiceItem> invoiceitems) {
         this.invoiceitems = invoiceitems;
     }
 

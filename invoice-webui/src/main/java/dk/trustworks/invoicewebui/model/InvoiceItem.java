@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -8,16 +10,17 @@ import java.util.UUID;
 /**
  * Created by hans on 08/07/2017.
  */
+@EqualsAndHashCode
 @Entity
 @Table(name = "invoiceitems")
 public class InvoiceItem {
 
     @Id
     public String uuid;
-    public String itemname;
-    public String description;
-    public double rate;
-    public double hours;
+    @EqualsAndHashCode.Exclude public String itemname;
+    @EqualsAndHashCode.Exclude public String description;
+    @EqualsAndHashCode.Exclude public double rate;
+    @EqualsAndHashCode.Exclude public double hours;
     //public String invoiceuuid;
 
     public InvoiceItem() {
