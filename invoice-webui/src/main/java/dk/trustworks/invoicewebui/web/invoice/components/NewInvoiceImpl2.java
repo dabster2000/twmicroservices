@@ -16,7 +16,6 @@ import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.ProjectSummaryService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.StringUtils;
@@ -66,7 +65,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     private InvoiceListItem selectedItem;
 
     @Autowired
-    public NewInvoiceImpl2(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService, PhotoService photoService, ProjectService projectService, PhotoService photoService1, DropboxAPI dropboxAPI) {
+    public NewInvoiceImpl2(ProjectSummaryService projectSummaryClient, InvoiceService invoiceService, PhotoService photoService1, DropboxAPI dropboxAPI) {
         this.projectSummaryClient = projectSummaryClient;
         this.invoiceService = invoiceService;
         this.photoService = photoService1;
@@ -259,12 +258,17 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 tabSheet.removeTab(tab);
             });
             invoiceEditDesign.btnCreateInvoice.addClickListener(event -> {
-                Invoice savedInvoice = invoiceEditDesign.saveInvoice();
+                System.out.println("createInvoice: invoice = " + invoice);
+                Invoice savedInvoice = invoiceEditDesign.createInvoice();
+                System.out.println("after createInvoice: savedInvoice = " + savedInvoice);
 
+                /*
                 savedInvoice.setStatus(InvoiceStatus.CREATED);
                 savedInvoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
                 savedInvoice.pdf = invoiceService.createInvoicePdf(savedInvoice);
                 savedInvoice = invoiceService.save(savedInvoice);
+                */
+
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);
                 refreshTabs(tabSheet, projectSummary);

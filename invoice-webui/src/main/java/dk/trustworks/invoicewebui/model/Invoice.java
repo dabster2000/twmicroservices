@@ -43,7 +43,7 @@ public class Invoice {
     public String projectref;
     public String contractref;
     public String specificdescription;
-    @OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="invoiceuuid")
     public List<InvoiceItem> invoiceitems;
     @Transient
@@ -301,13 +301,8 @@ public class Invoice {
 
     @Override
     public String toString() {
-        return "Invoice{" +
+        String s = "Invoice{" +
                 "uuid='" + uuid + '\'' +
-                ", contractuuid='" + contractuuid + '\'' +
-                ", projectuuid='" + projectuuid + '\'' +
-                ", projectname='" + projectname + '\'' +
-                ", year=" + year +
-                ", month=" + month +
                 ", discount=" + discount +
                 ", clientname='" + clientname + '\'' +
                 ", clientaddresse='" + clientaddresse + '\'' +
@@ -318,14 +313,18 @@ public class Invoice {
                 ", attention='" + attention + '\'' +
                 ", invoicenumber=" + invoicenumber +
                 ", invoicedate=" + invoicedate +
-                ", projectref='" + projectref + '\'' +
-                ", contractref='" + contractref + '\'' +
                 ", specificdescription='" + specificdescription + '\'' +
-                ", errors=" + errors +
                 ", type=" + type +
                 ", status=" + status +
                 ", sumNoTax=" + sumNoTax +
                 ", sumWithTax=" + sumWithTax +
-                '}';
+                "}\n";
+        s += "{\n";
+        for (InvoiceItem invoiceitem : getInvoiceitems()) {
+            s+="invoiceitem = " + invoiceitem + "\n";
+        }
+        s += "}\n";
+
+        return s;
     }
 }
