@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,6 +33,9 @@ public class InvoiceService {
 
     @Autowired
     private InvoiceRepository invoiceRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     public Invoice createCreditNota(@RequestBody Invoice invoice) {
         log.info("InvoiceController.createCreditNota");
@@ -93,7 +97,9 @@ public class InvoiceService {
 
     @Transactional
     public Invoice save(Invoice invoice) {
-        return invoiceRepository.save(invoice);
+        invoice = invoiceRepository.save(invoice);
+        //entityManager.refresh(invoice);
+        return invoice;
     }
 
     public int getMaxInvoiceNumber() {
@@ -110,5 +116,10 @@ public class InvoiceService {
 
     public List<Invoice> findAll() {
         return invoiceRepository.findAll();
+    }
+
+    @Transactional
+    public void refresh(Invoice invoice) {
+        entityManager.refresh(invoice);
     }
 }
