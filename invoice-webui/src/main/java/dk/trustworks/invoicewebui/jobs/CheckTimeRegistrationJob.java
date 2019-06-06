@@ -162,7 +162,7 @@ public class CheckTimeRegistrationJob {
                 //ChatPostMessageMethod textMessage = new ChatPostMessageMethod(userService.findByUsername("hans.lassen").getSlackusername(), responses[new Random().nextInt(responses.length)]);
                 textMessage.setAs_user(true);
                 log.info("Sending message to "+user);
-                //halWebApiClient.postMessage(textMessage);
+                halWebApiClient.postMessage(textMessage);
 
 
                 ChatPostMessageMethod textMessage2 = new ChatPostMessageMethod("@hans", "Notification sent to: "+ user.getUsername() +" at "+user.getSlackusername());
