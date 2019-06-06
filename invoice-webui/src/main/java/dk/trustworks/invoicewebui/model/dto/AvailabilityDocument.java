@@ -28,7 +28,7 @@ public class AvailabilityDocument {
         this.user = user;
         this.vacation = vacation;
         this.month = month;
-        weekdaysInPeriod = DateUtils.getWeekdaysInPeriod(month, month.plusMonths(1).minusDays(1));
+        weekdaysInPeriod = DateUtils.getWeekdaysInPeriod(month, month.plusMonths(1));
         this.sickdays = sickdays;
         weeks = weekdaysInPeriod / 5.0;
         double result = ((workWeek - 2) * weeks) - vacation;

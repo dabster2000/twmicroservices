@@ -73,12 +73,21 @@ public class HoursPerConsultantChart {
             double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, month);
             budgetHoursByMonth -= revenueHoursByMonth;
             if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
+
             AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, month);
             double availableHoursByMonth = availability.getAvailableHours();
             availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth;
             if(availableHoursByMonth < 0) availableHoursByMonth = 0;
+
             double vacationHoursByMonth = availability.getVacation();
             double sickHoursByMonth = availability.getSickdays();
+
+            availableHoursByMonth -= sickHoursByMonth;
+            if(availableHoursByMonth < 0) {
+                budgetHoursByMonth -= availableHoursByMonth;
+                availableHoursByMonth = 0;
+            }
+            if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
 
             revenueData[i] = NumberUtils.round(revenueHoursByMonth, 0);
             budgetHours[i] = NumberUtils.round(budgetHoursByMonth, 0);
@@ -87,7 +96,6 @@ public class HoursPerConsultantChart {
             sickHours[i] = NumberUtils.round(sickHoursByMonth, 0);
 
             categories[i++] = user.getUsername();
-            //budgetHoursSeries.add(new DataSeriesItem(user.getUsername(), budgetHoursByMonth));
         }
 
         XAxis x = new XAxis();

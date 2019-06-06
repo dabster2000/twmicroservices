@@ -59,7 +59,7 @@ public class DateUtils {
         do {
             if(!isWeekendDay(localDate)) weekDays++;
             localDate = localDate.plusDays(1);
-        } while (localDate.isBefore(dateTo.plusDays(1)));
+        } while (localDate.isBefore(dateTo));
         return weekDays - getVacationDaysInPeriod(dateFrom, dateTo);
     }
 
@@ -179,36 +179,6 @@ public class DateUtils {
             monthNames[i] = localDateStart.plusMonths(i).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         }
         return monthNames;
-    }
-
-    public static int countWeekDays(LocalDate startDate, LocalDate endDate) {
-        Calendar startCal = Calendar.getInstance();
-        startCal.setTime(convertLocalDateToDate(startDate));
-
-        Calendar endCal = Calendar.getInstance();
-        endCal.setTime(convertLocalDateToDate(endDate));
-
-        int workDays = 0;
-
-        //Return 0 if start and end are the same
-        if (startCal.getTimeInMillis() == endCal.getTimeInMillis()) {
-            return 0;
-        }
-
-        if (startCal.getTimeInMillis() > endCal.getTimeInMillis()) {
-            startCal.setTime(convertLocalDateToDate(endDate));
-            endCal.setTime(convertLocalDateToDate(startDate));
-        }
-
-        do {
-            //excluding start date
-            startCal.add(Calendar.DAY_OF_MONTH, 1);
-            if (startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-                ++workDays;
-            }
-        } while (startCal.getTimeInMillis() < endCal.getTimeInMillis()); //excluding end date
-
-        return workDays;
     }
 
     public static String stringIt(LocalDate date) {

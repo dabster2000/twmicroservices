@@ -117,7 +117,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
                     userStatus = userStatusIteration;
                 }
 
-                int weekDays = DateUtils.getWeekdaysInPeriod(localDate, localDate.plusMonths(1).minusDays(1));
+                int weekDays = DateUtils.getWeekdaysInPeriod(localDate, localDate.plusMonths(1));
                 assert userStatus != null;
                 double budget = Math.round((weekDays * (userStatus.getAllocation() / 5.0)) - hoursPerMonth[m]);
                 if (budget < 0.0) budget = 0.0;

@@ -221,7 +221,6 @@ public class StatisticsCachedService {
 
     private List<ExpenseDocument> createExpenseData() {
         List<ExpenseDocument> expenseDocumentList = new ArrayList<>();
-        //System.out.println("----------------------------------");
         LocalDate startDate = LocalDate.of(2014, 7, 1);
         do {
             LocalDate finalStartDate = startDate;
@@ -232,8 +231,6 @@ public class StatisticsCachedService {
                     .mapToDouble(Expense::getAmount)
                     .sum();
             long consultantCount = countActiveConsultantCountByMonth(finalStartDate);
-            //System.out.println(finalStartDate);
-            //System.out.println("getUsername;consultantSalaries;expenseSalaries;consultantCount;staffSalaries;sharedExpense;salary");
             double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
             double sharedExpense = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1)).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
 
@@ -245,15 +242,6 @@ public class StatisticsCachedService {
             for (User user : userService.findAll()) {
                 UserStatus userStatus = userService.getUserStatus(user, finalStartDate);
                 if(userStatus.getType().equals(ConsultantType.CONSULTANT) && userStatus.getStatus().equals(StatusType.ACTIVE)) {
-                    /*
-                    System.out.print("" + user.getUsername());
-                    System.out.print(";"+Math.round(consultantSalaries));
-                    System.out.print(";" + Math.round(expenseSalaries));
-                    System.out.print(";" + Math.round(consultantCount));
-                    System.out.print(";" + Math.round(staffSalaries));
-                    System.out.print(";" + Math.round(sharedExpense));
-
-                     */
                     AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, finalStartDate);
                     if (availability == null || availability.getAvailableHours() <= 0.0) continue;
                     int salary = userService.getUserSalary(user, finalStartDate);

@@ -19,6 +19,7 @@ import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.repositories.AmbitionCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
@@ -36,9 +37,6 @@ import java.util.*;
 @SpringUI
 public class SalesLayout extends VerticalLayout {
 
-    //@Autowired
-    //private TaskOfferingRepository taskOfferingRepository;
-
     @Autowired
     private AmbitionRepository ambitionRepository;
 
@@ -47,9 +45,6 @@ public class SalesLayout extends VerticalLayout {
 
     @Autowired
     private WorkRepository workRepository;
-
-    //@Autowired
-    //private SalesHeatMap salesHeatMap;
 
     @Autowired
     private HoursPerConsultantChart hoursPerConsultantChart;
@@ -69,31 +64,23 @@ public class SalesLayout extends VerticalLayout {
         ResponsiveRow row = responsiveLayout.addRow();
 
         LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
-        LocalDate localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(11);
-
-        //Card salesViewCard = new Card();
-        //salesViewCard.getCardHolder().addComponent(salesHeatMap.getSalesOverview());
 
         Card consultantsBudgetRealizationCard = new Card();
         consultantsBudgetRealizationCard.getCardHolder().addComponent(consultantsBudgetRealizationChart.createConsultantsBudgetRealizationChart());
-
-
-
-        //Card offeringCard = new Card();
-        //offeringCard.getCardHolder().addComponent(createOfferingChart(2018));
 
         Card hoursPerConsultantCard = new Card();
         hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month");
         DateTimeField field = new DateTimeField(event -> {
             hoursPerConsultantCard.getContent().removeAllComponents();
             hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(event.getValue().toLocalDate().withDayOfMonth(1)));
+            hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month (month norm: "+ DateUtils.getWeekdaysInPeriod(localDateStart, localDateStart.plusMonths(1)) +")");
         });
         field.setWidth(150, Unit.PIXELS);
         field.setResolution(DateTimeResolution.MONTH);
         field.setValue(localDateStart.atStartOfDay());
         field.setDateFormat("MMM yyyy");
+        field.addStyleName("floating");
         hoursPerConsultantCard.getHlTitleBar().addComponent(field);
-        //hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(localDateStart));
 
         row.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
@@ -102,18 +89,6 @@ public class SalesLayout extends VerticalLayout {
         row.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsBudgetRealizationCard);
-/*
-        row.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
-                .withComponent(salesViewCard);
-
-
-
-        row.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
-                .withComponent(offeringCard);
-
- */
 
         this.addComponent(responsiveLayout);
 
