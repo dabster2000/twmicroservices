@@ -14,8 +14,7 @@ import dk.trustworks.invoicewebui.web.profile.components.ProfileCanvas;
 
 import java.util.List;
 
-import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
-import static dk.trustworks.invoicewebui.model.enums.ConsultantType.STAFF;
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
 
 /**
  * Created by hans on 21/12/2016.
@@ -71,7 +70,7 @@ public class ProfileLayout extends VerticalLayout {
     }
 
     private void createDefaultViewRow() {
-        for (User employee : userService.findCurrentlyEmployedUsers(CONSULTANT)) {
+        for (User employee : userService.findCurrentlyEmployedUsers(CONSULTANT, STAFF, STUDENT)) {
             Image memberImage = photoService.getRoundMemberImage(employee, false, 100, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 createUserViewRow(employee);
