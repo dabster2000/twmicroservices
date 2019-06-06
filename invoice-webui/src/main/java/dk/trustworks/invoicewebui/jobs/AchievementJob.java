@@ -38,10 +38,12 @@ public class AchievementJob {
     private final AmbitionRepository ambitionRepository;
     private final UserAmbitionDTORepository userAmbitionDTORepository;
     private final StatisticsService statisticsService;
+    private final BubbleMemberRepository bubbleMemberRepository;
+    private final BubbleRepository bubbleRepository;
 
 
     @Autowired
-    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, StatisticsService statisticsService) {
+    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, StatisticsService statisticsService, BubbleMemberRepository bubbleMemberRepository, BubbleRepository bubbleRepository) {
         this.achievementRepository = achievementRepository;
         this.userService = userService;
         this.workService = workService;
@@ -52,6 +54,8 @@ public class AchievementJob {
         this.ambitionRepository = ambitionRepository;
         this.userAmbitionDTORepository = userAmbitionDTORepository;
         this.statisticsService = statisticsService;
+        this.bubbleMemberRepository = bubbleMemberRepository;
+        this.bubbleRepository = bubbleRepository;
     }
 
     @PostConstruct
@@ -103,6 +107,12 @@ public class AchievementJob {
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER5, isWorthyOfBudgetBeatersAchievement(user, 5));
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER15, isWorthyOfBudgetBeatersAchievement(user, 15));
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER30, isWorthyOfBudgetBeatersAchievement(user, 30));
+
+            testAchievement(user, achievementList, AchievementType.BUBBLES3, isWorthyOfBubbleMemberAchievement(user, 3));
+            testAchievement(user, achievementList, AchievementType.BUBBLES6, isWorthyOfBubbleMemberAchievement(user, 6));
+            testAchievement(user, achievementList, AchievementType.BUBBLES9, isWorthyOfBubbleMemberAchievement(user, 9));
+
+            testAchievement(user, achievementList, AchievementType.BUBBLELEADER, isWorthyOfBubbleLeaderAchievement(user));
         }
     }
 
@@ -142,6 +152,23 @@ public class AchievementJob {
         }
 
         return found;
+    }
+
+    private boolean isWorthyOfBubbleMemberAchievement(User user, int minBubbles) {
+        int bubbleCount = 0;
+        for (BubbleMember bubbleMember : bubbleMemberRepository.findByMember(user)) {
+            if(bubbleMember.getBubble().isActive()) {
+                bubbleCount++;
+            }
+        }
+        return (bubbleCount>=minBubbles);
+    }
+
+    private boolean isWorthyOfBubbleLeaderAchievement(User user) {
+        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrue()) {
+            if(bubble.getUser().getUuid().equals(user.getUuid())) return true;
+        }
+        return false;
     }
 
     private boolean isWorthyOfVacationAllMonthsAchievement(User user) {

@@ -28,6 +28,12 @@ Profilside
  GDPR
 
 
+Du har opnået +50 DNA-termometer reaktioner på dine Slack beskeder,
+"Du deltager i +5 bubler",
+"Du har svaret +50 gange i tråd på Spørg en kollega",
+"Du har opnået en 50 dages streak på TM",
+"Du har svaret HAL igen +10 gange"
+
 
  - Et ønske til intra, når du har tid: På Report siden vil jeg gerne kunne vælge døde projekter, og meget gerne kunne angive en periode (eller få hele projektet). Det bruger jeg efterhånden ret tit ifm tilbud, og pt sidder jeg og susser mig frem på fakturaoverblik
  - Bemærkningsfelt ud for lønhop

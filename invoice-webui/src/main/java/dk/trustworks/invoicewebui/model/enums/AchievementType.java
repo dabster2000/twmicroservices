@@ -43,7 +43,11 @@ public enum AchievementType {
     AMBITIONENTERED("Completed skill charts", 6, 1, "AMBITIONENTERED", "You have filled in your skill chart"),
     BUDGETBEATER5("+5 Budget Beaters", 7, 1, "BUDGETBEATERS", "Your billable hours beats your budgettet hours for five months"),
     BUDGETBEATER15("+15 Budget Beaters", 7, 2, "BUDGETBEATERS", "Your billable hours beats your budgettet hours for fifteen months"),
-    BUDGETBEATER30("+30 Budget Beaters", 7, 3, "BUDGETBEATERS", "Your billable hours beats your budgettet hours for thirty months");
+    BUDGETBEATER30("+30 Budget Beaters", 7, 3, "BUDGETBEATERS", "Your billable hours beats your budgettet hours for thirty months"),
+    BUBBLES3("+3 Bubble Member", 8, 1, "BUBBLES", "You are participating in more than 3 bubbles"),
+    BUBBLES6("+6 Bubble Member", 8, 2, "BUBBLES", "You are participating in more than 6 bubbles"),
+    BUBBLES9("+9 Bubble Member", 8, 3, "BUBBLES", "You are participating in more than 9 bubbles"),
+    BUBBLELEADER("Bubble Leader", 9, 1, "BUBBLELEADER", "You have blown a bubble");
 
     private final String name;
     private final int number;
