@@ -54,7 +54,7 @@ public class CheckTimeRegistrationJob {
 
     @Scheduled(cron = "0 20 11 * * MON-FRI")
     public void checkDuplicateEntries() {
-        System.out.println("CheckTimeRegistrationJob.checkDuplicateEntries");
+        //System.out.println("CheckTimeRegistrationJob.checkDuplicateEntries");
         LocalDate dateTime = LocalDate.now();
         Map<String, Work> uniqueWork = new HashMap<>();
         List<Work> failedWork = new ArrayList<>();
@@ -66,7 +66,7 @@ public class CheckTimeRegistrationJob {
                 uniqueWork.put(key, work);
             }
         }
-        System.out.println("failedWork.size() = " + failedWork.size());
+        //System.out.println("failedWork.size() = " + failedWork.size());
         if(failedWork.size() > 0) {
             String text = "";
             for (Work work : failedWork) {
@@ -85,6 +85,7 @@ public class CheckTimeRegistrationJob {
         halWebApiClient = SlackClientFactory.createWebApiClient(halBotUserOAuthAccessToken);
         log.info("CheckTimeRegistrationJob.execute");
         LocalDate dateTime = LocalDate.now();
+        if(!DateUtils.isWorkday(dateTime)) return;
         log.info("dateTime = " + dateTime);
 
         int count = 0;
@@ -102,7 +103,7 @@ public class CheckTimeRegistrationJob {
         List<UserBooking> userBookingList = statisticsService.getUserBooking(0, 1);
 
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-            if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
+            //if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
             log.info("checking user = " + user);
 
             boolean hasWork = allWork.stream().filter(work -> work.getUser().getUuid().equals(user.getUuid())).anyMatch(work -> work.getWorkduration()>0);
