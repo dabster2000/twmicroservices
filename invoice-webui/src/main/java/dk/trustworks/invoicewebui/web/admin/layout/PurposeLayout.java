@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.admin.components;
+package dk.trustworks.invoicewebui.web.admin.layout;
 
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveRow;

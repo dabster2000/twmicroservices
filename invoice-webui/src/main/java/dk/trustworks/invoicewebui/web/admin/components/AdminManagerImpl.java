@@ -7,6 +7,9 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.web.admin.layout.DocumentLayout;
+import dk.trustworks.invoicewebui.web.admin.layout.PurposeLayout;
+import dk.trustworks.invoicewebui.web.admin.layout.TalentPassionLayout;
+import dk.trustworks.invoicewebui.web.admin.layout.UserLayout;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.ItBudgetTab;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +37,9 @@ public class AdminManagerImpl extends VerticalLayout {
     @Autowired
     private ItBudgetTab itBudgetTab;
 
+    @Autowired
+    private TalentPassionLayout talentPassionLayout;
+
     ResponsiveLayout responsiveLayout;
 
     ResponsiveRow buttonRow;
@@ -43,6 +49,7 @@ public class AdminManagerImpl extends VerticalLayout {
     private ResponsiveRow docsContentRow;
     private ResponsiveRow purposeContentRow;
     private ResponsiveRow budgContentRow;
+    private ResponsiveRow talentPassionContentRow;
 
     public AdminManagerImpl() {
     }
@@ -65,27 +72,33 @@ public class AdminManagerImpl extends VerticalLayout {
         budgContentRow.setVisible(false);
         docsContentRow = responsiveLayout.addRow();
         docsContentRow.setVisible(false);
+        talentPassionContentRow = responsiveLayout.addRow();
+        talentPassionContentRow.setVisible(false);
 
         final Button btnEmployee = new MButton(MaterialIcons.VERIFIED_USER, "employees", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top").withEnabled(false);
         final Button btnSlack = new MButton(MaterialIcons.CALL, "slack comms", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnBudget = new MButton(MaterialIcons.SHOPPING_CART, "IT Budget", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnDocuments = new MButton(MaterialIcons.ARCHIVE, "Documents", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnPurpose = new MButton(MaterialIcons.TRENDING_UP, "key purpose", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
+        final Button btnTalentPassion = new MButton(MaterialIcons.TRENDING_UP, "talent & passion", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
 
         btnEmployee.addClickListener(event -> {
-            setNewButtonPressState(btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, event, employeeContentRow);
+            setNewButtonPressState(event, employeeContentRow, btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, btnTalentPassion);
         });
         btnSlack.addClickListener(event -> {
-            setNewButtonPressState(btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, event, slackContentRow);
+            setNewButtonPressState(event, slackContentRow, btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, btnTalentPassion);
         });
         btnBudget.addClickListener(event -> {
-            setNewButtonPressState(btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, event, budgContentRow);
+            setNewButtonPressState(event, budgContentRow, btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, btnTalentPassion);
         });
         btnDocuments.addClickListener(event -> {
-            setNewButtonPressState(btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, event, docsContentRow);
+            setNewButtonPressState(event, docsContentRow, btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, btnTalentPassion);
         });
         btnPurpose.addClickListener(event -> {
-            setNewButtonPressState(btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, event, purposeContentRow);
+            setNewButtonPressState(event, purposeContentRow, btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, btnTalentPassion);
+        });
+        btnTalentPassion.addClickListener(event -> {
+            setNewButtonPressState(event, talentPassionContentRow, btnEmployee, btnSlack, btnBudget, btnDocuments, btnPurpose, btnTalentPassion);
         });
 
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnEmployee);
@@ -93,29 +106,24 @@ public class AdminManagerImpl extends VerticalLayout {
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnPurpose);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnDocuments);
         buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(btnBudget);
-        buttonRow.addColumn().withDisplayRules(12, 6, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
+        buttonRow.addColumn().withDisplayRules(12, 6 ,2, 2).withComponent(btnTalentPassion);
+
 
         userLayout.createEmployeeLayout(employeeContentRow);
         purposeLayout.createEmployeeLayout(purposeContentRow);
         docsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(documentLayout);
         budgContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(itBudgetTab.getTabLayout());
-
+        talentPassionContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(talentPassionLayout.getLayout());
         addComponent(responsiveLayout);
     }
 
-    private void setNewButtonPressState(Button btnWork, Button btnKnowledge, Button btnBudget, Button btnDocuments, Button btnPurpose, Button.ClickEvent event, ResponsiveRow contentRow) {
+    private void setNewButtonPressState(Button.ClickEvent event, ResponsiveRow contentRow, Button... buttons) {
         hideAllDynamicRows();
-        enableAllButtons(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose);
+        for (Button button : buttons) {
+            button.setEnabled(true);
+        }
         event.getButton().setEnabled(false);
         contentRow.setVisible(true);
-    }
-
-    private void enableAllButtons(Button btnWork, Button btnKnowledge, Button btnBudget, Button btnDocuments, Button btnPurpose) {
-        btnWork.setEnabled(true);
-        btnKnowledge.setEnabled(true);
-        btnPurpose.setEnabled(true);
-        btnBudget.setEnabled(true);
-        btnDocuments.setEnabled(true);
     }
 
     private void hideAllDynamicRows() {
@@ -124,54 +132,5 @@ public class AdminManagerImpl extends VerticalLayout {
         purposeContentRow.setVisible(false);
         docsContentRow.setVisible(false);
         budgContentRow.setVisible(false);
-    }
-}
-
-class Employee {
-    String name;
-    String status;
-    int hours;
-    int salary;
-
-    public Employee() {
-    }
-
-    public Employee(String name, String status, int hours, int salary) {
-        this.name = name;
-        this.status = status;
-        this.hours = hours;
-        this.salary = salary;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public int getHours() {
-        return hours;
-    }
-
-    public void setHours(int hours) {
-        this.hours = hours;
-    }
-
-    public int getSalary() {
-        return salary;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
     }
 }

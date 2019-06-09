@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.admin.components;
+package dk.trustworks.invoicewebui.web.admin.layout;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
@@ -21,8 +21,9 @@ import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.web.admin.components.*;
+import dk.trustworks.invoicewebui.web.admin.model.Employee;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
