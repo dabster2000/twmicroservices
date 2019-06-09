@@ -68,41 +68,48 @@ public class TalentPassionLayout {
             scoringDesign.getImgTeam().setSource(new ThemeResource("images/icons/trustworks_icon_kollega.svg"));
             row.addColumn().withComponent(scoringDesign).withDisplayRules(12, 12, 6, 6);
 
+            scoringDesign.getRbgPotentialTeam().setValue(-1.0);
+            scoringDesign.getRbgPerformanceTeam().setValue(-1.0);
+            scoringDesign.getRbgPotentialCustomer().setValue(-1.0);
+            scoringDesign.getRbgPerformanceCustomer().setValue(-1.0);
+            scoringDesign.getRbgPotentialDNA().setValue(-1.0);
+            scoringDesign.getRbgPerformanceDNA().setValue(-1.0);
+
             int[] performance = {-1, -1, -1};
             int[] potential = {-1, -1, -1};
 
             scoringDesign.getRbgPerformanceDNA().addValueChangeListener(event -> {
-                performance[0] = Integer.parseInt(event.getValue());
+                performance[0] = event.getValue().intValue();
                 if(performance[0]>-1 && potential[0]>-1) scoringDesign.getBtnDNA().setEnabled(true);
                 updateChart(user, performance, potential);
             });
 
             scoringDesign.getRbgPotentialDNA().addValueChangeListener(event -> {
-                potential[0] = Integer.parseInt(event.getValue());
+                potential[0] = event.getValue().intValue();
                 if(performance[0]>-1 && potential[0]>-1) scoringDesign.getBtnDNA().setEnabled(true);
                 updateChart(user, performance, potential);
             });
 
             scoringDesign.getRbgPerformanceCustomer().addValueChangeListener(event -> {
-                performance[1] = Integer.parseInt(event.getValue());
+                performance[1] = event.getValue().intValue();
                 if(performance[1]>-1 && potential[1]>-1) scoringDesign.getBtnCustomer().setEnabled(true);
                 updateChart(user, performance, potential);
             });
 
             scoringDesign.getRbgPotentialCustomer().addValueChangeListener(event -> {
-                potential[1] = Integer.parseInt(event.getValue());
+                potential[1] = event.getValue().intValue();
                 if(performance[1]>-1 && potential[1]>-1) scoringDesign.getBtnCustomer().setEnabled(true);
                 updateChart(user, performance, potential);
             });
 
             scoringDesign.getRbgPerformanceTeam().addValueChangeListener(event -> {
-                performance[2] = Integer.parseInt(event.getValue());
+                performance[2] = event.getValue().intValue();
                 if(performance[2]>-1 && potential[2]>-1) scoringDesign.getBtnTeam().setEnabled(true);
                 updateChart(user, performance, potential);
             });
 
             scoringDesign.getRbgPotentialTeam().addValueChangeListener(event -> {
-                potential[2] = Integer.parseInt(event.getValue());
+                potential[2] = event.getValue().intValue();
                 if(performance[2]>-1 && potential[2]>-1) scoringDesign.getBtnTeam().setEnabled(true);
                 updateChart(user, performance, potential);
             });
