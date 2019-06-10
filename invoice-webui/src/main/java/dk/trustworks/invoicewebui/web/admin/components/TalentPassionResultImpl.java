@@ -54,24 +54,6 @@ public class TalentPassionResultImpl {
     private final Table<Integer, Integer, Integer> scoringConverter = HashBasedTable.create();
 
     public TalentPassionResultImpl() {
-        /*
-        scoringConverter.put(0, 0, 0);
-        scoringConverter.put(1, 0, 2);
-        scoringConverter.put(2, 0, 5);
-
-        scoringConverter.put(0, 1, 1);
-        scoringConverter.put(1, 1, 4);
-        scoringConverter.put(2, 1, 7);
-
-        scoringConverter.put(0, 2, 3);
-        scoringConverter.put(1, 2, 6);
-        scoringConverter.put(2, 2, 8);
-
-        scoringConverter.put(3, 3, 8);
-        scoringConverter.put(3, 3, 8);
-
-         */
-
         scoringConverter.put(0, 0, 1);
         scoringConverter.put(1, 0, 2);
         scoringConverter.put(2, 0, 4);
@@ -134,20 +116,11 @@ public class TalentPassionResultImpl {
             if(!descriptionLayout.isVisible()) return;
             descriptionLayout.removeAllComponents();
 
-            System.out.println("perfomance = " + perfomance + ", potential = " + potential);
-
             Integer scoreMajor = scoringConverter.get((int) (perfomance), (int) (potential));
-            System.out.println("scoreMajor = " + scoreMajor);
-
-            //double scoreMajor = scoringConverter.get((int) perfomance, (int) potential);
-            //double scoreMinor = scoringConverter.get((int) perfomance, (int) potential) - scoreMajor;
-
-            //System.out.println("scoreMajor = " + scoreMajor);
-            //System.out.println("scoreMinor = " + scoreMinor);
 
             descriptionLayout.addComponent(new MLabel("").withFullWidth());
             descriptionLayout.addComponent(new MLabel("Name:",user.getFirstname()+" "+user.getLastname()).withFullWidth());
-            descriptionLayout.addComponent(new MLabel("Score (???):", ""+(scoreMajor)).withFullWidth());
+            descriptionLayout.addComponent(new MLabel("Score:", ""+(scoreMajor)).withFullWidth());
             descriptionLayout.addComponent(new MLabel("Recommendation:", texts[scoreMajor-1]).withFullWidth());
             descriptionLayout.addComponent(new MLabel("Abnormalities:", "").withFullWidth());
 
