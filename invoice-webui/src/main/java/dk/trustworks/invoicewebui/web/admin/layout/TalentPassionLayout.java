@@ -1,7 +1,5 @@
 package dk.trustworks.invoicewebui.web.admin.layout;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.ThemeResource;
@@ -25,6 +23,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static dk.trustworks.invoicewebui.web.admin.components.TalentPassionResultImpl.performanceConverter;
+import static dk.trustworks.invoicewebui.web.admin.components.TalentPassionResultImpl.potentialConverter;
 
 @SpringUI
 @SpringComponent
@@ -42,20 +42,14 @@ public class TalentPassionLayout {
     @Autowired
     private TalentPassionResultImpl talentPassionResult;
 
-    private final Table<Double, Double, Integer> scoringConverter = HashBasedTable.create();
-
-    private final double[] performanceConverter = {0.0, 0.75, 1.5, 2.25, 3.0};
-    private final double[] potentialConverter = {0.0, 0.25, 0.5, 0.75, 1.0, 1.33, 1.66, 2.0, 2.5, 3.0};
 
     public TalentPassionLayout() {
-
     }
-
 
     public Component getLayout() {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
 
-        responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 12, 12).withComponent(talentPassionResult.getInstance());
+        responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 12, 12).withComponent(talentPassionResult.getResultBoard());
 
         ResponsiveRow row = responsiveLayout.addRow();
 
@@ -150,8 +144,8 @@ public class TalentPassionLayout {
             if(performance[i] < 0) continue;
             if(potential[i] < 0) continue;
 
-            performanceScore += performanceConverter[performance[i]];
-            potentialScore += potentialConverter[potential[i]];
+            performanceScore += performanceConverter(performance[i]);
+            potentialScore += potentialConverter(potential[i]);
             count++;
         }
         if(count==0) return;

@@ -85,6 +85,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private RevenuePerConsultantChart revenuePerConsultantChart;
 
     @Autowired
+    private TalentPassionResultBox talentPassionResultBox;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -254,6 +257,11 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("9 out of 10 charts created!");
         System.out.println("timeMillis 9 = " + (System.currentTimeMillis() - timeMillis));
 
+        Card talentPassionCard = new Card();
+        talentPassionCard.getLblTitle().setValue("Talent & Passion");
+        talentPassionCard.getContent().addComponent(talentPassionResultBox.create());
+        notification.setDescription("9 out of 10 charts created!");
+        System.out.println("timeMillis 9 = " + (System.currentTimeMillis() - timeMillis));
 
         Card expensesPerEmployee = new Card();
         expensesPerEmployee.getLblTitle().setValue("Average Historical Economic Overview per Employee");
@@ -337,6 +345,9 @@ excelFileDownloader.extend(downloadAsExcel);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(averageConsultantRevenueByYearCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(talentPassionCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(averageConsultantRevenueCard);
