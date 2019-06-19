@@ -5,7 +5,6 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -22,18 +21,15 @@ public class YourTrustworksForecastChart {
 
     private final StatisticsService statisticsService;
 
-    private final UserService userService;
-
     @Autowired
-    public YourTrustworksForecastChart(StatisticsService statisticsService, UserService userService) {
+    public YourTrustworksForecastChart(StatisticsService statisticsService) {
         this.statisticsService = statisticsService;
-        this.userService = userService;
     }
 
     public Chart createChart(LocalDate periodStart, LocalDate periodEnd) {
         Chart chart = new Chart();
         chart.setSizeFull();
-        int period = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1));
+        int period = (int) ChronoUnit.MONTHS.between(periodStart, (periodEnd.isBefore(LocalDate.now().withDayOfMonth(1)))?periodEnd:LocalDate.now().withDayOfMonth(1));
 
         chart.setCaption("Your Trustworks Forecast");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
