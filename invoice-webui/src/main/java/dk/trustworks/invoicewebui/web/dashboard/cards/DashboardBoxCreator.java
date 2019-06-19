@@ -80,7 +80,7 @@ public class DashboardBoxCreator {
 
     public TopCardContent getPayout() {
         SimpleRegression regression = new SimpleRegression();
-        Number[] payouts = statisticsService.getPayoutsByPeriod(DateUtils.getCurrentFiscalStartDate());
+        Number[] payouts = statisticsService.getPayoutsByPeriod(DateUtils.getCurrentFiscalStartDate(), LocalDate.now().withDayOfMonth(1));
 
         LocalDate periodStart = DateUtils.getCurrentFiscalStartDate();
         double payout = 0.0;

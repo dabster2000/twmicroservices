@@ -29,7 +29,8 @@ public class YourTrustworksForecastChart {
     public Chart createChart(LocalDate periodStart, LocalDate periodEnd) {
         Chart chart = new Chart();
         chart.setSizeFull();
-        int period = (int) ChronoUnit.MONTHS.between(periodStart, (periodEnd.isBefore(LocalDate.now().withDayOfMonth(1)))?periodEnd:LocalDate.now().withDayOfMonth(1));
+        periodEnd = (periodEnd.isBefore(LocalDate.now().withDayOfMonth(1))) ? periodEnd : LocalDate.now().withDayOfMonth(1);
+        int period = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
         chart.setCaption("Your Trustworks Forecast");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
@@ -51,7 +52,7 @@ public class YourTrustworksForecastChart {
 
         DataSeries payoutSeries = new DataSeries("Payout Factor");
 
-        Number[] payout = statisticsService.getPayoutsByPeriod(periodStart);
+        Number[] payout = statisticsService.getPayoutsByPeriod(periodStart, periodEnd);
 
         String[] categories = new String[period];
         for (int i = 0; i < period; i++) {

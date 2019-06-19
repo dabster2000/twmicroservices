@@ -82,10 +82,10 @@ public class StatisticsService extends StatisticsCachedService {
         return (invoicedAmountByMonth > 0.0)?invoicedAmountByMonth:getRegisteredRevenueByMonth(month);
     }
 
-    public Number[] getPayoutsByPeriod(LocalDate periodStart) {
+    public Number[] getPayoutsByPeriod(LocalDate periodStart, LocalDate periodEnd) {
         double forecastedExpenses = 33000;
         double forecastedSalaries = 60000;
-        double forecastedConsultants = countActiveEmployeeTypesByMonth(LocalDate.now().withDayOfMonth(1), ConsultantType.CONSULTANT, ConsultantType.STAFF);
+        double forecastedConsultants = countActiveEmployeeTypesByMonth(periodEnd, ConsultantType.CONSULTANT, ConsultantType.STAFF);
         double totalForecastedExpenses = (forecastedExpenses + forecastedSalaries) * forecastedConsultants;
 
         double totalCumulativeRevenue = 0.0;
@@ -93,7 +93,7 @@ public class StatisticsService extends StatisticsCachedService {
 
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            if(!currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) break;
+            if(!currentDate.isBefore(periodEnd)) break;
 
             totalCumulativeRevenue += getMonthRevenue(currentDate);
             double grossMargin = totalCumulativeRevenue - totalForecastedExpenses;
