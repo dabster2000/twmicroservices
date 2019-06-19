@@ -15,19 +15,6 @@ Profilside
 
  - Kunder, domæner, services mapping...
 
- - TILMELDINGSBLANKET:
- Start
- Deadline
- Reminder (48 timer)
-
- Billede
- Tekst
- Navn og email
- Om man kommer eller ikke kommer
- Tilmeldingsindhold
- GDPR
-
-
 
  - Et ønske til intra, når du har tid: På Report siden vil jeg gerne kunne vælge døde projekter, og meget gerne kunne angive en periode (eller få hele projektet). Det bruger jeg efterhånden ret tit ifm tilbud, og pt sidder jeg og susser mig frem på fakturaoverblik
  - Bemærkningsfelt ud for lønhop
