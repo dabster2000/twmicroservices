@@ -152,7 +152,7 @@ public class ContractService {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
         if(work.getWorkas()==null) {
-            return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+            return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUseruuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         } else {
             return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         }
@@ -163,7 +163,7 @@ public class ContractService {
         //System.out.println("work = [" + work + "], statusList = [" + statusList + "]");
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
         if(work.getWorkas()==null) {
-            return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
+            return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUseruuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
         } else {
             return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkas().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
         }
@@ -203,7 +203,7 @@ public class ContractService {
             if(!(work.getWorkduration()>0)) continue;
             if(work.getTask().getType().equals(TaskType.SO)) continue;
             if(findConsultantRateByWork(work, ContractStatus.values())==null)
-                errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
+                errors.put(work.getUseruuid()+work.getTask().getProject().getUuid(), work);
         }
         return errors;
     }
@@ -213,18 +213,18 @@ public class ContractService {
         for (Work work : workService.findByPeriodAndUserUUID(errorDate.minusMonths(months), errorDate, user.getUuid())) {
             if(!(work.getWorkduration()>0)) continue;
             if(findConsultantRateByWork(work)==null)
-                errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
+                errors.put(work.getUseruuid()+work.getTask().getProject().getUuid(), work);
         }
         return errors;
     }
 
-    public Set<User> getEmployeesWorkingOnProjectWithNoContract(Project project) {
-        Set<User> users = new HashSet<>();
+    public Set<String> getEmployeesWorkingOnProjectWithNoContract(Project project) {
+        Set<String> users = new HashSet<>();
         if(project.getTasks().size() == 0) return users;
         for (Work work : workService.findByTasks(project.getTasks())) {
             if(!(work.getWorkduration()>0)) continue;
             if(findConsultantRateByWork(work, ContractStatus.values())==null)
-                users.add(work.getUser());
+                users.add(work.getUseruuid());
         }
         return users;
     }
@@ -285,7 +285,7 @@ public class ContractService {
         for (Work work : errors.values().stream().filter(work -> work.getWorkduration()>0).sorted(Comparator.comparing(Work::getRegistered).reversed()).collect(Collectors.toList())) {
             String client = work.getTask().getProject().getClient().getName();
             String project = work.getTask().getProject().getName();
-            String username = work.getUser().getUsername();
+            String username = work.getUseruuid();
             String error = "There is no valid contract for " + username +
                     " work on " + client +
                     "'s project " + project +

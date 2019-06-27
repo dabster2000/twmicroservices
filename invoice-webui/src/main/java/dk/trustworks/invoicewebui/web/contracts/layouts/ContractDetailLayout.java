@@ -448,7 +448,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         plotOptions.setMarker(marker);
         conf.setPlotOptions(plotOptions);
 
-        Map<User, Map<LocalDate, Double>> userMapMap = new HashMap<>();
+        Map<String, Map<LocalDate, Double>> userMapMap = new HashMap<>();
         String unit = "weeks";
         TemporalAdjuster temporalAdjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
         if(between > 26) {
@@ -462,14 +462,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
         List<Work> workList = contractService.getWorkOnContractByUser(contract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList());
         for (Work work : workList) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
-            Optional<ContractConsultant> optionalConsultant = contract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
+            Optional<ContractConsultant> optionalConsultant = contract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUseruuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;
             LocalDate workDate = work.getRegistered().with(temporalAdjuster);
             Map<LocalDate, Double> runningBudget;
-            if(!userMapMap.containsKey(work.getUser())) {
-                userMapMap.put(work.getUser(), new TreeMap<>());
+            if(!userMapMap.containsKey(work.getUseruuid())) {
+                userMapMap.put(work.getUseruuid(), new TreeMap<>());
             }
-            runningBudget = userMapMap.get(work.getUser());
+            runningBudget = userMapMap.get(work.getUseruuid());
             double workDuration = 0.0;
             if(!runningBudget.containsKey(workDate)) {
                 runningBudget.put(workDate, workDuration);
@@ -478,7 +478,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             runningBudget.put(workDate, workDuration);
         }
         if(unit.equals("months")) {
-            for (User user : userMapMap.keySet()) {
+            for (String user : userMapMap.keySet()) {
                 Map<LocalDate, Double> doubleMap = userMapMap.get(user);
                 for (LocalDate localDate : doubleMap.keySet()) {
                     double aDouble = doubleMap.get(localDate);
@@ -488,7 +488,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             }
         }
         if(unit.equals("quarters")) {
-            for (User user : userMapMap.keySet()) {
+            for (String user : userMapMap.keySet()) {
                 Map<LocalDate, Double> doubleMap = userMapMap.get(user);
                 for (LocalDate localDate : doubleMap.keySet()) {
                     double aDouble = doubleMap.get(localDate);
@@ -500,8 +500,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
             }
         }
 
-        for (User user : userMapMap.keySet()) {
-            Map<LocalDate, Double> runningBudget = userMapMap.get(user);
+        for (String useruuid : userMapMap.keySet()) {
+            Map<LocalDate, Double> runningBudget = userMapMap.get(useruuid);
+            User user = userService.findByUUID(useruuid);
             DataSeries ls = new DataSeries(user.getFirstname()+" "+user.getLastname());
             for (LocalDate localDate : runningBudget.keySet()) {
                 DataSeriesItem item = new DataSeriesItem(localDate.atStartOfDay().toInstant(ZoneOffset.UTC),runningBudget.get(localDate));
@@ -683,12 +684,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createProposedConsultants(Contract Contract, ResponsiveRow responsiveRow) {
-        HashMap<String, User> proposedUsers = new HashMap<>();
+        HashMap<String, String> proposedUsers = new HashMap<>();
         for (Project project : Contract.getProjects()) {
-            Set<User> employees = contractService.getEmployeesWorkingOnProjectWithNoContract(project);
-            for (User employee : employees) {
-                if(Contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(employee.getUuid())))
-                    proposedUsers.put(employee.getUuid(), employee);
+            Set<String> employees = contractService.getEmployeesWorkingOnProjectWithNoContract(project);
+            for (String employee : employees) {
+                if(Contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(employee)))
+                    proposedUsers.put(employee, employee);
             }
         }
 
@@ -696,28 +697,29 @@ public class ContractDetailLayout extends ResponsiveLayout {
             responsiveRow.addColumn()
                     .withDisplayRules(12, 12, 12, 12)
                     .withComponent(new MLabel("Proposed consultants:"));
-            for (User user : proposedUsers.values()) {
+            for (String user : proposedUsers.values()) {
                 createConsultantRow(Contract, responsiveRow, user);
             }
         } else if(Contract.getProjects().size() == 0) {
             for (Project project : Contract.getClient().getProjects()) {
-                for (User user : contractService.getEmployeesWorkingOnProjectWithNoContract(project)) {
-                    if(Contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(user.getUuid())))
-                    proposedUsers.put(user.getUuid(), user);
+                for (String user : contractService.getEmployeesWorkingOnProjectWithNoContract(project)) {
+                    if(Contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(user)))
+                    proposedUsers.put(user, user);
                 }
             }
             if(proposedUsers.size() > 0) {
                 responsiveRow.addColumn()
                         .withDisplayRules(12, 12, 12, 12)
                         .withComponent(new MLabel("Proposed consultants:"));
-                for (User user : proposedUsers.values()) {
+                for (String user : proposedUsers.values()) {
                     createConsultantRow(Contract, responsiveRow, user);
                 }
             }
         }
     }
 
-    private void createConsultantRow(Contract Contract, ResponsiveRow responsiveRow, User user) {
+    private void createConsultantRow(Contract Contract, ResponsiveRow responsiveRow, String useruuid) {
+        User user = userService.findByUUID(useruuid);
         ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
         consultantRowDesign.getHlBackground().setStyleName("bg-grey");
         consultantRowDesign.getHlNameBackground().setStyleName("dark-grey");

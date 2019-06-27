@@ -31,14 +31,14 @@ public class TimeService {
         //currentDate.getWeekOfWeekyear(), currentDate.getYear(), getSelActiveUser().getSelectedItem().get()
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(weekNumber - 1, year, user);
         for (Week week : weeks) {
-            weekRepository.save(new Week(UUID.randomUUID().toString(), weekNumber, year, week.getUser(), week.getTask()));
+            weekRepository.save(new Week(UUID.randomUUID().toString(), weekNumber, year, week.getUseruuid(), week.getTask()));
         }
     }
 
     public void cloneTaskToWeek(LocalDate currentDate, User user) {
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user);
         for (Week week : weeks) {
-            weekRepository.save(new Week(UUID.randomUUID().toString(), currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), week.getUser(), week.getTask(), week.getWorkas()));
+            weekRepository.save(new Week(UUID.randomUUID().toString(), currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), week.getUseruuid(), week.getTask(), week.getWorkas()));
         }
     }
 }

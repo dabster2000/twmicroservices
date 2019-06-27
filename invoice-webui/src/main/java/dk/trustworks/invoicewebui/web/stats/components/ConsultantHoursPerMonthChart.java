@@ -72,8 +72,8 @@ public class ConsultantHoursPerMonthChart {
         List<Work> workList = workService.findBillableWorkByPeriod(periodStart, periodEnd);
 
         for (Work work : workList) {
-            if(!userMonths.containsKey(work.getUser().getUuid())) userMonths.put(work.getUser().getUuid(), new double[period+1]);
-            userMonths.get(work.getUser().getUuid())[Period.between(periodStart, work.getRegistered()).getMonths()] += work.getWorkduration();
+            if(!userMonths.containsKey(work.getUseruuid())) userMonths.put(work.getUseruuid(), new double[period+1]);
+            userMonths.get(work.getUseruuid())[Period.between(periodStart, work.getRegistered()).getMonths()] += work.getWorkduration();
         }
 
         for (String useruuid : userMonths.keySet()) {

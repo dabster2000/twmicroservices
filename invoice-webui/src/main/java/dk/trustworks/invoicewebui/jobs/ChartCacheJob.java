@@ -67,7 +67,7 @@ public class ChartCacheJob {
         double budget = mainContract.getAmount();
         for (Work work : contractService.getWorkOnContractByUser(mainContract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList())) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
-            Optional<ContractConsultant> optionalConsultant = mainContract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
+            Optional<ContractConsultant> optionalConsultant = mainContract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUseruuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;
             budget -= (work.getWorkduration() * optionalConsultant.get().getRate());
             runningBudget.put(work.getRegistered(), budget);

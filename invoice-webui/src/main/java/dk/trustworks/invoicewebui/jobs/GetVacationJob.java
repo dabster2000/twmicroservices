@@ -49,8 +49,8 @@ public class GetVacationJob {
         for (Work work : workList) {
             LocalDate month = DateUtils.getFirstDayOfMonth(work.getRegistered());
             dates.add(month.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            userVacationByMonth.putIfAbsent(work.getUser().getUuid(), new TreeMap<>());
-            Map<String, Double> vacationByMonth = userVacationByMonth.get(work.getUser().getUuid());
+            userVacationByMonth.putIfAbsent(work.getUseruuid(), new TreeMap<>());
+            Map<String, Double> vacationByMonth = userVacationByMonth.get(work.getUseruuid());
             vacationByMonth.putIfAbsent(month.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), 0.0);
             Double vacation = vacationByMonth.get(month.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             Double newVacation = vacation + work.getWorkduration();

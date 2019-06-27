@@ -40,13 +40,16 @@ public class ProjectSummaryService {
 
     private final InvoiceRepository invoiceClient;
 
+    private final UserService userService;
+
     @Autowired
-    public ProjectSummaryService(ReceiptsRepository receiptsRepository, ContractService contractService, ProjectService projectService, WorkService workService, InvoiceRepository invoiceClient) {
+    public ProjectSummaryService(ReceiptsRepository receiptsRepository, ContractService contractService, ProjectService projectService, WorkService workService, InvoiceRepository invoiceClient, UserService userService) {
         this.receiptsRepository = receiptsRepository;
         this.contractService = contractService;
         this.projectService = projectService;
         this.workService = workService;
         this.invoiceClient = invoiceClient;
+        this.userService = userService;
     }
 
     @Transactional
@@ -173,7 +176,7 @@ public class ProjectSummaryService {
                 projectSummaryMap.put(contractuuid+project.getUuid(), projectSummary);
                 logger.info("Created new projectSummary: " + projectSummary);
             }
-            if(work.getUser()==null) logger.info("work u = " + work);
+            if(work.getUseruuid()==null) logger.info("work u = " + work);
             if(work.getTask()==null) logger.info("work t = " + work);
 
             ProjectSummary projectSummary = projectSummaryMap.get(contractuuid+project.getUuid());
@@ -181,8 +184,8 @@ public class ProjectSummaryService {
             if(rate != null) {
                 projectSummary.addAmount(work.getWorkduration() * (rate));
             } else {
-                projectSummary.addError(work.getUser().getUuid()+work.getTask().getProject().getUuid(),
-                        "There is no valid contract for " + work.getUser().getUsername() +
+                projectSummary.addError(work.getUseruuid()+work.getTask().getProject().getUuid(),
+                        "There is no valid contract for " + work.getUseruuid() +
                         " work on " + work.getTask().getProject().getClient().getName() +"'s project " +
                         work.getTask().getProject().getName());
             }
@@ -256,8 +259,8 @@ public class ProjectSummaryService {
                 if (!contractService.findContractByWork(workResource, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED).getUuid().equals(contract.getUuid()))
                     continue;
 
-                User user = workResource.getUser();
-                System.out.println("user = " + user);
+                String useruuid = workResource.getUseruuid();
+                System.out.println("user = " + useruuid);
 
                 if (contract.getClientdata() == null) logger.info("clientdata null: " + contract);
                 Clientdata clientdata = (contract.getClientdata() != null) ? contract.getClientdata() : new Clientdata();
@@ -289,27 +292,28 @@ public class ProjectSummaryService {
                 System.out.println("rate = " + rate);
 
                 if (rate == null) {
-                    logger.error("Taskworkerconstraint could not be found for user (link: " + user.getUuid() + ") and task (link: " + task.getUuid() + ")");
+                    logger.error("Taskworkerconstraint could not be found for user (link: " + useruuid + ") and task (link: " + task.getUuid() + ")");
                     invoice.errors = true;
                     Notification.show("User not assigned",
-                            user.getUsername() + " is not assigned to task \"" + task.getName() + "\" " +
+                            useruuid + " is not assigned to task \"" + task.getName() + "\" " +
                                     "on the project \"" + project.getName() + "\". " +
                                     "Please fix this on project page.",
                             Notification.Type.ERROR_MESSAGE);
                     return null;
                 }
-                if (!invoiceItemMap.containsKey(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid())) {
+                if (!invoiceItemMap.containsKey(contract.getUuid() + project.getUuid() + workResource.getUseruuid() + workResource.getTask().getUuid())) {
+                    User user = userService.findByUUID(useruuid);
                     InvoiceItem invoiceItem = new InvoiceItem(user.getFirstname() + " " + user.getLastname(),
                             task.getName(),
                             rate,
                             0.0);
                     invoiceItem.uuid = UUID.randomUUID().toString();
-                    invoiceItemMap.put(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid(), invoiceItem);
+                    invoiceItemMap.put(contract.getUuid() + project.getUuid() + workResource.getUseruuid() + workResource.getTask().getUuid(), invoiceItem);
                     invoice.invoiceitems.add(invoiceItem);
                     logger.info("Created new invoice item: " + invoiceItem);
                 }
                 System.out.println("...end");
-                invoiceItemMap.get(contract.getUuid() + project.getUuid() + workResource.getUser().getUuid() + workResource.getTask().getUuid()).hours += workResource.getWorkduration();
+                invoiceItemMap.get(contract.getUuid() + project.getUuid() + workResource.getUseruuid() + workResource.getTask().getUuid()).hours += workResource.getWorkduration();
             }
         }
         System.out.println("invoice = " + invoice);

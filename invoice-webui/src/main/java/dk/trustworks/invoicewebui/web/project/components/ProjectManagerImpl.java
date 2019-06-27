@@ -387,16 +387,17 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         chart.getConfiguration().setPlotOptions(plot);
 
 
-        Map<User, Double> userWork = new HashMap<>();
+        Map<String, Double> userWork = new HashMap<>();
         List<Work> workList = task.getWorkList();
 
         for (Work work : workList) {
-            userWork.putIfAbsent(work.getUser(), 0.0);
-            userWork.put(work.getUser(), userWork.get(work.getUser())+work.getWorkduration());
+            userWork.putIfAbsent(work.getUseruuid(), 0.0);
+            userWork.put(work.getUseruuid(), userWork.get(work.getUseruuid())+work.getWorkduration());
         }
 
-        for (User user : userWork.keySet()) {
-            chart.getConfiguration().addSeries(new ListSeries(user.getFirstname()+" "+user.getLastname(), userWork.get(user)));
+        for (String useruuid : userWork.keySet()) {
+            User user = userService.findByUUID(useruuid);
+            chart.getConfiguration().addSeries(new ListSeries(user.getFirstname()+" "+user.getLastname(), userWork.get(useruuid)));
         }
 
         Credits c = new Credits("");

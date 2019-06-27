@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Task;
-import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.WorkWithRate;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,7 +19,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "work", path = "work")
 public interface WorkRepository extends CrudRepository<Work, String> {
 
-    Work findByRegisteredAndUserAndTask(LocalDate registered, User user, Task task);
+    Work findByRegisteredAndUseruuidAndTask(LocalDate registered, String useruuid, Task task);
 
     @Query(value = "select w.*, cc.rate from " +
             "work as w " +

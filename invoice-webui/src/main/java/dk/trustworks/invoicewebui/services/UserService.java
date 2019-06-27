@@ -60,7 +60,7 @@ public class UserService {
     }
 
     public User findBySlackusername(String userId) {
-        return userServiceClient.findBySlackusername(userId);
+        return userServiceClient.findBySlackusername(userId)[0];
     }
 
     public List<User> findAll() {
@@ -116,7 +116,7 @@ public class UserService {
     }
 
     public int getUserSalary(User user, LocalDate date) {
-        Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, user));
+        Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0));
         return salary.getSalary();
     }
 
@@ -128,7 +128,7 @@ public class UserService {
         String[] statusList = {ACTIVE.toString()};
         return userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
                 .stream().mapToInt(value ->
-                        value.getSalaries().stream().filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, null)).getSalary()
+                        value.getSalaries().stream().filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0)).getSalary()
                 ).sum();
     }
 

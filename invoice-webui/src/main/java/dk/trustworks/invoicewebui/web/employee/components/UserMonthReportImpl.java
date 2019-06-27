@@ -8,6 +8,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.model.UserHourItem;
@@ -31,6 +32,9 @@ public class UserMonthReportImpl extends UserMonthReportDesign {
     @Autowired
     private WorkService workService;
 
+    @Autowired
+    private UserService userService;
+
     public UserMonthReportImpl() {
         user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
     }
@@ -51,11 +55,14 @@ public class UserMonthReportImpl extends UserMonthReportDesign {
         Map<String, UserHourItem> userHourItemMap = new HashMap<>();
 
         for (Work work : workList) {
-            if(!userHourItemMap.containsKey(work.getTask().getUuid())) userHourItemMap.put(work.getTask().getUuid(),
-                    new UserHourItem(work.getUser().getUuid(),
-                            work.getTask().getUuid(),
-                            work.getTask().getProject().getName() + " / " + work.getTask().getName(),
-                            work.getUser().getUsername()));
+            if(!userHourItemMap.containsKey(work.getTask().getUuid())) {
+                User otherUser = userService.findByUUID(work.getUseruuid());
+                userHourItemMap.put(work.getTask().getUuid(),
+                        new UserHourItem(work.getUseruuid(),
+                                work.getTask().getUuid(),
+                                work.getTask().getProject().getName() + " / " + work.getTask().getName(),
+                                otherUser.getUsername()));
+            }
 
             userHourItemMap.get(work.getTask().getUuid()).addHours(work.getWorkduration());
 

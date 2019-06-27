@@ -38,16 +38,16 @@ public class MonthReportImpl extends MonthReportDesign {
             if(work.getTask().getProject().getUuid().equals(projectUUID)) {
                 UserHourItem userHourItem = null;
                 for (UserHourItem item : userHourItems) {
-                    if (item.getUserUUID().equals(work.getUser().getUuid())
+                    if (item.getUserUUID().equals(work.getUseruuid())
                             && item.getTaskUUID().equals(work.getTask().getUuid())) {
                         userHourItem = item;
                     }
                 }
                 if (userHourItem == null) {
-                    userHourItem = new UserHourItem(work.getUser().getUuid(),
+                    userHourItem = new UserHourItem(work.getUseruuid(),
                             work.getTask().getUuid(),
                             work.getTask().getName(),
-                            work.getUser().getUsername());
+                            work.getUseruuid());
                     userHourItems.add(userHourItem);
                 }
                 userHourItem.addHours(work.getWorkduration());

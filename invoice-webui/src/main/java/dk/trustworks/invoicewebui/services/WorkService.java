@@ -140,7 +140,7 @@ public class WorkService {
     public Work saveWork(Work work) {
         System.out.println("WorkService.saveWork");
         System.out.println("work = [" + work + "]");
-        Work existingWork = workRepository.findByRegisteredAndUserAndTask(work.getRegistered(), work.getUser(), work.getTask());
+        Work existingWork = workRepository.findByRegisteredAndUseruuidAndTask(work.getRegistered(), work.getUseruuid(), work.getTask());
         if(existingWork!=null) {
             existingWork.setWorkduration(work.getWorkduration());
             work = existingWork;

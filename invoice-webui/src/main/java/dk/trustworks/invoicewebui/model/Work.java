@@ -19,9 +19,7 @@ public class Work {
     @JoinColumn(name = "taskuuid")
     private Task task;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "useruuid")
-    private User user;
+    private String useruuid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workas")
@@ -30,17 +28,17 @@ public class Work {
     public Work() {
     }
 
-    public Work(LocalDate registered, double workduration, User user, Task task) {
+    public Work(LocalDate registered, double workduration, String useruuid, Task task) {
         this.registered = registered;
         this.workduration = workduration;
-        this.user = user;
+        this.useruuid = useruuid;
         this.task = task;
     }
 
-    public Work(LocalDate registered, double workduration, User user, Task task, User workas) {
+    public Work(LocalDate registered, double workduration, String useruuid, Task task, User workas) {
         this.registered = registered;
         this.workduration = workduration;
-        this.user = user;
+        this.useruuid = useruuid;
         this.task = task;
         this.workas = workas;
     }
@@ -77,12 +75,12 @@ public class Work {
         this.task = task;
     }
 
-    public User getUser() {
-        return user;
+    public String getUseruuid() {
+        return useruuid;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 
     public User getWorkas() {
@@ -99,9 +97,9 @@ public class Work {
                 "id='" + id + '\'' +
                 ", workduration=" + workduration +
                 ", task=" + task.getUuid() +
-                ", user=" + user.getUuid() +
+                ", user=" + useruuid +
                 ", workas=" + (workas!=null) +
-                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +
+                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+useruuid+"]" +
                 '}';
     }
 }

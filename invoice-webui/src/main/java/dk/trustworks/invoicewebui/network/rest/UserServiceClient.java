@@ -1,27 +1,33 @@
 package dk.trustworks.invoicewebui.network.rest;
 
 import dk.trustworks.invoicewebui.model.User;
-import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 
-@FeignClient(value = "user-service", path = "users", fallback = HystrixClientFallback.class)
-public interface UserServiceClient {
+@Service
+public class UserServiceClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/search/findByUsername")
-    User findByUsername(@RequestParam("username") String username);
+    @Autowired
+    private RestTemplate restTemplate;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{uuid}")
-    User findOne(@PathVariable("uuid") String uuid);
+    public User findByUsername(String username) {
+        return restTemplate.getForObject("http://localhost:5460/users/search/findByUsername?username="+username, User.class);
+    }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/search/findBySlackusername")
-    User findBySlackusername(@RequestParam("slackusername") String slackusername);
+    public User findOne(String uuid) {
+        return restTemplate.getForObject("http://localhost:5460/users/"+uuid, User.class);
+    }
 
-    @RequestMapping(method = RequestMethod.GET)
-    List<User> findByOrderByUsername();
+    public List<User> findByOrderByUsername() {
+        return Arrays.asList(restTemplate.getForObject("http://localhost:5460/users", User[].class));
+    }
+
+    public User[] findBySlackusername(String userId) {
+        return restTemplate.getForObject("http://localhost:5460/users/search/findBySlackusername?username="+userId, User[].class);
+    }
 }
 

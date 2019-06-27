@@ -59,7 +59,7 @@ public class CheckTimeRegistrationJob {
         Map<String, Work> uniqueWork = new HashMap<>();
         List<Work> failedWork = new ArrayList<>();
         for (Work work : workService.findByPeriod(DateUtils.getFirstDayOfMonth(dateTime), DateUtils.getLastDayOfMonth(dateTime))) {
-            String key = work.getUser().getUuid()+""+work.getTask().getUuid()+""+work.getRegistered().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String key = work.getUseruuid()+""+work.getTask().getUuid()+""+work.getRegistered().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             if(uniqueWork.containsKey(key)) {
                 failedWork.add(work);
             } else {
@@ -70,7 +70,7 @@ public class CheckTimeRegistrationJob {
         if(failedWork.size() > 0) {
             String text = "";
             for (Work work : failedWork) {
-                text = work.getUser().getUsername() + " duplicate entry " + work.getTask().getName() + " on " + work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                text = work.getUseruuid() + " duplicate entry " + work.getTask().getName() + " on " + work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             }
             ChatPostMessageMethod textMessage3 = new ChatPostMessageMethod("@hans", text);
             textMessage3.setAs_user(true);
@@ -105,7 +105,7 @@ public class CheckTimeRegistrationJob {
             if(!user.getUsername().equalsIgnoreCase("hans.lassen")) continue;
             log.info("checking user = " + user);
 
-            boolean hasWork = allWork.stream().filter(work -> work.getUser().getUuid().equals(user.getUuid())).anyMatch(work -> work.getWorkduration()>0);
+            boolean hasWork = allWork.stream().filter(work -> work.getUseruuid().equals(user.getUuid())).anyMatch(work -> work.getWorkduration()>0);
             log.info("hasWork = " + hasWork);
 
             // Todo: Only send to people with budgets

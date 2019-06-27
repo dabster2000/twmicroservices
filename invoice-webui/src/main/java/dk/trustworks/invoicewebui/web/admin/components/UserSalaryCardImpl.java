@@ -48,7 +48,7 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
             getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getSalaries());
         });
         getBtnAddSalary().addClickListener(event -> {
-            salaryRepository.save(new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue()), user));
+            salaryRepository.save(new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue())));
             user = userRepository.findOne(user.getUuid());
             salaries = user.getSalaries();
             getGridSalaries().setItems(salaries);

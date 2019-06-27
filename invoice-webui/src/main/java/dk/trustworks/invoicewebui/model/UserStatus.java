@@ -12,15 +12,10 @@ import java.util.UUID;
 /**
  * Created by hans on 23/06/2017.
  */
-@Entity
-@Table(name = "userstatus")
 public class UserStatus {
 
     @Id
     private String uuid;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
-    private User user;
 
     @Enumerated(EnumType.STRING)
     private ConsultantType type;
@@ -36,7 +31,6 @@ public class UserStatus {
     public UserStatus(User user, ConsultantType type, StatusType status, LocalDate statusdate, int allocation) {
         uuid = UUID.randomUUID().toString();
         this.type = type;
-        this.user = user;
         this.status = status;
         this.statusdate = statusdate;
         /*
@@ -55,14 +49,6 @@ public class UserStatus {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public StatusType getStatus() {
@@ -101,7 +87,6 @@ public class UserStatus {
     public String toString() {
         return "UserStatus{" +
                 "uuid='" + uuid + '\'' +
-                ", user=" + user +
                 ", type=" + type +
                 ", status=" + status +
                 ", statusdate=" + statusdate +
