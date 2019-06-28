@@ -3,13 +3,9 @@ package dk.trustworks.invoicewebui.model.dto;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
 import java.time.LocalDate;
 
-@Data
-@AllArgsConstructor
 public class BudgetDocument {
 
     private final LocalDate month;
@@ -19,4 +15,40 @@ public class BudgetDocument {
     private double budgetHours;
     private final double rate;
 
+    public BudgetDocument(LocalDate month, Client client, User user, Contract contract, double budgetHours, double rate) {
+        this.month = month;
+        this.client = client;
+        this.user = user;
+        this.contract = contract;
+        this.budgetHours = budgetHours;
+        this.rate = rate;
+    }
+
+    public LocalDate getMonth() {
+        return month;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public double getBudgetHours() {
+        return budgetHours;
+    }
+
+    public void setBudgetHours(double budgetHours) {
+        this.budgetHours = budgetHours;
+    }
+
+    public double getRate() {
+        return rate;
+    }
 }

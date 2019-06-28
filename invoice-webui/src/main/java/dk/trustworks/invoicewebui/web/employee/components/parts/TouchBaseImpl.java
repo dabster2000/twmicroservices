@@ -15,7 +15,7 @@ public class TouchBaseImpl extends TouchBaseDesign {
 
     public TouchBaseImpl(User user, NotesRepository notesRepository, ReminderRepository reminderRepository) {
         Reminder reminderType = reminderRepository.findFirstByType(ReminderType.TOUCHBASE);
-        List<Note> notes = notesRepository.findByUserOrderByNotedateDesc(user);
+        List<Note> notes = notesRepository.findByUseruuidOrderByNotedateDesc(user.getUuid());
         Note note = (notes.size()>0)?notes.get(0):null;
 
         if(note == null) {

@@ -1,37 +1,20 @@
 package dk.trustworks.invoicewebui.model;
 
-import javax.persistence.*;
-
 /**
  * Created by hans on 23/06/2017.
  */
-@Entity
-@Table(name = "user_contactinfo")
 public class UserContactinfo {
 
-    @Id
-    @GeneratedValue
     private int id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
-    private User user;
-
-    @Column(name = "street")
     private String streetName;
-
-    @Column(name = "postalcode")
     private String postalCode;
-
     private String city;
-
     private String phone;
 
     public UserContactinfo() {
     }
 
-    public UserContactinfo(User user, String streetName, String postalCode, String city, String phone) {
-        this.user = user;
+    public UserContactinfo(String streetName, String postalCode, String city, String phone) {
         this.streetName = streetName;
         this.postalCode = postalCode;
         this.city = city;
@@ -44,14 +27,6 @@ public class UserContactinfo {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getStreetName() {
@@ -90,7 +65,6 @@ public class UserContactinfo {
     public String toString() {
         return "UserContactinfo{" +
                 "id=" + id +
-                ", user=" + user +
                 ", streetName='" + streetName + '\'' +
                 ", postalCode='" + postalCode + '\'' +
                 ", city='" + city + '\'' +

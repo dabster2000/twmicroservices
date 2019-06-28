@@ -40,7 +40,7 @@ public class AchievementCardController {
         //BoxImpl box = new BoxImpl().witHeight(600, PIXELS).withWidth(100, PERCENTAGE);
         AchievementBar achievementBar = new AchievementBar();
 
-        List<Achievement> achievementList = achievementRepository.findByUser(user);
+        List<Achievement> achievementList = achievementRepository.findByUseruuid(user.getUuid());
 
         Set<String> collected = new TreeSet<>();
         for (AchievementType achievementType : Arrays.stream(AchievementType.values()).sorted(Comparator.comparingInt(AchievementType::getRank).reversed()).collect(Collectors.toCollection(ArrayList::new))) {

@@ -32,7 +32,7 @@ public class UserAmbitionTableImpl {
     @Transactional
     public Component getUserAmbitionTable(User user, AmbitionCategory ambitionCategory) {
         UserAmbitionTable userAmbitionTable = new UserAmbitionTable();
-        List<UserAmbition> userAmbitions = userAmbitionRepository.findByUser(user);
+        List<UserAmbition> userAmbitions = userAmbitionRepository.findByUseruuid(user.getUuid());
 
         for (Ambition ambition : ambitionRepository.findAmbitionByActiveIsTrueAndCategory(ambitionCategory.getAmbitionCategoryType())) {
             final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElseGet(() ->
@@ -57,7 +57,7 @@ public class UserAmbitionTableImpl {
             ambitionEntry.getBtnAmbition().setDescription(AmbitionType.values()[ambitionScore].getDescription());
             ambitionEntry.getBtnAmbition().addClickListener(event -> {
                 UserAmbition one = userAmbitionRepository.findOne(userAmbition.getId());
-                if(one.getAmbition()==1 && userAmbitionRepository.findByUser(user).stream().filter(ua -> ua.getAmbition()!=1).count() >= 5) {
+                if(one.getAmbition()==1 && userAmbitionRepository.findByUseruuid(user.getUuid()).stream().filter(ua -> ua.getAmbition()!=1).count() >= 5) {
                     Notification.show("Only 5 changes", "Only five changes are allowed across all skills", Notification.Type.WARNING_MESSAGE);
                     return;
                 }

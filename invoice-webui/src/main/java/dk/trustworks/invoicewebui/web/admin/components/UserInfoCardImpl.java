@@ -9,8 +9,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
     private String motherSlackToken;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userRepository;
 
     private Binder<User> binder;
     private User user;
@@ -49,7 +49,7 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
     @Transactional
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
     public void init(String userUUID) {
-        user = userRepository.findOne(userUUID);
+        user = userRepository.findByUUID(userUUID);
         binder = new Binder<>();
 
         SlackWebApiClient slackWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);

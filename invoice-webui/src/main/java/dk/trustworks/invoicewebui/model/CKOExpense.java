@@ -23,8 +23,9 @@ public class CKOExpense {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate eventdate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     private String description;
@@ -55,7 +56,7 @@ public class CKOExpense {
 
     public CKOExpense(LocalDate eventdate, User user, String description, int price, String comment, double days, CKOExpenseType type, CKOExpenseStatus status, CKOExpensePurpose purpose) {
         this.eventdate = eventdate;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.description = description;
         this.price = price;
         this.comment = comment;
@@ -87,6 +88,14 @@ public class CKOExpense {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 
     public String getDescription() {

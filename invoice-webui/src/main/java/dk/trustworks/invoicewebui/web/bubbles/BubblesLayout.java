@@ -142,7 +142,7 @@ public class BubblesLayout extends VerticalLayout {
             });
 
             bubblesDesign.getBtnLeave().addClickListener(event -> {
-                bubbleMemberRepository.delete(bubbleMemberRepository.findByBubbleAndMember(bubble, user));
+                bubbleMemberRepository.delete(bubbleMemberRepository.findByBubbleAndUseruuid(bubble, user.getUuid()));
                 try {
                     bubbleWebApiClient.kickUserFromGroup(bubbleWebApiClient.getGroupInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
                 } catch (Exception e) {
@@ -151,7 +151,7 @@ public class BubblesLayout extends VerticalLayout {
                 Page.getCurrent().reload();
             });
 
-            if(bubbleMemberRepository.findByBubbleAndMember(bubble, user) != null) {
+            if(bubbleMemberRepository.findByBubbleAndUseruuid(bubble, user.getUuid()) != null) {
                 bubblesDesign.getBtnLeave().setVisible(true);
                 bubblesDesign.getBtnApply().setVisible(false);
                 bubblesDesign.getBtnJoin().setVisible(false);

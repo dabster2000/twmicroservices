@@ -1,13 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import org.apache.commons.text.WordUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -17,32 +12,24 @@ import java.util.UUID;
  * Created by hans on 23/06/2017.
  */
 
-@Entity
 public class User {
 
-    @Id private String uuid;
+    private String uuid;
     private boolean active;
     private Date created;
     private String email;
     private String firstname;
     private String lastname;
-    @JsonIgnore private String password;
+    private String password;
     private String username;
     private String slackusername;
     private LocalDate birthday;
-    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<Salary> salaries;
-    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<UserStatus> statuses;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Week> weeks;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Work> workList;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Role> roleList;
-    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
     private List<Notification> notifications;
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Project> projects;
 
     public User() {

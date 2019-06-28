@@ -5,7 +5,6 @@ package dk.trustworks.invoicewebui.repositories;
  */
 
 import dk.trustworks.invoicewebui.model.CKOExpense;
-import dk.trustworks.invoicewebui.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -16,6 +15,6 @@ import java.util.List;
 public interface CKOExpenseRepository extends CrudRepository<CKOExpense, Integer> {
 
 
-    List<CKOExpense> findCKOExpenseByUser(@Param("user") User user);
+    List<CKOExpense> findCKOExpenseByUseruuid(@Param("user") String useruuid);
 
 }

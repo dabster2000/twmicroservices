@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -7,7 +9,6 @@ import java.time.LocalDate;
  * Created by hans on 28/06/2017.
  */
 @Entity
-@Table(schema = "timemanager")
 public class Work {
 
     @Id
@@ -19,13 +20,15 @@ public class Work {
     @JoinColumn(name = "taskuuid")
     private Task task;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workas")
-    private User workas;
+    private String workas;
+
+    @Transient
+    private User workasUser;
 
     public Work() {
     }
@@ -33,16 +36,16 @@ public class Work {
     public Work(LocalDate registered, double workduration, User user, Task task) {
         this.registered = registered;
         this.workduration = workduration;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.task = task;
     }
 
     public Work(LocalDate registered, double workduration, User user, Task task, User workas) {
         this.registered = registered;
         this.workduration = workduration;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.task = task;
-        this.workas = workas;
+        this.workas = workas.getUuid();
     }
 
     public int getId() {
@@ -77,20 +80,16 @@ public class Work {
         this.task = task;
     }
 
-    public User getUser() {
-        return user;
+    public String getUseruuid() {
+        return useruuid;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public User getUser() {
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public User getWorkas() {
-        return workas;
-    }
-
-    public void setWorkas(User workas) {
-        this.workas = workas;
+        return UserService.get().findByUUID(workas);
     }
 
     @Override

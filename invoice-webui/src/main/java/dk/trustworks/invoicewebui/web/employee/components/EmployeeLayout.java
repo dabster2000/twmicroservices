@@ -177,7 +177,7 @@ public class EmployeeLayout extends VerticalLayout {
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthReport);
 
-        for (Note note : notesRepository.findByUserOrderByNotedateDesc(user)) {
+        for (Note note : notesRepository.findByUseruuidOrderByNotedateDesc(user.getUuid())) {
             purpContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new KeyPurposeNoteImpl(note));
         }
 

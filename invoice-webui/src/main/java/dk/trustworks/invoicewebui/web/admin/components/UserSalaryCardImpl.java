@@ -2,12 +2,12 @@ package dk.trustworks.invoicewebui.web.admin.components;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.SalaryRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +21,11 @@ import java.util.List;
 @SpringComponent
 public class UserSalaryCardImpl extends UserSalaryCardDesign {
 
-    @Autowired
+    // TODO: Migrate to UserService
     private SalaryRepository salaryRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userRepository;
 
     private User user;
     private List<Salary> salaries;
@@ -45,11 +45,11 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
 
         getBtnDelete().addClickListener(event -> {
             salaryRepository.delete(getGridSalaries().getSelectedItems());
-            getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getSalaries());
+            getGridSalaries().setItems(userRepository.findByUUID(user.getUuid()).getSalaries());
         });
         getBtnAddSalary().addClickListener(event -> {
-            salaryRepository.save(new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue()), user));
-            user = userRepository.findOne(user.getUuid());
+            salaryRepository.save(new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue())));
+            user = userRepository.findByUUID(user.getUuid());
             salaries = user.getSalaries();
             getGridSalaries().setItems(salaries);
         });
@@ -63,7 +63,7 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
         System.out.println("uuid = [" + userUUID + "]");
 
 
-        user = userRepository.findOne(userUUID);
+        user = userRepository.findByUUID(userUUID);
         salaries = user.getSalaries();
 
         getGridSalaries().setItems(salaries);

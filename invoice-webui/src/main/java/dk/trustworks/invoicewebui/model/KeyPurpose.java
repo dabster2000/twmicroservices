@@ -13,8 +13,9 @@ public class KeyPurpose {
     @GeneratedValue
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     private int num;
@@ -26,7 +27,7 @@ public class KeyPurpose {
     }
 
     public KeyPurpose(User user, int num, String description) {
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.num = num;
         this.description = description;
     }
@@ -71,5 +72,13 @@ public class KeyPurpose {
                 ", num=" + num +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

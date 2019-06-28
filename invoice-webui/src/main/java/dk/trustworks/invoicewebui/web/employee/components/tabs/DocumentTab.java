@@ -48,7 +48,7 @@ public class DocumentTab {
 
     private void createEquipmentCards() {
         documentCardsRow.removeAllComponents();
-        for (Document document : documentRepository.findByUserAndType(user, DocumentType.CONTRACT)) {
+        for (Document document : documentRepository.findByUseruuidAndType(user.getUuid(), DocumentType.CONTRACT)) {
             documentCardsRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(new DocumentImpl(document));
         }
     }

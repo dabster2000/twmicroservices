@@ -22,7 +22,7 @@ public class BubblesCardImpl extends BubblesCardDesign {
         List<Bubble> bubbles;
 
         if(user.isPresent()) {
-            bubbles = bubbleMemberRepository.findByMember(user.get()).stream().map(BubbleMember::getBubble).filter(Bubble::isActive).collect(Collectors.toList());
+            bubbles = bubbleMemberRepository.findByUseruuid(user.get().getUuid()).stream().map(BubbleMember::getBubble).filter(Bubble::isActive).collect(Collectors.toList());
         } else {
             bubbles = bubbleRepository.findBubblesByActiveTrueOrderByCreatedDesc();
         }

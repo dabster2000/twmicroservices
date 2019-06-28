@@ -25,7 +25,7 @@ public class KeyPurposeHeadlinesCardController {
     }
 
     public Component getCard(User user) {
-        List<KeyPurpose> keyPurposeList = keyPurposeRepository.findByUserOrderByNumAsc(user);
+        List<KeyPurpose> keyPurposeList = keyPurposeRepository.findByUseruuidOrderByNumAsc(user.getUuid());
         while(keyPurposeList.size()<3) {
             KeyPurpose keyPurpose = keyPurposeRepository.save(new KeyPurpose(user, keyPurposeList.size() + 1, "No Purposes Yet!"));
             keyPurposeList.add(keyPurpose);

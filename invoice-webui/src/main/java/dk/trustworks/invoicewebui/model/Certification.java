@@ -10,9 +10,9 @@ public class Certification {
     @GeneratedValue
     private int id;
 
-    @ManyToOne()
-    @JoinColumn(name="useruuid")
+    private String useruuid;
 
+    @Transient
     private User user;
 
     private String certification;
@@ -25,7 +25,7 @@ public class Certification {
     }
 
     public Certification(User user, String certification, String level, int year) {
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.certification = certification;
         this.level = level;
         this.year = year;
@@ -80,5 +80,13 @@ public class Certification {
                 ", level='" + level + '\'' +
                 ", year=" + year +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

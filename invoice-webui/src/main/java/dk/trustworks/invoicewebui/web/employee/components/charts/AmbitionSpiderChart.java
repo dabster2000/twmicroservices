@@ -101,7 +101,7 @@ public class AmbitionSpiderChart {
         conf.getLegend().setY(100);
         conf.getLegend().setLayout(LayoutDirection.VERTICAL);
 
-        //List<UserAmbition> userAmbitionList = userAmbitionRepository.findByUser(user);
+        //List<UserAmbition> userAmbitionList = userAmbitionRepository.findByUseruuid(user);
 
         ListSeries line1 = new ListSeries();
         ListSeries line2 = new ListSeries();

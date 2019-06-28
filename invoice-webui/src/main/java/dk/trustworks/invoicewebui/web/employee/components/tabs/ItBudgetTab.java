@@ -124,7 +124,7 @@ public class ItBudgetTab {
     private void createEquipmentCards() {
         int budgetLeft = 25000;
         budgetCardsRow.removeAllComponents();
-        for (ItBudgetItem budgetItem : itBudgetItemRepository.findByUser(user)) {
+        for (ItBudgetItem budgetItem : itBudgetItemRepository.findByUseruuid(user.getUuid())) {
             LocalDate tempDate = currentDate.minusMonths(budgetItem.getCategory().getLifespan());
             BudgetItemImpl item = new BudgetItemImpl(budgetItem);
             if(budgetItem.getInvoicedate().isAfter(tempDate) && budgetItem.getStatus().equals(ACTIVE)) {

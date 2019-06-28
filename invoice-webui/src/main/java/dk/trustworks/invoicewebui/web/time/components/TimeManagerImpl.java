@@ -319,9 +319,9 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private void loadData(User user) {
         log.info("TimeManagerImpl.loadData");
         log.info("user = [" + user + "]");
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(
                 1, //TODO: FIX
-                1, user); //TODO: FIX);
+                1, user.getUuid()); //TODO: FIX);
                 //currentDate.withDayOfWeek(7).getWeekOfWeekyear(),
                 //currentDate.withDayOfWeek(7).getYear(), user);
         //log.info("weeks.size() = " + weeks.size());

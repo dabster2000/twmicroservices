@@ -70,7 +70,7 @@ public class AchievementJob {
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT)) {
             if(userService.isExternal(user)) continue;
 
-            List<Achievement> achievementList = achievementRepository.findByUser(user);
+            List<Achievement> achievementList = achievementRepository.findByUseruuid(user.getUuid());
             /**
              * Disabled
              */
@@ -127,7 +127,7 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfCkoExpenseAchievement(User user, int years) {
-        List<CKOExpense> ckoExpenseList = ckoExpenseRepository.findCKOExpenseByUser(user);
+        List<CKOExpense> ckoExpenseList = ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid());
         Map<String, Double> expensePerYearMap = new HashMap<>();
         for (CKOExpense ckoExpense : ckoExpenseList) {
             LocalDate localDate = ckoExpense.getEventdate();
@@ -156,7 +156,7 @@ public class AchievementJob {
 
     private boolean isWorthyOfBubbleMemberAchievement(User user, int minBubbles) {
         int bubbleCount = 0;
-        for (BubbleMember bubbleMember : bubbleMemberRepository.findByMember(user)) {
+        for (BubbleMember bubbleMember : bubbleMemberRepository.findByUseruuid(user.getUuid())) {
             if(bubbleMember.getBubble().isActive()) {
                 bubbleCount++;
             }
@@ -240,7 +240,7 @@ public class AchievementJob {
     private boolean isWorthyOfSpeedDateAchievement(User user, int minDates) {
         int count = 0;
         List<ReminderHistory> others = reminderHistoryRepository.findByTargetuuidAndType(user.getUuid(), ReminderType.SPEEDDATE);
-        for (ReminderHistory reminderHistory : reminderHistoryRepository.findByTypeAndUserOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user)) {
+        for (ReminderHistory reminderHistory : reminderHistoryRepository.findByTypeAndUseruuidOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user.getUuid())) {
             if(others.stream().anyMatch(reminderHistory1 -> reminderHistory1.getUser().getUuid().equals(reminderHistory.getTargetuuid()))) count++;
         }
         return count >= minDates;

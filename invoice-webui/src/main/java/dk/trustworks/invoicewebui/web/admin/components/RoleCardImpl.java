@@ -4,11 +4,11 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.TwinColSelect;
 import dk.trustworks.invoicewebui.model.Role;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.RoleRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +24,9 @@ import java.util.Set;
 public class RoleCardImpl extends RoleCardDesign {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userRepository;
 
-    @Autowired
+    // TODO: Migrate to UserService
     private RoleRepository roleRepository;
 
     public RoleCardImpl() {
@@ -37,7 +37,7 @@ public class RoleCardImpl extends RoleCardDesign {
     @AccessRules(roleTypes = {RoleType.ADMIN})
     public void init(String userUUID) {
         getContainer().removeAllComponents();
-        User user = userRepository.findOne(userUUID);
+        User user = userRepository.findByUUID(userUUID);
         List<RoleType> roleTypes = Arrays.asList(RoleType.values());
 
         RoleType[] currentRoleTypes = new RoleType[user.getRoleList().size()];

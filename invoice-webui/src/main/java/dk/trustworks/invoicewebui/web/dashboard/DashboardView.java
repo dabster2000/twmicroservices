@@ -245,7 +245,7 @@ public class   DashboardView extends VerticalLayout implements View {
     private void createNotifications() {
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
 
-        List<Notification> notificationList = notificationRepository.findByReceiverAndAndExpirationdateAfter(user, LocalDate.now());
+        List<Notification> notificationList = notificationRepository.findByUseruuidAndAndExpirationdateAfter(user.getUuid(), LocalDate.now());
         for (Notification notification : notificationList) {
             logger.info("notification = " + notification);
             Window window = new Window();
@@ -281,7 +281,7 @@ public class   DashboardView extends VerticalLayout implements View {
 
 
         List<ReminderHistory> otherReminderHistories = reminderHistoryRepository.findByTargetuuidAndType(user.getUuid(), ReminderType.SPEEDDATE);
-        List<ReminderHistory> myReminderHistories = reminderHistoryRepository.findByTypeAndUserOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user);
+        List<ReminderHistory> myReminderHistories = reminderHistoryRepository.findByTypeAndUseruuidOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user.getUuid());
         for (ReminderHistory otherReminderHistory : otherReminderHistories) {
             boolean found = false;
             for (ReminderHistory myReminderHistory : myReminderHistories) {

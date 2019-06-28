@@ -17,8 +17,9 @@ public class Note {
     @GeneratedValue
     private int id;
 
-    @ManyToOne()
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     @Enumerated(EnumType.STRING)
@@ -35,7 +36,7 @@ public class Note {
     }
 
     public Note(User user, NoteType type, LocalDate notedate, String content) {
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.type = type;
         this.notedate = notedate;
         this.content = content;
@@ -90,5 +91,13 @@ public class Note {
                 ", notedate=" + notedate +
                 ", content='" + content + '\'' +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

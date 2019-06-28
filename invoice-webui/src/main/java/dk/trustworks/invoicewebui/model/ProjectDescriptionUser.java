@@ -10,8 +10,9 @@ public class ProjectDescriptionUser {
     @GeneratedValue
     private int id;
 
-    @ManyToOne()
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     @ManyToOne()
@@ -25,7 +26,7 @@ public class ProjectDescriptionUser {
     }
 
     public ProjectDescriptionUser(User user, ProjectDescription projectDescription, String description) {
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.projectDescription = projectDescription;
         this.description = description;
     }
@@ -70,5 +71,13 @@ public class ProjectDescriptionUser {
                 ", projectDescription=" + projectDescription +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

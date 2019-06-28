@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.TalentPassion;
-import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.TalentPassionType;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -19,7 +18,7 @@ import java.util.Optional;
 @RepositoryRestResource(collectionResourceRel = "talentpassion", path = "talentpassions")
 public interface TalentPassionRepository extends CrudRepository<TalentPassion, String> {
 
-    Optional<TalentPassion> findByUserAndOwnerAndTypeAndRegistered(User user, User owner, TalentPassionType type, LocalDate registered);
+    Optional<TalentPassion> findByUseruuidAndOwnerAndTypeAndRegistered(String user, String owner, TalentPassionType type, LocalDate registered);
 
-    List<TalentPassion> findByUserOrderByRegisteredDesc(User user);
+    List<TalentPassion> findByUseruuidOrderByRegisteredDesc(String user);
 }

@@ -5,19 +5,16 @@ import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by hans on 23/06/2017.
  */
 
-@RepositoryRestResource(collectionResourceRel = "statuses", path = "statuses")
-public interface UserStatusRepository extends CrudRepository<UserStatus, String> {
+public interface UserStatusRepository {
 
     @Query(value = "SELECT " +
             "  yt.uuid, " +
@@ -55,6 +52,7 @@ public interface UserStatusRepository extends CrudRepository<UserStatus, String>
 
     List<UserStatus> findByUserAndTypeAndStatusOrderByStatusdateAsc(@Param("user") User user, @Param("type") ConsultantType type, @Param("status") StatusType status);
 
-    @Override @RestResource(exported = false) void delete(String id);
-    @Override @RestResource(exported = false) void delete(UserStatus entity);
+    void delete(Set<UserStatus> selectedItems);
+
+    void save(UserStatus userStatus);
 }
