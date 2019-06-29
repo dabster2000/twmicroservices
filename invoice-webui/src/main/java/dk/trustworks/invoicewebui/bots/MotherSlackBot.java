@@ -83,7 +83,10 @@ public class MotherSlackBot extends Bot {
         AIRequest request = new AIRequest(event.getText());
         log.debug("event.getUser().getId() = " + event.getUserId());
         if(event.getUserId().equals("U7GH6EM70")) return;
-        User user = userService.findBySlackusername(event.getUserId());
+        User[] users = userService.findBySlackusername(event.getUserId());
+        User user;
+        if(users.length > 0) user = users[0];
+        else return;
 
         AIResponse response = null;
         try {

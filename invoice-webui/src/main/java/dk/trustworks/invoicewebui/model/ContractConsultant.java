@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -63,7 +65,7 @@ public class ContractConsultant {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {

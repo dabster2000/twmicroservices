@@ -37,7 +37,11 @@ spring:
     port: 587
     properties.mail.smtp.auth: true
     properties.mail.smtp.starttls.enable: true
-  jackson.property-naming-strategy: SNAKE_CASE
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    DeserializationFeature: ACCEPT_EMPTY_ARRAY_AS_EMPTY_OBJECT
+
+
 
 activemq:
   broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false

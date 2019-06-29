@@ -8,7 +8,6 @@ import dk.trustworks.invoicewebui.model.Achievement;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.AchievementType;
 import dk.trustworks.invoicewebui.repositories.AchievementRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.utils.SpriteSheet;
 import dk.trustworks.invoicewebui.web.employee.components.parts.AchievementBar;
 import org.vaadin.viritin.label.MLabel;
@@ -24,14 +23,11 @@ import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
 @SpringComponent
 public class AchievementCardController {
 
-    private final UserRepository userRepository;
-
     private final SpriteSheet spriteSheet;
 
     private final AchievementRepository achievementRepository;
 
-    public AchievementCardController(UserRepository userRepository, SpriteSheet spriteSheet, AchievementRepository achievementRepository) {
-        this.userRepository = userRepository;
+    public AchievementCardController(SpriteSheet spriteSheet, AchievementRepository achievementRepository) {
         this.spriteSheet = spriteSheet;
         this.achievementRepository = achievementRepository;
     }

@@ -54,7 +54,7 @@ public class UserService implements InitializingBean {
         return userRestService.findByUsername(username);
     }
 
-    public User findBySlackusername(String userId) {
+    public User[] findBySlackusername(String userId) {
         return userRestService.findBySlackusername(userId);
     }
 
@@ -197,4 +197,7 @@ public class UserService implements InitializingBean {
         return instance;
     }
 
+    public boolean login(String username, String password) {
+        return userRestService.login(username, password);
+    }
 }

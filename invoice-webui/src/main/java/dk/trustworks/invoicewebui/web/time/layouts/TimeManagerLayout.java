@@ -443,7 +443,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
                         workResource.getUser(),
                         workResource.getTask(),
-                        workResource.getWorkas());
+                        workResource.getWorkasUser());
                 weekRepository.save(week);
                 weeks.add(week);
             }

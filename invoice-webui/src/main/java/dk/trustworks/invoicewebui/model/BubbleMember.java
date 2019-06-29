@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -34,7 +36,7 @@ public class BubbleMember {
     }
 
     public User getMember() {
-        return member;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setMember(User member) {

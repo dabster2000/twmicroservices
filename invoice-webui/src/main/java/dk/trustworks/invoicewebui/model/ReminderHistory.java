@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -66,7 +67,7 @@ public class ReminderHistory {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {

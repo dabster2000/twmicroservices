@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 
 @Entity
@@ -40,7 +42,7 @@ public class ProjectDescriptionUser {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {

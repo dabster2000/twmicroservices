@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import dk.trustworks.invoicewebui.model.enums.TalentPassionType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -54,7 +55,7 @@ public class TalentPassion {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
@@ -62,7 +63,7 @@ public class TalentPassion {
     }
 
     public User getOwner() {
-        return owner_user;
+        return UserService.get().findByUUID(owner);
     }
 
     public void setOwner(User owner) {

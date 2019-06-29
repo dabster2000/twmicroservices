@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.google.common.base.Objects;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 
@@ -88,7 +89,7 @@ public class Week {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {

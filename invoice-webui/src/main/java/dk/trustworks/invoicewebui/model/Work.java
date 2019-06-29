@@ -88,8 +88,21 @@ public class Work {
         return UserService.get().findByUUID(getUseruuid());
     }
 
-    public User getWorkas() {
-        return UserService.get().findByUUID(workas);
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
+    }
+
+    public String getWorkas() {
+        return workas;
+    }
+
+    public void setWorkas(String workas) {
+        this.workas = workas;
+    }
+
+    public User getWorkasUser() {
+        if(getWorkas()==null || getWorkas().trim().equals("")) return null;
+        return UserService.get().findByUUID(getWorkas());
     }
 
     @Override
@@ -98,9 +111,9 @@ public class Work {
                 "id='" + id + '\'' +
                 ", workduration=" + workduration +
                 ", task=" + task.getUuid() +
-                ", user=" + user.getUuid() +
+                ", user=" + getUseruuid() +
                 ", workas=" + (workas!=null) +
-                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +
+                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+"]" +
                 '}';
     }
 }

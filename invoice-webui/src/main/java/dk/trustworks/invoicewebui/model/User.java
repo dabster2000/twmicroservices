@@ -1,12 +1,12 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import org.apache.commons.text.WordUtils;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by hans on 23/06/2017.
@@ -26,11 +26,7 @@ public class User {
     private LocalDate birthday;
     private List<Salary> salaries;
     private List<UserStatus> statuses;
-    private List<Week> weeks;
-    private List<Work> workList;
     private List<Role> roleList;
-    private List<Notification> notifications;
-    private List<Project> projects;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -133,20 +129,14 @@ public class User {
         this.statuses = statuses;
     }
 
-    public List<Week> getWeeks() {
-        return weeks;
-    }
+    @SuppressWarnings("unchecked")
+    @JsonProperty("roleList")
+    private void unpackNested(List<Map<String,Object>> roleList) {
+        this.roleList = new ArrayList<>();
+        for (Map<String, Object> stringObjectMap : roleList) {
+            this.roleList.add(new Role(this, RoleType.valueOf(((String)stringObjectMap.get("role")).toUpperCase())));
+        }
 
-    public void setWeeks(List<Week> weeks) {
-        this.weeks = weeks;
-    }
-
-    public List<Work> getWorkList() {
-        return workList;
-    }
-
-    public void setWorkList(List<Work> workList) {
-        this.workList = workList;
     }
 
     public List<Role> getRoleList() {
@@ -155,22 +145,6 @@ public class User {
 
     public void setRoleList(List<Role> roleList) {
         this.roleList = roleList;
-    }
-
-    public List<Notification> getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
-    }
-
-    public List<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
     }
 
     public String getInitials() {
