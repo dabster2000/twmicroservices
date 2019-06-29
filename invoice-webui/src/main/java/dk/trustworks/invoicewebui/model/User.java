@@ -27,6 +27,7 @@ public class User {
     private List<Salary> salaries;
     private List<UserStatus> statuses;
     private List<Role> roleList;
+    private UserContactinfo userContactinfo;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -129,6 +130,14 @@ public class User {
         this.statuses = statuses;
     }
 
+    public UserContactinfo getUserContactinfo() {
+        return userContactinfo;
+    }
+
+    public void setUserContactinfo(UserContactinfo userContactinfo) {
+        this.userContactinfo = userContactinfo;
+    }
+
     @SuppressWarnings("unchecked")
     @JsonProperty("roleList")
     private void unpackNested(List<Map<String,Object>> roleList) {
@@ -136,7 +145,16 @@ public class User {
         for (Map<String, Object> stringObjectMap : roleList) {
             this.roleList.add(new Role(this, RoleType.valueOf(((String)stringObjectMap.get("role")).toUpperCase())));
         }
+    }
 
+    @SuppressWarnings("unchecked")
+    @JsonProperty("userContactinfo")
+    private void unpackNestedUserContactinfo(Map<String,Object> stringObjectMap) {
+        this.userContactinfo = new UserContactinfo(
+                (String)stringObjectMap.get("streetName"),
+                (String)stringObjectMap.get("postalCode"),
+                (String)stringObjectMap.get("city"),
+                (String)stringObjectMap.get("phone"));
     }
 
     public List<Role> getRoleList() {

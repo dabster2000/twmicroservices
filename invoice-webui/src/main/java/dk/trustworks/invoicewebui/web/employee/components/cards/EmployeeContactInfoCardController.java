@@ -37,7 +37,8 @@ public class EmployeeContactInfoCardController {
 
         userBinder.forField(userDetailsCard.getDfBirthday()).bind(User::getBirthday, User::setBirthday);
 
-        UserContactinfo contactinfo = userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo("", "" ,"", ""));
+        final UserContactinfo contactinfo = user.getUserContactinfo()!=null?user.getUserContactinfo():new UserContactinfo("", "" ,"", "");//userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo("", "" ,"", ""));
+        //if(contactinfo==null) contactinfo = new UserContactinfo("", "" ,"", "");
         contactinfoBinder.forField(userDetailsCard.getTxtCity()).bind(UserContactinfo::getCity, UserContactinfo::setCity);
         contactinfoBinder.forField(userDetailsCard.getTxtPostal()).bind(UserContactinfo::getPostalCode, UserContactinfo::setPostalCode);
         contactinfoBinder.forField(userDetailsCard.getTxtStreet()).bind(UserContactinfo::getStreetName, UserContactinfo::setStreetName);
