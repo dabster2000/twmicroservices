@@ -33,7 +33,7 @@ public class ResourcePlanningLayout extends VerticalLayout {
         LocalDate localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(11);
 
         localDateStart = LocalDate.of(2018,7,1).withDayOfMonth(1);
-        localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(11);
+        localDateEnd = localDateStart.plusMonths(11);
 
         Card heatMapCard = new Card();
         heatMapCard.getCardHolder().addComponent(salesHeatMap.getChart(localDateStart, localDateEnd));
