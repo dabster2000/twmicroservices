@@ -6,7 +6,6 @@ import com.vaadin.ui.TwinColSelect;
 import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.RoleRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +23,7 @@ import java.util.Set;
 public class RoleCardImpl extends RoleCardDesign {
 
     @Autowired
-    private UserService userRepository;
-
-    // TODO: Migrate to UserService
-    private RoleRepository roleRepository;
+    private UserService userService;
 
     public RoleCardImpl() {
 
@@ -37,7 +33,7 @@ public class RoleCardImpl extends RoleCardDesign {
     @AccessRules(roleTypes = {RoleType.ADMIN})
     public void init(String userUUID) {
         getContainer().removeAllComponents();
-        User user = userRepository.findByUUID(userUUID);
+        User user = userService.findByUUID(userUUID);
         List<RoleType> roleTypes = Arrays.asList(RoleType.values());
 
         RoleType[] currentRoleTypes = new RoleType[user.getRoleList().size()];
@@ -55,19 +51,13 @@ public class RoleCardImpl extends RoleCardDesign {
         getContainer().addComponent(twinColSelect);
 
         twinColSelect.addValueChangeListener(event -> {
-            System.out.println("Save roles");
             Set<RoleType> roleTypeSet = event.getValue();
-            System.out.println("Save user roles = " + user);
             List<Role> roleList = user.getRoleList();
-            for (Role role : roleList) {
-                System.out.println("Delete role = " + role);
-                roleRepository.delete(role);
-            }
+            userService.deleteRoles(user, roleList);
             for (RoleType roleType : roleTypeSet) {
-                System.out.println("Add roleType = " + roleType);
-                Role role = new Role(user, roleType);
-                //user.getRoleList().add(role);
-                roleRepository.save(role);
+                Role role = new Role(roleType);
+                user.getRoleList().add(role);
+                userService.create(user, role);
             }
         });
     }

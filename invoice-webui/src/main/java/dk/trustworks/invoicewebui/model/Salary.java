@@ -6,7 +6,6 @@ import java.util.UUID;
 /**
  * Created by hans on 23/06/2017.
  */
-
 public class Salary {
 
     private String uuid;

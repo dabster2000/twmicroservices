@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
@@ -199,5 +196,29 @@ public class UserService implements InitializingBean {
 
     public boolean login(String username, String password) {
         return userRestService.login(username, password);
+    }
+
+    public void deleteSalaries(User user, Set<Salary> salaries) {
+        userRestService.deleteSalaries(user, salaries);
+    }
+
+    public void deleteUserStatuses(User user, Set<UserStatus> userStatuses) {
+        userRestService.deleteUserStatuses(user, userStatuses);
+    }
+
+    public void deleteRoles(User user, List<Role> roles) {
+        userRestService.deleteRoles(user, roles);
+    }
+
+    public void create(User user, Salary salary) {
+        userRestService.create(user, salary);
+    }
+
+    public void create(User user, UserStatus userStatus) {
+        userRestService.create(user, userStatus);
+    }
+
+    public void create(User user, Role role) {
+        userRestService.create(user, role);
     }
 }

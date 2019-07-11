@@ -5,7 +5,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.SalaryRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,8 @@ import java.util.List;
 @SpringComponent
 public class UserSalaryCardImpl extends UserSalaryCardDesign {
 
-    // TODO: Migrate to UserService
-    private SalaryRepository salaryRepository;
-
     @Autowired
-    private UserService userRepository;
+    private UserService userService;
 
     private User user;
     private List<Salary> salaries;
@@ -44,12 +40,12 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            salaryRepository.delete(getGridSalaries().getSelectedItems());
-            getGridSalaries().setItems(userRepository.findByUUID(user.getUuid()).getSalaries());
+            userService.deleteSalaries(user, getGridSalaries().getSelectedItems());
+            getGridSalaries().setItems(userService.findByUUID(user.getUuid()).getSalaries());
         });
         getBtnAddSalary().addClickListener(event -> {
-            salaryRepository.save(new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue())));
-            user = userRepository.findByUUID(user.getUuid());
+            userService.create(user, new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue())));
+            user = userService.findByUUID(user.getUuid());
             salaries = user.getSalaries();
             getGridSalaries().setItems(salaries);
         });
@@ -59,13 +55,8 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.CXO})
     public void init(String userUUID) {
         this.setVisible(true);
-        System.out.println("UserSalaryCardImpl.init");
-        System.out.println("uuid = [" + userUUID + "]");
-
-
-        user = userRepository.findByUUID(userUUID);
+        user = userService.findByUUID(userUUID);
         salaries = user.getSalaries();
-
         getGridSalaries().setItems(salaries);
     }
 }

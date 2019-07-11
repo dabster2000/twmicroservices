@@ -143,7 +143,7 @@ public class User {
     private void unpackNested(List<Map<String,Object>> roleList) {
         this.roleList = new ArrayList<>();
         for (Map<String, Object> stringObjectMap : roleList) {
-            this.roleList.add(new Role(this, RoleType.valueOf(((String)stringObjectMap.get("role")).toUpperCase())));
+            this.roleList.add(new Role(stringObjectMap.get("uuid").toString(), RoleType.valueOf(((String)stringObjectMap.get("role")).toUpperCase())));
         }
     }
 
