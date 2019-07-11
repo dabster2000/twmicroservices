@@ -196,9 +196,9 @@ public class ClientManagerImpl extends ClientManagerDesign {
         });
         clientComponent.getCbClientManager().setItems(userService.findAll());
         clientComponent.getCbClientManager().setItemCaptionGenerator(User::getUsername);
-        clientComponent.getCbClientManager().setSelectedItem(client.getAccountmanager());
+        clientComponent.getCbClientManager().setSelectedItem(client.getAccount_manager());
         clientComponent.getCbClientManager().addValueChangeListener(event -> {
-            client.setAccountmanager(event.getValue());
+            client.setAccount_manager(event.getValue());
             saveClient(client);
         });
         return clientComponent;

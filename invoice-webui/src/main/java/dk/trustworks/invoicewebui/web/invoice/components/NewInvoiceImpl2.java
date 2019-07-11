@@ -128,7 +128,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 if(!tabList.isEmpty()) {
                     InvoiceTab invoiceTab = tabList.get(tabList.size() - 1);
                     invoiceTab.getLblClientName().setValue(client.getName());
-                    if(client.getAccountmanager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), false, 40, PIXELS));
+                    if(client.getAccount_manager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccount_manager(), false, 40, PIXELS));
                     invoiceTab.getLblPercent().setValue(NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%");
                 }
                 final InvoiceTab tab = new InvoiceTab();
@@ -176,7 +176,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
         if(!tabList.isEmpty()) {
             InvoiceTab invoiceTab = tabList.get(tabList.size() - 1);
             invoiceTab.getLblClientName().setValue(client.getName());
-            if(client.getAccountmanager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), false, 40, PIXELS));
+            if(client.getAccount_manager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccount_manager(), false, 40, PIXELS));
             invoiceTab.getLblPercent().setValue(NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%");
         }
         if(lastInvoiceListItem!=null) lastInvoiceListItem.removeStyleName("grey-box-border");

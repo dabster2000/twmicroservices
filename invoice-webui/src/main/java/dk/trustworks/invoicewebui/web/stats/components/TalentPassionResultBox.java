@@ -43,7 +43,7 @@ public class TalentPassionResultBox {
         for (User user : userService.findCurrentlyEmployedUsers()) {
             Map<String, Double> performanceScoreMap = new HashMap<>();
             Map<String, Double> potentialScoreMap = new HashMap<>();
-            for (TalentPassion talentPassion : talentPassionRepository.findByUserOrderByRegisteredDesc(user)) {
+            for (TalentPassion talentPassion : talentPassionRepository.findByUseruuidOrderByRegisteredDesc(user.getUuid())) {
                 performanceScoreMap.putIfAbsent(
                         talentPassion.getType().name() + talentPassion.getOwner().getUuid(),
                         TalentPassionResultImpl.performanceConverter(talentPassion.getPerformance()));

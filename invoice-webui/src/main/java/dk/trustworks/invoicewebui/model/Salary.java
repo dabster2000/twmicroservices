@@ -1,24 +1,14 @@
 package dk.trustworks.invoicewebui.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.util.UUID;
 
 /**
  * Created by hans on 23/06/2017.
  */
-
-@Entity
 public class Salary {
 
-    @Id
     private String uuid;
-    @ManyToOne()
-    @JoinColumn(name="useruuid")
-    private User user;
     private int salary;
 
     private LocalDate activefrom;
@@ -26,17 +16,9 @@ public class Salary {
     public Salary() {
     }
 
-    public Salary(LocalDate activeFrom, int salary, User user) {
+    public Salary(LocalDate activeFrom, int salary) {
         uuid = UUID.randomUUID().toString();
-        this.user = user;
         this.activefrom = activeFrom;
-        /*
-        this.activefrom = LocalDate.from(
-                activeFrom.atStartOfDay(
-                        ZoneId.of( "Europe/Paris" )
-                ).toInstant()
-        );
-        */
         this.salary = salary;
     }
 
@@ -46,14 +28,6 @@ public class Salary {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public int getSalary() {
@@ -75,7 +49,6 @@ public class Salary {
     @Override
     public String toString() {
         return "Salary{" + "uuid='" + uuid + '\'' +
-                ", user=" + user +
                 ", salary=" + salary +
                 ", activefrom=" + activefrom +
                 '}';

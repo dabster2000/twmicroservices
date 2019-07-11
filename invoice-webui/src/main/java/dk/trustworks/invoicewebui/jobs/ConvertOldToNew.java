@@ -68,7 +68,7 @@ public class ConvertOldToNew {
             Project project = work.getTask().getProject();
             LocalDate workDate = LocalDate.of(work.getYear(), work.getMonth() + 1, work.getDay());
             for (MainContract mainContract : project.getContracts()) {
-                if(mainContract.findByUser(work.getUser())!=null) {
+                if(mainContract.findByUseruuid(work.getUser())!=null) {
                     outsidePeriod = true;
                     if (workDate.isAfter(mainContract.getActiveFrom()) &&
                             workDate.isBefore(mainContract.getActiveTo())) {

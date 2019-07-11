@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.google.common.base.Objects;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 
@@ -9,7 +10,6 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(schema = "timemanager")
 public class Week {
 
     @Id private String uuid;
@@ -17,15 +17,15 @@ public class Week {
     @JoinColumn(name = "taskuuid")
     private Task task;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
     private int weeknumber;
     private int year;
     private int sorting;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workas")
+    @Transient
     private User workas;
 
     public Week() {
@@ -35,7 +35,7 @@ public class Week {
         this.uuid = uuid;
         this.weeknumber = weeknumber;
         this.year = year;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.task = task;
     }
 
@@ -43,7 +43,7 @@ public class Week {
         this.uuid = uuid;
         this.weeknumber = weeknumber;
         this.year = year;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.task = task;
         this.workas = workas;
     }
@@ -89,7 +89,7 @@ public class Week {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
@@ -131,5 +131,13 @@ public class Week {
                 ", year=" + year +
                 ", sorting=" + sorting +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

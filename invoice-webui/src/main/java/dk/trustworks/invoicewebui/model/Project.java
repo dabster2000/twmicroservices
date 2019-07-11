@@ -41,8 +41,9 @@ public class Project {
     @JoinColumn(name="clientdatauuid")
     private Clientdata clientdata;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userowneruuid")
+    private String userowneruuid;
+
+    @Transient
     private User owner;
 
     @ManyToMany(mappedBy = "projects", fetch = FetchType.LAZY)
@@ -238,5 +239,13 @@ public class Project {
     @Override
     public int hashCode() {
         return uuid.hashCode();
+    }
+
+    public String getUserowneruuid() {
+        return userowneruuid;
+    }
+
+    public void setUserowneruuid(String userowneruuid) {
+        this.userowneruuid = userowneruuid;
     }
 }

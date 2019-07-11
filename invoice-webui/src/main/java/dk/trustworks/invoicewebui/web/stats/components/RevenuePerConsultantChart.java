@@ -51,7 +51,7 @@ public class RevenuePerConsultantChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        LocalDate periodStart = user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(user, ConsultantType.CONSULTANT, StatusType.ACTIVE, LocalDate.now(), 0)).getStatusdate();//LocalDate.of(2017, 07, 01);
+        LocalDate periodStart = user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE, LocalDate.now(), 0)).getStatusdate();//LocalDate.of(2017, 07, 01);
         System.out.println("createRevenuePerConsultantChart periodStart = " + periodStart);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1);
 

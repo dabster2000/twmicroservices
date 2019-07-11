@@ -2,13 +2,13 @@ package dk.trustworks.invoicewebui.web.admin.components;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +23,7 @@ import java.util.List;
 public class UserStatusCardImpl extends UserStatusCardDesign {
 
     @Autowired
-    private UserStatusRepository userStatusRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     private User user;
     private List<UserStatus> userStatusList;
@@ -45,12 +42,12 @@ public class UserStatusCardImpl extends UserStatusCardDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            userStatusRepository.delete(getGridSalaries().getSelectedItems());
-            getGridSalaries().setItems(userRepository.findOne(user.getUuid()).getStatuses());
+            userService.deleteUserStatuses(user, getGridSalaries().getSelectedItems());
+            getGridSalaries().setItems(userService.findByUUID(user.getUuid()).getStatuses());
         });
         getBtnCreate().addClickListener(event -> {
-            userStatusRepository.save(new UserStatus(user, getCbType().getValue(), getCbStatus().getValue(), getDfDate().getValue(), Integer.parseInt(getTxtAllocation().getValue())));
-            user = userRepository.findOne(user.getUuid());
+            userService.create(user, new UserStatus(getCbType().getValue(), getCbStatus().getValue(), getDfDate().getValue(), Integer.parseInt(getTxtAllocation().getValue())));
+            user = userService.findByUUID(user.getUuid());
             userStatusList = user.getStatuses();
             getGridSalaries().setItems(userStatusList);
         });
@@ -62,10 +59,9 @@ public class UserStatusCardImpl extends UserStatusCardDesign {
     @Transactional
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.CXO})
     public void init(String userUUID) {
-        System.out.println("UserStatusCardImpl.init");
         this.setVisible(true);
 
-        user = userRepository.findOne(userUUID);
+        user = userService.findByUUID(userUUID);
         userStatusList = user.getStatuses();
 
         getGridSalaries().setItems(userStatusList);

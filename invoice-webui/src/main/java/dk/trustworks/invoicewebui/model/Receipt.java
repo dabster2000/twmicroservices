@@ -20,8 +20,9 @@ public class Receipt {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate receiptdate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,7 +38,7 @@ public class Receipt {
 
     public Receipt(LocalDate receiptdate, User user, Project project, String description, float amount) {
         this.receiptdate = receiptdate;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.project = project;
         this.description = description;
         this.amount = amount;
@@ -101,5 +102,13 @@ public class Receipt {
                 ", description='" + description + '\'' +
                 ", amount=" + amount +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

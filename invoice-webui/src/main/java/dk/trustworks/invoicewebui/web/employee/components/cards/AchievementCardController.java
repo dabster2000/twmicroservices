@@ -8,7 +8,6 @@ import dk.trustworks.invoicewebui.model.Achievement;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.AchievementType;
 import dk.trustworks.invoicewebui.repositories.AchievementRepository;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
 import dk.trustworks.invoicewebui.utils.SpriteSheet;
 import dk.trustworks.invoicewebui.web.employee.components.parts.AchievementBar;
 import org.vaadin.viritin.label.MLabel;
@@ -24,14 +23,11 @@ import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
 @SpringComponent
 public class AchievementCardController {
 
-    private final UserRepository userRepository;
-
     private final SpriteSheet spriteSheet;
 
     private final AchievementRepository achievementRepository;
 
-    public AchievementCardController(UserRepository userRepository, SpriteSheet spriteSheet, AchievementRepository achievementRepository) {
-        this.userRepository = userRepository;
+    public AchievementCardController(SpriteSheet spriteSheet, AchievementRepository achievementRepository) {
         this.spriteSheet = spriteSheet;
         this.achievementRepository = achievementRepository;
     }
@@ -40,7 +36,7 @@ public class AchievementCardController {
         //BoxImpl box = new BoxImpl().witHeight(600, PIXELS).withWidth(100, PERCENTAGE);
         AchievementBar achievementBar = new AchievementBar();
 
-        List<Achievement> achievementList = achievementRepository.findByUser(user);
+        List<Achievement> achievementList = achievementRepository.findByUseruuid(user.getUuid());
 
         Set<String> collected = new TreeSet<>();
         for (AchievementType achievementType : Arrays.stream(AchievementType.values()).sorted(Comparator.comparingInt(AchievementType::getRank).reversed()).collect(Collectors.toCollection(ArrayList::new))) {

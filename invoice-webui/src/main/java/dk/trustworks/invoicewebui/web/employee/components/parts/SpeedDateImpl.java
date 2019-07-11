@@ -34,7 +34,7 @@ public class SpeedDateImpl extends SpeedDateDesign {
         });
     }
     private void createInvitationLabel() {
-        List<ReminderHistory> reminderHistoryList = reminderHistoryRepository.findByTypeAndUserOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user);
+        List<ReminderHistory> reminderHistoryList = reminderHistoryRepository.findByTypeAndUseruuidOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user.getUuid());
         List<String> useruuidList = reminderHistoryList.stream().map(ReminderHistory::getTargetuuid).collect(Collectors.toList());
         useruuidList.add(user.getUuid());
         List<Consultant> allConsultants = consultantRepository.findByTypeAndStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE);

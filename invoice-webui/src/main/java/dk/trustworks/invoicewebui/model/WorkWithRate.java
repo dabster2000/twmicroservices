@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -21,13 +23,15 @@ public class WorkWithRate {
     @JoinColumn(name = "taskuuid")
     private Task task;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workas")
-    private User workas;
+    private String workas;
+
+    @Transient
+    private User workasUser;
 
     public WorkWithRate() {
     }
@@ -88,20 +92,16 @@ public class WorkWithRate {
         this.task = task;
     }
 
-    public User getUser() {
-        return user;
+    public String getUseruuid() {
+        return useruuid;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public User getUser() {
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public User getWorkas() {
-        return workas;
-    }
-
-    public void setWorkas(User workas) {
-        this.workas = workas;
+        return UserService.get().findByUUID(workas);
     }
 
     public LocalDate getDate() {

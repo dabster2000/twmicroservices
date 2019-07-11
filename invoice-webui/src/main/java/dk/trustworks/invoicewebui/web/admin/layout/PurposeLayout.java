@@ -141,14 +141,14 @@ public class PurposeLayout {
             }
         });
 
-        noteComboBox.setItems(notesRepository.findByUserOrderByNotedateDesc(user));
+        noteComboBox.setItems(notesRepository.findByUseruuidOrderByNotedateDesc(user.getUuid()));
 
         return new BoxImpl().instance(new MVerticalLayout(noteComboBox, dateField, noteTextArea, saveButton, deleteButton).withWidth(100, Sizeable.Unit.PERCENTAGE));
     }
 
     private void resetNoteForm(User user, ComboBox<Note> noteComboBox, DateField dateField, RichTextArea noteTextArea) {
         noteComboBox.setValue(null);
-        noteComboBox.setItems(notesRepository.findByUserOrderByNotedateDesc(user));
+        noteComboBox.setItems(notesRepository.findByUseruuidOrderByNotedateDesc(user.getUuid()));
         noteTextArea.setValue("");
         dateField.setValue(LocalDate.now());
     }
@@ -157,7 +157,7 @@ public class PurposeLayout {
         TextArea purp1 = new TextArea("Key Purpose 1:");
         purp1.setWidth(100, Sizeable.Unit.PERCENTAGE);
         purp1.addBlurListener(event -> {
-            KeyPurpose keyPurpose = keyPurposeRepository.findByUserAndNum(user, 1);
+            KeyPurpose keyPurpose = keyPurposeRepository.findByUseruuidAndNum(user.getUuid(), 1);
             if(keyPurpose == null) keyPurpose = keyPurposeRepository.save(new KeyPurpose(user, 1, ""));
             keyPurpose.setDescription(purp1.getValue());
             keyPurposeRepository.save(keyPurpose);
@@ -165,7 +165,7 @@ public class PurposeLayout {
         TextArea purp2 = new TextArea("Key Purpose 2:");
         purp2.setWidth(100, Sizeable.Unit.PERCENTAGE);
         purp2.addBlurListener(event -> {
-            KeyPurpose keyPurpose = keyPurposeRepository.findByUserAndNum(user, 2);
+            KeyPurpose keyPurpose = keyPurposeRepository.findByUseruuidAndNum(user.getUuid(), 2);
             if(keyPurpose == null) keyPurpose = keyPurposeRepository.save(new KeyPurpose(user, 2, ""));
             keyPurpose.setDescription(purp2.getValue());
             keyPurposeRepository.save(keyPurpose);
@@ -173,7 +173,7 @@ public class PurposeLayout {
         TextArea purp3 = new TextArea("Key Purpose 3:");
         purp3.setWidth(100, Sizeable.Unit.PERCENTAGE);
         purp3.addBlurListener(event -> {
-            KeyPurpose keyPurpose = keyPurposeRepository.findByUserAndNum(user, 3);
+            KeyPurpose keyPurpose = keyPurposeRepository.findByUseruuidAndNum(user.getUuid(), 3);
             if(keyPurpose == null) keyPurpose = keyPurposeRepository.save(new KeyPurpose(user, 3, ""));
             keyPurpose.setDescription(purp3.getValue());
             keyPurposeRepository.save(keyPurpose);
@@ -182,7 +182,7 @@ public class PurposeLayout {
         purp1.setValue("");
         purp2.setValue("");
         purp3.setValue("");
-        List<KeyPurpose> keyPurposeList = keyPurposeRepository.findByUserOrderByNumAsc(user);
+        List<KeyPurpose> keyPurposeList = keyPurposeRepository.findByUseruuidOrderByNumAsc(user.getUuid());
         if(keyPurposeList.size()>0) purp1.setValue(keyPurposeList.get(0).getDescription());
         if(keyPurposeList.size()>1) purp2.setValue(keyPurposeList.get(1).getDescription());
         if(keyPurposeList.size()>2) purp3.setValue(keyPurposeList.get(2).getDescription());

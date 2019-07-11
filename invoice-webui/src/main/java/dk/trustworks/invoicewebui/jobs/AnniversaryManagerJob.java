@@ -29,13 +29,14 @@ public class AnniversaryManagerJob {
 
     private static final Logger log = LoggerFactory.getLogger(AnniversaryManagerJob.class);
 
-    @Autowired
-    private NewsRepository newsRepository;
+    private final NewsRepository newsRepository;
+
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
-
-    public AnniversaryManagerJob() {
+    public AnniversaryManagerJob(NewsRepository newsRepository, UserService userService) {
+        this.newsRepository = newsRepository;
+        this.userService = userService;
     }
 
     @PostConstruct
@@ -46,6 +47,7 @@ public class AnniversaryManagerJob {
     @Transactional
     @Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
+        System.out.println("userService = " + userService);
         for (User user : userService.findCurrentlyEmployedUsers()) {
             if(userService.isExternal(user)) continue;
 

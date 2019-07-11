@@ -18,8 +18,10 @@ public class Notification {
 
     @Id
     private String uuid;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "useruuid")
+
+    private String useruuid;
+
+    @Transient
     private User receiver;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -42,7 +44,7 @@ public class Notification {
     public Notification(User receiver, LocalDate entrydate, LocalDate expirationdate, String titel, String content, String link, String themeimage, NotificationType notificationType) {
         this.notificationType = notificationType;
         uuid = UUID.randomUUID().toString();
-        this.receiver = receiver;
+        this.useruuid = receiver.getUuid();
         this.entrydate = entrydate;
         this.expirationdate = expirationdate;
         this.titel = titel;
@@ -136,5 +138,13 @@ public class Notification {
                 ", themeimage='" + themeimage + '\'' +
                 ", notificationType=" + notificationType +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

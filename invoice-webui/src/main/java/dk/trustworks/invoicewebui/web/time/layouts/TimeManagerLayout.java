@@ -409,7 +409,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         int rows = 1;
 
-        List<Receipt> receipts = receiptsRepository.findByUserAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue(), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(1), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).getMonth().length(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).isLeapYear())));
+        List<Receipt> receipts = receiptsRepository.findByUseruuidAndReceiptdateIsBetween(dateButtons.getSelActiveUser().getValue().getUuid(), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(1), currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).withDayOfMonth(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).getMonth().length(currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).isLeapYear())));
         gridExistingReceipts.setRows(receipts.size()+2);
         for (Receipt receipt : receipts) {
             System.out.println("rows = " + rows);
@@ -432,7 +432,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private void createTimesheet(User user) {
         sumHours = 0.0;
         weekDaySums = new WeekValues();
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUserOrderBySortingAsc(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user);
+        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user.getUuid());
         LocalDate startOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
         LocalDate endOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
         List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
@@ -443,7 +443,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
                         workResource.getUser(),
                         workResource.getTask(),
-                        workResource.getWorkas());
+                        workResource.getWorkasUser());
                 weekRepository.save(week);
                 weeks.add(week);
             }

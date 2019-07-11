@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -21,8 +22,9 @@ public class ReminderHistory {
     @Enumerated(EnumType.STRING)
     private ReminderType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -37,7 +39,7 @@ public class ReminderHistory {
 
     public ReminderHistory(ReminderType type, User user, LocalDate transmissionDate) {
         this.type = type;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.transmissionDate = transmissionDate;
     }
 
@@ -65,7 +67,7 @@ public class ReminderHistory {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
@@ -97,5 +99,13 @@ public class ReminderHistory {
                 ", transmissionDate=" + transmissionDate +
                 ", targetuuid='" + targetuuid + '\'' +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

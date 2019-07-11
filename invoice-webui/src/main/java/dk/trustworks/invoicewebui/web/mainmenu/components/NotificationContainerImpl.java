@@ -38,7 +38,7 @@ public class NotificationContainerImpl extends NotificationContainerDesign {
         this.removeAllComponents();
         UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
         if(userSession==null) return;
-        List<Notification> notifications = notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), LocalDate.now());
+        List<Notification> notifications = notificationRepository.findByUseruuidAndAndExpirationdateAfter(userSession.getUser().getUuid(), LocalDate.now());
         System.out.println("notifications.size() = " + notifications.size());
         for (Notification notification : notifications) {
             System.out.println("notification = " + notification);

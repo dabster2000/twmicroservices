@@ -6,7 +6,6 @@ package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
-import dk.trustworks.invoicewebui.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -18,8 +17,8 @@ import java.util.List;
 public interface BubbleMemberRepository extends CrudRepository<BubbleMember, String> {
 
     List<BubbleMember> findByBubble(@Param("bubble") Bubble bubble);
-    List<BubbleMember> findByMember(@Param("member") User user);
-    BubbleMember findByBubbleAndMember(@Param("bubble") Bubble bubble, @Param("member") User user);
+    List<BubbleMember> findByUseruuid(@Param("member") String user);
+    BubbleMember findByBubbleAndUseruuid(@Param("bubble") Bubble bubble, @Param("member") String user);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(BubbleMember entity);

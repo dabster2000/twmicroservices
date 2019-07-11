@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -20,8 +21,9 @@ public class Bubble {
     private String application;
     private String slackchannel;
 
-    @ManyToOne()
-    @JoinColumn(name="owner")
+    private String owner;
+
+    @Transient
     private User user;
     private boolean active;
 
@@ -43,7 +45,7 @@ public class Bubble {
         this.name = name;
         this.description = description;
         this.application = application;
-        this.user = user;
+        this.owner = user.getUuid();
         this.active = active;
         this.slackchannel = slackchannel;
         this.created = LocalDate.now();
@@ -78,7 +80,7 @@ public class Bubble {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getOwner());
     }
 
     public void setUser(User user) {
@@ -125,5 +127,13 @@ public class Bubble {
                 ", active=" + active +
                 ", created=" + created +
                 '}';
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }

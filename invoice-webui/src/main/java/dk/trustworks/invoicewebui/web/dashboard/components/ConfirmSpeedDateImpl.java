@@ -20,7 +20,7 @@ public class ConfirmSpeedDateImpl extends ConfirmSpeedDateDesign {
         });
 
         getBtnNope().addClickListener(event -> {
-            ReminderHistory reminderHistory = reminderHistoryRepository.findFirstByUserAndTargetuuidAndType(target, user.getUuid(), ReminderType.SPEEDDATE);
+            ReminderHistory reminderHistory = reminderHistoryRepository.findFirstByUseruuidAndTargetuuidAndType(target.getUuid(), user.getUuid(), ReminderType.SPEEDDATE);
             reminderHistoryRepository.delete(reminderHistory.getId());
             window.close();
         });

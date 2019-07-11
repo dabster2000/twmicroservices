@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Document;
-import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +17,7 @@ public interface DocumentRepository extends CrudRepository<Document, Integer> {
 
     List<Document> findAll();
     List<Document> findByType(@Param("contract") DocumentType contract);
-    List<Document> findByUserAndType(@Param("user") User user, @Param("contract") DocumentType contract);
+    List<Document> findByUseruuidAndType(@Param("user") String useruuid, @Param("contract") DocumentType contract);
 
     @Override @RestResource(exported = false) void delete(Integer id);
     @Override @RestResource(exported = false) void delete(Document entity);

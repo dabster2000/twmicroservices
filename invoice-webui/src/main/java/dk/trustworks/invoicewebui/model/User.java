@@ -1,49 +1,33 @@
 package dk.trustworks.invoicewebui.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import org.apache.commons.text.WordUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by hans on 23/06/2017.
  */
 
-@Entity
 public class User {
 
-    @Id private String uuid;
+    private String uuid;
     private boolean active;
     private Date created;
     private String email;
     private String firstname;
     private String lastname;
-    @JsonIgnore private String password;
+    private String password;
     private String username;
     private String slackusername;
     private LocalDate birthday;
-    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<Salary> salaries;
-    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<UserStatus> statuses;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Week> weeks;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Work> workList;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Role> roleList;
-    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
-    private List<Notification> notifications;
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    private List<Project> projects;
+    private UserContactinfo userContactinfo;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -146,20 +130,31 @@ public class User {
         this.statuses = statuses;
     }
 
-    public List<Week> getWeeks() {
-        return weeks;
+    public UserContactinfo getUserContactinfo() {
+        return userContactinfo;
     }
 
-    public void setWeeks(List<Week> weeks) {
-        this.weeks = weeks;
+    public void setUserContactinfo(UserContactinfo userContactinfo) {
+        this.userContactinfo = userContactinfo;
     }
 
-    public List<Work> getWorkList() {
-        return workList;
+    @SuppressWarnings("unchecked")
+    @JsonProperty("roleList")
+    private void unpackNested(List<Map<String,Object>> roleList) {
+        this.roleList = new ArrayList<>();
+        for (Map<String, Object> stringObjectMap : roleList) {
+            this.roleList.add(new Role(stringObjectMap.get("uuid").toString(), RoleType.valueOf(((String)stringObjectMap.get("role")).toUpperCase())));
+        }
     }
 
-    public void setWorkList(List<Work> workList) {
-        this.workList = workList;
+    @SuppressWarnings("unchecked")
+    @JsonProperty("userContactinfo")
+    private void unpackNestedUserContactinfo(Map<String,Object> stringObjectMap) {
+        this.userContactinfo = new UserContactinfo(
+                (String)stringObjectMap.get("streetName"),
+                (String)stringObjectMap.get("postalCode"),
+                (String)stringObjectMap.get("city"),
+                (String)stringObjectMap.get("phone"));
     }
 
     public List<Role> getRoleList() {
@@ -168,22 +163,6 @@ public class User {
 
     public void setRoleList(List<Role> roleList) {
         this.roleList = roleList;
-    }
-
-    public List<Notification> getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
-    }
-
-    public List<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
     }
 
     public String getInitials() {

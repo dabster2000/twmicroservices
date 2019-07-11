@@ -125,7 +125,7 @@ public class TalentPassionLayout {
     }
 
     private void saveChoice(User user, int[] performance, int[] potential, TalentPassionType dna, int i, VerticalLayout vlChoiceDNA) {
-        talentPassionRepository.findByUserAndOwnerAndTypeAndRegistered(user, userService.getLoggedInUser().get(), dna, LocalDate.now()).ifPresent(talentPassion -> talentPassionRepository.delete(talentPassion.getUuid()));
+        talentPassionRepository.findByUseruuidAndOwnerAndTypeAndRegistered(user.getUuid(), userService.getLoggedInUser().get().getUuid(), dna, LocalDate.now()).ifPresent(talentPassion -> talentPassionRepository.delete(talentPassion.getUuid()));
         talentPassionRepository.save(new TalentPassion(UUID.randomUUID().toString(), user, userService.getLoggedInUser().get(), dna, performance[i], potential[i], LocalDate.now()));
         vlChoiceDNA.removeAllComponents();
         Image image = new Image(null, new ThemeResource("images/icons/trustworks_icon_kage.svg"));

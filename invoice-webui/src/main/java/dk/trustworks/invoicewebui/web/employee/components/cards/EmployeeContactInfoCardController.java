@@ -18,13 +18,11 @@ public class EmployeeContactInfoCardController {
 
     private final UserService userService;
 
-    private final UserContactinfoRepository userContactinfoRepository;
+    // TODO: Migrate to UserService
+    private UserContactinfoRepository userContactinfoRepository;
 
-    private User user;
-
-    public EmployeeContactInfoCardController(UserService userService, UserContactinfoRepository userContactinfoRepository) {
+    public EmployeeContactInfoCardController(UserService userService) {
         this.userService = userService;
-        this.userContactinfoRepository = userContactinfoRepository;
     }
 
     public Component getCard(User user) {
@@ -39,7 +37,8 @@ public class EmployeeContactInfoCardController {
 
         userBinder.forField(userDetailsCard.getDfBirthday()).bind(User::getBirthday, User::setBirthday);
 
-        UserContactinfo contactinfo = userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo(user, "", "" ,"", ""));
+        final UserContactinfo contactinfo = user.getUserContactinfo()!=null?user.getUserContactinfo():new UserContactinfo("", "" ,"", "");//userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo("", "" ,"", ""));
+        //if(contactinfo==null) contactinfo = new UserContactinfo("", "" ,"", "");
         contactinfoBinder.forField(userDetailsCard.getTxtCity()).bind(UserContactinfo::getCity, UserContactinfo::setCity);
         contactinfoBinder.forField(userDetailsCard.getTxtPostal()).bind(UserContactinfo::getPostalCode, UserContactinfo::setPostalCode);
         contactinfoBinder.forField(userDetailsCard.getTxtStreet()).bind(UserContactinfo::getStreetName, UserContactinfo::setStreetName);

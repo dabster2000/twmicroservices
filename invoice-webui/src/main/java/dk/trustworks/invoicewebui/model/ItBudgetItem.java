@@ -20,8 +20,9 @@ public class ItBudgetItem {
     @GeneratedValue
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,7 +45,7 @@ public class ItBudgetItem {
     }
 
     public ItBudgetItem(User user, ITBudgetCategory category, String description, int price, ItBudgetStatus status, LocalDate invoicedate) {
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.category = category;
         this.description = description;
         this.price = price;
@@ -119,5 +120,13 @@ public class ItBudgetItem {
                 ", status=" + status +
                 ", invoicedate=" + invoicedate +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

@@ -19,6 +19,39 @@ public class WorkDocument {
     private final double workHours;
     private final double rate;
 
+    public WorkDocument(LocalDate month, Client client, User user, Contract contract, double workHours, double rate) {
+        this.month = month;
+        this.client = client;
+        this.user = user;
+        this.contract = contract;
+        this.workHours = workHours;
+        this.rate = rate;
+    }
+
+    public LocalDate getMonth() {
+        return month;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public double getWorkHours() {
+        return workHours;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
     public double getMonthRevenue() {
         return workHours * rate;
     }

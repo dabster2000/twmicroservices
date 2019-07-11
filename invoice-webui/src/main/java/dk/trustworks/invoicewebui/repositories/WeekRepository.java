@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.repositories;
 
-import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Week;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +14,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "weeks", path = "weeks")
 public interface WeekRepository extends CrudRepository<Week, String> {
 
-    List<Week> findByWeeknumberAndYearAndUserOrderBySortingAsc(@Param("weeknumber") int weeknumber, @Param("year") int year, @Param("user") User user);
+    List<Week> findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(@Param("weeknumber") int weeknumber, @Param("year") int year, @Param("user") String user);
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Week entity);

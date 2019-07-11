@@ -9,20 +9,18 @@ import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
-import dk.trustworks.invoicewebui.repositories.UserStatusRepository;
+import dk.trustworks.invoicewebui.network.rest.UserRestService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import lombok.NonNull;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
@@ -30,15 +28,15 @@ import static dk.trustworks.invoicewebui.model.enums.StatusType.ACTIVE;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.NON_PAY_LEAVE;
 
 @Service
-public class UserService {
+public class UserService implements InitializingBean {
 
-    private final UserRepository userRepository;
+    private static UserService instance;
 
-    private final UserStatusRepository userStatusRepository;
+    private final UserRestService userRestService;
 
-    public UserService(UserRepository userRepository, UserStatusRepository userStatusRepository) {
-        this.userRepository = userRepository;
-        this.userStatusRepository = userStatusRepository;
+    @Autowired
+    public UserService(UserRestService userRestService) {
+        this.userRestService = userRestService;
     }
 
     public Optional<User> getLoggedInUser() {
@@ -46,24 +44,25 @@ public class UserService {
     }
 
     public User findByUUID(String uuid) {
-        return userRepository.findOne(uuid);
+        return userRestService.findOne(uuid);
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRestService.findByUsername(username);
     }
 
-    public User findBySlackusername(String userId) {
-        return userRepository.findBySlackusername(userId);
+    public User[] findBySlackusername(String userId) {
+        return userRestService.findBySlackusername(userId);
     }
 
     public List<User> findAll() {
-        return userRepository.findByOrderByUsername();
+        return userRestService.findByOrderByUsername();
     }
 
     public List<User> findCurrentlyEmployedUsers() {
+        System.out.println("UserService.findCurrentlyEmployedUsers");
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(
+        return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
@@ -71,7 +70,7 @@ public class UserService {
 
     public List<User> findCurrentlyWorkingUsers() {
         String[] statusList = {ACTIVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(
+        return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
@@ -79,7 +78,7 @@ public class UserService {
 
     public List<User> findEmployedUsersByDate(LocalDate date, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(
+        return userRestService.findUsersByDateAndStatusListAndTypes(
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
@@ -87,7 +86,7 @@ public class UserService {
 
     public List<User> findWorkingUsersByDate(LocalDate date, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(
+        return userRestService.findUsersByDateAndStatusListAndTypes(
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
@@ -95,7 +94,7 @@ public class UserService {
 
     public List<User> findCurrentlyEmployedUsers(ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(
+        return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new)).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
@@ -103,35 +102,43 @@ public class UserService {
 
     public List<User> countCurrentlyWorkingEmployees() {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(
+        return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
     public int getUserSalary(User user, LocalDate date) {
-        Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, user));
+        Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0));
         return salary.getSalary();
     }
 
     public UserStatus getUserStatus(User user, LocalDate date) {
-        return user.getStatuses().stream().filter(value -> value.getStatusdate().isBefore(date)).max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(user, ConsultantType.STAFF, StatusType.TERMINATED, date, 0));
+        return user.getStatuses().stream().filter(value -> value.getStatusdate().isBefore(date)).max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(ConsultantType.STAFF, StatusType.TERMINATED, date, 0));
     }
 
     public int getMonthSalaries(LocalDate date, String... consultantTypes) {
         String[] statusList = {ACTIVE.toString()};
-        return userRepository.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
+        return userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
                 .stream().mapToInt(value ->
-                        value.getSalaries().stream().filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0, null)).getSalary()
+                        value.getSalaries().stream().filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0)).getSalary()
                 ).sum();
     }
 
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
-        return userRepository.calculateCapacityByMonthByUser(useruuid, statusdate);
+        return userRestService.calculateCapacityByMonthByUser(useruuid, statusdate);
+    }
+
+    public List<UserStatus> findByUserAndTypeAndStatusOrderByStatusdateAsc(User user, ConsultantType type, StatusType status) {
+        return userRestService.findOne(user.getUuid()).getStatuses()
+                .stream()
+                .filter(userStatus -> userStatus.getStatus().equals(status) && userStatus.getType().equals(type))
+                .sorted(Comparator.comparing(UserStatus::getStatusdate).reversed())
+                .collect(Collectors.toList());
     }
 
     public Optional<LocalDate> findEmployedDate(@NonNull User user) {
-        List<UserStatus> statusdateAsc = userStatusRepository.findByUserAndTypeAndStatusOrderByStatusdateAsc(user, CONSULTANT, ACTIVE);
+        List<UserStatus> statusdateAsc = findByUserAndTypeAndStatusOrderByStatusdateAsc(user, CONSULTANT, ACTIVE);
         if(statusdateAsc.size()==0) return Optional.empty();
         return Optional.ofNullable(statusdateAsc.get(0).getStatusdate());
     }
@@ -174,7 +181,44 @@ public class UserService {
     @Transactional
     @CacheEvict("user")
     public User save(User user) {
-        return userRepository.save(user);
+        return userRestService.save(user);
     }
 
+    @Override
+    public void afterPropertiesSet() {
+        System.out.println("UserService.afterPropertiesSet");
+        instance = this;
+    }
+
+    public static UserService get() {
+        return instance;
+    }
+
+    public boolean login(String username, String password) {
+        return userRestService.login(username, password);
+    }
+
+    public void deleteSalaries(User user, Set<Salary> salaries) {
+        userRestService.deleteSalaries(user, salaries);
+    }
+
+    public void deleteUserStatuses(User user, Set<UserStatus> userStatuses) {
+        userRestService.deleteUserStatuses(user, userStatuses);
+    }
+
+    public void deleteRoles(User user, List<Role> roles) {
+        userRestService.deleteRoles(user, roles);
+    }
+
+    public void create(User user, Salary salary) {
+        userRestService.create(user, salary);
+    }
+
+    public void create(User user, UserStatus userStatus) {
+        userRestService.create(user, userStatus);
+    }
+
+    public void create(User user, Role role) {
+        userRestService.create(user, role);
+    }
 }

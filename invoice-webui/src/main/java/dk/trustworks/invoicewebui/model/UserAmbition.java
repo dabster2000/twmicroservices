@@ -13,8 +13,9 @@ public class UserAmbition {
 
     private int ambitionid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     private int score;
@@ -28,7 +29,7 @@ public class UserAmbition {
 
     public UserAmbition(int ambitionid, User user, int score, int ambition) {
         this.ambitionid = ambitionid;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.score = score;
         this.ambition = ambition;
         updated = LocalDate.now();
@@ -103,5 +104,13 @@ public class UserAmbition {
                 ", ambition=" + ambition +
                 ", updated=" + updated +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

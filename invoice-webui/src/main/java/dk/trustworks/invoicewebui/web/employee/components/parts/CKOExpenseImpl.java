@@ -93,7 +93,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 /*
         getBtnDelete().addClickListener(event -> {
             //this.ckoExpenseRepository.delete(getGridCKOExpenses().getSelectedItems());
-            //getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUser(user));
+            //getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUseruuid(user));
         });
 
         getBtnEditItem().addClickListener(event -> {
@@ -115,21 +115,21 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
-            //getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUser(user));
+            //getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUseruuid(user));
             refreshExpenseCards(user, expenseBoard);
         });
 
         //getGridCKOExpenses().sort("eventdate", SortDirection.ASCENDING);
 
         this.setVisible(true);
-        //getGridCKOExpenses().setItems(ckoExpenseRepository.findCKOExpenseByUser(user));
+        //getGridCKOExpenses().setItems(ckoExpenseRepository.findCKOExpenseByUseruuid(user));
     }
 
     private void refreshExpenseCards(User user, ResponsiveLayout expenseBoard) {
         expenseBoard.removeAllComponents();
         ResponsiveRow row = expenseBoard.addRow();
 
-        for (CKOExpense expense : ckoExpenseRepository.findCKOExpenseByUser(user)) {
+        for (CKOExpense expense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid())) {
             CKOExpenseItem expenseItem = new CKOExpenseItem();
             expenseItem.getImgIcon().setSource(new ThemeResource("images/icons/"+expense.getType().name().toLowerCase()+"-icon.png"));
             expenseItem.getLblDate().setValue(expense.getEventdate().format(DateTimeFormatter.ofPattern("dd. MMMM yyyy")));
@@ -168,7 +168,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         conf.setTitle("Knowledge Budget");
 
         SortedMap<String, Integer> expenses = new TreeMap<>();
-        for (CKOExpense ckoExpense : ckoExpenseRepository.findCKOExpenseByUser(user)) {
+        for (CKOExpense ckoExpense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid())) {
             if(ckoExpense.getStatus()!=null && ckoExpense.getStatus().equals(CKOExpenseStatus.WISHLIST)) continue;
             expenses.putIfAbsent(ckoExpense.getEventdate().getYear()+"", 0);
             Integer integer = expenses.get(ckoExpense.getEventdate().getYear() + "");

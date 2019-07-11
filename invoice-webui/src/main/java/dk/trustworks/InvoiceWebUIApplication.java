@@ -105,6 +105,7 @@ public class InvoiceWebUIApplication {
         return builder.build();
     }
 
+
     @Bean
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -116,3 +117,4 @@ public class InvoiceWebUIApplication {
         return executor;
     }
 }
+

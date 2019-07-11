@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.Note;
-import dk.trustworks.invoicewebui.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -16,7 +15,7 @@ import java.util.List;
 public interface NotesRepository extends CrudRepository<Note, Integer> {
 
     List<Note> findAll();
-    List<Note> findByUserOrderByNotedateDesc(@Param("user") User user);
+    List<Note> findByUseruuidOrderByNotedateDesc(@Param("user") String user);
 
     @Override @RestResource(exported = false) void delete(Integer id);
     @Override @RestResource(exported = false) void delete(Note entity);

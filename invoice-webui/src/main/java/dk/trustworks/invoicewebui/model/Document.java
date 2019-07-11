@@ -21,8 +21,9 @@ public class Document {
     @GeneratedValue
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     @Column(length = 80)
@@ -45,7 +46,7 @@ public class Document {
     }
 
     public Document(User user, String name, String filename, DocumentType type, LocalDate uploaddate, byte[] content) {
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.name = name;
         this.filename = filename;
         this.type = type;
@@ -120,5 +121,13 @@ public class Document {
                 ", uploaddate=" + uploaddate +
                 ", content=" + Arrays.toString(content) +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }

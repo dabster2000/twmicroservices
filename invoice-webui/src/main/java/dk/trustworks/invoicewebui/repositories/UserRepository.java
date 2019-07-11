@@ -1,20 +1,15 @@
 package dk.trustworks.invoicewebui.repositories;
 
 import dk.trustworks.invoicewebui.model.User;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.List;
 
 /**
  * Created by hans on 23/06/2017.
  */
-@RepositoryRestResource(collectionResourceRel = "users", path = "users")
-public interface UserRepository extends CrudRepository<User, String> {
+public interface UserRepository {
 
     List<User> findByOrderByUsername();
     User findByUsername(@Param("username") String username);
@@ -40,14 +35,8 @@ public interface UserRepository extends CrudRepository<User, String> {
             ") usi ON u.uuid = usi.useruuid WHERE u.uuid LIKE :useruuid ;", nativeQuery = true)
     int calculateCapacityByMonthByUser(@Param("useruuid") String useruuid, @Param("statusdate") String statusdate);
 
-    @Override
-    @CacheEvict("user")
-    <S extends User> Iterable<S> save(Iterable<S> entities);
 
-    @Override
-    @CacheEvict("user")
-    <S extends User> S save(S entity);
+    public void save(User user);
 
-    @Override @RestResource(exported = false) void delete(String id);
-    @Override @RestResource(exported = false) void delete(User entity);
+    public User findOne(String userUUID);
 }

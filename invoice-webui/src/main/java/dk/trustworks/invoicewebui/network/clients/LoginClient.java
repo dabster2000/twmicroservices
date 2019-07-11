@@ -1,9 +1,7 @@
 package dk.trustworks.invoicewebui.network.clients;
 
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.enums.LogType;
 import dk.trustworks.invoicewebui.services.UserService;
-import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,8 @@ public class LoginClient {
     public User login(String username, String password) {
         logger.info(String.format("User.login(%s) attempt ", username));
         User user = userService.findByUsername(username);
+        return userService.login(username, password)?user:null;
+        /*
         if(user.getPassword().trim().equals("")) {
             logger.info("Failed login attempt (no password) by "+user.getUsername());
             return null;
@@ -31,6 +31,8 @@ public class LoginClient {
             logger.info("Failed login attempt (wrong password) by " + user.getUsername());
             return null;
         }
+
+         */
     }
 
 }

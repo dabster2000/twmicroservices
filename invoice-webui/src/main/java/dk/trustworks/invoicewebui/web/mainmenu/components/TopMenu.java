@@ -133,7 +133,7 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
             }
 
             userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
-            for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), LocalDate.now())) {
+            for (Notification notification : notificationRepository.findByUseruuidAndAndExpirationdateAfter(userSession.getUser().getUuid(), LocalDate.now())) {
                 System.out.println("notification = " + notification);
 
                 notifications.showNotification(notification, notification.getTitel(), notification.getContent());
@@ -165,7 +165,7 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
             //UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
             if(userSession!=null) {
                 if(!notifications.isAttached()) ((ComponentContainer)this.getParent()).addComponent(notifications);
-                for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
+                for (Notification notification : notificationRepository.findByUseruuidAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
                     System.out.println("GET THEM notification = " + notification);
                     UI.getCurrent().access(() -> notifications.showNotification(null, notification.getTitel(), notification.getContent(), MaterialIcons.DATE_RANGE));
                 }

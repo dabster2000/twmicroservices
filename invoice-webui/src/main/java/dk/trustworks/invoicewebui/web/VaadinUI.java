@@ -99,7 +99,7 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         if(message.equals("notification")) {
             UserSession userSession = this.getSession().getAttribute(UserSession.class);
             if(userSession!=null) {
-                for (Notification notification : notificationRepository.findByReceiverAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
+                for (Notification notification : notificationRepository.findByUseruuidAndAndExpirationdateAfter(userSession.getUser(), new Date())) {
                     //System.out.println("notification = " + notification);
 
                     //getCurrent().access(() ->fancyNotifications.showNotification(null, notification.getTitel(), notification.getContent(), MaterialIcons.DATE_RANGE));

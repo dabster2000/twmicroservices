@@ -6,7 +6,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.repositories.UserRepository;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +31,10 @@ public class ConsultantHoursPerMonthChart {
 
     private final WorkService workService;
 
-    private final UserRepository userRepository;
+    private final UserService userRepository;
 
     @Autowired
-    public ConsultantHoursPerMonthChart(WorkService workService, UserRepository userRepository) {
+    public ConsultantHoursPerMonthChart(WorkService workService, UserService userRepository) {
         this.workService = workService;
         this.userRepository = userRepository;
     }
@@ -77,7 +77,7 @@ public class ConsultantHoursPerMonthChart {
         }
 
         for (String useruuid : userMonths.keySet()) {
-            User user = userRepository.findOne(useruuid);
+            User user = userRepository.findByUUID(useruuid);
             chart.getConfiguration().addSeries(new ListSeries(user.getFirstname()+" "+user.getLastname(), Arrays.asList(ArrayUtils.toObject(userMonths.get(useruuid)))));
         }
         chart.getConfiguration().getxAxis().setCategories(categories);

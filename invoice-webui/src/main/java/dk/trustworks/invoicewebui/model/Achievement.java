@@ -17,8 +17,9 @@ public class Achievement {
     @GeneratedValue
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="useruuid")
+    private String useruuid;
+
+    @Transient
     private User user;
 
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -32,7 +33,7 @@ public class Achievement {
     }
 
     public Achievement(User user, LocalDate achieved, AchievementType achievement) {
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.achieved = achieved;
         this.achievement = achievement;
     }
@@ -77,5 +78,13 @@ public class Achievement {
                 ", achieved=" + achieved +
                 ", achievement=" + achievement +
                 '}';
+    }
+
+    public String getUseruuid() {
+        return useruuid;
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 }
