@@ -21,8 +21,6 @@ public class Role {
     }
 
     public Role(String uuid, RoleType role) {
-        System.out.println("NEW ROLE");
-        System.out.println("uuid = [" + uuid + "], role = [" + role + "]");
         this.uuid = uuid;
         this.role = role;
     }

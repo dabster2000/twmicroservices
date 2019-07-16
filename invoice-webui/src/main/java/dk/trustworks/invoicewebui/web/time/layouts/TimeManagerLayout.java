@@ -241,6 +241,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 } else {
                     user = userSession.getUser();
                 }
+                log.info("Finding user contracts for "+ user.getUsername());
                 List<Contract> newActiveConsultantContracts = getMainContracts(contractService, user);
                 List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
                 Set<Project> projects;
@@ -305,7 +306,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private List<Contract> getMainContracts(ContractService contractService, User user) {
-        return contractService.findTimeActiveConsultantContracts(user, java.time.LocalDate.of(currentDate.getYear(), currentDate.getMonthValue(), 1));
+        return contractService.findTimeActiveConsultantContracts(user, LocalDate.of(currentDate.getYear(), currentDate.getMonthValue(), 1));
     }
 
     public ResponsiveLayout init() {
@@ -456,7 +457,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
             boolean onContract = isOnContract(week);
             if(!task.getProject().isActive() && !task.getProject().getClient().isActive()) onContract = false;
-            WeekItem weekItem = new WeekItem(week, task, user, week.getWorkas(), !onContract);
+            WeekItem weekItem = new WeekItem(week, task, user, week.getWorkasUser(), !onContract);
             weekItem.setDate(startOfWeek);
             weekItems.add(weekItem);
             weekItem.setTaskname(task.getProject().getName() + " / " + task.getName());
@@ -845,7 +846,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             workService.saveWork(work);
             if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));
         } catch (ParseException e) {
-            log.error("Could not save work for weekItem " + weekItem, e);
+            log.error("Could not create work for weekItem " + weekItem, e);
         }
     }
 
@@ -857,8 +858,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
         boolean result = false;
         LocalDate localDateStart = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
         LocalDate localDateEnd = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
-        if(isOnContract(localDateStart, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
-        if(isOnContract(localDateEnd, (week.getWorkas()!=null)?week.getWorkas():week.getUser(), week.getTask())) result = true;
+        log.info("isOnContract: "+week);
+        if(isOnContract(localDateStart, (week.getWorkasUser()!=null)?week.getWorkasUser():week.getUser(), week.getTask())) result = true;
+        if(isOnContract(localDateEnd, (week.getWorkasUser()!=null)?week.getWorkasUser():week.getUser(), week.getTask())) result = true;
         return result;
     }
 

@@ -140,7 +140,7 @@ public class ContractService {
         contract = contractRepository.findOne(contract.getUuid());
         project = projectService.findOne(project.getUuid());
         project.addContract(contract);
-        //project = projectRepository.save(project);
+        //project = projectRepository.create(project);
         contract.addProject(project);
         contractRepository.save(contract);
         return contract;

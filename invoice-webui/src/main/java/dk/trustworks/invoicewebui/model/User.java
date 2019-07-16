@@ -16,7 +16,7 @@ public class User {
 
     private String uuid;
     private boolean active;
-    private Date created;
+    private LocalDate created;
     private String email;
     private String firstname;
     private String lastname;
@@ -31,7 +31,7 @@ public class User {
 
     public User() {
         uuid = UUID.randomUUID().toString();
-        created = new Date();
+        created = LocalDate.now();
     }
 
     public String getUuid() {
@@ -50,11 +50,11 @@ public class User {
         this.active = active;
     }
 
-    public Date getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDate created) {
         this.created = created;
     }
 

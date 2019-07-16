@@ -25,8 +25,10 @@ public class Week {
     private int year;
     private int sorting;
 
+    private String workas;
+
     @Transient
-    private User workas;
+    private User workasUser;
 
     public Week() {
     }
@@ -45,7 +47,7 @@ public class Week {
         this.year = year;
         this.useruuid = user.getUuid();
         this.task = task;
-        this.workas = workas;
+        this.workas = workas.getUuid();
     }
 
     public String getUuid() {
@@ -92,16 +94,16 @@ public class Week {
         return UserService.get().findByUUID(getUseruuid());
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public User getWorkas() {
+    public String getWorkas() {
         return workas;
     }
 
-    public void setWorkas(User workas) {
+    public void setWorkas(String workas) {
         this.workas = workas;
+    }
+
+    public User getWorkasUser() {
+        return UserService.get().findByUUID(getWorkas());
     }
 
     @Override
@@ -125,11 +127,12 @@ public class Week {
     public String toString() {
         return "Week{" +
                 "uuid='" + uuid + '\'' +
-                ", task=" + task.getUuid() +
-                ", user=" + user.getUuid() +
+                ", task=" + task +
+                ", useruuid='" + UserService.get().findByUUID(useruuid).getUsername() + '\'' +
                 ", weeknumber=" + weeknumber +
                 ", year=" + year +
                 ", sorting=" + sorting +
+                ", workas='" + workas + '\'' +
                 '}';
     }
 

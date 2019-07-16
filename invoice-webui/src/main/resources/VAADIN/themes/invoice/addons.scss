@@ -21,10 +21,6 @@
 @import "../../../VAADIN/addons/materialicons/materialicons.scss";
 
 
-/* Provided by searchdropdown-0.3.0.jar */
-@import "../../../VAADIN/addons/searchdropdown/searchdropdown.scss";
-
-
 /* Provided by gantt-addon-1.0.4.jar */
 @import "../../../VAADIN/addons/gantt/gantt.scss";
 
@@ -40,7 +36,6 @@
 	@include product-tour;
 	@include fancylayouts;
 	@include materialicons;
-	@include searchdropdown;
 	@include gantt;
 	@include wtpdfviewer;
 }

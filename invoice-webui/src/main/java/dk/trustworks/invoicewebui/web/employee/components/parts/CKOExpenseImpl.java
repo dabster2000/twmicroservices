@@ -106,7 +106,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         });
 */
         getBtnAddSalary().addClickListener(event -> {
-            //this.ckoExpenseRepository.save(new CKOExpense(getDfDate().getValue(), user, getTxtDescription().getValue(), Integer.parseInt(getTxtPrice().getValue()), getTxtComments().getValue(), NumberConverter.parseDouble(getTxtDays().getValue()), CKOExpenseType.valueOf(getCbType().getValue()), CKOExpenseStatus.valueOf(getCbStatus().getValue()), CKOExpensePurpose.valueOf(getCbPurpose().getValue())));
+            //this.ckoExpenseRepository.create(new CKOExpense(getDfDate().getValue(), user, getTxtDescription().getValue(), Integer.parseInt(getTxtPrice().getValue()), getTxtComments().getValue(), NumberConverter.parseDouble(getTxtDays().getValue()), CKOExpenseType.valueOf(getCbType().getValue()), CKOExpenseStatus.valueOf(getCbStatus().getValue()), CKOExpensePurpose.valueOf(getCbPurpose().getValue())));
             try {
                 binder.writeBean(ckoExpense);
                 ckoExpenseRepository.save(ckoExpense);

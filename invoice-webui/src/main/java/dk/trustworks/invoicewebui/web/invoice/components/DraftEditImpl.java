@@ -255,7 +255,7 @@ public class DraftEditImpl extends DraftEditDesign {
             System.out.println("writebean: invoice = " + invoice);
             dfInvoiceDueDate.setValue(invoice.invoicedate.plusMonths(1));
             invoiceService.save(invoice);
-            System.out.println("after save: invoice = " + invoice);
+            System.out.println("after create: invoice = " + invoice);
             Notification.show("Saved", Notification.Type.TRAY_NOTIFICATION);
         } catch (ValidationException e) {
             Notification.show("Invoice could not be saved, " +

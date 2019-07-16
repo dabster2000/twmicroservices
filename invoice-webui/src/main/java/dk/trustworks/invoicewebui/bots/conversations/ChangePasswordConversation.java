@@ -30,7 +30,7 @@ public class ChangePasswordConversation implements Conversation {
                 conversationState.step++;
                 log.debug("Change password...");
                 conversationState.getUser().setPassword(text);
-                userService.save(conversationState.getUser());
+                userService.update(conversationState.getUser());
                 conversationState.setValid(false);
                 return "Password changed!";
             default:

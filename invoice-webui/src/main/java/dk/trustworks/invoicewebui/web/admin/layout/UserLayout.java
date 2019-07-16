@@ -97,11 +97,10 @@ public class UserLayout {
         MButton addUserButton = new MButton("add user").withStyleName("flat", "friendly").withListener((Button.ClickListener) event -> {
             User user = new User();
             user.setUsername("new.new");
-            userService.save(user);
+            userService.create(user);
             userComboBox.setItems(userService.findAll());
             userComboBox.setSelectedItem(user);
         });
-
 
         userComboBox = new ComboBox<>();
         userComboBox.setItems(userService.findAll());

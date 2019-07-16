@@ -38,7 +38,7 @@ public class TimeService {
     public void cloneTaskToWeek(LocalDate currentDate, User user) {
         List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user.getUuid());
         for (Week week : weeks) {
-            weekRepository.save(new Week(UUID.randomUUID().toString(), currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), week.getUser(), week.getTask(), week.getWorkas()));
+            weekRepository.save(new Week(UUID.randomUUID().toString(), currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), week.getUser(), week.getTask(), week.getWorkasUser()));
         }
     }
 }

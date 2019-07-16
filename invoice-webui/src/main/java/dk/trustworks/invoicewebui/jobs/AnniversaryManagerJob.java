@@ -47,7 +47,6 @@ public class AnniversaryManagerJob {
     @Transactional
     @Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
-        System.out.println("userService = " + userService);
         for (User user : userService.findCurrentlyEmployedUsers()) {
             if(userService.isExternal(user)) continue;
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.DocumentType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -22,9 +23,6 @@ public class Document {
     private int id;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     @Column(length = 80)
     private String name;
@@ -62,12 +60,16 @@ public class Document {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public String getUseruuid() {
+        return useruuid;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public User getUser() {
+        return UserService.get().findByUUID(getUseruuid());
+    }
+
+    public void setUseruuid(String useruuid) {
+        this.useruuid = useruuid;
     }
 
     public String getName() {
@@ -114,7 +116,6 @@ public class Document {
     public String toString() {
         return "Document{" +
                 "id=" + id +
-                ", user=" + user +
                 ", name='" + name + '\'' +
                 ", filename='" + filename + '\'' +
                 ", type=" + type +
@@ -123,11 +124,4 @@ public class Document {
                 '}';
     }
 
-    public String getUseruuid() {
-        return useruuid;
-    }
-
-    public void setUseruuid(String useruuid) {
-        this.useruuid = useruuid;
-    }
 }

@@ -52,7 +52,7 @@ public class EmployeeContactInfoCardController {
                 userBinder.writeBean(user);
                 contactinfoBinder.writeBean(contactinfo);
 
-                userService.save(user);
+                userService.update(user);
                 userContactinfoRepository.save(contactinfo);
 
                 Notification.show("Contact information updated", Notification.Type.TRAY_NOTIFICATION);

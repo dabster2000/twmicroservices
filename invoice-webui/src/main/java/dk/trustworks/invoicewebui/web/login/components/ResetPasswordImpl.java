@@ -39,7 +39,7 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
             } else if (getTxtPassword().getValue().equals(getTxtVerifyPassword().getValue())) {
                 User userDb = userService.findByUUID(user.getUuid());
                 userDb.setPassword(BCrypt.hashpw(getTxtPassword().getValue(), BCrypt.gensalt()));
-                userService.save(userDb);
+                userService.update(userDb);
                 getUI().getNavigator().navigateTo("login");
                 Notification.show("Succes",
                         "Your may now use your new password.",

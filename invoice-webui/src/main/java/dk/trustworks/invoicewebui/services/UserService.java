@@ -12,11 +12,10 @@ import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.network.rest.UserRestService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import lombok.NonNull;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,6 +43,7 @@ public class UserService implements InitializingBean {
     }
 
     public User findByUUID(String uuid) {
+        if(uuid==null) return null;
         return userRestService.findOne(uuid);
     }
 
@@ -60,7 +60,6 @@ public class UserService implements InitializingBean {
     }
 
     public List<User> findCurrentlyEmployedUsers() {
-        System.out.println("UserService.findCurrentlyEmployedUsers");
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -178,10 +177,13 @@ public class UserService implements InitializingBean {
         return anyMatch;
     }
 
-    @Transactional
-    @CacheEvict("user")
-    public User save(User user) {
-        return userRestService.save(user);
+    public User create(User user) {
+        return userRestService.create(user);
+    }
+
+    public void update(User user) {
+        Validate.notNull(user.getUuid());
+        userRestService.update(user);
     }
 
     @Override

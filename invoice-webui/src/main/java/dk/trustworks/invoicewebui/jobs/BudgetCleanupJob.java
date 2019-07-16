@@ -90,7 +90,7 @@ public class BudgetCleanupJob {
         }
         log.debug("newBudgets.size() = " + newBudgets.size());
 
-        budgetRepository.save(newBudgets);
+        budgetRepository.create(newBudgets);
         log.debug("done");
     }
 */

@@ -38,7 +38,7 @@ public class WeekItem {
         this.locked = locked;
     }
 
-    public WeekItem(Week week, Task task, User user, User workas, boolean locked) {
+    public  WeekItem(Week week, Task task, User user, User workas, boolean locked) {
         this.week = week;
         this.task = task;
         this.user = user;

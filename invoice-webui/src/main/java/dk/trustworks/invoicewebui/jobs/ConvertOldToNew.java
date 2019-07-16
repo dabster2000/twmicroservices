@@ -53,7 +53,7 @@ public class ConvertOldToNew {
                 }
             }
             project.addMainContract(mainContract);
-            mainContractRepository.save(mainContract);
+            mainContractRepository.create(mainContract);
         }
 
         Map<String, Work> noContract = new HashMap<>();

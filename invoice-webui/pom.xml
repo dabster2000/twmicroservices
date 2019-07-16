@@ -12,17 +12,17 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.4.RELEASE</version>
+        <version>1.5.21.RELEASE</version>
     </parent>
 
     <properties>
         <java.version>1.8</java.version>
-        <vaadin.version>8.7.0</vaadin.version>
+        <vaadin.version>8.8.5</vaadin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <springboot.version>1.5.4.RELEASE</springboot.version>
+        <springboot.version>1.5.21.RELEASE</springboot.version>
         <org.vaadin.spring.version>0.0.7.RELEASE</org.vaadin.spring.version>
-        <vaadin-spring.version>3.1.1</vaadin-spring.version>
+        <vaadin-spring.version>3.2.0</vaadin-spring.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <undertow.version>1.4.12.Final</undertow.version>
 
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-charts</artifactId>
-            <version>4.1.0.beta1</version>
+            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -185,11 +185,12 @@
             <artifactId>extended-token-field</artifactId>
             <version>0.3.0</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>com.fo0.advancedtokenfield</groupId>
             <artifactId>AdvancedTokenField</artifactId>
             <version>0.5.1</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.whitestein.vaadin.widgets</groupId>
             <artifactId>wt-pdf-viewer</artifactId>
@@ -351,12 +352,12 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-java8</artifactId>
-            <version>LATEST</version>
+            <version>5.4.3.Final</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>LATEST</version>
+            <version>3.3.1</version>
         </dependency>
 
         <!-- CLOUD SERVICES -->
@@ -380,7 +381,7 @@
         <dependency>
             <groupId>com.github.seratch</groupId>
             <artifactId>jslack</artifactId>
-            <version>LATEST</version>
+            <version>1.7.4</version>
         </dependency>
         <dependency>
             <groupId>javax.websocket</groupId>
@@ -640,7 +641,7 @@
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
-            <version>LATEST</version>
+            <version>4.1.0</version>
         </dependency>
 
 
@@ -769,26 +770,6 @@
                         </fileset>
                     </filesets>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-one</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>com.github.appreciated</includeGroupIds>
-                            <includeArtifactIds>material</includeArtifactIds>
-                            <type>zip</type>
-                            <excludes>*</excludes>
-                            <includes>VAADIN/themes/**</includes>
-                            <outputDirectory>src/main/webapp/</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
 

@@ -36,10 +36,8 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
     public UserInfoCardImpl() {
         getBtnUpdate().addClickListener(event -> {
             try {
-                System.out.println("Save user info = " + user);
                 binder.writeBean(user);
-                System.out.println("Save user info = " + user);
-                userRepository.save(user);
+                userRepository.update(user);
             } catch (ValidationException e) {
                 e.printStackTrace();
             }

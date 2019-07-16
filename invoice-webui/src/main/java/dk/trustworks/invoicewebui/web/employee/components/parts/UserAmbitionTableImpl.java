@@ -37,7 +37,7 @@ public class UserAmbitionTableImpl {
         for (Ambition ambition : ambitionRepository.findAmbitionByActiveIsTrueAndCategory(ambitionCategory.getAmbitionCategoryType())) {
             final UserAmbition userAmbition = userAmbitions.stream().filter(ua -> ua.getAmbitionid() == ambition.getId()).findFirst().orElseGet(() ->
                     userAmbitionRepository.save(new UserAmbition(ambition.getId(), user, 0, 1)));
-            //userAmbitionRepository.save(userAmbition);
+            //userAmbitionRepository.create(userAmbition);
             double knowledgeScore = userAmbition.getScore();
             int ambitionScore = userAmbition.getAmbition();
 

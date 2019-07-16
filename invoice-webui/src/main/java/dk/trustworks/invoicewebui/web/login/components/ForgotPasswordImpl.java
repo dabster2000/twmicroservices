@@ -31,6 +31,7 @@ public class ForgotPasswordImpl extends ForgotPasswordDesign {
             User user = userService.findByUsername(getTxtUsername().getValue());
             String uuid = UUID.randomUUID().toString();
             uuidMap.put(uuid, user);
+            System.out.println("uuid = " + uuid);
             getVlReset().setVisible(false);
             getVlConfirmation().setVisible(true);
             emailSender.sendResetPassword(user, uuid);

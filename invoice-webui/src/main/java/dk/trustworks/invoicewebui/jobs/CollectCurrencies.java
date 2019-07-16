@@ -31,15 +31,15 @@ public class CollectCurrencies {
         RestTemplate restTemplate = new RestTemplate();
         CryptoCompare ether = restTemplate.getForObject("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR", CryptoCompare.class);
         log.debug(ether.stringIt());
-        currencyRepository.save(new Currency("ETH", ether.getUsd()));
+        currencyRepository.create(new Currency("ETH", ether.getUsd()));
 
         CryptoCompare bitcoin = restTemplate.getForObject("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=BTC,USD,EUR", CryptoCompare.class);
         log.debug(bitcoin.stringIt());
-        currencyRepository.save(new Currency("BTC", bitcoin.getUsd()));
+        currencyRepository.create(new Currency("BTC", bitcoin.getUsd()));
 
         CryptoCompare bitcoinCash = restTemplate.getForObject("https://min-api.cryptocompare.com/data/price?fsym=BCH&tsyms=BTC,USD,EUR", CryptoCompare.class);
         log.debug(bitcoinCash.stringIt());
-        currencyRepository.save(new Currency("BCH", bitcoinCash.getUsd()));
+        currencyRepository.create(new Currency("BCH", bitcoinCash.getUsd()));
     }
 
     //@Scheduled(fixedRate = 60000)

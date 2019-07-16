@@ -129,7 +129,7 @@ public class WorkService {
 
     @Transactional
     public Work save(Work work) {
-        System.out.println("WorkService.save");
+        System.out.println("WorkService.create");
         System.out.println("work = [" + work + "]");
         Work savedWork = workRepository.save(work);
         eventBus.notify("notificationConsumer", Event.wrap(work));

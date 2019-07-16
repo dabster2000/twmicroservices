@@ -61,8 +61,15 @@ public class UserRestService {
     }
 
     @CacheEvict(value = "users", allEntries = true)
-    public User save(User user) {
-        return null;
+    public User create(User user) {
+        String url = userServiceUrl+"/users";
+        return restTemplate.postForObject(url, user, User.class);
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    public void update(User user) {
+        String url = userServiceUrl+"/users/"+user.getUuid();
+        restTemplate.put(url, user);
     }
 
     public boolean login(String username, String password) {
