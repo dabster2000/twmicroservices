@@ -23,8 +23,6 @@ public class Bubble {
 
     private String owner;
 
-    @Transient
-    private User user;
     private boolean active;
 
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -84,7 +82,7 @@ public class Bubble {
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.owner = user.getUuid();
     }
 
     public boolean isActive() {
@@ -123,7 +121,7 @@ public class Bubble {
                 ", description='" + description + '\'' +
                 ", application='" + application + '\'' +
                 ", slackchannel='" + slackchannel + '\'' +
-                ", user=" + user.getUsername() +
+                ", owner=" + owner +
                 ", active=" + active +
                 ", created=" + created +
                 '}';

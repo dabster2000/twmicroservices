@@ -15,13 +15,7 @@ public class TalentPassion {
 
     private String useruuid;
 
-    @Transient
-    private User user;
-
     private String owner;
-
-    @Transient
-    private User owner_user;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
@@ -59,7 +53,7 @@ public class TalentPassion {
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public User getOwner() {
@@ -67,7 +61,7 @@ public class TalentPassion {
     }
 
     public void setOwner(User owner) {
-        this.owner_user = owner;
+        this.owner = owner.getUuid();
     }
 
     public TalentPassionType getType() {
@@ -106,7 +100,7 @@ public class TalentPassion {
     public String toString() {
         return "TalentPassion{" +
                 "uuid='" + uuid + '\'' +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", owner=" + owner +
                 ", type=" + type +
                 ", performance=" + performance +

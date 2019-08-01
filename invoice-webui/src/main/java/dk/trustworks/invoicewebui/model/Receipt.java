@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -21,9 +22,6 @@ public class Receipt {
     private LocalDate receiptdate;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectuuid")
@@ -61,11 +59,11 @@ public class Receipt {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public Project getProject() {
@@ -97,7 +95,7 @@ public class Receipt {
         return "Receipt{" +
                 "id=" + id +
                 ", receiptdate=" + receiptdate +
-                ", user=" + user.getUsername() +
+                ", user=" + useruuid +
                 ", project=" + project.getName() +
                 ", description='" + description + '\'' +
                 ", amount=" + amount +

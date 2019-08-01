@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.AchievementType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,9 +19,6 @@ public class Achievement {
     private int id;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -47,11 +45,11 @@ public class Achievement {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public LocalDate getAchieved() {
@@ -74,7 +72,7 @@ public class Achievement {
     public String toString() {
         return "Achievement{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", achieved=" + achieved +
                 ", achievement=" + achievement +
                 '}';

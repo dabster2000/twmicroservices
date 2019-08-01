@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,9 +13,6 @@ public class Certification {
     private int id;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     private String certification;
 
@@ -40,11 +39,11 @@ public class Certification {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public String getCertification() {
@@ -75,7 +74,7 @@ public class Certification {
     public String toString() {
         return "Certification{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", certification='" + certification + '\'' +
                 ", level='" + level + '\'' +
                 ", year=" + year +

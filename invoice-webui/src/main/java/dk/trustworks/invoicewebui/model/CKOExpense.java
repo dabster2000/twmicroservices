@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -24,9 +25,6 @@ public class CKOExpense {
     private LocalDate eventdate;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     private String description;
 
@@ -51,7 +49,7 @@ public class CKOExpense {
     }
 
     public CKOExpense(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public CKOExpense(LocalDate eventdate, User user, String description, int price, String comment, double days, CKOExpenseType type, CKOExpenseStatus status, CKOExpensePurpose purpose) {
@@ -83,11 +81,11 @@ public class CKOExpense {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public String getUseruuid() {
@@ -159,7 +157,7 @@ public class CKOExpense {
         return "CKOExpense{" +
                 "id=" + id +
                 ", eventdate=" + eventdate +
-                ", user=" + user.getUsername() +
+                ", user=" + useruuid +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", comment='" + comment + '\'' +

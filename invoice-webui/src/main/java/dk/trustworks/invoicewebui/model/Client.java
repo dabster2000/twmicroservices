@@ -1,6 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,9 +20,6 @@ public class Client {
     private String name;
 
     private String accountmanager;
-
-    @Transient
-    private User account_manager;
 
     private Double latitude;
     private Double longitude;
@@ -132,11 +131,11 @@ public class Client {
     }
 
     public User getAccount_manager() {
-        return account_manager;
+        return UserService.get().findByUUID(accountmanager);
     }
 
     public void setAccount_manager(User accountmanager) {
-        this.account_manager = accountmanager;
+        this.accountmanager = accountmanager.getUuid();
     }
 
     @Override

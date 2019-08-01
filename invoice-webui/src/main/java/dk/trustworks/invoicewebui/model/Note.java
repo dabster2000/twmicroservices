@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.NoteType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,9 +19,6 @@ public class Note {
     private int id;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     @Enumerated(EnumType.STRING)
     private NoteType type;
@@ -51,11 +49,11 @@ public class Note {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public NoteType getType() {
@@ -86,7 +84,7 @@ public class Note {
     public String toString() {
         return "Note{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", type=" + type +
                 ", notedate=" + notedate +
                 ", content='" + content + '\'' +

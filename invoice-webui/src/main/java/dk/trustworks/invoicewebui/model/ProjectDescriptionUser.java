@@ -14,9 +14,6 @@ public class ProjectDescriptionUser {
 
     private String useruuid;
 
-    @Transient
-    private User user;
-
     @ManyToOne()
     @JoinColumn(name="projectdescid")
     private ProjectDescription projectDescription;
@@ -46,7 +43,7 @@ public class ProjectDescriptionUser {
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public ProjectDescription getProjectDescription() {
@@ -69,7 +66,7 @@ public class ProjectDescriptionUser {
     public String toString() {
         return "ProjectDesctiptionUsers{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", projectDescription=" + projectDescription +
                 ", description='" + description + '\'' +
                 '}';

@@ -24,9 +24,6 @@ public class ReminderHistory {
 
     private String useruuid;
 
-    @Transient
-    private User user;
-
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @Column(name = "transmissiondate")
@@ -45,7 +42,7 @@ public class ReminderHistory {
 
     public ReminderHistory(ReminderType type, User user, LocalDate transmissionDate, String targetuuid) {
         this.type = type;
-        this.user = user;
+        this.useruuid = user.getUuid();
         this.transmissionDate = transmissionDate;
         this.targetuuid = targetuuid;
     }
@@ -71,7 +68,7 @@ public class ReminderHistory {
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public LocalDate getTransmissionDate() {
@@ -95,7 +92,7 @@ public class ReminderHistory {
         return "ReminderHistory{" +
                 "id=" + id +
                 ", type=" + type +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", transmissionDate=" + transmissionDate +
                 ", targetuuid='" + targetuuid + '\'' +
                 '}';

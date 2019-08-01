@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.NotificationType;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -21,8 +22,6 @@ public class Notification {
 
     private String useruuid;
 
-    @Transient
-    private User receiver;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate entrydate;
@@ -62,11 +61,11 @@ public class Notification {
     }
 
     public User getReceiver() {
-        return receiver;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setReceiver(User receiver) {
-        this.receiver = receiver;
+        this.useruuid = receiver.getUuid();
     }
 
     public LocalDate getExpirationdate() {
@@ -129,7 +128,7 @@ public class Notification {
     public String toString() {
         return "Notification{" +
                 "uuid='" + uuid + '\'' +
-                ", receiver=" + receiver +
+                ", receiver=" + useruuid +
                 ", entrydate=" + entrydate +
                 ", expirationdate=" + expirationdate +
                 ", titel='" + titel + '\'' +

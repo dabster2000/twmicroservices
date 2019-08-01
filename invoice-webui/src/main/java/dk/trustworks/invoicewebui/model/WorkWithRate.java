@@ -25,13 +25,7 @@ public class WorkWithRate {
 
     private String useruuid;
 
-    @Transient
-    private User user;
-
     private String workas;
-
-    @Transient
-    private User workasUser;
 
     public WorkWithRate() {
     }
@@ -115,9 +109,9 @@ public class WorkWithRate {
                 ", date=" + getDate() +
                 ", workduration=" + workduration +
                 ", task=" + task.getUuid() +
-                ", user=" + user.getUuid() +
+                ", user=" + useruuid +
                 ", workas=" + (workas!=null) +
-                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+user.getUsername()+"]" +
+                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+useruuid+"]" +
                 '}';
     }
 }

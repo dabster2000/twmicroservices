@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.ItBudgetStatus;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -21,9 +22,6 @@ public class ItBudgetItem {
     private int id;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id")
@@ -46,6 +44,7 @@ public class ItBudgetItem {
 
     public ItBudgetItem(User user, ITBudgetCategory category, String description, int price, ItBudgetStatus status, LocalDate invoicedate) {
         this.useruuid = user.getUuid();
+        this.useruuid = user.getUuid();
         this.category = category;
         this.description = description;
         this.price = price;
@@ -62,11 +61,11 @@ public class ItBudgetItem {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public ITBudgetCategory getCategory() {
@@ -113,7 +112,7 @@ public class ItBudgetItem {
     public String toString() {
         return "ItBudgetItem{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", category=" + category +
                 ", description='" + description + '\'' +
                 ", price=" + price +

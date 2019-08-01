@@ -22,13 +22,7 @@ public class Work {
 
     private String useruuid;
 
-    @Transient
-    private User user;
-
     private String workas;
-
-    @Transient
-    private User workasUser;
 
     public Work() {
     }

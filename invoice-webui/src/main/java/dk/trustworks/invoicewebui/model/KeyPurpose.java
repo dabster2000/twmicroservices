@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 
 /**
@@ -14,9 +16,6 @@ public class KeyPurpose {
     private int id;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     private int num;
 
@@ -41,11 +40,11 @@ public class KeyPurpose {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public int getNum() {
@@ -68,7 +67,7 @@ public class KeyPurpose {
     public String toString() {
         return "KeyPurpose{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", num=" + num +
                 ", description='" + description + '\'' +
                 '}';

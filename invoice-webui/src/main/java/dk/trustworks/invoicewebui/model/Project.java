@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -42,9 +43,6 @@ public class Project {
     private Clientdata clientdata;
 
     private String userowneruuid;
-
-    @Transient
-    private User owner;
 
     @ManyToMany(mappedBy = "projects", fetch = FetchType.LAZY)
     private Set<Contract> contracts = new HashSet<>();
@@ -163,11 +161,11 @@ public class Project {
     }
 
     public User getOwner() {
-        return owner;
+        return UserService.get().findByUUID(getUserowneruuid());
     }
 
     public void setOwner(User owner) {
-        this.owner = owner;
+        this.userowneruuid = owner.getUuid();
     }
 
     public double getLongitude() {

@@ -14,9 +14,6 @@ public class BubbleMember {
 
     private String useruuid;
 
-    @Transient
-    private User member;
-
     @ManyToOne()
     @JoinColumn(name="bubbleuuid")
     private Bubble bubble;
@@ -40,7 +37,7 @@ public class BubbleMember {
     }
 
     public void setMember(User member) {
-        this.member = member;
+        this.useruuid = member.getUuid();
     }
 
     public Bubble getBubble() {
@@ -55,7 +52,7 @@ public class BubbleMember {
     public String toString() {
         return "BubbleMember{" +
                 "uuid='" + uuid + '\'' +
-                ", member=" + member +
+                ", member=" + useruuid +
                 ", bubble=" + bubble +
                 '}';
     }

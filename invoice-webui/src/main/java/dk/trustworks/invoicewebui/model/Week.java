@@ -19,8 +19,6 @@ public class Week {
 
     private String useruuid;
 
-    @Transient
-    private User user;
     private int weeknumber;
     private int year;
     private int sorting;

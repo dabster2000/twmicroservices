@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.UserService;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -14,9 +16,6 @@ public class UserAmbition {
     private int ambitionid;
 
     private String useruuid;
-
-    @Transient
-    private User user;
 
     private int score;
 
@@ -38,7 +37,7 @@ public class UserAmbition {
     public void refresh(UserAmbition userAmbition) {
         this.id = userAmbition.getId();
         this.ambitionid = userAmbition.getAmbitionid();
-        this.user = userAmbition.getUser();
+        this.useruuid = userAmbition.getUser().getUuid();
         this.score = userAmbition.getScore();
         this.ambition = userAmbition.getAmbition();
         this.updated = userAmbition.getUpdated();
@@ -57,11 +56,11 @@ public class UserAmbition {
     }
 
     public User getUser() {
-        return user;
+        return UserService.get().findByUUID(getUseruuid());
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public int getScore() {
@@ -99,7 +98,7 @@ public class UserAmbition {
         return "UserAmbition{" +
                 "id=" + id +
                 ", ambitionid=" + ambitionid +
-                ", user=" + user +
+                ", user=" + useruuid +
                 ", score=" + score +
                 ", ambition=" + ambition +
                 ", updated=" + updated +

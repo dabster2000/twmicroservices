@@ -23,9 +23,6 @@ public class ContractConsultant {
 
     private String useruuid;
 
-    @Transient
-    private User user;
-
     private double rate;
 
     private double budget;
@@ -69,7 +66,7 @@ public class ContractConsultant {
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.useruuid = user.getUuid();
     }
 
     public double getRate() {
@@ -109,7 +106,7 @@ public class ContractConsultant {
         return "ContractConsultant{" +
                 "uuid='" + uuid + '\'' +
                 ", contract=" + contract.getUuid() +
-                ", user=" + user.getUsername() +
+                ", user=" + useruuid +
                 ", rate=" + rate +
                 ", budget=" + budget +
                 ", hours=" + hours +
