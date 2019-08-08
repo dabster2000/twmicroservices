@@ -81,6 +81,7 @@ public class AllRevenuePerMonthChart {
         for (User user : userService.findAll()) {
             Optional<LocalDate> employedDate = userService.findEmployedDate(user);
             if(!employedDate.isPresent()) continue;
+            if(!employedDate.get().isBefore(LocalDate.now().withDayOfMonth(1))) continue; // Spring over, hvis personen er ansat i denne måned eller senere
             int between = (int) ChronoUnit.MONTHS.between(periodStart, employedDate.get());
             usersEmployedSeries.add(new FlagItem(dataSeries.get(between).getX(), user.getFirstname(), user.getFirstname()+" "+user.getLastname()+" was empployed"));
         }
