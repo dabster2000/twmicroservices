@@ -25,9 +25,6 @@ public class Week {
 
     private String workas;
 
-    @Transient
-    private User workasUser;
-
     public Week() {
     }
 
@@ -45,7 +42,7 @@ public class Week {
         this.year = year;
         this.useruuid = user.getUuid();
         this.task = task;
-        this.workas = workas.getUuid();
+        this.workas = (workas!=null)?workas.getUuid():null;
     }
 
     public String getUuid() {

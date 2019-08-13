@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.vaadin.ui.themes.ValoTheme.COMBOBOX_BORDERLESS;
@@ -208,7 +209,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                     new FileItem("maalarkitetur.pptx", PPTX));
             architectureCell1.getCbFileSelector().addValueChangeListener(event1 -> {
                 architectureCell1.getImgTop().setSource(new ThemeResource("images/cards/architecture/arc1.png"));
-                List<User> employees = userService.findCurrentlyWorkingEmployees(ConsultantType.CONSULTANT);
+                List<User> employees = userService.findWorkingUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT);
                 architectureCell1.getVlConsultants().removeAllComponents();
                 for (int j = 0; j < 2; j++) {
                     architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(employees.get(j+4), false, 50, Unit.PIXELS));

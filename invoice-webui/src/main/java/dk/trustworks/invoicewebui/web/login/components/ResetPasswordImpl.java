@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SpringUI
 public class ResetPasswordImpl extends ResetPasswordDesign {
 
-    private String uuid;
     private User user;
     private ForgotPasswordImpl forgotPassword;
 
@@ -60,7 +59,6 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
     }
 
     public void setUser(String uuid) {
-        this.uuid = uuid;
         user = forgotPassword.getResetUser(uuid);
         getTxtUsername().setValue(user.getUsername());
     }
