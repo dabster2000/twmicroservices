@@ -7,7 +7,9 @@ import com.dropbox.core.v2.DbxTeamClientV2;
 import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
+import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import dk.trustworks.invoicewebui.network.clients.model.DropboxFile;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.text.WordUtils;
@@ -17,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -52,6 +56,7 @@ public class DropboxAPI {
             ListFolderResult result = files.listFolder(path);
             while (true) {
                 for (Metadata metadata : result.getEntries()) {
+                    if(metadata instanceof FolderMetadata) continue;
                     filePaths.add(metadata.getPathLower());
                 }
 
@@ -118,7 +123,27 @@ public class DropboxAPI {
         return new byte[0];
     }
 
+    public Resource getThumbnail(String filePath) {
+        log.debug("DropboxAPI.getThumbnail");
+        log.debug("filePath = [" + filePath + "]");
+
+        try {
+            DbxDownloader<FileMetadata> thumbnail = client.asMember("").files().getThumbnail(filePath);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            thumbnail.download(outputStream);
+            return new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(outputStream.toByteArray()),new Random(1000000)+".jpg");
+        } catch (DbxException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ThemeResource("images/clients/missing-logo.jpg");
+    }
+
     public String getSpecificTextFile(String filePath) {
+        return getSpecificTextFile(filePath, StandardCharsets.ISO_8859_1);
+    }
+
+    public String getSpecificTextFile(String filePath, Charset charset) {
         System.out.println("DropboxAPI.getSpecificTextFile");
         log.debug("filePath = [" + filePath + "]");
         try {
@@ -126,7 +151,7 @@ public class DropboxAPI {
             DbxDownloader<FileMetadata> file = files.download(filePath);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             file.download(outputStream);
-            return new String(outputStream.toByteArray(), StandardCharsets.ISO_8859_1);
+            return new String(outputStream.toByteArray(), charset);
         } catch (DbxException | IOException e) {
             log.warn("'"+filePath+"' not found!");
         }
