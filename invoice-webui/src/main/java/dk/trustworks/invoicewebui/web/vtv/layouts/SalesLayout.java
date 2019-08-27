@@ -12,14 +12,18 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.Ambition;
-import dk.trustworks.invoicewebui.model.AmbitionCategory;
-import dk.trustworks.invoicewebui.model.TaskOffering;
-import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.network.clients.SlackAPI;
 import dk.trustworks.invoicewebui.repositories.AmbitionCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
@@ -47,10 +51,19 @@ public class SalesLayout extends VerticalLayout {
     private WorkRepository workRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private StatisticsService statisticsService;
+
+    @Autowired
     private HoursPerConsultantChart hoursPerConsultantChart;
 
     @Autowired
     private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
+
+    @Autowired
+    private SlackAPI slackAPI;
 
     private static Color[] colors = new ValoLightTheme().getColors();
 
@@ -91,6 +104,8 @@ public class SalesLayout extends VerticalLayout {
                 .withComponent(consultantsBudgetRealizationCard);
 
         this.addComponent(responsiveLayout);
+
+        getAverageAllocationByYear(LocalDate.of(2018, 7, 1));
 
         return this;
     }
@@ -179,6 +194,36 @@ public class SalesLayout extends VerticalLayout {
         conf.addSeries(series);
 
         return chart;
+    }
+
+    private double getAverageAllocationByYear(LocalDate startDate) {
+        double allocation = 0.0;
+        double count = 0.0;
+        do {
+            startDate = startDate.plusMonths(1);
+            for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
+                if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
+
+                double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
+                AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
+                if (availability == null) {
+                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
+                }
+                double monthAllocation = 0.0;
+                if (billableWorkHours > 0.0 && availability.getAvailableHours() > 0.0) {
+                    monthAllocation = (billableWorkHours / availability.getAvailableHours()) * 100.0;
+                    System.out.println("--- startDate = " + startDate);
+                    System.out.println(user.getUsername()+" monthAllocation = " + monthAllocation);
+                    count++;
+                }
+                allocation += monthAllocation;
+            }
+            System.out.println(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + allocation);
+            User user = userService.findByUsername("hans.lassen");
+            slackAPI.sendSlackMessage(user, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + allocation);
+
+        } while (startDate.isBefore(LocalDate.now()));
+        return NumberUtils.round(allocation / count, 0);
     }
 
     private static SolidColor color(int colorIndex) {
