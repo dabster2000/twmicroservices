@@ -23,7 +23,6 @@ import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
@@ -213,16 +212,16 @@ public class SalesLayout extends VerticalLayout {
                 if (billableWorkHours > 0.0 && availability.getAvailableHours() > 0.0) {
                     monthAllocation = (billableWorkHours / availability.getAvailableHours()) * 100.0;
                     //System.out.println("--- startDate = " + startDate);
-                    System.out.println(user.getUsername()+" monthAllocation = " + monthAllocation);
+                    //System.out.println(user.getUsername()+" monthAllocation = " + monthAllocation);
                     count++;
                 }
                 allocation += monthAllocation;
             }
-            System.out.println("count = " + count);
-            System.out.println("allocation = " + allocation);
-            System.out.println(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
-            User user = userService.findByUsername("hans.lassen");
-            slackAPI.sendSlackMessage(user, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
+            //System.out.println("count = " + count);
+            //System.out.println("allocation = " + allocation);
+            //System.out.println(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
+            //User user = userService.findByUsername("hans.lassen");
+            //slackAPI.sendSlackMessage(user, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
 
         } while (startDate.isBefore(LocalDate.now()));
         //return NumberUtils.round(allocation / count, 0);
