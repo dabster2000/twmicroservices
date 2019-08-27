@@ -105,7 +105,7 @@ public class SalesLayout extends VerticalLayout {
 
         this.addComponent(responsiveLayout);
 
-        getAverageAllocationByYear(LocalDate.of(2018, 7, 1));
+        getAverageAllocationByYear(LocalDate.of(2018, 6, 1));
 
         return this;
     }
@@ -196,11 +196,11 @@ public class SalesLayout extends VerticalLayout {
         return chart;
     }
 
-    private double getAverageAllocationByYear(LocalDate startDate) {
-        double allocation = 0.0;
-        double count = 0.0;
+    private void getAverageAllocationByYear(LocalDate startDate) {
         do {
             startDate = startDate.plusMonths(1);
+            double count = 0.0;
+            double allocation = 0.0;
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
@@ -212,18 +212,20 @@ public class SalesLayout extends VerticalLayout {
                 double monthAllocation = 0.0;
                 if (billableWorkHours > 0.0 && availability.getAvailableHours() > 0.0) {
                     monthAllocation = (billableWorkHours / availability.getAvailableHours()) * 100.0;
-                    System.out.println("--- startDate = " + startDate);
+                    //System.out.println("--- startDate = " + startDate);
                     System.out.println(user.getUsername()+" monthAllocation = " + monthAllocation);
                     count++;
                 }
                 allocation += monthAllocation;
             }
-            System.out.println(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + allocation);
+            System.out.println("count = " + count);
+            System.out.println("allocation = " + allocation);
+            System.out.println(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
             User user = userService.findByUsername("hans.lassen");
-            slackAPI.sendSlackMessage(user, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + allocation);
+            slackAPI.sendSlackMessage(user, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
 
         } while (startDate.isBefore(LocalDate.now()));
-        return NumberUtils.round(allocation / count, 0);
+        //return NumberUtils.round(allocation / count, 0);
     }
 
     private static SolidColor color(int colorIndex) {
