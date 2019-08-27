@@ -165,8 +165,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
             MLabel spacer = new MLabel("").withWidth(100, PERCENTAGE);
 
+            System.out.println("dateButtons.getSelActiveUser().getSelectedItem().get() = " + dateButtons.getSelActiveUser().getSelectedItem().get());
             List<Contract> activeConsultantContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getSelectedItem().get());
+            System.out.println("activeConsultantContracts.size() = " + activeConsultantContracts.size());
             List<Client> clientResources = getClients(activeConsultantContracts);
+            System.out.println("clientResources.size() = " + clientResources.size());
 
             ComboBox<Client> clientComboBox = new ComboBox<>();
             clientComboBox.setItemCaptionGenerator(Client::getName);
@@ -301,6 +304,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private List<Client> getClients(List<Contract> activeConsultantContracts) {
         List<Client> clientList = activeConsultantContracts.stream().map(Contract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+        System.out.println("clientList.size() = " + clientList.size());
         clientList.add(clientRepository.findOne("40c93307-1dfa-405a-8211-37cbda75318b"));
         return clientList;
     }

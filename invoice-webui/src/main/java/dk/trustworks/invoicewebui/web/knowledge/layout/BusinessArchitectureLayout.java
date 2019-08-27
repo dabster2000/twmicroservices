@@ -266,8 +266,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                     e.printStackTrace();
                 }
 
-
-
 /*
                 FileItem fileItem = new FileItem("GCW-01.pptx", PPTX);
                 architectureCell1.getCbFileSelector().setItems(
