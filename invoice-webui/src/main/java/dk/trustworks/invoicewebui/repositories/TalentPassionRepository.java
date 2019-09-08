@@ -21,4 +21,6 @@ public interface TalentPassionRepository extends CrudRepository<TalentPassion, S
     Optional<TalentPassion> findByUseruuidAndOwnerAndTypeAndRegistered(String user, String owner, TalentPassionType type, LocalDate registered);
 
     List<TalentPassion> findByUseruuidOrderByRegisteredDesc(String user);
+
+    List<TalentPassion> findAll();
 }

@@ -11,6 +11,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.TalentPassion;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.TalentPassionType;
 import dk.trustworks.invoicewebui.repositories.TalentPassionRepository;
 import dk.trustworks.invoicewebui.services.PhotoService;
@@ -20,6 +21,7 @@ import dk.trustworks.invoicewebui.web.admin.components.TalentPassionScoringDesig
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
@@ -31,7 +33,7 @@ import static dk.trustworks.invoicewebui.web.admin.components.TalentPassionResul
 public class TalentPassionLayout {
 
     @Autowired
-    TalentPassionRepository talentPassionRepository;
+    private TalentPassionRepository talentPassionRepository;
 
     @Autowired
     private UserService userService;
@@ -53,7 +55,9 @@ public class TalentPassionLayout {
 
         ResponsiveRow row = responsiveLayout.addRow();
 
-        for (User user : userService.findCurrentlyEmployedUsers()) {
+        List<TalentPassion> talentPassions = talentPassionRepository.findAll();
+
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             TalentPassionScoringDesign scoringDesign = new TalentPassionScoringDesign();
             Image roundMemberImage = photoService.getRoundMemberImage(user, false, 125, PIXELS);
             scoringDesign.getImgUser().addComponent(roundMemberImage);
