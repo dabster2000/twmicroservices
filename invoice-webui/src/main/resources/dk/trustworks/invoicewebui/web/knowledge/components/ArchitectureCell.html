@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta charset="UTF-8">
-  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
   <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
@@ -22,8 +22,14 @@
       <vaadin-vertical-layout spacing="false" height="200px" _id="content"></vaadin-vertical-layout>
      </vaadin-vertical-layout>
      <vaadin-horizontal-layout width-full>
-      <vaadin-horizontal-layout _id="vlConsultants" :middle></vaadin-horizontal-layout>
-      <vaadin-image height="35px" _id="imgCustomer" :middle :right></vaadin-image>
+      <vaadin-horizontal-layout _id="vlConsultants" :middle :expand="0.5"></vaadin-horizontal-layout>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e703" style-name="icon-only" plain-text _id="btnDownloadFile"></vaadin-button>
+      <vaadin-image height="35px" _id="imgCustomer" :middle :right :expand="0.5"></vaadin-image>
+     </vaadin-horizontal-layout>
+     <vaadin-horizontal-layout style-name="dark-grey" width-full>
+      <vaadin-label style-name="h4 white-font" plain-text _id="lblAreaTitle" :middle :center>
+        Label 
+      </vaadin-label>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>

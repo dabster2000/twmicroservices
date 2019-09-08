@@ -30,7 +30,7 @@ public class GetVacationJob {
 
     @PostConstruct
     public void startup() {
-        checkBudgetJob();
+        //checkBudgetJob();
     }
 
     public void checkBudgetJob() {

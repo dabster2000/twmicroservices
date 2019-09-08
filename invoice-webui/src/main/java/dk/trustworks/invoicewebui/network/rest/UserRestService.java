@@ -30,6 +30,7 @@ public class UserRestService {
         this.restTemplate = restTemplate;
     }
 
+    @Cacheable("usersbyusername")
     public User findByUsername(String username) {
         return restTemplate.getForObject(userServiceUrl+"/users/search/findByUsername?username="+username, User.class);
     }

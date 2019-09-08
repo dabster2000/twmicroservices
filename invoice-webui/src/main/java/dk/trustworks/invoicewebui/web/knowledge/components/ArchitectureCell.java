@@ -30,7 +30,9 @@ public class ArchitectureCell extends VerticalLayout {
     private Image imgTop;
     private VerticalLayout content;
     private HorizontalLayout vlConsultants;
+    private Button btnDownloadFile;
     private Image imgCustomer;
+    private Label lblAreaTitle;
 
     public ArchitectureCell() {
         Design.read(this);
@@ -68,8 +70,16 @@ public class ArchitectureCell extends VerticalLayout {
         return vlConsultants;
     }
 
+    public Button getBtnDownloadFile() {
+        return btnDownloadFile;
+    }
+
     public Image getImgCustomer() {
         return imgCustomer;
+    }
+
+    public Label getLblAreaTitle() {
+        return lblAreaTitle;
     }
 
 }
