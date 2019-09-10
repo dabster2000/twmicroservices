@@ -166,7 +166,7 @@ public class BubblesLayout extends VerticalLayout {
             bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getUser(), true));
             for (BubbleMember member : bubbleMemberRepository.findByBubble(bubble)) {
                 if(member.getMember().getUuid().equals(bubble.getUser().getUuid())) continue;
-                if(userService.isEmployed(user)) {
+                if(userService.isEmployed(member.getMember())) {
                     Image image = photoService.getRoundMemberImage(member.getMember(), false);
                     bubblesDesign.getPhotoContainer().addComponent(image);
                 }

@@ -42,9 +42,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
     private final String rootFilePath = "/Shared/Administration/Intra/knowledge_architecture/";
 
-    private static final ThemeResource PPTX = new ThemeResource("images/icons/powerpoint.png");
-    private static final ThemeResource DOCX = new ThemeResource("images/icons/word.png");
-
     private static final Map<String, ThemeResource> icons = new HashMap();
 
     @Autowired
@@ -68,8 +65,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
         mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         mainBox = new Box();
-        //mainBox.getCardHolder().setWidthUndefined();
-        //mainBox.getContent().setWidthUndefined();
         mainBox.getContent().addComponent(mainLayout);
         mainBox.getContent().setMargin(false);
         this.addComponent(mainBox);
@@ -95,77 +90,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        /*
-        VerticalLayout taskColumn = createArchitectureColumn2("Opgaver", "blue-bg", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        VerticalLayout informationColumn = createArchitectureColumn2("Information", "bg-secondary-1-2", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        VerticalLayout applicationColumn = createArchitectureColumn2("Applikation", "bg-secondary-2-0", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        VerticalLayout strategyColumn = createArchitectureColumn2("Strategi", "yellow", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        VerticalLayout controlColumn = createArchitectureColumn2("Styring", "turquoise", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-         */
-        /*
-        createRows(taskColumn, "opgaver",
-                "Forretningsstruktur",
-                "<ul style='list-style-type:square;'><li>Opgave-/Servicekatalog</li>" +
-                "<li>Domænemodel</li>" +
-                "<li>Proceslandskab</li></ul>",
-
-                "Processer",
-                "- Aktører/roller<br/>" +
-                "- Procesmodel<br/>" +
-                "- Brugerrejse<br/>" +
-                "- Servicemodel<br/>" +
-                "- Use case / user story",
-
-                "Arbejdstilrettelæggelse",
-                "- Arbejdsgang / -beskrivelse");
-
-        createRows(informationColumn, "information",
-                "Forretningsobjekter og begreber",
-                "- Centrale forretningsobjekter<br/>" +
-                "- Begrebsliste / model",
-
-                "Logiske datamodeller",
-                "- Informationsmodel<br/>" +
-                        "- Logisk datamodel<br/>" +
-                        "- Masterdata<br/>" +
-                        "- Datakvalitet<br/>",
-
-                "Fysiske datamodeller",
-                "- Datasæt<br/>" +
-                                "- Dataudvekslings-format");
-
-        createRows(applicationColumn,"applikation",
-                "Applikationsstruktur og integrationsmønstre",
-                "- Systemlandskab / kontekstdiagram",
-
-                "Applikationslandskab og integrationer",
-                "- Applikationslandskab / +integration<br/>" +
-                        "- Applikationer mappet til forretning<br/>" +
-                        "- Applikationer mappet til information",
-
-                "Applikationsdesign og konfiguration",
-                "- Applikationsdesign<br/>" +
-                        "- Løsningskomponent<br/>" +
-                        "- Snitfladebeskrivelser<br/>" +
-                        "- Testscenarier");
-
-
-
-
-        for (int i = 0; i < 3; i++) {
-            Box box = new Box();
-            box.getContent().addComponent(new MLabel("Opgave-/Servicekatalog"));
-            box.getContent().setHeight(150, Unit.PIXELS);
-            strategyColumn.addComponent(box);
-        }
-
-        for (int i = 0; i < 3; i++) {
-            Box box = new Box();
-            box.getContent().addComponent(new MLabel("Opgave-/Servicekatalog"));
-            box.getContent().setHeight(150, Unit.PIXELS);
-            controlColumn.addComponent(box);
-        }*/
 
         return this;
     }
@@ -366,7 +290,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
              */
         });
         box.addStyleName("semi-white-bg");
-        //box.getImgTop().setSource(new ThemeResource("images/cards/architecture/"+type+"-"+i+".png"));
         box.getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
                 new ByteArrayInputStream(dropboxAPI.getSpecificBinaryFile(rootFilePath + "" + item.getKey() + ".png")),
                 Math.random()+".png"));
@@ -388,7 +311,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
     private VerticalLayout createArchitectureColumn2(String opgaver, String color, String description) {
         MVerticalLayout column = new MVerticalLayout(
                 new MLabel(opgaver).withFullWidth().withStyleName("align-center large bold")
-                //new MLabel(description).withFullWidth().withStyleName("align-center small")
         ).withWidth(100, Unit.PERCENTAGE).withMargin(false);
 
         gridRow.addColumn()
