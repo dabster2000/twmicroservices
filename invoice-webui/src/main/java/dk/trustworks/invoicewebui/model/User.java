@@ -150,11 +150,13 @@ public class User {
     @SuppressWarnings("unchecked")
     @JsonProperty("userContactinfo")
     private void unpackNestedUserContactinfo(Map<String,Object> stringObjectMap) {
+        return;/*
         this.userContactinfo = new UserContactinfo(
-                (String)stringObjectMap.get("streetName"),
-                (String)stringObjectMap.get("postalCode"),
-                (String)stringObjectMap.get("city"),
-                (String)stringObjectMap.get("phone"));
+                (String)stringObjectMap.getOrDefault("streetName", ""),
+                (String)stringObjectMap.getOrDefault("postalCode", ""),
+                (String)stringObjectMap.getOrDefault("city", ""),
+                (String)stringObjectMap.getOrDefault("phone", ""));
+                */
     }
 
     public List<Role> getRoleList() {

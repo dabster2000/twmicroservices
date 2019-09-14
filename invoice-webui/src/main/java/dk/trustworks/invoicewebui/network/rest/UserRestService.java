@@ -4,6 +4,7 @@ import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.network.dto.IntegerJsonResponse;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +76,8 @@ public class UserRestService {
 
     public boolean login(String username, String password) {
         String url = userServiceUrl+"/users/command/login?username="+username+"&password="+password;
-        System.out.println(restTemplate.getForObject(url, String.class));
-        return restTemplate.getForObject(url, String.class).equals("{\"result\":true}");
+        System.out.println(restTemplate.getForObject(url, LoginToken.class));
+        return restTemplate.getForObject(url, LoginToken.class).isSuccess();
     }
 
     @CacheEvict(value = "users", allEntries = true)

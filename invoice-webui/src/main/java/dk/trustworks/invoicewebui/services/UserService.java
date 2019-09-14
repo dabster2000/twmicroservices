@@ -159,8 +159,12 @@ public class UserService implements InitializingBean {
      * @return
      */
     public UserStatus getStatus(User user, boolean first, StatusType type) {
+        System.out.println("UserService.getStatus");
+        System.out.println("user = " + user.getUsername() + ", first = " + first + ", type = " + type);
         List<UserStatus> statuses = user.getStatuses();
         statuses = statuses.stream().filter(userStatus -> userStatus.getStatus().equals(type)).sorted(Comparator.comparing(UserStatus::getStatusdate)).collect(Collectors.toList());
+        System.out.println("statuses.size() = " + statuses.size());
+        if(statuses.size()==0) return new UserStatus(CONSULTANT, StatusType.TERMINATED, LocalDate.of(2014,2, 1), 0);
         return first?statuses.get(0):statuses.get(statuses.size()-1);
     }
 
