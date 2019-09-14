@@ -6,7 +6,6 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.network.dto.IntegerJsonResponse;
-import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -91,24 +90,27 @@ public class UserRestService {
     @CacheEvict(value = "users", allEntries = true)
     public void deleteUserStatuses(User user, Set<UserStatus> userStatuses) {
         for (UserStatus userStatus : userStatuses) {
-            String url = userServiceUrl+"/users/"+user.getUuid()+"/userstatuses/"+userStatus.getUuid();
+            String url = userServiceUrl+"/users/"+user.getUuid()+"/statuses/"+userStatus.getUuid();
             restTemplate.delete(url);
         }
     }
 
     @CacheEvict(value = "users", allEntries = true)
     public void deleteRoles(User user, List<Role> roles) {
+        String url = userServiceUrl+"/users/"+user.getUuid()+"/roles";
+        restTemplate.delete(url);
+        /*
         for (Role role : roles) {
             String url = userServiceUrl+"/users/"+user.getUuid()+"/roles/type/"+role.getRole().name();
             restTemplate.delete(url);
         }
+         */
     }
 
     @CacheEvict(value = "users", allEntries = true)
     public void create(User user, Salary salary) {
         user.getSalaries().add(salary);
         String url = userServiceUrl+"/users/"+user.getUuid()+"/salaries";
-        System.out.println("url = " + url);
         restTemplate.postForObject(url, salary, String.class);
     }
 
@@ -121,7 +123,7 @@ public class UserRestService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void create(User user, Role role) {
-        Validate.matchesPattern(role.getUuid(), "", "UUID must be blank, when instance is created");
+        //Validate.matchesPattern(role.getUuid(), "", "UUID must be blank, when instance is created");
         user.getRoleList().add(role);
         String url = userServiceUrl+"/users/"+user.getUuid()+"/roles";
         restTemplate.postForObject(url, role, String.class);

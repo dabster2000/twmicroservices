@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
@@ -167,6 +168,7 @@ public class User {
         this.roleList = roleList;
     }
 
+    @JsonIgnore
     public String getInitials() {
         return WordUtils.initials(firstname + " " + lastname);
     }

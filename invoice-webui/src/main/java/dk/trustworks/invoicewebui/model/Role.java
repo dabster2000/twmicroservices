@@ -3,6 +3,8 @@ package dk.trustworks.invoicewebui.model;
 
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 
+import java.util.UUID;
+
 /**
  * Created by hans on 23/06/2017.
  */
@@ -16,7 +18,7 @@ public class Role {
     }
 
     public Role(RoleType role) {
-        uuid = "";
+        uuid = UUID.randomUUID().toString();
         this.role = role;
     }
 
