@@ -349,7 +349,7 @@
         <dependency>
             <groupId>org.sql2o</groupId>
             <artifactId>sql2o</artifactId>
-            <version>1.5.4</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -363,7 +363,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-java8</artifactId>
-            <version>5.4.3.Final</version>
+            <version>5.4.4.Final</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -380,7 +380,7 @@
         <dependency>
             <groupId>com.dropbox.core</groupId>
             <artifactId>dropbox-core-sdk</artifactId>
-            <version>3.0.11</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>me.ramswaroop.jbot</groupId>
@@ -446,12 +446,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.1-jre</version>
+            <version>28.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
+            <version>3.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -461,17 +461,17 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.1</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>de.svenkubiak</groupId>
             <artifactId>jBCrypt</artifactId>
-            <version>0.4</version>
+            <version>0.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
-            <version>1.0</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.maximeroussy</groupId>

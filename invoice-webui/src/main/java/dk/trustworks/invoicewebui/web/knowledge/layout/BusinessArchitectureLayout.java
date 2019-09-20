@@ -128,7 +128,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
             headerRow.addColumn().withDisplayRules(12, 12, 6,6).withComponent(
                     new MVerticalLayout(
-                            new MLabel(datum.getHeadline().toUpperCase()).withFullSize().withStyleName("h4"),
+                            new MLabel(item.getTitle().toUpperCase()).withFullSize().withStyleName("h4"),
                             new MLabel(datum.getDescription()).withContentMode(ContentMode.HTML)
                             )
                             .withFullWidth()

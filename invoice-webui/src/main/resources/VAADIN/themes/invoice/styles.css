@@ -1017,10 +1017,6 @@
  */
 
 /**
- *
- */
-
-/**
  * @group window
  */
 
@@ -1081,7 +1077,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "${project.version}";
+	content: "8.8.5";
 }
 
 .v-widget {
@@ -1172,7 +1168,7 @@
 	overflow: auto;
 }
 
-.v-assistive-device-only {
+.v-assistive-device-only, .v-assistive-device-only-label label {
 	position: absolute;
 	top: -2000px;
 	left: -2000px;
@@ -2385,10 +2381,6 @@ div.v-layout.v-horizontal.v-widget {
  * @param {string} $primary-stylename (v-upload) -
  *
  * @group upload
- */
-
-/**
- *
  */
 
 /**
@@ -5183,6 +5175,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 }
 
+.invoice .v-grid-body .v-grid-header > .v-grid-row {
+	position: relative;
+}
+
 .invoice .v-grid-row {
 	display: block;
 }
@@ -5358,6 +5354,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	border-right: 1px solid #d4d4d4;
+	position: relative;
+	z-index: 11;
 }
 
 .invoice .v-grid-cell.frozen  + th, .invoice .v-grid-cell.frozen  + td {
@@ -7054,7 +7052,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-datefield-popup td.v-datefield-calendarpanel-month {
 	width: 148px;
+	cursor: default;
 	color: #00BCD4;
+}
+
+.invoice .v-datefield-popup td.v-datefield-calendarpanel-month.header-month-year {
+	cursor: pointer;
 }
 
 .invoice .v-datefield-popup .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -7235,7 +7238,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice td.v-datefield-calendarpanel-month {
 	width: 148px;
+	cursor: default;
 	color: #00BCD4;
+}
+
+.invoice td.v-datefield-calendarpanel-month.header-month-year {
+	cursor: pointer;
 }
 
 .invoice .v-datefield-calendarpanel-year td.v-datefield-calendarpanel-month {
@@ -7886,7 +7894,12 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice td.v-inline-datefield-calendarpanel-month {
 	width: 148px;
+	cursor: default;
 	color: #00BCD4;
+}
+
+.invoice td.v-inline-datefield-calendarpanel-month.header-month-year {
+	cursor: pointer;
 }
 
 .invoice .v-inline-datefield-calendarpanel-year td.v-inline-datefield-calendarpanel-month {
@@ -9293,6 +9306,26 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	color: inherit;
 }
 
+.invoice .v-window-closebox:focus::after {
+	content: "";
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	bottom: 6px;
+	left: 2px;
+	border-radius: 4px;
+}
+
+.invoice .v-window-maximizebox:focus::after, .invoice .v-window-restorebox:focus::after {
+	content: "";
+	position: absolute;
+	top: 6px;
+	right: 2px;
+	bottom: 6px;
+	left: 6px;
+	border-radius: 4px;
+}
+
 .invoice .v-window-closebox {
 	padding-right: 4px;
 	border-radius: 0 4px 0 4px;
@@ -9320,6 +9353,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	width: 37px;
 	padding-right: 0;
 	border-bottom-left-radius: 4px;
+}
+
+.invoice .v-window-closebox-disabled  + .v-window-closebox:focus::after, .invoice .v-window-resizebox-disabled  + .v-window-closebox:focus::after, .invoice .v-window-restorebox-disabled  + .v-window-closebox:focus::after, .invoice .v-window-maximizebox-disabled  + .v-window-closebox:focus::after {
+	left: 6px;
 }
 
 .invoice .v-window-maximizebox:before {
@@ -9715,6 +9752,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 }
 
+.invoice .v-tree8-body .v-tree8-header > .v-tree8-row {
+	position: relative;
+}
+
 .invoice .v-tree8-row {
 	display: block;
 }
@@ -9890,6 +9931,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	border-right: 1px solid #d4d4d4;
+	position: relative;
+	z-index: 11;
 }
 
 .invoice .v-tree8-cell.frozen  + th, .invoice .v-tree8-cell.frozen  + td {
@@ -10592,6 +10635,70 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	padding-left: 15em;
 }
 
+.invoice .v-tree8-node.depth-16 {
+	padding-left: 16em;
+}
+
+.invoice .v-tree8-node.depth-17 {
+	padding-left: 17em;
+}
+
+.invoice .v-tree8-node.depth-18 {
+	padding-left: 18em;
+}
+
+.invoice .v-tree8-node.depth-19 {
+	padding-left: 19em;
+}
+
+.invoice .v-tree8-node.depth-20 {
+	padding-left: 20em;
+}
+
+.invoice .v-tree8-node.depth-21 {
+	padding-left: 21em;
+}
+
+.invoice .v-tree8-node.depth-22 {
+	padding-left: 22em;
+}
+
+.invoice .v-tree8-node.depth-23 {
+	padding-left: 23em;
+}
+
+.invoice .v-tree8-node.depth-24 {
+	padding-left: 24em;
+}
+
+.invoice .v-tree8-node.depth-25 {
+	padding-left: 25em;
+}
+
+.invoice .v-tree8-node.depth-26 {
+	padding-left: 26em;
+}
+
+.invoice .v-tree8-node.depth-27 {
+	padding-left: 27em;
+}
+
+.invoice .v-tree8-node.depth-28 {
+	padding-left: 28em;
+}
+
+.invoice .v-tree8-node.depth-29 {
+	padding-left: 29em;
+}
+
+.invoice .v-tree8-node.depth-30 {
+	padding-left: 30em;
+}
+
+.invoice .v-tree8-node.depth-31 {
+	padding-left: 31em;
+}
+
 .invoice .v-tree8-cell-content {
 	display: inline-block;
 	vertical-align: middle;
@@ -10775,6 +10882,10 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	left: 0;
 }
 
+.invoice .v-treegrid-body .v-treegrid-header > .v-treegrid-row {
+	position: relative;
+}
+
 .invoice .v-treegrid-row {
 	display: block;
 }
@@ -10950,6 +11061,8 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	-webkit-box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	border-right: 1px solid #d4d4d4;
+	position: relative;
+	z-index: 11;
 }
 
 .invoice .v-treegrid-cell.frozen  + th, .invoice .v-treegrid-cell.frozen  + td {
@@ -11650,6 +11763,70 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 
 .invoice .v-treegrid-node.depth-15 {
 	padding-left: 15em;
+}
+
+.invoice .v-treegrid-node.depth-16 {
+	padding-left: 16em;
+}
+
+.invoice .v-treegrid-node.depth-17 {
+	padding-left: 17em;
+}
+
+.invoice .v-treegrid-node.depth-18 {
+	padding-left: 18em;
+}
+
+.invoice .v-treegrid-node.depth-19 {
+	padding-left: 19em;
+}
+
+.invoice .v-treegrid-node.depth-20 {
+	padding-left: 20em;
+}
+
+.invoice .v-treegrid-node.depth-21 {
+	padding-left: 21em;
+}
+
+.invoice .v-treegrid-node.depth-22 {
+	padding-left: 22em;
+}
+
+.invoice .v-treegrid-node.depth-23 {
+	padding-left: 23em;
+}
+
+.invoice .v-treegrid-node.depth-24 {
+	padding-left: 24em;
+}
+
+.invoice .v-treegrid-node.depth-25 {
+	padding-left: 25em;
+}
+
+.invoice .v-treegrid-node.depth-26 {
+	padding-left: 26em;
+}
+
+.invoice .v-treegrid-node.depth-27 {
+	padding-left: 27em;
+}
+
+.invoice .v-treegrid-node.depth-28 {
+	padding-left: 28em;
+}
+
+.invoice .v-treegrid-node.depth-29 {
+	padding-left: 29em;
+}
+
+.invoice .v-treegrid-node.depth-30 {
+	padding-left: 30em;
+}
+
+.invoice .v-treegrid-node.depth-31 {
+	padding-left: 31em;
 }
 
 .invoice .v-treegrid-cell-content {
@@ -13071,6 +13248,14 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	text-align: right;
 }
 
+.invoice .v-tabsheet-right-aligned-tabs .v-tabsheet-spacertd {
+	display: inline-block !important;
+}
+
+.invoice .v-tabsheet-right-aligned-tabs .v-tabsheet-scroller {
+	padding-left: 9px;
+}
+
 .invoice .v-tabsheet-padded-tabbar  > .v-tabsheet-tabcontainer .v-tabsheet-tabs {
 	padding: 0 9px;
 }
@@ -13207,6 +13392,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 	width: 100% !important;
 	height: auto !important;
 	padding: 9px;
+	display: inline-flex;
 }
 
 .invoice .v-colorpicker-preview-textfield {

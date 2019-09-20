@@ -7,12 +7,10 @@ import dk.trustworks.pdf.InvoicePdfGenerator;
 import dk.trustworks.repositories.InvoiceRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.rest.core.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import javax.xml.ws.http.HTTPException;
 import java.io.IOException;
 
 /**

@@ -38,14 +38,12 @@ public class DropboxAPI {
 
     private static final Logger log = LoggerFactory.getLogger(DropboxAPI.class);
 
-    private String dropboxToken;
-
     private final DbxTeamClientV2 client;
 
     @Autowired
     public DropboxAPI(@Value("${dropboxToken}") final String dropboxToken) {
-        this.dropboxToken = dropboxToken;
-        DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial", "en_US");
+        DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/java-tutorial").build();
+        //new DbxRequestConfig("dropbox/java-tutorial", "en_US");
         client = new DbxTeamClientV2(config, dropboxToken);
     }
 
