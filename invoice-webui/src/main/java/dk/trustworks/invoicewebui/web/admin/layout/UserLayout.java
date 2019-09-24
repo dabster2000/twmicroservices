@@ -143,7 +143,7 @@ public class UserLayout {
 
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            List<User> usersByLocalDate = countEmployees.getUsersByLocalDate(currentDate);
+            List<User> usersByLocalDate = userService.findEmployedUsersByDate(currentDate, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);
             revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy")), usersByLocalDate.size()));
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy"));
         }
