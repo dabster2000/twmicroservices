@@ -83,13 +83,13 @@ public class UserLayout {
 
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Consultants", "The car", consultantRepository.findByTypeAndStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE).size()+"", "medium-blue")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Consultants", "The car", userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).size()+"", "medium-blue")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Staff", "The engine", consultantRepository.findByTypeAndStatus(ConsultantType.STAFF, StatusType.ACTIVE).size()+"", "dark-green")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Staff", "The engine", userService.findCurrentlyEmployedUsers(ConsultantType.STAFF).size()+"", "dark-green")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Students", "The transmission", consultantRepository.findByTypeAndStatus(ConsultantType.STUDENT, StatusType.ACTIVE).size()+"", "orange")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Students", "The transmission", userService.findCurrentlyEmployedUsers(ConsultantType.STUDENT).size()+"", "orange")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
                 .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Former", "CO2", consultantRepository.findByStatus(StatusType.TERMINATED).size()+"", "dark-grey")));

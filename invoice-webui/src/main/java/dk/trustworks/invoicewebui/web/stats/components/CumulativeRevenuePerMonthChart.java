@@ -48,7 +48,7 @@ public class CumulativeRevenuePerMonthChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         String[] categories = new String[period];
-        DataSeries revenueSeries = new DataSeries("Revenue");
+        DataSeries registeredRevenueSeries = new DataSeries("Registered Revenue");
         DataSeries budgetSeries = new DataSeries("Budget");
         DataSeries earningsSeries = new DataSeries("Earnings");
 
@@ -100,7 +100,7 @@ public class CumulativeRevenuePerMonthChart {
                 cumulativeExpensePerMonth += expense;
             }
 
-            revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
+            registeredRevenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
 
@@ -110,7 +110,7 @@ public class CumulativeRevenuePerMonthChart {
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
         chart.getConfiguration().getxAxis().setCategories(categories);
-        chart.getConfiguration().addSeries(revenueSeries);
+        chart.getConfiguration().addSeries(registeredRevenueSeries);
         chart.getConfiguration().addSeries(budgetSeries);
         chart.getConfiguration().addSeries(earningsSeries);
         chart.getConfiguration().addSeries(avgRevenueList);
