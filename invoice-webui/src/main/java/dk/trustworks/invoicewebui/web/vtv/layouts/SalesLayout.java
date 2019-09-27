@@ -80,9 +80,10 @@ public class SalesLayout extends VerticalLayout {
         Card hoursPerConsultantCard = new Card();
         hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month");
         DateTimeField field = new DateTimeField(event -> {
+            LocalDate date = event.getValue().toLocalDate().withDayOfMonth(1);
             hoursPerConsultantCard.getContent().removeAllComponents();
-            hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(event.getValue().toLocalDate().withDayOfMonth(1)));
-            hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month (month norm: "+ ((DateUtils.getWeekdaysInPeriod(localDateStart, localDateStart.plusMonths(1))/5.0)*35.0) +")");
+            hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(date));
+            hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month (month norm: "+ ((DateUtils.getWeekdaysInPeriod(date, date.plusMonths(1))/5.0)*35.0) +")");
         });
         field.setWidth(150, Unit.PIXELS);
         field.setResolution(DateTimeResolution.MONTH);
