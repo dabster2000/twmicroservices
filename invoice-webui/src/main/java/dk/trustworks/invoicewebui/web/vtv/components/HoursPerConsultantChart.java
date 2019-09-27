@@ -69,23 +69,24 @@ public class HoursPerConsultantChart {
 
         int i = 0;
         for (User user : users) {
-            double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, month);
-            double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, month);
-            budgetHoursByMonth -= revenueHoursByMonth;
+            double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, month); // 59
+            double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, month); // 117
+            budgetHoursByMonth -= revenueHoursByMonth; // 58
             if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
 
             AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, month);
-            double availableHoursByMonth = availability.getAvailableHours();
-            availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth;
+            double availableHoursByMonth = availability.getAvailableHours(); // 147
+            availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth; // 147 - 59 - 58 = 30
             if(availableHoursByMonth < 0) availableHoursByMonth = 0;
 
-            double vacationHoursByMonth = availability.getVacation();
-            double sickHoursByMonth = availability.getSickdays();
+            double vacationHoursByMonth = availability.getVacation();  // 44
+            double sickHoursByMonth = availability.getSickdays(); // 15
 
-            availableHoursByMonth -= sickHoursByMonth;
+            availableHoursByMonth -= sickHoursByMonth; // 30 - 15 = 15
+            availableHoursByMonth -= vacationHoursByMonth; // 15 - 44 = -29
             if(availableHoursByMonth < 0) {
-                budgetHoursByMonth -= availableHoursByMonth;
-                availableHoursByMonth = 0;
+                budgetHoursByMonth += availableHoursByMonth; // 58 + (-14) = 44
+                availableHoursByMonth = 0; // 0
             }
             if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
 

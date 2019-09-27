@@ -98,9 +98,12 @@ public class SalesLayout extends VerticalLayout {
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(hoursPerConsultantCard);
 
+        /*
         row.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsBudgetRealizationCard);
+
+         */
 
         this.addComponent(responsiveLayout);
 
@@ -198,8 +201,6 @@ public class SalesLayout extends VerticalLayout {
     private void getAverageAllocationByYear(LocalDate startDate) {
         do {
             startDate = startDate.plusMonths(1);
-            double count = 0.0;
-            double allocation = 0.0;
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
@@ -213,9 +214,7 @@ public class SalesLayout extends VerticalLayout {
                     monthAllocation = (billableWorkHours / availability.getAvailableHours()) * 100.0;
                     //System.out.println("--- startDate = " + startDate);
                     //System.out.println(user.getUsername()+" monthAllocation = " + monthAllocation);
-                    count++;
                 }
-                allocation += monthAllocation;
             }
             //System.out.println("count = " + count);
             //System.out.println("allocation = " + allocation);
