@@ -77,9 +77,6 @@ public class SalesLayout extends VerticalLayout {
 
         LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
 
-        Card consultantsBudgetRealizationCard = new Card();
-        consultantsBudgetRealizationCard.getCardHolder().addComponent(consultantsBudgetRealizationChart.createConsultantsBudgetRealizationChart());
-
         Card hoursPerConsultantCard = new Card();
         hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month");
         DateTimeField field = new DateTimeField(event -> {
@@ -97,13 +94,6 @@ public class SalesLayout extends VerticalLayout {
         row.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(hoursPerConsultantCard);
-
-        /*
-        row.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
-                .withComponent(consultantsBudgetRealizationCard);
-
-         */
 
         this.addComponent(responsiveLayout);
 
