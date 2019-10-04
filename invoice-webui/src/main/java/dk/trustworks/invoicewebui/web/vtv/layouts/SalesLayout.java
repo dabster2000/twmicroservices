@@ -26,6 +26,7 @@ import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
+import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,10 +60,7 @@ public class SalesLayout extends VerticalLayout {
     private HoursPerConsultantChart hoursPerConsultantChart;
 
     @Autowired
-    private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
-
-    @Autowired
-    private SlackAPI slackAPI;
+    private UtilizationPerMonthChart utilizationPerMonthChart;
 
     private static Color[] colors = new ValoLightTheme().getColors();
 
@@ -96,9 +94,15 @@ public class SalesLayout extends VerticalLayout {
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(hoursPerConsultantCard);
 
+        Card allocationChartCard = new Card();
+        allocationChartCard.getLblTitle().setValue("Allocation per month");
+        allocationChartCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart.minusMonths(12)));
+
+        row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(allocationChartCard);
+
         this.addComponent(responsiveLayout);
 
-        getAverageAllocationByYear(LocalDate.of(2018, 6, 1));
+        //getAverageAllocationByYear(LocalDate.of(2018, 6, 1));
 
         return this;
     }
