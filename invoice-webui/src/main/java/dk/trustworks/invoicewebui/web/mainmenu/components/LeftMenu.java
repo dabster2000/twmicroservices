@@ -136,8 +136,8 @@ public class LeftMenu extends ResponsiveRow {
         MenuItemContainer travel = new MenuItemContainer(order++).createItem(TripsView.MENU_NAME, false, TripsView.VIEW_ICON, TripsView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(TripsView.VIEW_NAME, travel);
 
-        MenuItemContainer vtv = new MenuItemContainer(order++).createItem("V-T-V ---", true, null, null, false, RoleType.VTV);
-        menuItems.put("V-T-V", vtv);
+        MenuItemContainer coOps = new MenuItemContainer(order++).createItem("CoOps ---", true, null, null, false, RoleType.VTV);
+        menuItems.put("CoOps", coOps);
         MenuItemContainer sales = new MenuItemContainer(order++).createItem(SalesView.MENU_NAME, false, SalesView.VIEW_ICON, SalesView.VIEW_NAME, false, RoleType.VTV);
         menuItems.put(SalesView.VIEW_NAME, sales);
 
