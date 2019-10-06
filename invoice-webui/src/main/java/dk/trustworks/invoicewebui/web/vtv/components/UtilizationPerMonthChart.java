@@ -55,7 +55,7 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().getxAxis().setTickWidth(0);
         chart.getConfiguration().getyAxis().setTitle("%");
         chart.getConfiguration().getyAxes().getAxis(0).setMax(100);
-        chart.getConfiguration().getLegend().setEnabled(false);
+        chart.getConfiguration().getLegend().setEnabled(true);
 
         Tooltip tooltip = new Tooltip();
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");
