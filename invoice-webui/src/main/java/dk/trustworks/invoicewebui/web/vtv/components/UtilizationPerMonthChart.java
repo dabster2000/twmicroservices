@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class UtilizationPerMonthChart {
     }
 
     public Chart createUtilizationPerMonthChart(LocalDate periodStart) {
+        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(12))+1;
+
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
@@ -58,9 +61,35 @@ public class UtilizationPerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");
         chart.getConfiguration().setTooltip(tooltip);
 
+        double[] monthTotalAvailabilites = new double[monthPeriod];
+        double[] monthAvailabilites = new double[monthPeriod];
 
-        chart.getConfiguration().addSeries(new DataSeries(getAverageAllocationByYear(periodStart)));
-        chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, LocalDate.now().plusMonths(1).withDayOfMonth(1)));
+        LocalDate localDate = periodStart.withDayOfMonth(1);
+        int m = 0;
+        do {
+            for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
+                double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate);
+                monthAvailabilites[m] += budget;
+                double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getAvailableHours();
+                monthTotalAvailabilites[m] += availability;
+                //localDate = localDate.plusMonths(1);
+            }
+            m++;
+            localDate = localDate.plusMonths(1);
+        } while (m<=monthPeriod);
+
+        ListSeries budgetListSeries = new ListSeries("Budget utilization");
+        for (int j = 0; j < monthPeriod; j++) {
+            budgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
+        }
+
+        chart.getConfiguration().addSeries(budgetListSeries);
+
+        DataSeries actualDataSeries = new DataSeries("Actual utilization");
+        actualDataSeries.setData(getAverageAllocationByYear(periodStart));
+        chart.getConfiguration().addSeries(actualDataSeries);
+
+        chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(13)));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;

@@ -24,6 +24,7 @@ import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
+import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
 import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
@@ -62,6 +63,9 @@ public class SalesLayout extends VerticalLayout {
     @Autowired
     private UtilizationPerMonthChart utilizationPerMonthChart;
 
+    @Autowired
+    private SalesHeatMap salesHeatMap;
+
     private static Color[] colors = new ValoLightTheme().getColors();
 
     public SalesLayout() {
@@ -99,6 +103,13 @@ public class SalesLayout extends VerticalLayout {
         allocationChartCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart.minusMonths(12)));
 
         row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(allocationChartCard);
+
+        Card heatMapCard = new Card();
+        heatMapCard.getCardHolder().addComponent(salesHeatMap.getChart(localDateStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
+
+        row.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(heatMapCard);
 
         this.addComponent(responsiveLayout);
 
