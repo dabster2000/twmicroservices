@@ -5,6 +5,7 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
+import com.vaadin.client.ui.Icon;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValidationException;
@@ -19,6 +20,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
@@ -28,6 +30,8 @@ import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
+import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.time.components.*;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
@@ -78,6 +82,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final ReceiptsRepository receiptsRepository;
 
+    private final StatisticsService statisticsService;
+
     private ResponsiveLayout responsiveLayout;
 
     private LocalDate currentDate = LocalDate.now().with(DayOfWeek.MONDAY);
@@ -95,7 +101,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository, StatisticsService statisticsService) {
         this.projectService = projectService;
         this.userService = userService;
         this.clientRepository = clientRepository;
@@ -105,6 +111,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         this.photoService = photoService;
         this.contractService = contractService;
         this.receiptsRepository = receiptsRepository;
+        this.statisticsService = statisticsService;
 
         footerButtons = new FooterButtons();
         dateButtons = new DateButtons();
@@ -340,6 +347,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private void loadTimeview(User user) {
         responsiveLayout.removeAllComponents();
         createTitleRow();
+        createBudgetRow();
         createHeadlineRow();
         createTimesheet(user);
         createFooterRow();
@@ -520,6 +528,31 @@ public class TimeManagerLayout extends ResponsiveLayout {
         titleRow.addColumn()
                 .withDisplayRules(12, 12, 6, 4)
                 .withComponent(dateButtons, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+    }
+
+    private void createBudgetRow() {
+        LocalDate firstMonth = this.currentDate;
+        LocalDate secondMonth = this.currentDate.plusDays(7);
+
+        ResponsiveRow budgetRow = responsiveLayout.addRow().withAlignment(Alignment.MIDDLE_CENTER);
+
+        createMonthBudgetCards(firstMonth, budgetRow, firstMonth.getMonthValue()!=secondMonth.getMonthValue()?"medium-blue":"dark-blue");
+        if(firstMonth.getMonthValue()!=secondMonth.getMonthValue()) createMonthBudgetCards(secondMonth, budgetRow, "dark-blue");
+    }
+
+    private void createMonthBudgetCards(LocalDate month, ResponsiveRow budgetRow, String color) {
+        List<BudgetDocument> consultantBudgetList = statisticsService.getConsultantBudgetDataByMonth(dateButtons.getSelActiveUser().getValue(), month);
+
+        for (BudgetDocument budgetDocument : consultantBudgetList) {
+            double workSum = contractService.getWorkOnContractByUser(budgetDocument.getContract()).stream()
+                    .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)))
+                    .mapToDouble(Work::getWorkduration).sum();
+            if(budgetDocument.getBudgetHours()<=0.0) continue;
+            TopCardImpl topCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_ur.svg", budgetDocument.getClient().getName(), budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")), workSum+" / "+Math.round(budgetDocument.getBudgetHours()), "dark-blue"));
+            budgetRow.addColumn()
+                    .withDisplayRules(6, 6, 4,3)
+                    .withComponent(topCard, ResponsiveColumn.ColumnComponentAlignment.CENTER);
+        }
     }
 
     private void createHeadlineRow() {

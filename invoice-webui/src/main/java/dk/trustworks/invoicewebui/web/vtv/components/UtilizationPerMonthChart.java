@@ -42,7 +42,7 @@ public class UtilizationPerMonthChart {
     }
 
     public Chart createUtilizationPerMonthChart(LocalDate periodStart) {
-        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(12))+1;
+        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(10))+1;
 
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -55,14 +55,14 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().getxAxis().setTickWidth(0);
         chart.getConfiguration().getyAxis().setTitle("%");
         chart.getConfiguration().getyAxes().getAxis(0).setMax(100);
-        chart.getConfiguration().getLegend().setEnabled(true);
+        chart.getConfiguration().getLegend().setEnabled(true    );
 
         Tooltip tooltip = new Tooltip();
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        double[] monthTotalAvailabilites = new double[monthPeriod];
-        double[] monthAvailabilites = new double[monthPeriod];
+        double[] monthTotalAvailabilites = new double[monthPeriod+1];
+        double[] monthAvailabilites = new double[monthPeriod+1];
 
         LocalDate localDate = periodStart.withDayOfMonth(1);
         int m = 0;
@@ -72,7 +72,6 @@ public class UtilizationPerMonthChart {
                 monthAvailabilites[m] += budget;
                 double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getAvailableHours();
                 monthTotalAvailabilites[m] += availability;
-                //localDate = localDate.plusMonths(1);
             }
             m++;
             localDate = localDate.plusMonths(1);
@@ -89,7 +88,7 @@ public class UtilizationPerMonthChart {
         actualDataSeries.setData(getAverageAllocationByYear(periodStart));
         chart.getConfiguration().addSeries(actualDataSeries);
 
-        chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(13)));
+        chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;
