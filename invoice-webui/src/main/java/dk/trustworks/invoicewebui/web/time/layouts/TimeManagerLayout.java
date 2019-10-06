@@ -545,10 +545,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         for (BudgetDocument budgetDocument : consultantBudgetList) {
             double workSum = contractService.getWorkOnContractByUser(budgetDocument.getContract()).stream()
-                    .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)))
+                    .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)) &&
+                            work.getUseruuid().equals(budgetDocument.getUser().getUuid()))
                     .mapToDouble(Work::getWorkduration).sum();
             if(budgetDocument.getBudgetHours()<=0.0) continue;
-            TopCardImpl topCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_ur.svg", budgetDocument.getClient().getName(), budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")), workSum+" / "+Math.round(budgetDocument.getBudgetHours()), "dark-blue"));
+            TopCardImpl topCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_ur.svg", budgetDocument.getClient().getName(), "contract "+budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")), workSum+" / "+Math.round(budgetDocument.getBudgetHours()), "dark-blue"));
             budgetRow.addColumn()
                     .withDisplayRules(6, 6, 4,3)
                     .withComponent(topCard, ResponsiveColumn.ColumnComponentAlignment.CENTER);
