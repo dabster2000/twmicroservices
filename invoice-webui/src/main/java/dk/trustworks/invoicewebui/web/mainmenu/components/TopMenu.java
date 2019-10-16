@@ -6,6 +6,7 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -135,7 +136,7 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
             }
             TextArea expensesText = new TextArea("expenses", expenseResult);
 
-            String invoiceResult = "\n";
+            String invoiceResult = "date;status;type;sum\n";
             for (Invoice invoice : invoiceService.findAll()) {
                 invoiceResult += invoice.getInvoicedate()+";"+
                         invoice.status+";"+
@@ -144,8 +145,11 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
             }
             TextArea invoiceText = new TextArea("invoice", invoiceResult);
 
-            Window window = new Window("test", new MVerticalLayout(workText, expensesText, invoiceText));
+            Window window = new Window();
+            window.setWindowMode(WindowMode.MAXIMIZED);
+            window.setContent(new MVerticalLayout(workText, expensesText, invoiceText));
             window.setModal(true);
+            window.center();
             UI.getCurrent().addWindow(window);
         });
 
