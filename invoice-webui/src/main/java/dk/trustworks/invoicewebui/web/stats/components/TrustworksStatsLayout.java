@@ -5,11 +5,19 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
@@ -19,6 +27,7 @@ import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -92,6 +101,18 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     @Autowired
     private DashboardBoxCreator dashboardBoxCreator;
+
+    @Autowired
+    private WorkRepository workRepository;
+
+    @Autowired
+    private StatisticsService statisticsService;
+
+    @Autowired
+    private ContractService contractService;
+
+    @Autowired
+    private InvoiceService invoiceService;
 
 
     public TrustworksStatsLayout init() {
@@ -360,6 +381,54 @@ excelFileDownloader.extend(downloadAsExcel);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(expenseTableCard);
+
+        chartRow.addColumn()
+                .withDisplayRules(1,1,1,1)
+                .withComponent(new MButton("TEST").withListener(clickEvent -> {
+                    String workResult = "username;date;workas;task;project;client;hours;rate\n";
+                    for (Work work : workRepository.findAll()) {
+                        User userEntity = userService.findByUUID(work.getUseruuid());
+                        Double rate = contractService.findConsultantRateByWork(work);
+                        workResult += ""+userEntity.getUsername()+";"+
+                                work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+";"+
+                                userService.findByUUID(work.getWorkas())+";"+
+                                work.getTask().getName()+";"+
+                                work.getTask().getProject()+";"+
+                                work.getTask().getProject().getClient()+";"+
+                                work.getWorkduration()+";"+
+                                rate+"\n";
+                    }
+                    TextArea workText = new TextArea("value", workResult);
+                    chartRow.addColumn()
+                            .withDisplayRules(12,12,12,12)
+                            .withComponent(workText);
+
+                    String expenseResult = "date;user;expensesum;salary;shared;staff\n";
+                    for (ExpenseDocument document : statisticsService.getExpenseData()) {
+                        expenseResult += document.getMonth()+";"+
+                                document.getUser().getUsername()+";"+
+                                document.getExpenseSum()+";"+
+                                document.getSalary()+";"+
+                                document.getSharedExpense()+";"+
+                                document.getStaffSalaries()+"\n";
+                    }
+                    TextArea expensesText = new TextArea("expenses", expenseResult);
+                    chartRow.addColumn()
+                            .withDisplayRules(12,12,12,12)
+                            .withComponent(expensesText);
+
+                    String invoiceResult = "date;status;type;sum\n";
+                    for (Invoice invoice : invoiceService.findAll()) {
+                        invoiceResult += invoice.getInvoicedate()+";"+
+                                invoice.status+";"+
+                                invoice.getType()+";"+
+                                invoice.getInvoiceitems().stream().mapToDouble(value -> value.hours*value.rate).sum()+"\n";
+                    }
+                    TextArea invoiceText = new TextArea("invoice", invoiceResult);
+                    chartRow.addColumn()
+                            .withDisplayRules(12,12,12,12)
+                            .withComponent(invoiceText);
+                }));
         /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)

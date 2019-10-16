@@ -237,6 +237,7 @@ public class   DashboardView extends VerticalLayout implements View {
         row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(vacationCard);
         row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
 
+
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
 
         createNotifications();
