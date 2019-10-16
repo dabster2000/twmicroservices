@@ -9,12 +9,12 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.model.Photo;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.NotificationRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.Authorizer;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,13 @@ import org.vaadin.alump.fancylayouts.FancyNotifications;
 import org.vaadin.alump.fancylayouts.FancyNotifications.NotificationsListener;
 import org.vaadin.alump.fancylayouts.FancyTransition;
 import org.vaadin.alump.materialicons.MaterialIcons;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.SM;
 import static com.jarektoro.responsivelayout.ResponsiveLayout.DisplaySize.XS;
@@ -44,7 +47,19 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
     private PhotoRepository photoRepository;
 
     @Autowired
-    private Authorizer authorizer;
+    private WorkRepository workRepository;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private StatisticsService statisticsService;
+
+    @Autowired
+    private ContractService contractService;
+
+    @Autowired
+    private InvoiceService invoiceService;
 
     private FancyNotifications notifications;
 
@@ -93,6 +108,46 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
 
         Button searchButton = new Button(MaterialIcons.SEARCH);
         searchButton.setStyleName("borderless icon-only h4");
+        searchButton.addClickListener(clickEvent -> {
+            String workResult = "username;date;workas;task;project;client;hours;rate\n";
+            for (Work work : workRepository.findAll()) {
+                User userEntity = userService.findByUUID(work.getUseruuid());
+                Double rate = contractService.findConsultantRateByWork(work);
+                workResult += ""+userEntity.getUsername()+";"+
+                        work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+";"+
+                        userService.findByUUID(work.getWorkas())+";"+
+                        work.getTask().getName()+";"+
+                        work.getTask().getProject()+";"+
+                        work.getTask().getProject().getClient()+";"+
+                        work.getWorkduration()+";"+
+                        rate+"\n";
+            }
+            TextArea workText = new TextArea("value", workResult);
+
+            String expenseResult = "date;user;expensesum;salary;shared;staff\n";
+            for (ExpenseDocument document : statisticsService.getExpenseData()) {
+                expenseResult += document.getMonth()+";"+
+                        document.getUser().getUsername()+";"+
+                        document.getExpenseSum()+";"+
+                        document.getSalary()+";"+
+                        document.getSharedExpense()+";"+
+                        document.getStaffSalaries()+"\n";
+            }
+            TextArea expensesText = new TextArea("expenses", expenseResult);
+
+            String invoiceResult = "\n";
+            for (Invoice invoice : invoiceService.findAll()) {
+                invoiceResult += invoice.getInvoicedate()+";"+
+                        invoice.status+";"+
+                        invoice.getType()+";"+
+                        invoice.getInvoiceitems().stream().mapToDouble(value -> value.hours*value.rate).sum()+"\n";
+            }
+            TextArea invoiceText = new TextArea("invoice", invoiceResult);
+
+            Window window = new Window("test", new MVerticalLayout(workText, expensesText, invoiceText));
+            window.setModal(true);
+            UI.getCurrent().addWindow(window);
+        });
 
         HorizontalLayout horizontalLayout = new HorizontalLayout(appsButton, searchButton);
         row.addColumn()
