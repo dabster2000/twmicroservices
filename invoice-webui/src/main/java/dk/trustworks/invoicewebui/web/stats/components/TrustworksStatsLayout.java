@@ -387,7 +387,7 @@ excelFileDownloader.extend(downloadAsExcel);
                 .withDisplayRules(1,1,1,1)
                 .withComponent(new MButton("TEST").withListener(clickEvent -> {
                     String workResult = "username;date;workas;task;project;client;hours;rate\n";
-                    for (Work work : workRepository.findAll()) {
+                    for (Work work : workRepository.findByPeriod("2018-07-01", "2019-06-30")) {
                         User userEntity = userService.findByUUID(work.getUseruuid());
                         Double rate = contractService.findConsultantRateByWork(work, ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.BUDGET, ContractStatus.CLOSED);
                         workResult += ""+userEntity.getUsername()+";"+
