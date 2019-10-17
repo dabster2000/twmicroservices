@@ -21,6 +21,7 @@ import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.StringUtils;
 import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
@@ -420,7 +421,8 @@ excelFileDownloader.extend(downloadAsExcel);
 
                     String invoiceResult = "date;status;type;sum\n";
                     for (Invoice invoice : invoiceService.findAll()) {
-                        invoiceResult += invoice.getInvoicedate()+";"+
+                        invoiceResult += StringUtils.convertInvoiceNumberToString(invoice.invoicenumber)+";"+
+                                invoice.getInvoicedate()+";"+
                                 invoice.status+";"+
                                 invoice.getType()+";"+
                                 invoice.getInvoiceitems().stream().mapToDouble(value -> value.hours*value.rate).sum()+"\n";
