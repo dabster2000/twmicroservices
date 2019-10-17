@@ -394,8 +394,8 @@ excelFileDownloader.extend(downloadAsExcel);
                                 work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+";"+
                                 userService.findByUUID(work.getWorkas())+";"+
                                 work.getTask().getName()+";"+
-                                work.getTask().getProject()+";"+
-                                work.getTask().getProject().getClient()+";"+
+                                work.getTask().getProject().getName()+";"+
+                                work.getTask().getProject().getClient().getName()+";"+
                                 work.getWorkduration()+";"+
                                 rate+"\n";
                     }
