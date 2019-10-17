@@ -14,6 +14,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
@@ -388,7 +389,7 @@ excelFileDownloader.extend(downloadAsExcel);
                     String workResult = "username;date;workas;task;project;client;hours;rate\n";
                     for (Work work : workRepository.findAll()) {
                         User userEntity = userService.findByUUID(work.getUseruuid());
-                        Double rate = contractService.findConsultantRateByWork(work);
+                        Double rate = contractService.findConsultantRateByWork(work, ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.BUDGET, ContractStatus.CLOSED);
                         workResult += ""+userEntity.getUsername()+";"+
                                 work.getRegistered().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+";"+
                                 userService.findByUUID(work.getWorkas())+";"+
