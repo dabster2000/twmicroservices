@@ -421,7 +421,7 @@ excelFileDownloader.extend(downloadAsExcel);
 
                     String invoiceResult = "date;status;type;sum\n";
                     for (Invoice invoice : invoiceService.findAll()) {
-                        invoiceResult += StringUtils.convertInvoiceNumberToString(invoice.invoicenumber)+";"+
+                        invoiceResult += invoice.invoicenumber+";"+
                                 invoice.getInvoicedate()+";"+
                                 invoice.status+";"+
                                 invoice.getType()+";"+
