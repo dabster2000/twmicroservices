@@ -1,31 +1,41 @@
 package dk.trustworks.invoicewebui.web.knowledge.layout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gs.collections.api.tuple.Twin;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.model.KnowledgeArchitectureCard;
+import dk.trustworks.invoicewebui.model.KnowledgeArchitectureCell;
+import dk.trustworks.invoicewebui.model.KnowledgeArchitectureColumn;
 import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
+import dk.trustworks.invoicewebui.repositories.KnowArchiColumnRepository;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import dk.trustworks.invoicewebui.web.knowledge.components.ArchitectureCell;
 import dk.trustworks.invoicewebui.web.knowledge.components.SideBannerDesign;
-import dk.trustworks.invoicewebui.web.knowledge.model.Data;
 import dk.trustworks.invoicewebui.web.knowledge.model.DocumentMetadata;
-import dk.trustworks.invoicewebui.web.knowledge.model.DomainMetadata;
-import dk.trustworks.invoicewebui.web.knowledge.model.Item;
 import dk.trustworks.invoicewebui.web.model.FileItem;
+import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.materialicons.MaterialIcons;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MCssLayout;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +43,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.vaadin.ui.themes.ValoTheme.COMBOBOX_BORDERLESS;
 
@@ -48,10 +59,16 @@ public class BusinessArchitectureLayout extends VerticalLayout {
     private PhotoService photoService;
 
     @Autowired
+    private PhotoRepository photoRepository;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
     private DropboxAPI dropboxAPI;
+
+    @Autowired
+    private KnowArchiColumnRepository knowArchiColumnRepository;
 
     private ResponsiveLayout mainLayout;
     private ResponsiveRow gridRow;
@@ -71,26 +88,17 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
         gridRow = mainLayout.addRow();
 
-        VerticalLayout firstColumn = createArchitectureColumn2("-", "bg-grey", "");
+        VerticalLayout firstColumn = getTitleComponent("bg-grey", new Label("-"));
         firstColumn.addComponents(
                 createVerticalHeadline("Konceptuel", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."),
                 createVerticalHeadline("Logisk", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."),
                 createVerticalHeadline("Fysisk", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
         );
 
-        String dataJson = dropboxAPI.getSpecificTextFile(rootFilePath+"data.json", StandardCharsets.UTF_8);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            Data[] data = objectMapper.readValue(dataJson, Data[].class);
-            for (Data datum : data) {
-                VerticalLayout column = createArchitectureColumn2(datum.getHeadline(), datum.getColor(), datum.getDescription());
-                createRows(column, datum);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (KnowledgeArchitectureColumn archiColumn : knowArchiColumnRepository.findAll()) {
+            VerticalLayout column = createArchitectureColumn2(archiColumn);
+            createRows(column, archiColumn);
         }
-
         return this;
     }
 
@@ -107,14 +115,15 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         return card;
     }
 
-    private void createRows(VerticalLayout column, Data datum) {
-        column.addComponent(createCard(datum, 0));
-        column.addComponent(createCard(datum, 1));
-        column.addComponent(createCard(datum, 2));
+    private void createRows(VerticalLayout column, KnowledgeArchitectureColumn archiColumn) {
+        column.addComponent(createCard(archiColumn, 0));
+        column.addComponent(createCard(archiColumn, 1));
+        column.addComponent(createCard(archiColumn, 2));
     }
 
-    private ImageCardDesign createCard(Data datum, int i) {
-        Item item = datum.getItems()[i];
+    private ImageCardDesign createCard(KnowledgeArchitectureColumn archiColumn, int i) {
+        if(archiColumn.getCells().size()<=i) return new ImageCardDesign();
+        KnowledgeArchitectureCell item = archiColumn.getCells().get(i);
         ImageCardDesign box = new ImageCardDesign();
         box.addLayoutClickListener(event -> {
             mainBox.getContent().removeAllComponents();
@@ -123,13 +132,13 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             mainBox.getContent().addComponent(responsiveLayout);
 
             ResponsiveRow headerRow = responsiveLayout.addRow();
-            headerRow.setStyleName(datum.getColor(), true);
+            headerRow.setStyleName(archiColumn.getColor(), true);
 
 
             headerRow.addColumn().withDisplayRules(12, 12, 6,6).withComponent(
                     new MVerticalLayout(
-                            new MLabel(item.getTitle().toUpperCase()).withFullSize().withStyleName("h4"),
-                            new MLabel(datum.getDescription()).withContentMode(ContentMode.HTML)
+                            new MLabel(item.getName().toUpperCase()).withFullSize().withStyleName("h4"),
+                            new MLabel(item.getDescription()).withContentMode(ContentMode.HTML)
                             )
                             .withFullWidth()
                             .withMargin(true)
@@ -151,6 +160,69 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
             ResponsiveRow cardsRow = responsiveLayout.addRow();
 
+            for (KnowledgeArchitectureCard card : item.getCards()) {
+                Map<FileItem, DocumentMetadata> fileItems = new HashMap<>();
+
+                ArchitectureCell architectureCell1 = new ArchitectureCell();
+                architectureCell1.getLblTitle().setValue(card.getName()+"1");
+                architectureCell1.getCbFileSelector().setPlaceholder("");
+                architectureCell1.getCbFileSelector().addStyleName(COMBOBOX_BORDERLESS);
+                architectureCell1.getCbFileSelector().setItemCaptionGenerator(FileItem::getName);
+                architectureCell1.getCbFileSelector().setItemIconGenerator(FileItem::getIcon);
+                architectureCell1.getCbFileSelector().setEmptySelectionAllowed(false);
+                architectureCell1.getLblTitle().setVisible(false);
+                architectureCell1.getBtnAlt1().setVisible(false);
+                architectureCell1.getLblAreaTitle().setValue(card.getName());
+
+                architectureCell1.getCbFileSelector().addValueChangeListener(event1 -> {
+                    DocumentMetadata documentMetadata = fileItems.get(event1.getValue());
+                    architectureCell1.getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
+                            new ByteArrayInputStream(dropboxAPI.getSpecificBinaryFile(rootFilePath+card.getFolder()+"/"+documentMetadata.getPreview())),
+                            Math.random()+".jpg"));
+                    architectureCell1.getVlConsultants().removeAllComponents();
+
+                    for (String author : documentMetadata.getAuthors()) {
+                        architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(userService.findByUUID(author), false, 50, Unit.PIXELS));
+                    }
+                    architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhoto(documentMetadata.getCustomeruuid()));
+                    architectureCell1.getImgCustomer().setHeight(50, Unit.PIXELS);
+                    architectureCell1.getContent().removeAllComponents();
+                    architectureCell1.getContent().addComponent(new MLabel(documentMetadata.getDescription()).withFullWidth());
+                    //architectureCell1.getImgTop().setSource(dropboxAPI.getThumbnail());
+
+                    //architectureCell1.getContent().setMargin(true);
+                });
+
+                for (String file : dropboxAPI.getFilesInFolder(rootFilePath+card.getFolder())) {
+                    if(!FilenameUtils.getExtension(file).equals("json")) continue;
+                    String documentMetadataJson = dropboxAPI.getSpecificTextFile(file, StandardCharsets.UTF_8);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    DocumentMetadata documentMetadata = null;
+                    try {
+                        documentMetadata = objectMapper.readValue(documentMetadataJson, DocumentMetadata.class);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    FileItem fileItem = new FileItem("\t"+documentMetadata.getHeadline(), icons.get(documentMetadata.getFiletype()));
+
+                    fileItems.put(fileItem, documentMetadata);
+                }
+
+                architectureCell1.getCbFileSelector().setItems(fileItems.keySet());
+                architectureCell1.getCbFileSelector().setSelectedItem(fileItems.keySet().stream().findFirst().get());
+
+                cardsRow.addColumn().withDisplayRules(12, 12, 4, 4)
+                        .withComponent(architectureCell1);
+
+            }
+
+            if(isEditor()) {
+
+            }
+
+
+
+            /*
             String filePath = rootFilePath+item.getKey();
             for (String filename : dropboxAPI.getFilesInFolder(filePath)) {
                 //System.out.println("filename = " + filename);
@@ -212,31 +284,10 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                     e.printStackTrace();
                 }
 
-            /*
-                FileItem fileItem = new FileItem("GCW-01.pptx", PPTX);
-                architectureCell1.getCbFileSelector().setItems(
-                        fileItem,
-                        new FileItem("testfile.docx", DOCX),
-                        new FileItem("maalarkitetur.pptx", PPTX));
-                architectureCell1.getCbFileSelector().addValueChangeListener(event1 -> {
-                    architectureCell1.getImgTop().setSource(new ThemeResource("images/cards/architecture/arc1.png"));
-                    List<User> employees = userService.findWorkingUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT);
-                    architectureCell1.getVlConsultants().removeAllComponents();
-                    for (int j = 0; j < 2; j++) {
-                        architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(employees.get(j+4), false, 50, Unit.PIXELS));
-                    }
-                    architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(1).getUuid()));
-                    architectureCell1.getImgCustomer().setHeight(50, Unit.PIXELS);
-                    architectureCell1.getContent().removeAllComponents();
-                    architectureCell1.getContent().addComponent(new MLabel("Jeannette lavede brugerrejser for RP " +
-                            "som gav et overblik over de snitflader RP har til deres brugere.Derudover s lavede brugerrejser " +
-                            "for RP som gav et overblik over de snitflader RP har til deres brugere.").withFullWidth());
-                    //architectureCell1.getContent().setMargin(true);
-                });
 
-                */
             }
 
+             */
             /*
             architectureCell1.getImgTop().setSource(new ThemeResource("images/cards/architecture/applikation-1.png"));
             //architectureCell1.getImgTop2().setSource(photoService.getRelatedPhoto(clientRepository.findAllByOrderByActiveDescNameAsc().get(1).getUuid()));
@@ -289,29 +340,86 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
              */
         });
+
         box.addStyleName("semi-white-bg");
+
+        box.getImgTop().setSource(photoService.getRelatedPhoto(item.getPhotoUuid()));
+        /*
         box.getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
                 new ByteArrayInputStream(dropboxAPI.getSpecificBinaryFile(rootFilePath + "" + item.getKey() + ".png")),
                 Math.random()+".png"));
+         */
         box.getVlContent().addComponent(
                 new MVerticalLayout(
-                        new MLabel(item.getTitle())
+                        new MLabel(item.getName())
                                 .withFullWidth()
                                 .withStyleName("small bold"),
                         new MLabel(item.getContent())
                                 .withContentMode(ContentMode.HTML)
                                 .withFullWidth()
-                                .withStyleName("tiny bold")
+                                .withStyleName("tiny bold"),
+                        new MHorizontalLayout(
+                            new MButton(MaterialIcons.PHOTO).withStyleName("icon-only tiny").withListener(clickEvent -> {
+                                if(item.getPhotoUuid().equals("")) item.setPhotoUuid(UUID.randomUUID().toString());
+                                knowArchiColumnRepository.save(archiColumn);
+                                new PhotoUploader(item.getPhotoUuid(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoRepository).getUploader();
+                            }),
+                            new MButton(MaterialIcons.EDIT).withStyleName("icon-only tiny").withListener(clickEvent -> {
+                                Window window = new Window();
+                                MVerticalLayout vl = new MVerticalLayout(
+                                        new MTextField("Name", item.getName(), valueChangeEvent -> {
+                                            item.setName(valueChangeEvent.getValue());
+                                        }).withValueChangeMode(ValueChangeMode.BLUR),
+                                        new RichTextArea("Content", item.getContent(), valueChangeEvent -> {
+                                            item.setContent(valueChangeEvent.getValue());
+                                        }),
+                                        new MButton("Save", clickEvent1 -> {
+                                            knowArchiColumnRepository.save(archiColumn);
+                                            window.close();
+                                        }));
+                                window.setContent(vl);
+                                window.setModal(true);
+                                window.setDraggable(false);
+                                window.setClosable(false);
+                                window.setResizable(false);
+                                UI.getCurrent().addWindow(window);
+                            })
+                        ).withVisible(isEditor())
                 )
         );
         box.getVlContent().setHeight(175, Unit.PIXELS);
         return box;
     }
 
-    private VerticalLayout createArchitectureColumn2(String opgaver, String color, String description) {
-        MVerticalLayout column = new MVerticalLayout(
-                new MLabel(opgaver).withFullWidth().withStyleName("align-center large bold")
-        ).withWidth(100, Unit.PERCENTAGE).withMargin(false);
+    private boolean isEditor() {
+        return userService.getLoggedInUser().get().getUsername().equals("simon.gomez") || userService.getLoggedInUser().get().getUsername().equals("hans.lassen");
+    }
+
+    private VerticalLayout createArchitectureColumn2(KnowledgeArchitectureColumn column) {
+        VerticalLayout layout = new VerticalLayout(
+                new MLabel(column.getName())
+                        .withFullWidth()
+                        .withStyleName("align-center large bold"));
+        layout.addLayoutClickListener(layoutClickEvent -> {
+            final Window window = new Window();
+            MTextField title = new MTextField("title", column.getName(), valueChangeEvent -> {
+                column.setName(valueChangeEvent.getValue());
+                knowArchiColumnRepository.save(column);
+                window.close();
+            }).withValueChangeMode(ValueChangeMode.BLUR);
+            window.setContent(title);
+            window.setModal(true);
+            window.setDraggable(false);
+            window.setClosable(false);
+            window.setResizable(false);
+            UI.getCurrent().addWindow(window);
+        });
+
+        return getTitleComponent(column.getColor(), layout);
+    }
+
+    private VerticalLayout getTitleComponent(String color, Component layout) {
+        MVerticalLayout column = new MVerticalLayout(layout).withWidth(100, Unit.PERCENTAGE).withMargin(false);
 
         gridRow.addColumn()
                 .withDisplayRules(12, 12, 2, 2)
