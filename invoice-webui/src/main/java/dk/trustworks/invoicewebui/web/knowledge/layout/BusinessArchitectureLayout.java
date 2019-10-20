@@ -134,11 +134,67 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             ResponsiveRow headerRow = responsiveLayout.addRow();
             headerRow.setStyleName(archiColumn.getColor(), true);
 
+            /*
+            VerticalLayout layout = new VerticalLayout(
+                new MLabel(column.getName())
+                        .withFullWidth()
+                        .withStyleName("align-center large bold"));
+        layout.addLayoutClickListener(layoutClickEvent -> {
+            final Window window = new Window();
+            MTextField title = new MTextField("title", column.getName(), valueChangeEvent -> {
+                column.setName(valueChangeEvent.getValue());
+                knowArchiColumnRepository.save(column);
+                window.close();
+            }).withValueChangeMode(ValueChangeMode.BLUR);
+            window.setContent(title);
+            window.setModal(true);
+            window.setDraggable(false);
+            window.setClosable(false);
+            window.setResizable(false);
+            UI.getCurrent().addWindow(window);
+        });
+             */
+
+            VerticalLayout nameLayout = new VerticalLayout(
+                    new MLabel(item.getName().toUpperCase()).withFullSize().withStyleName("h4")
+            );
+            nameLayout.addLayoutClickListener(layoutClickEvent -> {
+                final Window window = new Window();
+                MTextField title = new MTextField("title", item.getName(), valueChangeEvent -> {
+                    item.setName(valueChangeEvent.getValue());
+                    knowArchiColumnRepository.save(archiColumn);
+                    window.close();
+                }).withValueChangeMode(ValueChangeMode.BLUR);
+                window.setContent(title);
+                window.setModal(true);
+                window.setDraggable(false);
+                window.setClosable(false);
+                window.setResizable(false);
+                UI.getCurrent().addWindow(window);
+            });
+
+            VerticalLayout descLayout = new VerticalLayout(
+                    new MLabel(item.getDescription()).withContentMode(ContentMode.HTML)
+            );
+            descLayout.addLayoutClickListener(layoutClickEvent -> {
+                final Window window = new Window();
+                MTextField title = new MTextField("description", item.getDescription(), valueChangeEvent -> {
+                    item.setDescription(valueChangeEvent.getValue());
+                    knowArchiColumnRepository.save(archiColumn);
+                    window.close();
+                }).withValueChangeMode(ValueChangeMode.BLUR);
+                window.setContent(title);
+                window.setModal(true);
+                window.setDraggable(false);
+                window.setClosable(false);
+                window.setResizable(false);
+                UI.getCurrent().addWindow(window);
+            });
 
             headerRow.addColumn().withDisplayRules(12, 12, 6,6).withComponent(
                     new MVerticalLayout(
-                            new MLabel(item.getName().toUpperCase()).withFullSize().withStyleName("h4"),
-                            new MLabel(item.getDescription()).withContentMode(ContentMode.HTML)
+                            nameLayout,
+                            descLayout
                             )
                             .withFullWidth()
                             .withMargin(true)
@@ -173,6 +229,24 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                 architectureCell1.getLblTitle().setVisible(false);
                 architectureCell1.getBtnAlt1().setVisible(false);
                 architectureCell1.getLblAreaTitle().setValue(card.getName());
+                if(isEditor()) {
+                    architectureCell1.getBtnEditName().setVisible(true);
+                    architectureCell1.getBtnEditName().setCaption("");
+                    architectureCell1.getBtnEditName().addClickListener(clickEvent -> {
+                        final Window window = new Window();
+                        MTextField title = new MTextField("title", card.getName(), valueChangeEvent -> {
+                            card.setName(valueChangeEvent.getValue());
+                            knowArchiColumnRepository.save(archiColumn);
+                            window.close();
+                        }).withValueChangeMode(ValueChangeMode.BLUR);
+                        window.setContent(title);
+                        window.setModal(true);
+                        window.setDraggable(false);
+                        window.setClosable(false);
+                        window.setResizable(false);
+                        UI.getCurrent().addWindow(window);
+                    });
+                }
 
                 architectureCell1.getCbFileSelector().addValueChangeListener(event1 -> {
                     DocumentMetadata documentMetadata = fileItems.get(event1.getValue());
@@ -217,7 +291,30 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             }
 
             if(isEditor()) {
-
+                MButton btn = new MButton(MaterialIcons.ADD).withStyleName("icon-only").withListener(clickEvent -> {
+                    Window window = new Window();
+                    KnowledgeArchitectureCard newCard = new KnowledgeArchitectureCard();
+                    MVerticalLayout vl = new MVerticalLayout(
+                            new MTextField("Name", "", valueChangeEvent -> {
+                                newCard.setName(valueChangeEvent.getValue());
+                            }).withValueChangeMode(ValueChangeMode.BLUR),
+                            new TextArea("Folder", "", valueChangeEvent -> {
+                                newCard.setFolder(valueChangeEvent.getValue());
+                            }),
+                            new MButton("Save", clickEvent1 -> {
+                                item.getCards().add(newCard);
+                                knowArchiColumnRepository.save(archiColumn);
+                                window.close();
+                            }));
+                    window.setContent(vl);
+                    window.setModal(true);
+                    window.setDraggable(false);
+                    window.setClosable(false);
+                    window.setResizable(false);
+                    UI.getCurrent().addWindow(window);
+                });
+                cardsRow.addColumn().withDisplayRules(12, 12, 4, 4)
+                        .withComponent(btn);
             }
 
 

@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta charset="UTF-8">
-  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;invoice&quot;}">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
   <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
@@ -27,9 +27,12 @@
       <vaadin-image height="35px" _id="imgCustomer" :middle :right :expand="0.5"></vaadin-image>
      </vaadin-horizontal-layout>
      <vaadin-horizontal-layout style-name="dark-grey" width-full>
-      <vaadin-label style-name="h4 white-font" plain-text _id="lblAreaTitle" :middle :center>
+      <vaadin-label style-name="h4 white-font" plain-text _id="lblAreaTitle" :middle :center :expand>
         Label 
       </vaadin-label>
+      <vaadin-button visible="false" icon="fonticon://Vaadin-Icons/e771" style-name="icon-only tiny" plain-text _id="btnEditName" :middle :right>
+        Button 
+      </vaadin-button>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>

@@ -33,6 +33,7 @@ public class ArchitectureCell extends VerticalLayout {
     private Button btnDownloadFile;
     private Image imgCustomer;
     private Label lblAreaTitle;
+    private Button btnEditName;
 
     public ArchitectureCell() {
         Design.read(this);
@@ -80,6 +81,10 @@ public class ArchitectureCell extends VerticalLayout {
 
     public Label getLblAreaTitle() {
         return lblAreaTitle;
+    }
+
+    public Button getBtnEditName() {
+        return btnEditName;
     }
 
 }
