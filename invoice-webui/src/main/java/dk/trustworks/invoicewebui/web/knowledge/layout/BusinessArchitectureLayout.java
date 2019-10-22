@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gs.collections.api.tuple.Twin;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
@@ -13,13 +14,14 @@ import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.model.KnowledgeArchitectureCard;
-import dk.trustworks.invoicewebui.model.KnowledgeArchitectureCell;
-import dk.trustworks.invoicewebui.model.KnowledgeArchitectureColumn;
+import dk.trustworks.invoicewebui.functions.TokenEventListener;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
+import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.KnowArchiColumnRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
@@ -28,7 +30,9 @@ import dk.trustworks.invoicewebui.web.knowledge.components.SideBannerDesign;
 import dk.trustworks.invoicewebui.web.knowledge.model.DocumentMetadata;
 import dk.trustworks.invoicewebui.web.model.FileItem;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
+import dk.trustworks.invoicewebui.web.project.components.TokenListImpl;
 import org.apache.commons.io.FilenameUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -40,10 +44,11 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.vaadin.ui.themes.ValoTheme.COMBOBOX_BORDERLESS;
 
@@ -65,10 +70,16 @@ public class BusinessArchitectureLayout extends VerticalLayout {
     private UserService userService;
 
     @Autowired
-    private DropboxAPI dropboxAPI;
+    private ClientRepository clientService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @Autowired
     private KnowArchiColumnRepository knowArchiColumnRepository;
+
+    @Autowired
+    private DropboxAPI dropboxAPI;
 
     private ResponsiveLayout mainLayout;
     private ResponsiveRow gridRow;
@@ -217,7 +228,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             ResponsiveRow cardsRow = responsiveLayout.addRow();
 
             for (KnowledgeArchitectureCard card : item.getCards()) {
-                Map<FileItem, DocumentMetadata> fileItems = new HashMap<>();
+                Map<FileItem, KnowledgeArchitectureFile> fileItems = new HashMap<>();
 
                 ArchitectureCell architectureCell1 = new ArchitectureCell();
                 architectureCell1.getLblTitle().setValue(card.getName()+"1");
@@ -233,61 +244,134 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                     architectureCell1.getBtnEditName().setVisible(true);
                     architectureCell1.getBtnEditName().setCaption("");
                     architectureCell1.getBtnEditName().addClickListener(clickEvent -> {
-                        final Window window = new Window();
-                        MTextField title = new MTextField("title", card.getName(), valueChangeEvent -> {
-                            card.setName(valueChangeEvent.getValue());
-                            knowArchiColumnRepository.save(archiColumn);
-                            window.close();
-                        }).withValueChangeMode(ValueChangeMode.BLUR);
-                        window.setContent(title);
-                        window.setModal(true);
-                        window.setDraggable(false);
-                        window.setClosable(false);
-                        window.setResizable(false);
-                        UI.getCurrent().addWindow(window);
+                        editNameWindow(archiColumn, card);
                     });
                 }
 
                 architectureCell1.getCbFileSelector().addValueChangeListener(event1 -> {
-                    DocumentMetadata documentMetadata = fileItems.get(event1.getValue());
-                    architectureCell1.getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(dropboxAPI.getSpecificBinaryFile(rootFilePath+card.getFolder()+"/"+documentMetadata.getPreview())),
+                    KnowledgeArchitectureFile cardFile = fileItems.get(event1.getValue());
+                    /*architectureCell1.getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
+                            new ByteArrayInputStream(dropboxAPI.getSpecificBinaryFile(rootFilePath+card.getFolder()+"/"+cardFile.getPreview())),
                             Math.random()+".jpg"));
+                     */
+                    architectureCell1.getImgTop().setSource(photoService.getRelatedPhoto(cardFile.getPreview()));
                     architectureCell1.getVlConsultants().removeAllComponents();
 
-                    for (String author : documentMetadata.getAuthors()) {
+                    for (String author : cardFile.getAuthors().split(",")) {
+                        if(author.length()<2) continue;
                         architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(userService.findByUUID(author), false, 50, Unit.PIXELS));
                     }
-                    architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhoto(documentMetadata.getCustomeruuid()));
+                    architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhoto(cardFile.getCustomeruuid()));
                     architectureCell1.getImgCustomer().setHeight(50, Unit.PIXELS);
                     architectureCell1.getContent().removeAllComponents();
-                    architectureCell1.getContent().addComponent(new MLabel(documentMetadata.getDescription()).withFullWidth());
-                    //architectureCell1.getImgTop().setSource(dropboxAPI.getThumbnail());
+                    architectureCell1.getContent().addComponent(new MLabel(cardFile.getDescription()).withFullWidth());
 
-                    //architectureCell1.getContent().setMargin(true);
+                    byte[] file = dropboxAPI.getSpecificBinaryFile(rootFilePath + cardFile.getFilename());
+                    System.out.println("file.length = " + file.length);
+                    FileDownloader fileDownloader = new FileDownloader(new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(file), cardFile.getFilename()));
+                    fileDownloader.extend(architectureCell1.getBtnDownloadFile());
+                    if(isEditor()) {
+                        architectureCell1.getVlAdminButtons().setVisible(true);
+                        architectureCell1.getBtnAddFile().addClickListener(clickEvent -> {
+                            KnowledgeArchitectureFile knowledgeArchitectureFile = new KnowledgeArchitectureFile();
+                            knowledgeArchitectureFile.setHeadline("new file");
+                            knowledgeArchitectureFile.setAuthors("");
+                            card.getFiles().add(knowledgeArchitectureFile);
+                            knowledgeArchitectureFile.setKnowledgeArchitectureCard(card);
+                            knowArchiColumnRepository.save(archiColumn);
+                            init();
+                        });
+                        architectureCell1.getBtnImgFile().addClickListener(clickEvent -> {
+                            if(cardFile.getPreview().equals("")) cardFile.setPreview(UUID.randomUUID().toString());
+                            knowArchiColumnRepository.save(archiColumn);
+                            new PhotoUploader(cardFile.getPreview(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoRepository).getUploader();
+                        });
+
+                        architectureCell1.getBtnEditFile().addClickListener(clickEvent -> {
+                            List<User> allUsers = userService.findAll();
+                            List<User> selectedUsers = new ArrayList<>();
+                            for (String useruuids : cardFile.getAuthors().split(",")) {
+                                if(useruuids.length()<2) continue;
+                                selectedUsers.add(userService.findByUUID(useruuids));
+                            }
+
+                            TokenListImpl tokenList = new TokenListImpl(
+                                    allUsers.stream().map(User::getUsername).sorted().collect(Collectors.toList()),
+                                    selectedUsers.stream().map(User::getUsername).sorted().collect(Collectors.toList()),
+                                    "select author"
+                            );
+
+                            tokenList.addTokenListener(new TokenEventListener() {
+                                @Override
+                                public void onTokenAdded(String token) {
+                                    selectedUsers.add(allUsers.stream().filter(user -> user.getUsername().equals(token)).findFirst().get());
+                                }
+
+                                @Override
+                                public void onTokenRemoved(String token) {
+                                    selectedUsers.remove(selectedUsers.stream().filter(user -> user.getUsername().equals(token)).findFirst().orElse(new User()));
+                                }
+                            });
+
+                            ComboBox<Client> clientComboBox = new ComboBox<>("Client: ", clientService.findByOrderByName());
+                            clientComboBox.setItemCaptionGenerator(Client::getName);
+                            Client client = clientService.findOne(cardFile.getCustomeruuid());
+                            clientComboBox.setSelectedItem(client);
+                            ComboBox<Project> projectComboBox = new ComboBox<>("Project: ", projectService.findByClientOrderByNameAsc(client));
+                            projectComboBox.setItemCaptionGenerator(Project::getName);
+                            projectComboBox.setSelectedItem(projectService.findOne(cardFile.getProjectuuid()));
+                            clientComboBox.addValueChangeListener(valueChangeEvent -> {
+                                projectComboBox.clear();
+                                projectComboBox.setItems(projectService.findByClientOrderByNameAsc(valueChangeEvent.getValue()));
+                            });
+
+                            Window window = new Window();
+                            MVerticalLayout vl = new MVerticalLayout(
+                                    new MTextField("Headline", cardFile.getHeadline(), valueChangeEvent -> {
+                                        cardFile.setHeadline(valueChangeEvent.getValue());
+                                    }).withValueChangeMode(ValueChangeMode.BLUR),
+                                    new MTextField("Filetype", cardFile.getFiletype(), valueChangeEvent -> {
+                                        cardFile.setFiletype(valueChangeEvent.getValue());
+                                    }).withValueChangeMode(ValueChangeMode.BLUR),
+                                    new MTextField("Filename", cardFile.getFilename(), valueChangeEvent -> {
+                                        cardFile.setFilename(valueChangeEvent.getValue());
+                                    }).withValueChangeMode(ValueChangeMode.BLUR),
+                                    new RichTextArea("Description", cardFile.getDescription(), valueChangeEvent -> {
+                                        cardFile.setDescription(valueChangeEvent.getValue());
+                                    }),
+                                    clientComboBox,
+                                    projectComboBox,
+                                    new DateField("Date", LocalDate.now(), valueChangeEvent -> {
+                                        cardFile.setDate(valueChangeEvent.getValue());
+                                    }),
+                                    tokenList,
+                                    new MButton("Save", clickEvent1 -> {
+                                        cardFile.setAuthors(selectedUsers.stream().map(User::getUuid).collect(Collectors.joining(",")));
+                                        cardFile.setCustomeruuid(clientComboBox.getSelectedItem().get().getUuid());
+                                        cardFile.setProjectuuid(projectComboBox.getSelectedItem().get().getUuid());
+                                        knowArchiColumnRepository.save(archiColumn);
+                                        window.close();
+                                    }));
+                            window.setContent(vl);
+                            window.setModal(true);
+                            window.setDraggable(false);
+                            window.setClosable(false);
+                            window.setResizable(false);
+                            UI.getCurrent().addWindow(window);
+                        });
+                    }
                 });
 
-                for (String file : dropboxAPI.getFilesInFolder(rootFilePath+card.getFolder())) {
-                    if(!FilenameUtils.getExtension(file).equals("json")) continue;
-                    String documentMetadataJson = dropboxAPI.getSpecificTextFile(file, StandardCharsets.UTF_8);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    DocumentMetadata documentMetadata = null;
-                    try {
-                        documentMetadata = objectMapper.readValue(documentMetadataJson, DocumentMetadata.class);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    FileItem fileItem = new FileItem("\t"+documentMetadata.getHeadline(), icons.get(documentMetadata.getFiletype()));
-
-                    fileItems.put(fileItem, documentMetadata);
+                for (KnowledgeArchitectureFile cardFile : card.getFiles()) {
+                    FileItem fileItem = new FileItem("\t"+cardFile.getHeadline(), icons.get(cardFile.getFiletype()));
+                    fileItems.put(fileItem, cardFile);
                 }
 
                 architectureCell1.getCbFileSelector().setItems(fileItems.keySet());
-                architectureCell1.getCbFileSelector().setSelectedItem(fileItems.keySet().stream().findFirst().get());
+                architectureCell1.getCbFileSelector().setSelectedItem(fileItems.keySet().stream().findFirst().orElse(null));
 
                 cardsRow.addColumn().withDisplayRules(12, 12, 4, 4)
                         .withComponent(architectureCell1);
-
             }
 
             if(isEditor()) {
@@ -298,7 +382,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                             new MTextField("Name", "", valueChangeEvent -> {
                                 newCard.setName(valueChangeEvent.getValue());
                             }).withValueChangeMode(ValueChangeMode.BLUR),
-                            new TextArea("Folder", "", valueChangeEvent -> {
+                            new MTextField("Folder", "", valueChangeEvent -> {
                                 newCard.setFolder(valueChangeEvent.getValue());
                             }),
                             new MButton("Save", clickEvent1 -> {
@@ -486,6 +570,21 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         );
         box.getVlContent().setHeight(175, Unit.PIXELS);
         return box;
+    }
+
+    private void editNameWindow(KnowledgeArchitectureColumn archiColumn, KnowledgeArchitectureCard card) {
+        final Window window = new Window();
+        MTextField title = new MTextField("title", card.getName(), valueChangeEvent -> {
+            card.setName(valueChangeEvent.getValue());
+            knowArchiColumnRepository.save(archiColumn);
+            window.close();
+        }).withValueChangeMode(ValueChangeMode.BLUR);
+        window.setContent(title);
+        window.setModal(true);
+        window.setDraggable(false);
+        window.setClosable(false);
+        window.setResizable(false);
+        UI.getCurrent().addWindow(window);
     }
 
     private boolean isEditor() {

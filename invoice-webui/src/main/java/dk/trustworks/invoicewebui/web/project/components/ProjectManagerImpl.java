@@ -274,7 +274,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     tokenList.addTokenListener(new TokenEventListener() {
                         @Override
                         public void onTokenAdded(String token) {
-                            System.out.println("token added = " + token);
                             TaskOffering taskOffering = new TaskOffering(task, token);
                             taskOfferingRepository.save(taskOffering);
                             updatedTask.addOffering(taskOffering);
@@ -283,7 +282,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
                         @Override
                         public void onTokenRemoved(String token) {
-                            System.out.println("token removed = " + token);
                             Task savedTask = taskRepository.findOne(task.getUuid());
                             savedTask.getTaskOfferings().stream().filter(taskOffering -> taskOffering.getName().equals(token)).findFirst().ifPresent(taskOffering -> {
                                 savedTask.removeOffering(taskOffering);

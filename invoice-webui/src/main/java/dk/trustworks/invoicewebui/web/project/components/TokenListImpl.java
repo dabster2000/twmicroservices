@@ -12,6 +12,8 @@ public class TokenListImpl extends TokenList {
     private final List<String> tokens;
     private List<TokenEventListener> listeners = new ArrayList<>();
 
+    private String placeholder = "add offering";
+
     public TokenListImpl() {
         tokens = new ArrayList<>();
         selectableValues = new ArrayList<>();
@@ -22,6 +24,11 @@ public class TokenListImpl extends TokenList {
         this.selectableValues = selectableValues;
         tokens = selectedValues;
         addTokenLabels();
+    }
+
+    public TokenListImpl(List<String> selectableValues, List<String> selectedValues, String placeholder) {
+        this(selectableValues, selectedValues);
+        this.placeholder = placeholder;
     }
 
     public void setSelectableValues(List<String> selectableValues) {

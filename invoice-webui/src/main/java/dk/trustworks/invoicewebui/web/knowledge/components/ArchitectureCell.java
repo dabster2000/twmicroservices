@@ -29,6 +29,10 @@ public class ArchitectureCell extends VerticalLayout {
     private ComboBox<dk.trustworks.invoicewebui.web.model.FileItem> cbFileSelector;
     private Image imgTop;
     private VerticalLayout content;
+    private VerticalLayout vlAdminButtons;
+    private Button btnAddFile;
+    private Button btnEditFile;
+    private Button btnImgFile;
     private HorizontalLayout vlConsultants;
     private Button btnDownloadFile;
     private Image imgCustomer;
@@ -65,6 +69,22 @@ public class ArchitectureCell extends VerticalLayout {
 
     public VerticalLayout getContent() {
         return content;
+    }
+
+    public VerticalLayout getVlAdminButtons() {
+        return vlAdminButtons;
+    }
+
+    public Button getBtnAddFile() {
+        return btnAddFile;
+    }
+
+    public Button getBtnEditFile() {
+        return btnEditFile;
+    }
+
+    public Button getBtnImgFile() {
+        return btnImgFile;
     }
 
     public HorizontalLayout getVlConsultants() {

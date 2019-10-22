@@ -19,7 +19,14 @@
      </vaadin-horizontal-layout>
      <vaadin-vertical-layout spacing="false" margin="false" :expand>
       <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
-      <vaadin-vertical-layout spacing="false" height="200px" _id="content"></vaadin-vertical-layout>
+      <vaadin-horizontal-layout spacing="false" width-full>
+       <vaadin-vertical-layout spacing="false" height="200px" _id="content" :expand></vaadin-vertical-layout>
+       <vaadin-vertical-layout visible="false" spacing="false" size-auto margin="false" _id="vlAdminButtons" :right>
+        <vaadin-button icon="fonticon://Vaadin-Icons/e801" style-name="icon-only tiny" _id="btnAddFile"></vaadin-button>
+        <vaadin-button icon="fonticon://Vaadin-Icons/e771" style-name="icon-only tiny" plain-text _id="btnEditFile"></vaadin-button>
+        <vaadin-button icon="fonticon://Vaadin-Icons/e7df" style-name="icon-only tiny" plain-text _id="btnImgFile"></vaadin-button>
+       </vaadin-vertical-layout>
+      </vaadin-horizontal-layout>
      </vaadin-vertical-layout>
      <vaadin-horizontal-layout width-full>
       <vaadin-horizontal-layout _id="vlConsultants" :middle :expand="0.5"></vaadin-horizontal-layout>
@@ -30,9 +37,7 @@
       <vaadin-label style-name="h4 white-font" plain-text _id="lblAreaTitle" :middle :center :expand>
         Label 
       </vaadin-label>
-      <vaadin-button visible="false" icon="fonticon://Vaadin-Icons/e771" style-name="icon-only tiny" plain-text _id="btnEditName" :middle :right>
-        Button 
-      </vaadin-button>
+      <vaadin-button visible="false" icon="fonticon://Vaadin-Icons/e771" style-name="icon-only tiny" plain-text _id="btnEditName" :middle :right></vaadin-button>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
    </vaadin-vertical-layout>
