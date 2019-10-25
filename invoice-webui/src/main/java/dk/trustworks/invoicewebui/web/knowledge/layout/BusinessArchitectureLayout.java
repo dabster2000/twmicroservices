@@ -315,11 +315,14 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
                             ComboBox<Client> clientComboBox = new ComboBox<>("Client: ", clientService.findByOrderByName());
                             clientComboBox.setItemCaptionGenerator(Client::getName);
-                            Client client = clientService.findOne(cardFile.getCustomeruuid());
-                            clientComboBox.setSelectedItem(client);
-                            ComboBox<Project> projectComboBox = new ComboBox<>("Project: ", projectService.findByClientOrderByNameAsc(client));
+                            ComboBox<Project> projectComboBox = new ComboBox<>("Project: ");
+                            if(cardFile.getCustomeruuid()!=null) {
+                                Client client = clientService.findOne(cardFile.getCustomeruuid());
+                                clientComboBox.setSelectedItem(client);
+                                projectComboBox.setItems(projectService.findByClientOrderByNameAsc(client));
+                            }
                             projectComboBox.setItemCaptionGenerator(Project::getName);
-                            projectComboBox.setSelectedItem(projectService.findOne(cardFile.getProjectuuid()));
+                            if(cardFile.getProjectuuid()!=null) projectComboBox.setSelectedItem(projectService.findOne(cardFile.getProjectuuid()));
                             clientComboBox.addValueChangeListener(valueChangeEvent -> {
                                 projectComboBox.clear();
                                 projectComboBox.setItems(projectService.findByClientOrderByNameAsc(valueChangeEvent.getValue()));
