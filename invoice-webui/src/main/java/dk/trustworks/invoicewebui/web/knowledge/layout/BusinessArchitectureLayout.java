@@ -330,21 +330,21 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
                             Window window = new Window();
                             MVerticalLayout vl = new MVerticalLayout(
-                                    new MTextField("Headline", cardFile.getHeadline(), valueChangeEvent -> {
+                                    new MTextField("Headline", (cardFile.getHeadline()!=null)?cardFile.getHeadline():"", valueChangeEvent -> {
                                         cardFile.setHeadline(valueChangeEvent.getValue());
                                     }).withValueChangeMode(ValueChangeMode.BLUR),
-                                    new MTextField("Filetype", cardFile.getFiletype(), valueChangeEvent -> {
+                                    new MTextField("Filetype", (cardFile.getFiletype()!=null)?cardFile.getFiletype():"", valueChangeEvent -> {
                                         cardFile.setFiletype(valueChangeEvent.getValue());
                                     }).withValueChangeMode(ValueChangeMode.BLUR),
-                                    new MTextField("Filename", cardFile.getFilename(), valueChangeEvent -> {
+                                    new MTextField("Filename", (cardFile.getFilename()!=null)?cardFile.getFilename():"", valueChangeEvent -> {
                                         cardFile.setFilename(valueChangeEvent.getValue());
                                     }).withValueChangeMode(ValueChangeMode.BLUR),
-                                    new RichTextArea("Description", cardFile.getDescription(), valueChangeEvent -> {
+                                    new RichTextArea("Description", (cardFile.getDescription()!=null)?cardFile.getDescription():"", valueChangeEvent -> {
                                         cardFile.setDescription(valueChangeEvent.getValue());
                                     }),
                                     clientComboBox,
                                     projectComboBox,
-                                    new DateField("Date", LocalDate.now(), valueChangeEvent -> {
+                                    new DateField("Date", (cardFile.getDate()!=null)?cardFile.getDate():LocalDate.now(), valueChangeEvent -> {
                                         cardFile.setDate(valueChangeEvent.getValue());
                                     }),
                                     tokenList,
