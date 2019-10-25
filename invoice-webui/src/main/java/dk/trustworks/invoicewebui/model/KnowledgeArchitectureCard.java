@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,5 +26,5 @@ public class KnowledgeArchitectureCard {
     private int cardOrder;
 
     @OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.ALL}, mappedBy = "knowledgeArchitectureCard")
-    public List<KnowledgeArchitectureFile> files;
+    public List<KnowledgeArchitectureFile> files = new ArrayList<>();
 }

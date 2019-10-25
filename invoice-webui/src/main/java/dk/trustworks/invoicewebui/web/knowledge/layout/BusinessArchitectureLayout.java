@@ -386,6 +386,10 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                                 newCard.setFolder(valueChangeEvent.getValue());
                             }),
                             new MButton("Save", clickEvent1 -> {
+                                KnowledgeArchitectureFile file = new KnowledgeArchitectureFile();
+                                file.setAuthors("");
+                                newCard.getFiles().add(file);
+                                file.setKnowledgeArchitectureCard(newCard);
                                 item.getCards().add(newCard);
                                 knowArchiColumnRepository.save(archiColumn);
                                 window.close();
