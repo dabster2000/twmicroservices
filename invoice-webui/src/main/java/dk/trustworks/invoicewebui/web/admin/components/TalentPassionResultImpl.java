@@ -138,10 +138,12 @@ public class TalentPassionResultImpl {
     }
 
     public static double performanceConverter(int performance) {
+        if(performance<0) return 0.0;
         return performanceConverter[performance];
     }
 
     public static double potentialConverter(int potential) {
+        if(potential<0) return 0.0;
         return potentialConverter[potential];
     }
 }

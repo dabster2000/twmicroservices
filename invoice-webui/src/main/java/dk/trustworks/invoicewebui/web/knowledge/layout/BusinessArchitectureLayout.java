@@ -145,27 +145,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             ResponsiveRow headerRow = responsiveLayout.addRow();
             headerRow.setStyleName(archiColumn.getColor(), true);
 
-            /*
-            VerticalLayout layout = new VerticalLayout(
-                new MLabel(column.getName())
-                        .withFullWidth()
-                        .withStyleName("align-center large bold"));
-        layout.addLayoutClickListener(layoutClickEvent -> {
-            final Window window = new Window();
-            MTextField title = new MTextField("title", column.getName(), valueChangeEvent -> {
-                column.setName(valueChangeEvent.getValue());
-                knowArchiColumnRepository.save(column);
-                window.close();
-            }).withValueChangeMode(ValueChangeMode.BLUR);
-            window.setContent(title);
-            window.setModal(true);
-            window.setDraggable(false);
-            window.setClosable(false);
-            window.setResizable(false);
-            UI.getCurrent().addWindow(window);
-        });
-             */
-
             VerticalLayout nameLayout = new VerticalLayout(
                     new MLabel(item.getName().toUpperCase()).withFullSize().withStyleName("h4")
             );

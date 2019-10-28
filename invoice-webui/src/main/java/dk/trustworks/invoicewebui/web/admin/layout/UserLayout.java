@@ -161,12 +161,12 @@ public class UserLayout {
         grid.setSizeFull();
         //grid.setHeight(400, PIXELS);
 
-        ArrayList<Employee> employees = new ArrayList();
+        ArrayList<Employee> employees = new ArrayList<>();
         // Set the data provider (ListDataProvider<CompanyBudgetHistory>)
         for (User user : userService.findAll()) {
-            Optional<Salary> salary = user.getSalaries().stream().sorted(Comparator.comparing(Salary::getActivefrom).reversed()).findFirst();
+            Optional<Salary> salary = user.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom));
             if(!salary.isPresent()) continue;
-            Optional<UserStatus> userStatus = user.getStatuses().stream().sorted((Comparator.comparing(UserStatus::getStatusdate)).reversed()).findFirst();
+            Optional<UserStatus> userStatus = user.getStatuses().stream().max((Comparator.comparing(UserStatus::getStatusdate)));
             if(!userStatus.isPresent()) continue;
             Employee employee = new Employee(user.getFirstname() + " " + user.getLastname(),
                     userStatus.get().getStatus().name(),
