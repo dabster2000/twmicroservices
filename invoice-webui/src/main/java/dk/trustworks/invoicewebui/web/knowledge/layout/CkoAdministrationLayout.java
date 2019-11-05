@@ -91,7 +91,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
         }
 
-        final Chart chart = new Chart(ChartType.COLUMN);
+        //final Chart chart = new Chart(ChartType.COLUMN);
         chart.setId("chart");
 
         final Configuration conf = chart.getConfiguration();
