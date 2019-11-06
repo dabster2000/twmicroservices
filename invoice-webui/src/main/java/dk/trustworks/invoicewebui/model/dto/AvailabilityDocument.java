@@ -27,8 +27,8 @@ public class AvailabilityDocument {
         weekdaysInPeriod = DateUtils.getWeekdaysInPeriod(month, month.plusMonths(1));
         this.sickdays = sickdays;
         weeks = weekdaysInPeriod / 5.0;
-        double result = ((workWeek - 2) * weeks) - vacation;
-        availableHours = Math.max(result, 0.0);
+        //double result = ((workWeek - 2) * weeks) - vacation;
+        availableHours = workWeek;//Math.max(result, 0.0);
     }
 
     /**
@@ -53,11 +53,11 @@ public class AvailabilityDocument {
      */
     @Deprecated
     public double getAvailableHours() {
-        return availableHours;
+        return Math.max(availableHours * weeks, 0.0);
     }
 
     public double getGrossAvailableHours() {
-        return availableHours;
+        return Math.max(availableHours * weeks, 0.0);
     }
 
     public double getNetAvailableHours() {
