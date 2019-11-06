@@ -118,10 +118,8 @@ public class DashboardBoxCreator {
                     availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
                 double monthAllocation = 0.0;
-                if (billableWorkHours > 0.0 && availability.getAvailableHours() > 0.0) {
-                    monthAllocation = (billableWorkHours / availability.getAvailableHours()) * 100.0;
-                    System.out.println("--- startDate = " + startDate);
-                    System.out.println(user.getUsername()+" monthAllocation = " + monthAllocation);
+                if (billableWorkHours > 0.0 && availability.getNetAvailableHours() > 0.0) {
+                    monthAllocation = (billableWorkHours / availability.getNetAvailableHours()) * 100.0;
                     count++;
                 }
                 allocation += monthAllocation;

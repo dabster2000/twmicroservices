@@ -31,16 +31,37 @@ public class AvailabilityDocument {
         availableHours = Math.max(result, 0.0);
     }
 
+    /**
+     * Hvilken måned dette dokument vedrører (f.eks. 2019-12-1, hvor dagen smides væk)
+     * @return Den relevante måned
+     */
     public LocalDate getMonth() {
         return month;
     }
 
+    /**
+     * Den aktuelle bruger
+     * @return Den aktuelle bruger
+     */
     public User getUser() {
         return user;
     }
 
+    /**
+     * Det antal timer, som konsulenten er tilgængelig, minus de to timer der bruges om fredagen samt eventuelt ferie.
+     * @return availability uden ferie og fredage
+     */
+    @Deprecated
     public double getAvailableHours() {
         return availableHours;
+    }
+
+    public double getGrossAvailableHours() {
+        return availableHours;
+    }
+
+    public double getNetAvailableHours() {
+        return Math.max(((availableHours - 2) * weeks) - vacation - sickdays, 0.0);
     }
 
     public double getVacation() {

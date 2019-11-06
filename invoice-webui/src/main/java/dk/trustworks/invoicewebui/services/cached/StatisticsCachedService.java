@@ -144,10 +144,10 @@ public class StatisticsCachedService {
                 AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
 
                 double sum = budgetDocuments.stream().mapToDouble(BudgetDocument::getBudgetHours).sum();
-                if(sum > availability.getAvailableHours()) {
+                if(sum > availability.getNetAvailableHours()) {
                     for (BudgetDocument budgetDocument : budgetDocuments) {
                         double factor = budgetDocument.getBudgetHours() / sum;
-                        budgetDocument.setBudgetHours(factor * availability.getAvailableHours());
+                        budgetDocument.setBudgetHours(factor * availability.getNetAvailableHours());
                     }
                 }
 
@@ -243,9 +243,8 @@ public class StatisticsCachedService {
                 UserStatus userStatus = userService.getUserStatus(user, finalStartDate);
                 if(userStatus.getType().equals(ConsultantType.CONSULTANT) && userStatus.getStatus().equals(StatusType.ACTIVE)) {
                     AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, finalStartDate);
-                    if (availability == null || availability.getAvailableHours() <= 0.0) continue;
+                    if (availability == null || availability.getGrossAvailableHours() <= 0.0) continue;
                     int salary = userService.getUserSalary(user, finalStartDate);
-                    //System.out.println(";" + Math.round(salary));
                     ExpenseDocument expenseDocument = new ExpenseDocument(finalStartDate, user, sharedExpense, salary, staffSalaries);
                     expenseDocumentList.add(expenseDocument);
                 }
@@ -263,7 +262,7 @@ public class StatisticsCachedService {
         return availabilityData.stream()
                 .filter(
                         availabilityDocument -> availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)) &&
-                                availabilityDocument.getAvailableHours()>0.0)
+                                availabilityDocument.getGrossAvailableHours()>0.0)
                 .count();
     }
 
@@ -272,7 +271,7 @@ public class StatisticsCachedService {
         return availabilityData.stream()
                 .filter(
                         availabilityDocument -> availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)) &&
-                                availabilityDocument.getAvailableHours()>0.0 &&
+                                availabilityDocument.getGrossAvailableHours()>0.0 &&
                                 availabilityDocument.getConsultantType().equals(ConsultantType.CONSULTANT) &&
                                 availabilityDocument.getStatusType().equals(StatusType.ACTIVE))
                 .count();
@@ -283,7 +282,7 @@ public class StatisticsCachedService {
         return availabilityData.stream()
                 .filter(
                         availabilityDocument -> availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)) &&
-                                availabilityDocument.getAvailableHours()>0.0 &&
+                                availabilityDocument.getGrossAvailableHours()>0.0 &&
                                 Arrays.asList(consultantTypes).contains(availabilityDocument.getConsultantType()) &&
                                 availabilityDocument.getStatusType().equals(StatusType.ACTIVE))
                 .count();

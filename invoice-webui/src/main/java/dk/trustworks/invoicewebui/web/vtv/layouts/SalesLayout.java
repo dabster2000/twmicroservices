@@ -204,34 +204,6 @@ public class SalesLayout extends VerticalLayout {
         return chart;
     }
 
-    private void getAverageAllocationByYear(LocalDate startDate) {
-        do {
-            startDate = startDate.plusMonths(1);
-            for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
-                if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
-
-                double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
-                if (availability == null) {
-                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
-                }
-                double monthAllocation = 0.0;
-                if (billableWorkHours > 0.0 && availability.getAvailableHours() > 0.0) {
-                    monthAllocation = (billableWorkHours / availability.getAvailableHours()) * 100.0;
-                    //System.out.println("--- startDate = " + startDate);
-                    //System.out.println(user.getUsername()+" monthAllocation = " + monthAllocation);
-                }
-            }
-            //System.out.println("count = " + count);
-            //System.out.println("allocation = " + allocation);
-            //System.out.println(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
-            //User user = userService.findByUsername("hans.lassen");
-            //slackAPI.sendSlackMessage(user, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " allocation = " + NumberUtils.round(allocation / count, 0));
-
-        } while (startDate.isBefore(LocalDate.now()));
-        //return NumberUtils.round(allocation / count, 0);
-    }
-
     private static SolidColor color(int colorIndex) {
         SolidColor c = (SolidColor) colors[colorIndex];
         String cStr = c.toString().substring(1);
