@@ -20,7 +20,7 @@ public class DateUtils {
      * Counts vacation days in period, weekends not included.
      *
      * @param dateFrom inclusive
-     * @param dateTo inclusive
+     * @param dateTo exclusive
      * @return number of vacation days
      */
     public static int getVacationDaysInPeriod(LocalDate dateFrom, LocalDate dateTo) {
@@ -32,7 +32,7 @@ public class DateUtils {
         for (LocalDate localDate : vacationDaysYear) {
             if (isWeekendDay(localDate)) continue;
             if(localDate.isAfter(dateFrom) && localDate.isBefore(dateTo)) countVacationDays++;
-            if(localDate.isEqual(dateFrom) || localDate.isEqual(dateTo)) countVacationDays++;
+            if(localDate.isEqual(dateFrom)) countVacationDays++;
         }
 
         return countVacationDays;
@@ -52,6 +52,13 @@ public class DateUtils {
         return false;
     }
 
+    /**
+     * Counts vacation days in period, weekends not included.
+     *
+     * @param dateFrom inclusive
+     * @param dateTo exclusive
+     * @return number of vacation days
+     */
     public static int getWeekdaysInPeriod(LocalDate dateFrom, LocalDate dateTo) {
         int weekDays = 0;
 

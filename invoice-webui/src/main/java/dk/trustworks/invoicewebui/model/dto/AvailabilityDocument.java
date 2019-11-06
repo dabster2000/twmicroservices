@@ -28,7 +28,7 @@ public class AvailabilityDocument {
         this.sickdays = sickdays;
         weeks = weekdaysInPeriod / 5.0;
         double result = ((workWeek - 2) * weeks) - vacation;
-        availableHours = (result<0.0)?0.0:result;
+        availableHours = Math.max(result, 0.0);
     }
 
     public LocalDate getMonth() {
