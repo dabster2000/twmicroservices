@@ -79,8 +79,8 @@ public class HoursPerConsultantChart {
             availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth; // 147 - 59 - 58 = 30
             if(availableHoursByMonth < 0) availableHoursByMonth = 0;
 
-            double vacationHoursByMonth = availability.getVacation();  // 44
-            double sickHoursByMonth = availability.getSickdays(); // 15
+            double vacationHoursByMonth = availability.getNetVacation();  // 44
+            double sickHoursByMonth = availability.getNetSickdays(); // 15
 
             //availableHoursByMonth -= sickHoursByMonth; // 30 - 15 = 15
             //availableHoursByMonth -= vacationHoursByMonth; // 15 - 44 = -29

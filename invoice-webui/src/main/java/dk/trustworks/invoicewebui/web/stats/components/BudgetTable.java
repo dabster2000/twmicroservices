@@ -53,7 +53,7 @@ public class BudgetTable {
                 double budgetAmountSum = 0.0;
 
                 for (BudgetDocument budgetDocument : statisticsService.getConsultantBudgetDataByMonth(user, startDate)) {
-                    double budgetHours = budgetDocument.getBudgetHours();
+                    double budgetHours = budgetDocument.getGrossBudgetHours();
                     double budgetAmount = budgetDocument.getRate() * budgetHours;
 
                     budgetAmountSum += budgetAmount;

@@ -5,7 +5,6 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
-import com.vaadin.client.ui.Icon;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValidationException;
@@ -548,8 +547,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)) &&
                             work.getUseruuid().equals(budgetDocument.getUser().getUuid()))
                     .mapToDouble(Work::getWorkduration).sum();
-            if(budgetDocument.getBudgetHours()<=0.0) continue;
-            TopCardImpl topCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_ur.svg", budgetDocument.getClient().getName(), "contract "+budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")), workSum+" / "+Math.round(budgetDocument.getBudgetHours()), "dark-blue"));
+            if(budgetDocument.getGrossBudgetHours()<=0.0) continue;
+            TopCardImpl topCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_ur.svg", budgetDocument.getClient().getName(), "contract "+budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")), workSum+" / "+Math.round(budgetDocument.getGrossBudgetHours()), "dark-blue"));
             budgetRow.addColumn()
                     .withDisplayRules(6, 6, 4,3)
                     .withComponent(topCard, ResponsiveColumn.ColumnComponentAlignment.CENTER);

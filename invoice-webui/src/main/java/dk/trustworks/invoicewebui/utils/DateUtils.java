@@ -76,6 +76,17 @@ public class DateUtils {
         return false;
     }
 
+    public static int countWeekdayOccurances(DayOfWeek dayOfWeek, LocalDate from, LocalDate to) {
+        int weekDayOccurances = 0;
+
+        LocalDate localDate = from;
+        do {
+            if(localDate.getDayOfWeek().getValue()==dayOfWeek.getValue()) weekDayOccurances++;
+            localDate = localDate.plusDays(1);
+        } while (localDate.isBefore(to));
+        return weekDayOccurances;
+    }
+
     public static boolean isWorkday(LocalDate localDate) {
         if(isWeekendDay(localDate)) return false;
         for (LocalDate vacationDate : getVacationDayArray(localDate.getYear())) {

@@ -40,11 +40,11 @@ public class BudgetDocument {
         return contract;
     }
 
-    public double getBudgetHours() {
+    public double getGrossBudgetHours() {
         return budgetHours;
     }
 
-    public void setBudgetHours(double budgetHours) {
+    public void setGrossBudgetHours(double budgetHours) {
         this.budgetHours = budgetHours;
     }
 

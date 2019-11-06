@@ -103,7 +103,7 @@ public class SalesHeatMap {
                 for (BudgetDocument budget : budgets) {
                     userAllocationPerAssignmentMap.putIfAbsent(user.getUuid(), new HashMap<>());
                     userAllocationPerAssignmentMap.get(user.getUuid()).putIfAbsent(budget.getClient().getUuid(), new double[12]);
-                    userAllocationPerAssignmentMap.get(user.getUuid()).get(budget.getClient().getUuid())[i] +=  (budget.getBudgetHours());
+                    userAllocationPerAssignmentMap.get(user.getUuid()).get(budget.getClient().getUuid())[i] +=  (budget.getGrossBudgetHours());
                 }
             }
 

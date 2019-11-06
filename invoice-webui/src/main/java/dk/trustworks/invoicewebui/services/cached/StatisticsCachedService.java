@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.services.cached;
 
+import dk.trustworks.invoicewebui.TrustworksConfiguration;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.*;
 import dk.trustworks.invoicewebui.model.enums.*;
@@ -8,10 +9,12 @@ import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,11 +108,11 @@ public class StatisticsCachedService {
                         ContractConsultant userContract = contract.findByUser(user);
                         if(userContract == null) continue;
 
-                        double budget = userContract.getHours();
+                        double budget = userContract.getHours(); // (f.eks. 35 timer)
                         if(budget == 0.0) continue;
 
                         AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
-                        double monthBudget = budget * availability.getWeeks();
+                        double monthBudget = budget * availability.getWeeks(); // f.eks. 2019-12-01, 18 days / 5 = 3,6 weeks * 35 (budget) = 126 hours
 
                         BudgetDocument budgetDocument = new BudgetDocument(startDate, contract.getClient(), user, contract, monthBudget, userContract.getRate());
                         budgetDocumentList.add(budgetDocument);
@@ -143,11 +146,11 @@ public class StatisticsCachedService {
 
                 AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
 
-                double sum = budgetDocuments.stream().mapToDouble(BudgetDocument::getBudgetHours).sum();
+                double sum = budgetDocuments.stream().mapToDouble(BudgetDocument::getGrossBudgetHours).sum();
                 if(sum > availability.getNetAvailableHours()) {
                     for (BudgetDocument budgetDocument : budgetDocuments) {
-                        double factor = budgetDocument.getBudgetHours() / sum;
-                        budgetDocument.setBudgetHours(factor * availability.getNetAvailableHours());
+                        double factor = budgetDocument.getGrossBudgetHours() / sum;
+                        budgetDocument.setGrossBudgetHours(factor * availability.getNetAvailableHours());
                     }
                 }
 
@@ -203,11 +206,11 @@ public class StatisticsCachedService {
                 LocalDate finalStartDate = startDate;
                 double vacation = vacationByUser.stream()
                         .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(finalStartDate))
-                        .mapToDouble(Work::getWorkduration).sum();
+                        .mapToDouble(Work::getWorkduration).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
                 double sickness = sicknessByUser.stream()
                         .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(finalStartDate))
-                        .mapToDouble(Work::getWorkduration).sum();
-                int capacity = userService.calculateCapacityByMonthByUser(user.getUuid(), stringIt(finalStartDate));
+                        .mapToDouble(Work::getWorkduration).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
+                int capacity = userService.calculateCapacityByMonthByUser(user.getUuid(), stringIt(finalStartDate)); // Ofte 37 timer på en uge
                 UserStatus userStatus = userService.getUserStatus(user, finalStartDate);
 
                 availabilityDocumentList.add(new AvailabilityDocument(user, finalStartDate, capacity, vacation, sickness, userStatus.getType(), userStatus.getStatus()));
@@ -319,7 +322,7 @@ public class StatisticsCachedService {
         List<BudgetDocument> budgetData = getBudgetData();
         return budgetData.stream()
                 .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(month.withDayOfMonth(1)))
-                .mapToDouble(budgetDocument -> budgetDocument.getBudgetHours() * budgetDocument.getRate()).sum();
+                .mapToDouble(budgetDocument -> budgetDocument.getGrossBudgetHours() * budgetDocument.getRate()).sum();
     }
 
     public List<BudgetDocument> getConsultantBudgetDataByMonth(User user, LocalDate month) {
@@ -333,7 +336,7 @@ public class StatisticsCachedService {
         List<BudgetDocument> budgetData = getBudgetData();
         return budgetData.stream()
                 .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(month.withDayOfMonth(1)))
-                .mapToDouble(BudgetDocument::getBudgetHours).sum();
+                .mapToDouble(BudgetDocument::getGrossBudgetHours).sum();
     }
 
     public AvailabilityDocument getConsultantAvailabilityByMonth(User user, LocalDate month) {

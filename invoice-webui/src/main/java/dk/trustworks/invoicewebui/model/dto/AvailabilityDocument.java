@@ -1,11 +1,16 @@
 package dk.trustworks.invoicewebui.model.dto;
 
+import dk.trustworks.invoicewebui.TrustworksConfiguration;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+
+import static dk.trustworks.invoicewebui.TrustworksConfiguration.getDayOffHours;
+import static dk.trustworks.invoicewebui.TrustworksConfiguration.getWeekOffHours;
 
 public class AvailabilityDocument {
     private final LocalDate month;
@@ -27,8 +32,7 @@ public class AvailabilityDocument {
         weekdaysInPeriod = DateUtils.getWeekdaysInPeriod(month, month.plusMonths(1));
         this.sickdays = sickdays;
         weeks = weekdaysInPeriod / 5.0;
-        //double result = ((workWeek - 2) * weeks) - vacation;
-        availableHours = workWeek;//Math.max(result, 0.0);
+        availableHours = workWeek;
     }
 
     /**
@@ -48,28 +52,39 @@ public class AvailabilityDocument {
     }
 
     /**
-     * Det antal timer, som konsulenten er tilgængelig, minus de to timer der bruges om fredagen samt eventuelt ferie.
-     * @return availability uden ferie og fredage
+     * Total availability i henhold til ansættelseskontrakt, f.eks. 37 timer.
+     * @return Total availability i henhold til ansættelseskontrakt, f.eks. 37 timer
      */
-    @Deprecated
-    public double getAvailableHours() {
-        return Math.max(availableHours * weeks, 0.0);
-    }
-
     public double getGrossAvailableHours() {
         return Math.max(availableHours * weeks, 0.0);
     }
 
+    /**
+     * Det antal timer, som konsulenten er tilgængelig, minus de to timer der bruges om fredagen samt eventuelt ferie og sygdom.
+     * @return availability uden ferie, sygdom og fredage
+     */
     public double getNetAvailableHours() {
-        return Math.max(((availableHours - 2) * weeks) - vacation - sickdays, 0.0);
+        return Math.max(((availableHours - adjustForOffHours()) * weeks) - getNetVacation() - getNetSickdays(), 0.0); // F.eks. 2019-12-01: ((37 - 2) * 3,6) - (7,4 * 2 - 0.4) - (0 * 1)) = 111,2
     }
 
-    public double getVacation() {
+    public double getGrossVacation() {
         return vacation;
     }
 
-    public double getSickdays() {
+    public double getNetVacation() {
+        return vacation - adjustForOffHours();
+    }
+
+    public double getGrossSickdays() {
         return sickdays;
+    }
+
+    public double getNetSickdays() {
+        return sickdays - adjustForOffHours();
+    }
+
+    private double adjustForOffHours() {
+        return DateUtils.countWeekdayOccurances(DayOfWeek.FRIDAY, getMonth(), getMonth().plusMonths(1)) * TrustworksConfiguration.getWeekOffHours();
     }
 
     public double getWeeks() {
