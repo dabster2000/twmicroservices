@@ -51,4 +51,16 @@ public class BudgetDocument {
     public double getRate() {
         return rate;
     }
+
+    @Override
+    public String toString() {
+        return "BudgetDocument{" +
+                "month=" + month +
+                ", client=" + client +
+                ", user=" + user.getUsername() +
+                ", contract=" + contract.getName() +
+                ", budgetHours=" + budgetHours +
+                ", rate=" + rate +
+                '}';
+    }
 }

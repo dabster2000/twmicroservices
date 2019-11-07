@@ -95,7 +95,7 @@ public class DateUtils {
         return true;
     }
 
-    private static List<LocalDate> getVacationDayArray(int year) {
+    public static List<LocalDate> getVacationDayArray(int year) {
         int a = year % 19;
         int b = (int) Math.round(year/100.0);
         int c = year % 100;

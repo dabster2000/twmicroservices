@@ -108,13 +108,8 @@ public class StatisticsCachedService {
                         ContractConsultant userContract = contract.findByUser(user);
                         if(userContract == null) continue;
 
-                        double budget = userContract.getHours(); // (f.eks. 35 timer)
-                        if(budget == 0.0) continue;
-
-                        AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
-                        double monthBudget = budget * availability.getWeeks(); // f.eks. 2019-12-01, 18 days / 5 = 3,6 weeks * 35 (budget) = 126 hours
-
-                        BudgetDocument budgetDocument = new BudgetDocument(startDate, contract.getClient(), user, contract, monthBudget, userContract.getRate());
+                        BudgetDocument budgetDocument = createBudgetDocument(user, startDate, contract, userContract);
+                        if (budgetDocument == null) continue;
                         budgetDocumentList.add(budgetDocument);
                     } else {
                         LocalDate finalStartDate = startDate;
@@ -145,11 +140,19 @@ public class StatisticsCachedService {
                         .collect(Collectors.toList());
 
                 AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
+                if(user.getUsername().equals("hans.lassen") && startDate.isEqual(LocalDate.of(2019, 12, 1)))
+                    System.out.println("availability = " + availability);
 
                 double sum = budgetDocuments.stream().mapToDouble(BudgetDocument::getGrossBudgetHours).sum();
+                if(user.getUsername().equals("hans.lassen") && startDate.isEqual(LocalDate.of(2019, 12, 1)))
+                    System.out.println("sum = " + sum);
                 if(sum > availability.getNetAvailableHours()) {
                     for (BudgetDocument budgetDocument : budgetDocuments) {
                         double factor = budgetDocument.getGrossBudgetHours() / sum;
+                        if(user.getUsername().equals("hans.lassen") && startDate.isEqual(LocalDate.of(2019, 12, 1))) {
+                            System.out.println("factor = " + factor);
+                            System.out.println("factor * availability.getNetAvailableHours() = " + factor * availability.getNetAvailableHours());
+                        }
                         budgetDocument.setGrossBudgetHours(factor * availability.getNetAvailableHours());
                     }
                 }
@@ -159,6 +162,24 @@ public class StatisticsCachedService {
         }
 
         return budgetDocumentList;
+    }
+
+    BudgetDocument createBudgetDocument(User user, LocalDate startDate, Contract contract, ContractConsultant userContract) {
+        if(user.getUsername().equals("hans.lassen")) System.out.println("StatisticsCachedService.createBudgetDocument");
+        if(user.getUsername().equals("hans.lassen")) System.out.println("user = " + user + ", startDate = " + startDate + ", contract = " + contract + ", userContract = " + userContract);
+        BudgetDocument result = null;
+        double budget = userContract.getHours(); // (f.eks. 35 timer)
+        if(user.getUsername().equals("hans.lassen")) System.out.println("budget = " + budget);
+        if (budget != 0.0) {
+            AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, startDate);
+            if(user.getUsername().equals("hans.lassen")) System.out.println("availability = " + availability);
+            double monthBudget = budget * availability.getWeeks(); // f.eks. 2019-12-01, 18 days / 5 = 3,6 weeks * 35 (budget) = 126 hours
+            if(user.getUsername().equals("hans.lassen")) System.out.println("monthBudget = " + monthBudget);
+            result = new BudgetDocument(startDate, contract.getClient(), user, contract, monthBudget, userContract.getRate());
+            if(user.getUsername().equals("hans.lassen")) System.out.println("result = " + result);
+        }
+
+        return result;
     }
 
     private List<WorkDocument> createIncomeData() {
@@ -206,11 +227,20 @@ public class StatisticsCachedService {
                 LocalDate finalStartDate = startDate;
                 double vacation = vacationByUser.stream()
                         .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(finalStartDate))
-                        .mapToDouble(Work::getWorkduration).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
+                        .mapToDouble(work -> {
+                            if(work.getRegistered().getDayOfWeek().getValue() == DayOfWeek.FRIDAY.getValue()) return work.getWorkduration()-2.0;
+                            return work.getWorkduration();
+                        }).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
+                if(user.getUsername().equals("hans.lassen")) System.out.println("vacation = " + vacation);
                 double sickness = sicknessByUser.stream()
                         .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(finalStartDate))
-                        .mapToDouble(Work::getWorkduration).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
+                        .mapToDouble(work -> {
+                            if(work.getRegistered().getDayOfWeek().getValue() == DayOfWeek.FRIDAY.getValue()) return work.getWorkduration()-2.0;
+                            return work.getWorkduration();
+                        }).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
+                if(user.getUsername().equals("hans.lassen")) System.out.println("sickness = " + sickness);
                 int capacity = userService.calculateCapacityByMonthByUser(user.getUuid(), stringIt(finalStartDate)); // Ofte 37 timer på en uge
+                if(user.getUsername().equals("hans.lassen")) System.out.println("capacity = " + capacity);
                 UserStatus userStatus = userService.getUserStatus(user, finalStartDate);
 
                 availabilityDocumentList.add(new AvailabilityDocument(user, finalStartDate, capacity, vacation, sickness, userStatus.getType(), userStatus.getStatus()));

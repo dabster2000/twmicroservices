@@ -1,9 +1,15 @@
 package dk.trustworks;
 
+import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.vaadin.spring.annotation.EnableVaadin;
 import dk.trustworks.invoicewebui.events.WorkNotificationConsumer;
+import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
+import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
+import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +28,9 @@ import reactor.Environment;
 import reactor.bus.EventBus;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
@@ -50,10 +59,13 @@ public class InvoiceWebUIApplication {
     private WorkNotificationConsumer workNotificationConsumer;
 
     @Autowired
-    private UserService userService;
+    private ContractService contractService;
 
     @Autowired
     StatisticsService statisticsService;
+
+    @Autowired
+    UserService userService;
 
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
@@ -87,6 +99,7 @@ public class InvoiceWebUIApplication {
 
 
         log.info("InitDemoApplication initialization logic ...");
+        test();
         eventBus.on($("notificationConsumer"), workNotificationConsumer);
     }
 
@@ -115,6 +128,35 @@ public class InvoiceWebUIApplication {
         executor.setThreadNamePrefix("AsyncMethod-");
         executor.initialize();
         return executor;
+    }
+
+    public void test() {
+        List<BudgetDocument> consultantBudgetList = statisticsService.getConsultantBudgetDataByMonth(userService.findByUsername("hans.lassen"), LocalDate.of(2019,12,10));
+
+        System.out.println("*********************************************************************");
+        System.out.println("*********************************************************************");
+        System.out.println("*********************************************************************");
+
+        for (BudgetDocument budgetDocument : consultantBudgetList) {
+            System.out.println("budgetDocument = " + budgetDocument);
+        }
+        System.out.println("*********************************************************************");
+
+        for (BudgetDocument budgetDocument : consultantBudgetList) {
+            double workSum = contractService.getWorkOnContractByUser(budgetDocument.getContract()).stream()
+                    .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)) &&
+                            work.getUseruuid().equals(budgetDocument.getUser().getUuid()))
+                    .mapToDouble(Work::getWorkduration).sum();
+            if(budgetDocument.getGrossBudgetHours()<=0.0) continue;
+            System.out.println("budgetDocument.getClient() = " + budgetDocument.getClient().getName());
+            System.out.println("budgetDocument.getMonth() = " + budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")));
+            System.out.println("workSum+\" / \"+getGrossBudgetHours = " + workSum + " / " + Math.round(budgetDocument.getGrossBudgetHours()));
+        }
+
+        System.out.println("*********************************************************************");
+        System.out.println("*********************************************************************");
+        System.out.println("*********************************************************************");
+
     }
 }
 

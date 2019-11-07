@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.network.rest;
 
+import com.gs.collections.impl.map.mutable.SynchronizedMutableMap;
 import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
@@ -13,9 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserRestService {
@@ -25,6 +24,8 @@ public class UserRestService {
 
     private final RestTemplate restTemplate;
 
+    private final Map<String, User> userCache = new HashMap<>();
+
     @Autowired
     public UserRestService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -32,16 +33,22 @@ public class UserRestService {
 
     @Cacheable("usersbyusername")
     public User findByUsername(String username) {
+        System.out.println("***** UserRestService.findByUsername");
         return restTemplate.getForObject(userServiceUrl+"/users/search/findByUsername?username="+username, User.class);
     }
 
-    @Cacheable("users")
     public User findOne(String uuid) {
-        return restTemplate.getForObject(userServiceUrl+"/users/"+uuid, User.class);
+        if(userCache.containsKey(uuid)) return userCache.get(uuid);
+        User user = restTemplate.getForObject(userServiceUrl + "/users/" + uuid, User.class);
+        userCache.put(user.getUuid(), user);
+        System.out.println("!!!!! UserRestService.findOne");
+        System.out.println("!!!!! -- cached user");
+        return user;
     }
 
     @Cacheable("users")
     public List<User> findByOrderByUsername() {
+        System.out.println("ooooo UserRestService.findByOrderByUsername");
         return Arrays.asList(restTemplate.getForObject(userServiceUrl+"/users", User[].class));
     }
 
@@ -57,18 +64,21 @@ public class UserRestService {
 
     @Cacheable("users")
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
+        // System.out.println("----- UserRestService.calculateCapacityByMonthByUser");
         String url = userServiceUrl+"/users/command/calculateCapacityByMonthByUser?useruuid="+useruuid+"&statusdate="+statusdate;
         return restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
     }
 
     @CacheEvict(value = "users", allEntries = true)
     public User create(User user) {
+        userCache.clear();
         String url = userServiceUrl+"/users";
         return restTemplate.postForObject(url, user, User.class);
     }
 
     @CacheEvict(value = "users", allEntries = true)
     public void update(User user) {
+        userCache.clear();
         String url = userServiceUrl+"/users/"+user.getUuid();
         restTemplate.put(url, user);
     }
@@ -81,6 +91,7 @@ public class UserRestService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void deleteSalaries(User user, Set<Salary> salaries) {
+        userCache.clear();
         for (Salary salary : salaries) {
             String url = userServiceUrl+"/users/"+user.getUuid()+"/salaries/"+salary.getUuid();
             restTemplate.delete(url);
@@ -89,6 +100,7 @@ public class UserRestService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void deleteUserStatuses(User user, Set<UserStatus> userStatuses) {
+        userCache.clear();
         for (UserStatus userStatus : userStatuses) {
             String url = userServiceUrl+"/users/"+user.getUuid()+"/statuses/"+userStatus.getUuid();
             restTemplate.delete(url);
@@ -97,6 +109,7 @@ public class UserRestService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void deleteRoles(User user, List<Role> roles) {
+        userCache.clear();
         String url = userServiceUrl+"/users/"+user.getUuid()+"/roles";
         restTemplate.delete(url);
         /*
@@ -109,6 +122,7 @@ public class UserRestService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void create(User user, Salary salary) {
+        userCache.clear();
         user.getSalaries().add(salary);
         String url = userServiceUrl+"/users/"+user.getUuid()+"/salaries";
         restTemplate.postForObject(url, salary, String.class);
@@ -116,6 +130,7 @@ public class UserRestService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void create(User user, UserStatus userStatus) {
+        userCache.clear();
         user.getStatuses().add(userStatus);
         String url = userServiceUrl+"/users/"+user.getUuid()+"/statuses";
         restTemplate.postForObject(url, userStatus, String.class);
@@ -123,6 +138,7 @@ public class UserRestService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void create(User user, Role role) {
+        userCache.clear();
         //Validate.matchesPattern(role.getUuid(), "", "UUID must be blank, when instance is created");
         user.getRoleList().add(role);
         String url = userServiceUrl+"/users/"+user.getUuid()+"/roles";

@@ -64,7 +64,9 @@ public class AvailabilityDocument {
      * @return availability uden ferie, sygdom og fredage
      */
     public double getNetAvailableHours() {
-        return Math.max(((availableHours - adjustForOffHours()) * weeks) - getNetVacation() - getNetSickdays(), 0.0); // F.eks. 2019-12-01: ((37 - 2) * 3,6) - (7,4 * 2 - 0.4) - (0 * 1)) = 111,2
+        if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
+            System.out.println("(("+ availableHours +" - "+ adjustForOffHours()+" ) * "+weeks+") - "+getNetVacation()+" - "+getNetSickdays()+"");
+        return Math.max((availableHours * weeks) - adjustForOffHours() - getNetVacation() - getNetSickdays(), 0.0); // F.eks. 2019-12-01: ((37 - 2) * 3,6) - (7,4 * 2 - 0.4) - (0 * 1)) = 111,2
     }
 
     public double getGrossVacation() {
@@ -72,7 +74,7 @@ public class AvailabilityDocument {
     }
 
     public double getNetVacation() {
-        return vacation - adjustForOffHours();
+        return vacation;
     }
 
     public double getGrossSickdays() {
@@ -80,11 +82,26 @@ public class AvailabilityDocument {
     }
 
     public double getNetSickdays() {
-        return sickdays - adjustForOffHours();
+        return sickdays;
     }
 
     private double adjustForOffHours() {
-        return DateUtils.countWeekdayOccurances(DayOfWeek.FRIDAY, getMonth(), getMonth().plusMonths(1)) * TrustworksConfiguration.getWeekOffHours();
+        if(user.getUsername().equals("hans.lassen") && month.isEqual(LocalDate.of(2019, 12, 1)))
+            System.out.println("month = " + month);
+        int numberOfFridaysInPeriod = DateUtils.countWeekdayOccurances(DayOfWeek.FRIDAY, getMonth(), getMonth().plusMonths(1));
+        if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
+            System.out.println("numberOfFridaysInPeriod = " + numberOfFridaysInPeriod);
+        for (LocalDate localDate : DateUtils.getVacationDayArray(getMonth().getYear())) {
+            if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
+                System.out.println("localDate = " + localDate);
+        }
+
+        int numberOfFridayHolidays = DateUtils.getVacationDayArray(getMonth().getYear()).stream()
+                .filter(localDate -> localDate.getMonthValue() == getMonth().getMonthValue())
+                .mapToInt(value -> (value.getDayOfWeek().getValue() != DayOfWeek.FRIDAY.getValue()) ? 0 : 1).sum();
+        if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
+            System.out.println("numberOfFridayHolidays = " + numberOfFridayHolidays);
+        return (numberOfFridaysInPeriod - numberOfFridayHolidays) * TrustworksConfiguration.getWeekOffHours();
     }
 
     public double getWeeks() {
