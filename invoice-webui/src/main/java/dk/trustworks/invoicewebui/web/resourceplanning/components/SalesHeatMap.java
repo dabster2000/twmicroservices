@@ -116,7 +116,7 @@ public class SalesHeatMap {
                 monthAvailabilites[m] += budget;
                 double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate.withDayOfMonth(1)).getNetAvailableHours();
                 monthTotalAvailabilites[m] += availability;
-                rs.addHeatPoint(m, userNumber, Math.round(100 - (budget / availability)*100.0));
+                rs.addHeatPoint(m, userNumber, Math.round((budget / availability)*100.0));
                 localDate = localDate.plusMonths(1);
                 m++;
             }
