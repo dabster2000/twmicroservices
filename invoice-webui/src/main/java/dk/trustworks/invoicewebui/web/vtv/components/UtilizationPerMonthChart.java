@@ -102,21 +102,21 @@ public class UtilizationPerMonthChart {
             double totalAvailableHours = 0.0;
             double totalAllocation = 0.0;
             double countEmployees = 0.0;
-            System.out.println("*** AVAILABILITY ***");
+            //System.out.println("*** AVAILABILITY ***");
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                System.out.print(user.getUsername()+";");
+                //System.out.print(user.getUsername()+";");
 
                 double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                System.out.print(billableWorkHours+";");
+                //System.out.print(billableWorkHours+";");
                 AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
                 if (availability == null || !availability.getStatusType().equals(StatusType.ACTIVE)) {
                     //System.out.println("user availability is null or not active = " + user.getUsername());
                     continue;
                     //availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
-                System.out.print(availability.getNetAvailableHours()+";");
+                //System.out.print(availability.getNetAvailableHours()+";");
                 totalAvailableHours += availability.getNetAvailableHours();
                 totalBillableHours += billableWorkHours;
                 //double monthAllocation = 0.0;
@@ -126,11 +126,11 @@ public class UtilizationPerMonthChart {
                 //System.out.print(monthAllocation+";");
                 countEmployees++;
                 //totalAllocation += monthAllocation;
-                System.out.println();
+                //System.out.println();
             }
             totalAllocation = Math.floor(((totalBillableHours / countEmployees) / (totalAvailableHours / countEmployees)) * 100.0);
-            System.out.println("allocation = " + totalAllocation);
-            System.out.println("countEmployees = " + countEmployees);
+            //System.out.println("allocation = " + totalAllocation);
+            //System.out.println("countEmployees = " + countEmployees);
             dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), NumberUtils.round(totalAllocation, 0)));
             startDate = startDate.plusMonths(1);
         } while (startDate.isBefore(LocalDate.now()));

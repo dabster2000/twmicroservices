@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.faq.components;
 
-import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.VaadinSession;
@@ -12,7 +11,7 @@ import dk.trustworks.invoicewebui.model.Faq;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.FaqRepository;
-import dk.trustworks.invoicewebui.web.common.Card;
+import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +22,9 @@ import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MFormLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Base64.getDecoder;
@@ -46,15 +46,24 @@ public class FaqBoard extends VerticalLayout {
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         this.removeAllComponents();
 
-        Card card = new Card();
+        Box card = new Box();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         card.getContent().addComponent(responsiveLayout);
         ResponsiveRow row = responsiveLayout.addRow();
 
+        SearchDesign searchDesign = new SearchDesign();
+
         String group = "";
-        ResponsiveColumn column;
         VerticalLayout vl = null;
         boolean firstGroup = true;
+
+        Accordion accFaq = searchDesign.getAccFaq();
+
+        row.addColumn().withDisplayRules(12, 12, 8, 8)
+                .withOffset(ResponsiveLayout.DisplaySize.MD, 2)
+                .withOffset(ResponsiveLayout.DisplaySize.LG, 2)
+                .withComponent(searchDesign);
+
         for (Faq faq : faqRepository.findByOrderByFaqgroupAscTitleAsc()) {
             if(!faq.getFaqgroup().equals(group)) {
                 if(!firstGroup) {
@@ -63,17 +72,18 @@ public class FaqBoard extends VerticalLayout {
                 }
                 group = faq.getFaqgroup();
                 firstGroup = false;
-                column = row.addColumn().withDisplayRules(12, 6, 4, 4);
+                //column = row.addColumn().withDisplayRules(12, 6, 4, 4);
                 vl = new MVerticalLayout();
                 MVerticalLayout scrollLayout = new MVerticalLayout().withHeight(300, Unit.PIXELS).withStyleName("v-scrollable").withComponent(vl);
-                column.withComponent(new MVerticalLayout().withComponents(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth(), scrollLayout));
+                //column.withComponent(new MVerticalLayout().withComponents(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth(), scrollLayout));
+                accFaq.addTab(new MVerticalLayout(scrollLayout), faq.getFaqgroup());
 
                 //scrollLayout.addComponent(new MLabel(faq.getFaqgroup()).withStyleName("h4").withFullWidth());
             }
-            vl.addComponent(createLabelButton(faq, faqRepository.findByOrderByFaqgroupAscTitleAsc().stream().map(Faq::getFaqgroup).distinct().collect(Collectors.toList())));
+            Objects.requireNonNull(vl).addComponent(createLabelButton(faq, faqRepository.findByOrderByFaqgroupAscTitleAsc().stream().map(Faq::getFaqgroup).distinct().collect(Collectors.toList())));
         }
         if(user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EDITOR)))
-            createAddQuestionButton(vl, group);
+            createAddQuestionButton(Objects.requireNonNull(vl), group);
 
         this.addComponent(card);
         return this;
@@ -86,55 +96,47 @@ public class FaqBoard extends VerticalLayout {
             Window window = new Window(faq.getTitle());
             window.setModal(true);
             window.setWidth(600, Unit.PIXELS);
-            try {
-                ComboBox<String> cbGroup = new ComboBox<>("Group: ", groups);
-                cbGroup.setSelectedItem(faq.getFaqgroup());
-                cbGroup.setEmptySelectionAllowed(false);
-                cbGroup.setWidth(100, Unit.PERCENTAGE);
-                cbGroup.setVisible(false);
-                TextField txtTitle = new MTextField("Title:").withFullWidth().withVisible(false).withValue(faq.getTitle());
-                Label lblDescription = new MLabel(new String(getDecoder().decode(faq.getContent()), "utf-8")).withFullWidth().withContentMode(ContentMode.HTML);
-                RichTextArea txtDescription = new RichTextArea();
-                txtDescription.setValue(new String(getDecoder().decode(faq.getContent()), "utf-8"));
-                txtDescription.setVisible(false);
-                txtDescription.setWidth(100, Unit.PERCENTAGE);
-                txtDescription.setHeight(500, Unit.PIXELS);
-                final Button btnSave = new MButton("Save", event -> {
-                    faq.setTitle(txtTitle.getValue());
-                    faq.setFaqgroup(cbGroup.getValue());
-                    try {
-                        faq.setContent(getEncoder().encodeToString(txtDescription.getValue().getBytes("utf-8")));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    faqRepository.save(faq);
-                    window.close();
-                    init();
-                }).withVisible(false);
-                final Button btnEdit = new MButton("Edit").withListener(event -> {
-                    lblDescription.setVisible(false);
-                    event.getButton().setVisible(false);
-                    cbGroup.setVisible(true);
-                    txtTitle.setVisible(true);
-                    txtDescription.setVisible(true);
-                    btnSave.setVisible(true);
-                });
-                final Button btnDelete = new MButton("Delete").withListener(event -> {
-                    faqRepository.delete(faq.getUuid());
-                    window.close();
-                    init();
-                });
+            ComboBox<String> cbGroup = new ComboBox<>("Group: ", groups);
+            cbGroup.setSelectedItem(faq.getFaqgroup());
+            cbGroup.setEmptySelectionAllowed(false);
+            cbGroup.setWidth(100, Unit.PERCENTAGE);
+            cbGroup.setVisible(false);
+            TextField txtTitle = new MTextField("Title:").withFullWidth().withVisible(false).withValue(faq.getTitle());
+            Label lblDescription = new MLabel(new String(getDecoder().decode(faq.getContent()), StandardCharsets.UTF_8)).withFullWidth().withContentMode(ContentMode.HTML);
+            RichTextArea txtDescription = new RichTextArea();
+            txtDescription.setValue(new String(getDecoder().decode(faq.getContent()), StandardCharsets.UTF_8));
+            txtDescription.setVisible(false);
+            txtDescription.setWidth(100, Unit.PERCENTAGE);
+            txtDescription.setHeight(500, Unit.PIXELS);
+            final Button btnSave = new MButton("Save", event -> {
+                faq.setTitle(txtTitle.getValue());
+                faq.setFaqgroup(cbGroup.getValue());
+                faq.setContent(getEncoder().encodeToString(txtDescription.getValue().getBytes(StandardCharsets.UTF_8)));
+                faqRepository.save(faq);
+                window.close();
+                init();
+            }).withVisible(false);
+            final Button btnEdit = new MButton("Edit").withListener(event -> {
+                lblDescription.setVisible(false);
+                event.getButton().setVisible(false);
+                cbGroup.setVisible(true);
+                txtTitle.setVisible(true);
+                txtDescription.setVisible(true);
+                btnSave.setVisible(true);
+            });
+            final Button btnDelete = new MButton("Delete").withListener(event -> {
+                faqRepository.delete(faq.getUuid());
+                window.close();
+                init();
+            });
 
-                if(!user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EDITOR))) {
-                    btnEdit.setVisible(false);
-                    btnDelete.setVisible(false);
-                    btnSave.setVisible(false);
-                }
-
-                window.setContent(new MVerticalLayout(cbGroup, txtTitle, txtDescription, lblDescription, btnSave, btnEdit, btnDelete).withFullWidth());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+            if(user.getRoleList().stream().noneMatch(role -> role.getRole().equals(RoleType.EDITOR))) {
+                btnEdit.setVisible(false);
+                btnDelete.setVisible(false);
+                btnSave.setVisible(false);
             }
+
+            window.setContent(new MVerticalLayout(cbGroup, txtTitle, txtDescription, lblDescription, btnSave, btnEdit, btnDelete).withFullWidth());
             UI.getCurrent().addWindow(window);
         });
     }
@@ -152,11 +154,7 @@ public class FaqBoard extends VerticalLayout {
                 Faq faq1 = new Faq();
                 faq1.setFaqgroup(group);
                 faq1.setTitle(title.getValue());
-                try {
-                    faq1.setContent(getEncoder().encodeToString(description.getValue().getBytes("utf-8")));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                faq1.setContent(getEncoder().encodeToString(description.getValue().getBytes(StandardCharsets.UTF_8)));
                 faqRepository.save(faq1);
                 addQuestionWindow.close();
                 init();

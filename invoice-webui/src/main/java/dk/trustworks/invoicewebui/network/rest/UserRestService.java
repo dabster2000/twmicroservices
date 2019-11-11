@@ -33,7 +33,6 @@ public class UserRestService {
 
     @Cacheable("usersbyusername")
     public User findByUsername(String username) {
-        System.out.println("***** UserRestService.findByUsername");
         return restTemplate.getForObject(userServiceUrl+"/users/search/findByUsername?username="+username, User.class);
     }
 
@@ -41,14 +40,11 @@ public class UserRestService {
         if(userCache.containsKey(uuid)) return userCache.get(uuid);
         User user = restTemplate.getForObject(userServiceUrl + "/users/" + uuid, User.class);
         userCache.put(user.getUuid(), user);
-        System.out.println("!!!!! UserRestService.findOne");
-        System.out.println("!!!!! -- cached user");
         return user;
     }
 
     @Cacheable("users")
     public List<User> findByOrderByUsername() {
-        System.out.println("ooooo UserRestService.findByOrderByUsername");
         return Arrays.asList(restTemplate.getForObject(userServiceUrl+"/users", User[].class));
     }
 
