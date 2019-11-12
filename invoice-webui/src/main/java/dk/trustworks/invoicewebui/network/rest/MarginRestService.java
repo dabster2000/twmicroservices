@@ -23,7 +23,6 @@ public class MarginRestService {
     public int calculateMargin(String useruuid, int rate) {
         String url = marginServiceUrl + "/margin/" + useruuid + "/" + rate;
         int margin = restTemplate.getForObject(url, MarginResult.class).getMargin();
-        System.out.println("margin = " + margin);
         return margin;
     }
 }

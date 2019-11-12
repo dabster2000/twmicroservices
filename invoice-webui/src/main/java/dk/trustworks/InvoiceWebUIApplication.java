@@ -99,7 +99,7 @@ public class InvoiceWebUIApplication {
 
 
         log.info("InitDemoApplication initialization logic ...");
-        test();
+        //test();
         eventBus.on($("notificationConsumer"), workNotificationConsumer);
     }
 
