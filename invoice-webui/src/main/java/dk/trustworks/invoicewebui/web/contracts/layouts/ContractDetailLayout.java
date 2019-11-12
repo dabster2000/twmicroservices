@@ -23,10 +23,7 @@ import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.ProjectService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
@@ -59,6 +56,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ChartCacheJob chartCache;
 
+    private final MarginService marginService;
+
     private ResponsiveRow contractRow;
 
     private VerticalLayout consultantsLayout;
@@ -74,13 +73,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository, ChartCacheJob chartCache) {
+    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository, ChartCacheJob chartCache, MarginService marginService) {
         this.userService = userService;
         this.contractService = contractService;
         this.projectService = projectService;
         this.consultantRepository = consultantRepository;
         this.photoService = photoService;
         this.chartCache = chartCache;
+        this.marginService = marginService;
     }
 
     @PostConstruct
@@ -619,6 +619,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
         for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
             ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
             consultantRowDesign.getLblName().setValue(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
+            consultantRowDesign.getLblMargin().setValue("Margin: "+MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.floor(contractConsultant.getRate()))+"%");
+            consultantRowDesign.getLblMargin().setVisible(true);
             consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate())+"");
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {
                 contractConsultant.setRate(NumberConverter.parseDouble(event.getValue()));
