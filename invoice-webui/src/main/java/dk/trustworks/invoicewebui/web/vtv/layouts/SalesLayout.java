@@ -15,11 +15,14 @@ import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.network.clients.SlackAPI;
 import dk.trustworks.invoicewebui.repositories.AmbitionCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.MarginService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -30,6 +33,8 @@ import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
 import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +61,9 @@ public class SalesLayout extends VerticalLayout {
 
     @Autowired
     private StatisticsService statisticsService;
+
+    @Autowired
+    private ContractService contractService;
 
     @Autowired
     private HoursPerConsultantChart hoursPerConsultantChart;
@@ -111,10 +119,23 @@ public class SalesLayout extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(heatMapCard);
 
+        Card marginCard = new Card();
+
+        MVerticalLayout verticalLayout = new MVerticalLayout().withFullWidth();
+        for (Contract contract : contractService.findActiveContractsByDate(LocalDate.now(), ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.BUDGET)) {
+            for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                int margin = MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.round(contractConsultant.getRate()));
+                verticalLayout.add(new MLabel("["+contract.getClient().getName()+", "+contractConsultant.getUser().getUsername()+"]: "+contractConsultant.getRate()+" / "+margin+"%"));
+            }
+        }
+
+        marginCard.getContent().addComponent(verticalLayout);
+
+        row.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(marginCard);
+
         this.addComponent(responsiveLayout);
-
-        //getAverageAllocationByYear(LocalDate.of(2018, 6, 1));
-
         return this;
     }
 

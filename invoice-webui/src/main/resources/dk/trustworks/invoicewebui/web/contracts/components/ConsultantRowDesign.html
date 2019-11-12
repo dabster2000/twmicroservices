@@ -11,9 +11,14 @@
    <vaadin-horizontal-layout style-name="light-blue" width-full _id="hlBackground" :expand>
     <vaadin-horizontal-layout style-name="dark-blue" width-full _id="hlNameBackground" :expand>
      <vaadin-css-layout width="75px" height="75px" _id="imgPhoto"></vaadin-css-layout>
-     <vaadin-label style-name="white-font" width-full plain-text _id="lblName" :middle :expand>
-       Hans Ernst Lassen 
-     </vaadin-label>
+     <vaadin-vertical-layout spacing="false" margin="false" :middle :expand>
+      <vaadin-label style-name="white-font" width-full plain-text _id="lblName">
+        Hans Ernst Lassen 
+      </vaadin-label>
+      <vaadin-label visible="false" style-name="white-font tiny" plain-text _id="lblMargin">
+        Label 
+      </vaadin-label>
+     </vaadin-vertical-layout>
      <vaadin-css-layout width="30px" height="30px" _id="imgLock" :middle :right></vaadin-css-layout>
     </vaadin-horizontal-layout>
     <vaadin-vertical-layout spacing="false" width="65px" margin="false" :middle :center>
