@@ -5,6 +5,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.TalentPassion;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.TalentPassionRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.admin.components.TalentPassionResultImpl;
@@ -40,7 +41,7 @@ public class TalentPassionResultBox {
         Component resultInstance = talentPassionResult.getResultBoard();
         talentPassionResult.showResultDescription();
 
-        for (User user : userService.findCurrentlyEmployedUsers()) {
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             Map<String, Double> performanceScoreMap = new HashMap<>();
             Map<String, Double> potentialScoreMap = new HashMap<>();
             for (TalentPassion talentPassion : talentPassionRepository.findByUseruuidOrderByRegisteredDesc(user.getUuid())) {

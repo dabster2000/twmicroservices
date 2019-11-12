@@ -104,7 +104,6 @@ public class TalentPassionResultImpl {
     }
 
     public void updateUser(User user, double perfomance, double potential) {
-        System.out.println("perfomance = [" + perfomance + "], potential = [" + potential + "]");
         int xMargin = 187;
         int yMargin = 87;
         int fieldSize = 200;

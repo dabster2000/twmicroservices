@@ -95,7 +95,6 @@ public class NewsImpl extends NewsDesign implements Box {
         getEventGrid().setRows(newsList.size()+1);
         getEventGrid().setColumnExpandRatio(1, 1.0f);
         int i = 0;
-        boolean projectHeaderVisible = false;
         for (News newsItem : newsList) {
             Label lblDate;
             if(newsItem.getNewstype().equalsIgnoreCase("project")) {
