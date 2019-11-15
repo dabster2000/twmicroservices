@@ -11,6 +11,7 @@ import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.DateTimeField;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
@@ -18,6 +19,7 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.network.clients.SlackAPI;
+import dk.trustworks.invoicewebui.network.dto.MarginResult;
 import dk.trustworks.invoicewebui.repositories.AmbitionCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -26,6 +28,7 @@ import dk.trustworks.invoicewebui.services.MarginService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
@@ -121,13 +124,25 @@ public class SalesLayout extends VerticalLayout {
 
         Card marginCard = new Card();
 
-        MVerticalLayout verticalLayout = new MVerticalLayout().withFullWidth();
+
+
+        List<MarginRow> marginRowList = new ArrayList<>();
+
         for (Contract contract : contractService.findActiveContractsByDate(LocalDate.now(), ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.BUDGET)) {
             for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
                 int margin = MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.round(contractConsultant.getRate()));
-                verticalLayout.add(new MLabel("["+contract.getClient().getName()+", "+contractConsultant.getUser().getUsername()+"]: "+contractConsultant.getRate()+" / "+margin+"%"));
+                new MarginRow(contract.getClient().getName(), contractConsultant.getUser().getUsername(), contractConsultant.getRate(), margin);
             }
         }
+
+
+
+        Grid<MarginRow> grid = new Grid<>(MarginRow.class);
+        grid.setItems(marginRowList);
+
+        grid.setColumns("customer", "consultant", "rate", "margin");
+
+        MVerticalLayout verticalLayout = new MVerticalLayout(grid).withFullWidth();
 
         marginCard.getContent().addComponent(verticalLayout);
 
@@ -236,5 +251,54 @@ public class SalesLayout extends VerticalLayout {
         double opacity = (50 + new Random(0).nextInt(95 - 50)) / 100.0;
 
         return new SolidColor(r, g, b, opacity);
+    }
+}
+
+class MarginRow {
+    String customer;
+    String consultant;
+    double rate;
+    int margin;
+
+    public MarginRow() {
+    }
+
+    public MarginRow(String customer, String consultant, double rate, int margin) {
+        this.customer = customer;
+        this.consultant = consultant;
+        this.rate = rate;
+        this.margin = margin;
+    }
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
+
+    public String getConsultant() {
+        return consultant;
+    }
+
+    public void setConsultant(String consultant) {
+        this.consultant = consultant;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
+    public int getMargin() {
+        return margin;
+    }
+
+    public void setMargin(int margin) {
+        this.margin = margin;
     }
 }
