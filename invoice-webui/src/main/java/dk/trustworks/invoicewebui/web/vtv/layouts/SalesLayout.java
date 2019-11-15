@@ -131,7 +131,7 @@ public class SalesLayout extends VerticalLayout {
         for (Contract contract : contractService.findActiveContractsByDate(LocalDate.now(), ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.BUDGET)) {
             for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
                 int margin = MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.round(contractConsultant.getRate()));
-                new MarginRow(contract.getClient().getName(), contractConsultant.getUser().getUsername(), contractConsultant.getRate(), margin);
+                marginRowList.add(new MarginRow(contract.getClient().getName(), contractConsultant.getUser().getUsername(), contractConsultant.getRate(), margin));
             }
         }
 
@@ -141,6 +141,7 @@ public class SalesLayout extends VerticalLayout {
         grid.setItems(marginRowList);
 
         grid.setColumns("customer", "consultant", "rate", "margin");
+        grid.setSizeFull();
 
         MVerticalLayout verticalLayout = new MVerticalLayout(grid).withFullWidth();
 
