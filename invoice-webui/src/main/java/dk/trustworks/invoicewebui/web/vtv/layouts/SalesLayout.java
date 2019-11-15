@@ -34,6 +34,7 @@ import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
 import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
 import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
+import dk.trustworks.invoicewebui.web.vtv.model.MarginRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.viritin.label.MLabel;
@@ -141,6 +142,7 @@ public class SalesLayout extends VerticalLayout {
         grid.setItems(marginRowList);
 
         grid.setColumns("customer", "consultant", "rate", "margin");
+
         grid.setSizeFull();
 
         MVerticalLayout verticalLayout = new MVerticalLayout(grid).withFullWidth();
@@ -255,51 +257,3 @@ public class SalesLayout extends VerticalLayout {
     }
 }
 
-class MarginRow {
-    String customer;
-    String consultant;
-    double rate;
-    int margin;
-
-    public MarginRow() {
-    }
-
-    public MarginRow(String customer, String consultant, double rate, int margin) {
-        this.customer = customer;
-        this.consultant = consultant;
-        this.rate = rate;
-        this.margin = margin;
-    }
-
-    public String getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(String customer) {
-        this.customer = customer;
-    }
-
-    public String getConsultant() {
-        return consultant;
-    }
-
-    public void setConsultant(String consultant) {
-        this.consultant = consultant;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        this.rate = rate;
-    }
-
-    public int getMargin() {
-        return margin;
-    }
-
-    public void setMargin(int margin) {
-        this.margin = margin;
-    }
-}
