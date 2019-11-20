@@ -148,7 +148,7 @@ public class BirthdayEventLayout {
                     textMessage3.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage3);
 
-                    ChatPostMessageMethod textMessage4 = new ChatPostMessageMethod("UG170B2DN", birthdayFormData.getName() + " fra " + birthdayFormData.getCompany() + ", har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
+                    ChatPostMessageMethod textMessage4 = new ChatPostMessageMethod("@elvi", birthdayFormData.getName() + " fra " + birthdayFormData.getCompany() + ", har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
                     textMessage4.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage4);
                 } catch (ValidationException e) {
