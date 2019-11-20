@@ -176,6 +176,7 @@ public class BirthdayEventLayout {
         createFormItemColumn(cardResponsiveLayout, headline2);
         createFormItemColumn(cardResponsiveLayout, email);
         createFormItemColumn(cardResponsiveLayout, fuldeNavn);
+        createFormItemColumn(cardResponsiveLayout, company);
         createFormItemColumn(cardResponsiveLayout, buttonGroup);
         //createFormItemColumn(cardResponsiveLayout, afmelding);
         createFormItemColumn(cardResponsiveLayout, send);
