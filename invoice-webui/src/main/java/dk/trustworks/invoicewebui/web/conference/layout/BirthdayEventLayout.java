@@ -116,6 +116,8 @@ public class BirthdayEventLayout {
                                         "<p>&nbsp;</p>\n" +
                                         "<p><strong>Adresse:<br /></strong>Amagertorv 29a, 3. sal<br />1160 K&oslash;benhavn K, Denmark</p>\n" +
                                         "<p>&nbsp;</p>\n" +
+                                        "<p>Vi har også sendt bekræftelsen til din mail. Har du ikke modtaget den inden 5 minutter, kan det være fordi den er havnet i uønsket post.</p>\n" +
+                                        "<p>&nbsp;</p>\n" +
                                         "<p>Vi ser frem til at se dig.</p>\n" +
                                         "<p>&nbsp;</p>\n" +
                                         "<p>Mange hilsner fra</p>\n" +
