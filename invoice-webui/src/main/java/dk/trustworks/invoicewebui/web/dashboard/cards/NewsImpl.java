@@ -136,6 +136,7 @@ public class NewsImpl extends NewsDesign implements Box {
 
             GridLayoutCrudFormFactory<News> formFactory = new GridLayoutCrudFormFactory<>(News.class, 3, 10);
             crud.setCrudFormFactory(formFactory);
+            crud.refreshGrid();
 
             crud.getGrid().getColumn("uuid").setHidden(true);
             crud.getGrid().getColumn("sha512").setHidden(true);
