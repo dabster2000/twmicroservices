@@ -105,12 +105,13 @@ public class NewsImpl extends NewsDesign implements Box {
             Window window = new Window("Edit news", crud);
             window.setModal(true);
             window.setWidth(500, Unit.PIXELS);
+            window.setHeight(500, Unit.PIXELS);
             UI.getCurrent().addWindow(window);
 
             crud.setCrudListener(new CrudListener<News>() {
                 @Override
                 public Collection<News> findAll() {
-                    return newsRepository.findByNewstype("user");
+                    return newsRepository.findByNewstypeIn("user", "new_employee", "anniversary");
                 }
 
                 @Override
@@ -143,9 +144,14 @@ public class NewsImpl extends NewsDesign implements Box {
             crud.getGrid().getColumn("description").setExpandRatio(1);
 
             formFactory.setVisibleProperties("newsdate", "description");
-            formFactory.setVisibleProperties(CrudOperation.READ, "newsdate", "description");
             formFactory.setFieldCreationListener("newsdate", field -> ((DateField) field).setDateFormat("yyyy-MM-dd"));
-            formFactory.setFieldType("description", TextArea.class);
+
+            formFactory.setFieldProvider("description", () -> {
+                TextArea textArea = new TextArea();
+                textArea.setSizeFull();
+                return textArea;
+            });
+
         });
 
         getImgTop().setSource(new ThemeResource("images/cards/"+season));
