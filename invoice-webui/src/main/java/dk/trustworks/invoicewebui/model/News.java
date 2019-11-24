@@ -15,9 +15,9 @@ public class News {
     @Id
     private String uuid;
 
-    private String description;
-
     private LocalDate newsdate;
+
+    private String description;
 
     private String newstype;
 
@@ -54,20 +54,20 @@ public class News {
         this.uuid = uuid;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public LocalDate getNewsdate() {
         return newsdate;
     }
 
     public void setNewsdate(LocalDate newsdate) {
         this.newsdate = newsdate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getSha512() {
@@ -117,7 +117,6 @@ public class News {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(uuid, sha512);
     }
 }

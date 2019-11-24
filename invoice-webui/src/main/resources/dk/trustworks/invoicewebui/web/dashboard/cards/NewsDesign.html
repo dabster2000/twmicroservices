@@ -3,16 +3,19 @@
  <head>
   <meta charset="UTF-8">
   <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:true,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
-  <meta name="vaadin-version" content="8.0.5">
+  <meta name="vaadin-version" content="8.1.5">
  </head>
  <body>
   <vaadin-vertical-layout>
    <vaadin-vertical-layout style-name="card-3 card-no-padding ripple card-hoverable" spacing="false" margin="false" _id="cardHolder">
     <vaadin-image width-full height="50%" _id="imgTop"></vaadin-image>
-    <vaadin-vertical-layout spacing="false" size-full _id="container" :expand>
-     <vaadin-label style-name="h5 bold" plain-text _id="lblHeading">
-       Upcomming Events 
-     </vaadin-label>
+    <vaadin-vertical-layout spacing="false" _id="container" :expand>
+     <vaadin-horizontal-layout spacing="false" width-full>
+      <vaadin-label style-name="h5 bold" plain-text _id="lblHeading" :expand>
+        Upcomming Events 
+      </vaadin-label>
+      <vaadin-button icon="fonticon://Vaadin-Icons/e771" style-name="icon-only tiny" plain-text _id="btnEditNews" :middle :right></vaadin-button>
+     </vaadin-horizontal-layout>
      <vaadin-panel style-name="v-scrollable" _id="panelContentHolder" :expand>
       <vaadin-grid-layout spacing width-full _id="eventGrid">
        <row>

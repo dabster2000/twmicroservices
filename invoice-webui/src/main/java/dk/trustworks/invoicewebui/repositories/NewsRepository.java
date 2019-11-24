@@ -15,6 +15,8 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "news",path="news")
 public interface NewsRepository extends CrudRepository<News, String> {
 
+    List<News> findAll();
+    List<News> findByNewstype(@Param("newstype") String newstype);
     List<News> findFirstBySha512(@Param("sha512") String sha512);
     List<News> findTop10ByOrderByNewsdateDesc();
 
