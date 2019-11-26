@@ -74,7 +74,6 @@ public class NewsImpl extends NewsDesign implements Box {
 
         for (News news : newsRepository.findAll()) {
             newsList.add(news);
-            System.out.println("news = " + news);
             if(news.getNewstype().equalsIgnoreCase("project")) news.setNewsdate(java.time.LocalDate.now().plusMonths(12));
         }
 

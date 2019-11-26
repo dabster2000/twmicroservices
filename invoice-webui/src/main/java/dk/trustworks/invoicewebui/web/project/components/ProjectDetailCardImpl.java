@@ -77,7 +77,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
         try {
             projectBinder.writeBean(project);
             projectService.save(project);
-            newsRepository.deleteAll();
+            //newsRepository.deleteAll();
         } catch (ValidationException e) {
             e.printStackTrace();
         }

@@ -56,7 +56,7 @@ public class AnniversaryManagerJob {
             List<UserStatus> statuses = user.getStatuses();
             UserStatus firstStatus = userService.getStatus(user, true, StatusType.ACTIVE);
 
-            if(firstStatus.getStatusdate().isAfter(LocalDate.now().minusMonths(1)) && firstStatus.getStatus().equals(StatusType.ACTIVE)) {
+            if(firstStatus.getStatusdate().isAfter(LocalDate.now().minusWeeks(2)) && firstStatus.getStatus().equals(StatusType.ACTIVE)) {
                 newsRepository.save(new News(
                         "A huge welcome to "+user.getFirstname()+" "+user.getLastname()+
                                 " who "+ ((firstStatus.getStatusdate().isAfter(LocalDate.now()))?"is joining":"just joined") +" Trustworks!",
@@ -65,7 +65,7 @@ public class AnniversaryManagerJob {
                         sha512hex
                 ));
                 continue;
-            } else if (firstStatus.getStatusdate().isAfter(LocalDate.now().minusMonths(1)) && statuses.size() >=3 &&
+            } else if (firstStatus.getStatusdate().isAfter(LocalDate.now().minusWeeks(2)) && statuses.size() >=3 &&
                     statuses.get(statuses.size()-1).getStatus().equals(StatusType.ACTIVE) &&
                     statuses.get(statuses.size()-2).getStatus().equals(StatusType.TERMINATED)) {
                 newsRepository.save(new News(
