@@ -18,7 +18,7 @@ public class Client {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
     private String name;
-    private String crmId;
+    private String crmid;
 
     private String accountmanager;
 
@@ -42,7 +42,7 @@ public class Client {
         this.name = name;
         this.latitude = 0.0;
         this.longitude = 0.0;
-        this.crmId = "";
+        this.crmid = "";
         this.clientdata = null;
         this.projects = new ArrayList<>();
         this.clientdata = new ArrayList<>();
@@ -140,12 +140,12 @@ public class Client {
         this.accountmanager = accountmanager.getUuid();
     }
 
-    public String getCrmId() {
-        return crmId;
+    public String getCrmid() {
+        return crmid;
     }
 
-    public void setCrmId(String crmId) {
-        this.crmId = crmId;
+    public void setCrmid(String crmid) {
+        this.crmid = crmid;
     }
 
     @Override

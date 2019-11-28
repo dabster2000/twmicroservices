@@ -194,9 +194,9 @@ public class ClientManagerImpl extends ClientManagerDesign {
             client.setName(event.getValue());
             saveClient(client);
         });
-        clientComponent.getCrmId().setValue(client.getCrmId());
+        clientComponent.getCrmId().setValue(client.getCrmid());
         clientComponent.getCrmId().addValueChangeListener(event -> {
-            client.setCrmId(event.getValue());
+            client.setCrmid(event.getValue());
             saveClient(client);
         });
         clientComponent.getCbClientManager().setItems(userService.findAll());
