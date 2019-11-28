@@ -30,6 +30,7 @@ public class ClientDesign extends VerticalLayout {
     private TextField txtName;
     @PropertyId("username")
     private ComboBox<dk.trustworks.invoicewebui.model.User> cbClientManager;
+    private TextField crmId;
     private OnOffSwitch btnActive;
 
     public ClientDesign() {
@@ -58,6 +59,10 @@ public class ClientDesign extends VerticalLayout {
 
     public ComboBox<dk.trustworks.invoicewebui.model.User> getCbClientManager() {
         return cbClientManager;
+    }
+
+    public TextField getCrmId() {
+        return crmId;
     }
 
     public OnOffSwitch getBtnActive() {

@@ -89,13 +89,12 @@ public class NewsImpl extends NewsDesign implements Box {
             }
             MHorizontalLayout textLayout = new MHorizontalLayout().add(new MLabel(newsItem.getDescription()).withWidth("100%")).withWidth("100%");
             textLayout.addLayoutClickListener(e -> UI.getCurrent().getNavigator().navigateTo(newsItem.getLink()));
-            if(newsItem.getNewstype().equalsIgnoreCase("project")) {
-                //getEventGrid().addComponent(textLayout, 0, i, 1, i);
-            } else {
+            if (!newsItem.getNewstype().equalsIgnoreCase("project")) {
                 getEventGrid().addComponent(lblDate, 0, i);
                 getEventGrid().setComponentAlignment(lblDate, Alignment.TOP_RIGHT);
                 getEventGrid().addComponent(textLayout, 1, i);
             }
+
             i++;
         }
 
