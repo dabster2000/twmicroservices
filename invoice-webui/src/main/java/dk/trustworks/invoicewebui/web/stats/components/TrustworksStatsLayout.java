@@ -48,6 +48,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private RevenuePerMonthChart revenuePerMonthChart;
 
     @Autowired
+    private AvgExpensesPerMonthChart avgExpensesPerMonthChart;
+
+    @Autowired
     private AllRevenuePerMonthChart allRevenuePerMonthChart;
 
     @Autowired
@@ -205,6 +208,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("1 out of 10 charts created!");
         System.out.println("timeMillis 1 = " + (System.currentTimeMillis() - timeMillis));
 
+        Card avgExpensesPerMonthCard = new Card();
+        avgExpensesPerMonthCard.getLblTitle().setValue("Average Expenses Per Month");
+        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createRevenuePerMonthChart());
+        notification.setDescription("1b out of 10 charts created!");
+        System.out.println("timeMillis 1b = " + (System.currentTimeMillis() - timeMillis));
+
         Card allRevenuePerMonthCard = new Card();
         allRevenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
         allRevenuePerMonthCard.getContent().addComponent(allRevenuePerMonthChart.createRevenuePerMonthChart());
@@ -336,6 +345,9 @@ excelFileDownloader.extend(downloadAsExcel);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(avgExpensesPerMonthCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(allRevenuePerMonthCard);
