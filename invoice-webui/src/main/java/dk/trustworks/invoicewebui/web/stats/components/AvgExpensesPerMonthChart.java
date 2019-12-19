@@ -52,19 +52,23 @@ public class AvgExpensesPerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-
-
-        PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
-        plotOptionsArea.setColor(new SolidColor(18, 51, 117));
+        PlotOptionsArea plotOptionsArea1 = new PlotOptionsArea();
+        plotOptionsArea1.setColor(new SolidColor(18, 51, 117));
 
         DataSeries salarySeries = new DataSeries("Average salaries");
-        salarySeries.setPlotOptions(plotOptionsArea);
+        salarySeries.setPlotOptions(plotOptionsArea1);
+
+        PlotOptionsArea plotOptionsArea2 = new PlotOptionsArea();
+        plotOptionsArea2.setColor(new SolidColor(84, 214, 158));
 
         DataSeries sharedExpensesSeries = new DataSeries("Average shared expenses");
-        sharedExpensesSeries.setPlotOptions(plotOptionsArea);
+        sharedExpensesSeries.setPlotOptions(plotOptionsArea2);
+
+        PlotOptionsArea plotOptionsArea3 = new PlotOptionsArea();
+        plotOptionsArea3.setColor(new SolidColor(253, 95, 91));
 
         DataSeries staffSalarySeries = new DataSeries("Average staff salaries");
-        staffSalarySeries.setPlotOptions(plotOptionsArea);
+        staffSalarySeries.setPlotOptions(plotOptionsArea3);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
