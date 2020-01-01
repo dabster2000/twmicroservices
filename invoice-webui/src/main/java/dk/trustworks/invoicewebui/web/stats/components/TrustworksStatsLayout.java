@@ -464,6 +464,14 @@ excelFileDownloader.extend(downloadAsExcel);
                 .withComponent(consultantHoursPerMonth);
         */
 
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(avgExpensesPerYearCard);
+
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(utilizationPerYearCard);
+
         notification.setDelayMsec(1000);
     }
 

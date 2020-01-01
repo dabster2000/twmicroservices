@@ -14,7 +14,7 @@ spring:
     hibernate.ddl-auto: none
   datasource:
     url: jdbc:mysql://trustworksdb.cm3iylt6ulsl.eu-west-1.rds.amazonaws.com:3306/usermanager?noDatetimeStringSync=true&characterEncoding=utf8
-    username: trustworksadmin
+    username: root
     password: TqNu)dV6BERQ7PXG
     hikari:
       maximum-pool-size: 2
