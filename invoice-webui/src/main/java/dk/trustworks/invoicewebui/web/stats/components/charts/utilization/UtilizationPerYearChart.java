@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.vtv.components;
+package dk.trustworks.invoicewebui.web.stats.components.charts.utilization;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
@@ -12,7 +12,6 @@ import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -20,8 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-
-import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
+import java.util.stream.IntStream;
 
 /**
  * Created by hans on 20/09/2017.
@@ -29,19 +27,20 @@ import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
 
 @SpringComponent
 @SpringUI
-public class UtilizationPerMonthChart {
+public class UtilizationPerYearChart {
 
     private UserService userService;
 
     private StatisticsService statisticsService;
 
     @Autowired
-    public UtilizationPerMonthChart(UserService userService, StatisticsService statisticsService) {
+    public UtilizationPerYearChart(UserService userService, StatisticsService statisticsService) {
         this.userService = userService;
         this.statisticsService = statisticsService;
     }
 
-    public Chart createUtilizationPerMonthChart(LocalDate periodStart) {
+    public Chart createChart() {
+        LocalDate periodStart = LocalDate.of(2016, 7, 1);
         int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(10))+1;
 
         Chart chart = new Chart();
@@ -78,10 +77,22 @@ public class UtilizationPerMonthChart {
             localDate = localDate.plusMonths(1);
         } while (m<=monthPeriod);
 
-        ListSeries budgetListSeries = new ListSeries("Budget utilization");
+        DataSeries budgetListSeries = new DataSeries("Contract utilization");
+
+        int count = 0;
+        double tempSum = 0.0;
+        List<DataSeriesItem> dataSeriesItemList = new ArrayList<>();
         for (int j = 0; j < monthPeriod; j++) {
-            budgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
+            tempSum = (Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
+            count++;
+            if(count==12) {
+                dataSeriesItemList.add(new DataSeriesItem(periodStart.plusMonths(j).format(DateTimeFormatter.ofPattern("yyyy")), tempSum / 12.0));
+                tempSum = 0.0;
+                count = 0;
+            }
         }
+        dataSeriesItemList.add(new DataSeriesItem(periodStart.plusMonths(monthPeriod-1).format(DateTimeFormatter.ofPattern("yyyy")), tempSum / count));
+        budgetListSeries.setData(dataSeriesItemList);
 
         chart.getConfiguration().addSeries(budgetListSeries);
 
@@ -98,43 +109,34 @@ public class UtilizationPerMonthChart {
     private List<DataSeriesItem> getAverageAllocationByYear(LocalDate startDate) {
         startDate = startDate.withDayOfMonth(1);
         List<DataSeriesItem> dataSeriesItemList = new ArrayList<>();
+        int count = 0;
+        double tempSum = 0.0;
         do {
             double totalBillableHours = 0.0;
             double totalAvailableHours = 0.0;
-            double totalAllocation = 0.0;
             double countEmployees = 0.0;
-            //System.out.println("*** AVAILABILITY ***");
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                //System.out.print(user.getUsername()+";");
-
                 double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                //System.out.print(billableWorkHours+";");
                 AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
                 if (availability == null || !availability.getStatusType().equals(StatusType.ACTIVE)) {
-                    //System.out.println("user availability is null or not active = " + user.getUsername());
                     continue;
-                    //availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
-                //System.out.print(availability.getNetAvailableHours()+";");
                 totalAvailableHours += availability.getNetAvailableHours();
                 totalBillableHours += billableWorkHours;
-                //double monthAllocation = 0.0;
-                //if (billableWorkHours > 0.0 && availability.getNetAvailableHours() > 0.0) {
-                //    monthAllocation = (billableWorkHours / availability.getNetAvailableHours()) * 100.0;
-                //}
-                //System.out.print(monthAllocation+";");
                 countEmployees++;
-                //totalAllocation += monthAllocation;
-                //System.out.println();
             }
-            totalAllocation = Math.floor(((totalBillableHours / countEmployees) / (totalAvailableHours / countEmployees)) * 100.0);
-            //System.out.println("allocation = " + totalAllocation);
-            //System.out.println("countEmployees = " + countEmployees);
-            dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), NumberUtils.round(totalAllocation, 0)));
+            tempSum += Math.floor(((totalBillableHours / countEmployees) / (totalAvailableHours / countEmployees)) * 100.0);
+            count++;
+            if(count==12) {
+                dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("yyyy")), NumberUtils.round(tempSum, 0)));
+                tempSum = 0.0;
+                count = 0;
+            }
             startDate = startDate.plusMonths(1);
         } while (startDate.isBefore(LocalDate.now()));
+        dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("yyyy")), NumberUtils.round(tempSum, 0)));
         return dataSeriesItemList;
     }
 }

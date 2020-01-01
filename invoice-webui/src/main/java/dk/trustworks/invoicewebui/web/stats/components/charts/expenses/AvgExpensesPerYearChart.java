@@ -1,4 +1,4 @@
-package dk.trustworks.invoicewebui.web.stats.components;
+package dk.trustworks.invoicewebui.web.stats.components.charts.expenses;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
@@ -13,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
-
-import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
 
 /**
  * Created by hans on 20/09/2017.
@@ -23,23 +22,22 @@ import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
 
 @SpringComponent
 @SpringUI
-public class AvgExpensesPerMonthChart {
+public class AvgExpensesPerYearChart {
 
     private final StatisticsService statisticsService;
 
     @Autowired
-    public AvgExpensesPerMonthChart(StatisticsService statisticsService) {
+    public AvgExpensesPerYearChart(StatisticsService statisticsService) {
         this.statisticsService = statisticsService;
     }
 
-    public Chart createRevenuePerMonthChart() {
-        System.out.println("RevenuePerMonthChart.createRevenuePerMonthChart");
+    public Chart createChart() {
         LocalDate periodStart = LocalDate.of(2016, 7, 1);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1).minusMonths(1);
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption("Average Expenses");
+        chart.setCaption("Average Expenses Per Year");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -69,22 +67,29 @@ public class AvgExpensesPerMonthChart {
         DataSeries staffSalarySeries = new DataSeries("Average staff salaries");
         staffSalarySeries.setPlotOptions(plotOptionsArea3);
 
-        int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
+        int years = (int) ChronoUnit.YEARS.between(periodStart, periodEnd);
 
-        String[] monthNames = new String[months];
-        for (int i = 0; i < months; i++) {
-            LocalDate currentDate = periodStart.plusMonths(i);
+        String[] yearNames = new String[years];
+        int monthCount = 0;
+        for (int i = 0; i < years; i++) {
+            List<ExpenseDocument> expensesByMonth = new ArrayList<>();
+            LocalDate fiscalDate = periodStart.plusMonths(monthCount);
+            for (int j = 0; j < 12; j++) {
+                LocalDate currentDate = periodStart.plusMonths(monthCount);
+                if(currentDate.isAfter(periodEnd)) break;
+                expensesByMonth.addAll(statisticsService.getExpensesByMonth(currentDate));
+                monthCount++;
+            }
 
-            List<ExpenseDocument> expensesByMonth = statisticsService.getExpensesByMonth(currentDate);
+            salarySeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSalary).average().orElse(0.0))));
+            sharedExpensesSeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSharedExpense).average().orElse(0.0))));
+            staffSalarySeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getStaffSalaries).average().orElse(0.0))));
 
-            salarySeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSalary).average().orElse(0.0))));
-            sharedExpensesSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSharedExpense).average().orElse(0.0))));
-            staffSalarySeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getStaffSalaries).average().orElse(0.0))));
+            yearNames[i] = fiscalDate.format(DateTimeFormatter.ofPattern("yyyy"));
 
-            monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
 
-        chart.getConfiguration().getxAxis().setCategories(monthNames);
+        chart.getConfiguration().getxAxis().setCategories(yearNames);
         chart.getConfiguration().addSeries(salarySeries);
         chart.getConfiguration().addSeries(sharedExpensesSeries);
         chart.getConfiguration().addSeries(staffSalarySeries);

@@ -26,6 +26,8 @@ import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
 import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
+import dk.trustworks.invoicewebui.web.stats.components.charts.expenses.AvgExpensesPerYearChart;
+import dk.trustworks.invoicewebui.web.stats.components.charts.utilization.UtilizationPerYearChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
@@ -59,9 +61,6 @@ public class TrustworksStatsLayout extends VerticalLayout {
     @Autowired
     private TopGrossingConsultantsChart topGrossingConsultantsChart;
 
-    //@Autowired
-    //private ConsultantHoursPerMonthChart consultantHoursPerMonthChart;
-
     @Autowired
     private AverageConsultantRevenueByYearChart averageConsultantRevenueByYearChart;
 
@@ -73,12 +72,6 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     @Autowired
     private RevenuePerMonthEmployeeAvgChart revenuePerMonthEmployeeAvgChart;
-
-    //@Autowired
-    //private CumulativePredictiveRevenuePerMonthChart cumulativePredictiveRevenuePerMonthChart;
-
-    //@Autowired
-    //private CumulativePredictiveRevenuePerYearChart cumulativePredictiveRevenuePerYearChart;
 
     @Autowired
     private YourTrustworksForecastChart yourTrustworksForecastChart;
@@ -97,6 +90,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     @Autowired
     private RevenuePerConsultantChart revenuePerConsultantChart;
+
+    @Autowired
+    private AvgExpensesPerYearChart avgExpensesPerYearChart;
+
+    @Autowired
+    private UtilizationPerYearChart utilizationPerYearChart;
 
     @Autowired
     private TalentPassionResultBox talentPassionResultBox;
@@ -334,6 +333,18 @@ public class TrustworksStatsLayout extends VerticalLayout {
         excelFileDownloader.extend(b);
         notification.setDescription("13 out of 13 charts created!");
         System.out.println("timeMillis 13 = " + (System.currentTimeMillis() - timeMillis));
+
+        Card avgExpensesPerYearCard = new Card();
+        avgExpensesPerYearCard.getLblTitle().setValue("Average Expenses per Year per Employee");
+        avgExpensesPerYearCard.getContent().addComponent(avgExpensesPerYearChart.createChart());
+        notification.setDescription("14 out of 14 charts created!");
+        System.out.println("timeMillis 14 = " + (System.currentTimeMillis() - timeMillis));
+
+        Card utilizationPerYearCard = new Card();
+        utilizationPerYearCard.getLblTitle().setValue("Average Utilization per Year per Employee");
+        utilizationPerYearCard.getContent().addComponent(utilizationPerYearChart.createChart());
+        notification.setDescription("15 out of 15 charts created!");
+        System.out.println("timeMillis 15 = " + (System.currentTimeMillis() - timeMillis));
 
         /*
         Button downloadAsExcel = new Button("Download As Excel");
