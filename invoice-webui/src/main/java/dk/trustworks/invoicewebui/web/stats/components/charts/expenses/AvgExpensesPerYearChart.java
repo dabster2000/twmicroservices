@@ -91,8 +91,8 @@ public class AvgExpensesPerYearChart {
 
         chart.getConfiguration().getxAxis().setCategories(yearNames);
         chart.getConfiguration().addSeries(salarySeries);
-        chart.getConfiguration().addSeries(sharedExpensesSeries);
         chart.getConfiguration().addSeries(staffSalarySeries);
+        chart.getConfiguration().addSeries(sharedExpensesSeries);
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;

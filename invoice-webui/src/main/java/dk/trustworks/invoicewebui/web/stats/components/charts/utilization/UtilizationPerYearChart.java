@@ -83,7 +83,7 @@ public class UtilizationPerYearChart {
         double tempSum = 0.0;
         List<DataSeriesItem> dataSeriesItemList = new ArrayList<>();
         for (int j = 0; j < monthPeriod; j++) {
-            tempSum = (Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
+            tempSum += (Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
             count++;
             if(count==12) {
                 dataSeriesItemList.add(new DataSeriesItem(periodStart.plusMonths(j).format(DateTimeFormatter.ofPattern("yyyy")), tempSum / 12.0));
@@ -130,13 +130,13 @@ public class UtilizationPerYearChart {
             tempSum += Math.floor(((totalBillableHours / countEmployees) / (totalAvailableHours / countEmployees)) * 100.0);
             count++;
             if(count==12) {
-                dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("yyyy")), NumberUtils.round(tempSum, 0)));
+                dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("yyyy")), NumberUtils.round(tempSum / 12, 0)));
                 tempSum = 0.0;
                 count = 0;
             }
             startDate = startDate.plusMonths(1);
         } while (startDate.isBefore(LocalDate.now()));
-        dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("yyyy")), NumberUtils.round(tempSum, 0)));
+        dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("yyyy")), NumberUtils.round(tempSum / count, 0)));
         return dataSeriesItemList;
     }
 }
