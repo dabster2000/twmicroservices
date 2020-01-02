@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Created by hans on 20/09/2017.
@@ -60,47 +59,11 @@ public class UtilizationPerYearChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        double[] monthTotalAvailabilites = new double[monthPeriod+1];
-        double[] monthAvailabilites = new double[monthPeriod+1];
-
-        LocalDate localDate = periodStart.withDayOfMonth(1);
-        int m = 0;
-        do {
-            for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
-                if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
-                double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate);
-                monthAvailabilites[m] += budget;
-                double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getNetAvailableHours();
-                monthTotalAvailabilites[m] += availability;
-            }
-            m++;
-            localDate = localDate.plusMonths(1);
-        } while (m<=monthPeriod);
-
-        DataSeries budgetListSeries = new DataSeries("Contract utilization");
-
-        int count = 0;
-        double tempSum = 0.0;
-        List<DataSeriesItem> dataSeriesItemList = new ArrayList<>();
-        for (int j = 0; j < monthPeriod; j++) {
-            tempSum += (Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
-            count++;
-            if(count==12) {
-                dataSeriesItemList.add(new DataSeriesItem(periodStart.plusMonths(j).format(DateTimeFormatter.ofPattern("yyyy")), tempSum / 12.0));
-                tempSum = 0.0;
-                count = 0;
-            }
-        }
-        dataSeriesItemList.add(new DataSeriesItem(periodStart.plusMonths(monthPeriod-1).format(DateTimeFormatter.ofPattern("yyyy")), tempSum / count));
-        budgetListSeries.setData(dataSeriesItemList);
-
-        chart.getConfiguration().addSeries(budgetListSeries);
-
         DataSeries actualDataSeries = new DataSeries("Actual utilization");
         actualDataSeries.setData(getAverageAllocationByYear(periodStart));
         chart.getConfiguration().addSeries(actualDataSeries);
 
-        chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
+        chart.getConfiguration().getxAxis().setCategories(statisticsService.getYearCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;

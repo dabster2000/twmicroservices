@@ -12,7 +12,6 @@ import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -20,8 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-
-import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
 
 /**
  * Created by hans on 20/09/2017.
@@ -89,7 +86,7 @@ public class UtilizationPerMonthChart {
         actualDataSeries.setData(getAverageAllocationByYear(periodStart));
         chart.getConfiguration().addSeries(actualDataSeries);
 
-        chart.getConfiguration().getxAxis().setCategories(statisticsService.getCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
+        chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;

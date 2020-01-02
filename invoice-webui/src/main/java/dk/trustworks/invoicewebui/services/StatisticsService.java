@@ -331,12 +331,22 @@ public class StatisticsService extends StatisticsCachedService {
         return resultMap;
     }
 
-    public String[] getCategories(LocalDate periodStart, LocalDate periodEnd) {
+    public String[] getMonthCategories(LocalDate periodStart, LocalDate periodEnd) {
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
         String[] categories = new String[months];
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+        }
+        return categories;
+    }
+
+    public String[] getYearCategories(LocalDate periodStart, LocalDate periodEnd) {
+        int years = (int)ChronoUnit.YEARS.between(periodStart, periodEnd);
+        String[] categories = new String[years];
+        for (int i = 0; i < years; i++) {
+            LocalDate currentDate = periodStart.plusYears(i);
+            categories[i] = currentDate.format(DateTimeFormatter.ofPattern("yyyy"));
         }
         return categories;
     }
