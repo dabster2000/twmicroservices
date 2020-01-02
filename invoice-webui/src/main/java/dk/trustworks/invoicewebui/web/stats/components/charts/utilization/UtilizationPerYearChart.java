@@ -98,7 +98,7 @@ public class UtilizationPerYearChart {
                 count = 0;
             }
             startDate = startDate.plusMonths(1);
-        } while (startDate.isBefore(LocalDate.now()));
+        } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1)));
         dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("yyyy")), NumberUtils.round(tempSum / count, 0)));
         return dataSeriesItemList;
     }
