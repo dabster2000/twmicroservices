@@ -18001,7 +18001,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .turquoise {
-	background-color: #A3D3D1;
+	background-color: #A3D3D2;
 }
 
 .invoice .dark-blue {
@@ -18168,7 +18168,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .turquoise-font .v-button-caption {
-	color: #A3D3D1;
+	color: #A3D3D2;
 }
 
 .invoice .white-font .v-icon {
@@ -18176,11 +18176,11 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .turquoise-font {
-	color: #A3D3D1;
+	color: #A3D3D2;
 }
 
 .invoice .turquoise-font-icon .v-icon {
-	color: #A3D3D1;
+	color: #A3D3D2;
 }
 
 .invoice .dark-green-font .v-icon {
@@ -18328,7 +18328,7 @@ body:not(.v-touch) .card-hoverable:hover, body.v-touch .card-hoverable:active {
 }
 
 .invoice .top-bar {
-	background-color: #A3D3D1;
+	background-color: #A3D3D2;
 }
 
 .invoice .label-project-description, .invoice .label-total-titel, .invoice .label-total-value {
