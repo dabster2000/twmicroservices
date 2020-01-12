@@ -86,6 +86,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
     private ResponsiveLayout mainLayout;
     private ResponsiveRow gridRow;
     private Box mainBox;
+    private Button backButton;
 
     public BusinessArchitectureLayout init() {
         icons.clear();
@@ -99,9 +100,9 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         mainBox.getContent().addComponent(mainLayout);
         mainBox.getContent().setMargin(false);
 
-        Button backButton = new MButton("back").withStyleName("floating").withListener(clickEvent -> {
+        backButton = new MButton("back").withStyleName("floating").withListener(clickEvent -> {
             init();
-        });
+        }).withVisible(false);
 
         Button editButton = new MButton("edit").withStyleName("floating").withVisible(false).withListener(clickEvent -> {
             isEditor = !isEditor;
@@ -203,6 +204,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
     private void drawDetailPage(KnowledgeArchitectureColumn archiColumn, KnowledgeArchitectureCell item) {
         mainBox.getContent().removeAllComponents();
+        backButton.setVisible(true);
 
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         mainBox.getContent().addComponent(responsiveLayout);
