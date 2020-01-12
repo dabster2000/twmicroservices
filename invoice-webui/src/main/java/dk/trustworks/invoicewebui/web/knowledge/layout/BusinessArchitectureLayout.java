@@ -231,7 +231,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         });
 
         VerticalLayout descLayout = new VerticalLayout(
-                new MLabel(item.getDescription()).withContentMode(ContentMode.HTML)
+                new MLabel(item.getDescription()).withFullWidth().withContentMode(ContentMode.HTML)
         );
         descLayout.addLayoutClickListener(layoutClickEvent -> {
             final Window window = new Window();
