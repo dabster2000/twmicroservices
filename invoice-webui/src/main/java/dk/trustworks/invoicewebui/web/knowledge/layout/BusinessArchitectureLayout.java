@@ -331,7 +331,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                     }));
 
                     registrationList.add(architectureCell1.getBtnImgFile().addClickListener(clickEvent -> {
-                        if(cardFile.getPreview().equals("")) cardFile.setPreview(UUID.randomUUID().toString());
+                        if(cardFile.getPreview() == null || cardFile.getPreview().equals("")) cardFile.setPreview(UUID.randomUUID().toString());
                         knowArchiColumnRepository.save(archiColumn);
                         new PhotoUploader(cardFile.getPreview(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoRepository).getUploader();
                     }));
