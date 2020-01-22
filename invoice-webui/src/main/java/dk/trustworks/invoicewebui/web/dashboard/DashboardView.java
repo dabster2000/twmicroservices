@@ -211,7 +211,6 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveRow rightRow = responsiveColumn2Layout.addRow();
 
         // *** LEFT COLUMN ***
-
         if(!VimeoAPI.videoAge.isBefore(LocalDate.now().minusDays(7))) {
             leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(monthNewsCardDesign);
         } else {

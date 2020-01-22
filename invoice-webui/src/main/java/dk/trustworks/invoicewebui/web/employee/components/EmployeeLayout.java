@@ -206,17 +206,17 @@ public class EmployeeLayout extends VerticalLayout {
         skillRoles.add("Project Manager");
         skillRoles.add("Tender Consultant");
         skillRoles.add("UX");
-        ComboBox<String> select_role = new ComboBox<>("Select role", skillRoles);
-        select_role.setSizeFull();
-        select_role.setEmptySelectionAllowed(false);
+        //ComboBox<String> select_role = new ComboBox<>("Select role", skillRoles);
+        //select_role.setSizeFull();
+        //select_role.setEmptySelectionAllowed(false);
         System.out.println("BEFORE");
-        KnowledgeRole knowledgeRole = knowledgeRoleRestService.findByUsername(user.getUuid());
-        System.out.println("knowledgeRole = " + knowledgeRole);
-        select_role.setValue(knowledgeRole.getName().name());
+        //KnowledgeRole knowledgeRole = knowledgeRoleRestService.findByUsername(user.getUuid());
+        //System.out.println("knowledgeRole = " + knowledgeRole);
+        //select_role.setValue(knowledgeRole.getName().name());
         System.out.println("AFTER");
-        select_role.addValueChangeListener(event -> {
+        //select_role.addValueChangeListener(event -> {
             // TODO: Save role
-        });
+        //});
         //skillRoleRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(select_role);
         skillRoleRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new Label("Her er en hjælpe tekst. Afventer indhold", ContentMode.HTML));
 
