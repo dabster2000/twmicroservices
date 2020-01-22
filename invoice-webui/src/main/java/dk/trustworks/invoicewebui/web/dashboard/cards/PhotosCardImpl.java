@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 
@@ -52,12 +53,15 @@ public class PhotosCardImpl extends PhotosCardDesign implements Box {
         return this;
     }
 
-    public void loadPhoto() {
+    public void loadResourcePhoto(String resource) {
+        getPhoto().setSource(new ThemeResource(resource));
+        getLblPhotoText().setVisible(false);
+    }
+
+    public void loadRandomPhoto() {
         byte[] randomPhoto = dashboardPreloader.getRandomPhoto();
         if(randomPhoto== null) return;
-        System.out.println("randomPhoto.length = " + randomPhoto.length);
         String randomText = dashboardPreloader.getRandomText();
-        System.out.println("randomText = " + randomText);
         getLblPhotoText().setVisible(true);
         getPhoto().setSource(new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(randomPhoto),(Math.random()*2000)+".jpg"));
         getLblPhotoText().setValue(randomText);

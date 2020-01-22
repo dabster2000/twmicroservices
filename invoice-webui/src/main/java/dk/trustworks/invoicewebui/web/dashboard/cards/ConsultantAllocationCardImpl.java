@@ -34,14 +34,6 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
         this.boxWidth = boxWidth;
         this.name = name;
 
-
-
-        //int monthPeriod = 12;
-        //double[] monthTotalAvailabilites;
-        //double[] monthAvailabilites;
-        //monthTotalAvailabilites = new double[monthPeriod];
-        //monthAvailabilites = new double[monthPeriod];
-        //List<User> users = userRepository.findByActiveTrue();
         LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
         LocalDate localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(11);
         String[] monthNames = DateUtils.getMonthNames(localDateStart, localDateEnd);

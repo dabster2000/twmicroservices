@@ -50,7 +50,7 @@ public class DashboardPreloader {
 
     private String trustworksStatus;
 
-    @Scheduled(cron = "0 1 1 * * ?")
+    @Scheduled(cron = "0 0 * * * *")
     public void loadTrustworksStatus() {
         trustworksStatus = vimeoAPI.getTrustworksStatus();
     }

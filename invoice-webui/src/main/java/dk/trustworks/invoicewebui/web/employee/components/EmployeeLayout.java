@@ -4,13 +4,18 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.AmbitionCategory;
+import dk.trustworks.invoicewebui.model.KnowledgeRole;
 import dk.trustworks.invoicewebui.model.Note;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.network.rest.KnowledgeRoleRestService;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
@@ -33,6 +38,7 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @SpringComponent
@@ -67,6 +73,8 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final AmbitionCategoryRepository ambitionCategoryRepository;
 
+    private final KnowledgeRoleRestService knowledgeRoleRestService;
+
     private final PhotoRepository photoRepository;
 
     private final PhotoService photoService;
@@ -85,6 +93,7 @@ public class EmployeeLayout extends VerticalLayout {
 
     private ResponsiveRow workContentRow;
     private ResponsiveRow knowContentRow;
+    private ResponsiveRow skillContentRow;
     private ResponsiveRow docsContentRow;
     private ResponsiveRow purpContentRow;
     private ResponsiveRow budgContentRow;
@@ -92,7 +101,7 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
@@ -109,6 +118,7 @@ public class EmployeeLayout extends VerticalLayout {
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
+        this.knowledgeRoleRestService = knowledgeRoleRestService;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
         this.employeeContactInfoCardController = employeeContactInfoCardController;
@@ -124,6 +134,8 @@ public class EmployeeLayout extends VerticalLayout {
         purpContentRow.setVisible(false);
         knowContentRow = responsiveLayout.addRow();
         knowContentRow.setVisible(false);
+        skillContentRow = responsiveLayout.addRow();
+        skillContentRow.setVisible(false);
         budgContentRow = responsiveLayout.addRow();
         budgContentRow.setVisible(false);
         docsContentRow = responsiveLayout.addRow();
@@ -151,27 +163,30 @@ public class EmployeeLayout extends VerticalLayout {
 
         final Button btnWork = new MButton(MaterialIcons.WORK, "work", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top").withEnabled(false);
         final Button btnKnowledge = new MButton(VaadinIcons.ACADEMY_CAP, "knowledge", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
+        final Button btnSkills = new MButton(VaadinIcons.ACADEMY_CAP, "skills", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnBudget = new MButton(MaterialIcons.SHOPPING_CART, "it budget", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnDocuments = new MButton(MaterialIcons.ARCHIVE, "documents", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
         final Button btnPurpose = new MButton(MaterialIcons.TRENDING_UP, "purpose", event -> {}).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top");
 
-        btnWork.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, workContentRow));
-        btnKnowledge.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, knowContentRow));
-        btnBudget.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, budgContentRow));
-        btnDocuments.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, docsContentRow));
-        btnPurpose.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose, event, purpContentRow));
+        btnWork.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose, event, workContentRow));
+        btnKnowledge.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose, event, knowContentRow));
+        btnSkills.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose, event, skillContentRow));
+        btnBudget.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose, event, budgContentRow));
+        btnDocuments.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose, event, docsContentRow));
+        btnPurpose.addClickListener(event -> setNewButtonPressState(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose, event, purpContentRow));
 
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnWork);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnPurpose);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnKnowledge);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnSkills);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnBudget);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnDocuments);
-        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
+        //buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
         workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign"));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseImpl(user, notesRepository, reminderRepository));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, consultantRepository));
         int adjustStartYear = 0;
-        if(LocalDate.now().getMonthValue() >= 1 && LocalDate.now().getMonthValue() <=6)  adjustStartYear = 1;
+        if(LocalDate.now().getMonthValue() <= 6)  adjustStartYear = 1;
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
@@ -184,13 +199,33 @@ public class EmployeeLayout extends VerticalLayout {
         budgContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(itBudgetTab.getTabLayout(user));
         docsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(documentTab.getTabLayout(user));
 
+        ResponsiveRow skillRoleRow = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).addRow();
+        ArrayList<String> skillRoles = new ArrayList<>();
+        skillRoles.add("Business Architect");
+        skillRoles.add("Solution Architect");
+        skillRoles.add("Project Manager");
+        skillRoles.add("Tender Consultant");
+        skillRoles.add("UX");
+        ComboBox<String> select_role = new ComboBox<>("Select role", skillRoles);
+        select_role.setSizeFull();
+        select_role.setEmptySelectionAllowed(false);
+        System.out.println("BEFORE");
+        KnowledgeRole knowledgeRole = knowledgeRoleRestService.findByUsername(user.getUuid());
+        System.out.println("knowledgeRole = " + knowledgeRole);
+        select_role.setValue(knowledgeRole.getName().name());
+        System.out.println("AFTER");
+        select_role.addValueChangeListener(event -> {
+            // TODO: Save role
+        });
+        //skillRoleRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(select_role);
+        skillRoleRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new Label("Her er en hjælpe tekst. Afventer indhold", ContentMode.HTML));
+
+        BoxImpl skillRoleBox = new BoxImpl();
+        skillRoleBox.getContent().addComponent(skillRoleRow);
+
+        skillContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(skillRoleBox);
         for (AmbitionCategory ambitionCategory : ambitionCategoryRepository.findAll()) {
-            knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, ambitionCategory));
-
-
-            //knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, AmbitionCategoryType.SKILL));
-            //knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, AmbitionCategoryType.SYSTEM));
-
+            skillContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, ambitionCategory));
         }
 
         knowContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new CKOExpenseImpl(ckoExpenseRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
@@ -203,16 +238,17 @@ public class EmployeeLayout extends VerticalLayout {
         monthReport.init();
     }
 
-    private void setNewButtonPressState(Button btnWork, Button btnKnowledge, Button btnBudget, Button btnDocuments, Button btnPurpose, Button.ClickEvent event, ResponsiveRow contentRow) {
+    private void setNewButtonPressState(Button btnWork, Button btnKnowledge, Button btnSkills, Button btnBudget, Button btnDocuments, Button btnPurpose, Button.ClickEvent event, ResponsiveRow contentRow) {
         hideAllDynamicRows();
-        enableAllButtons(btnWork, btnKnowledge, btnBudget, btnDocuments, btnPurpose);
+        enableAllButtons(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose);
         event.getButton().setEnabled(false);
         contentRow.setVisible(true);
     }
 
-    private void enableAllButtons(Button btnWork, Button btnKnowledge, Button btnBudget, Button btnDocuments, Button btnPurpose) {
+    private void enableAllButtons(Button btnWork, Button btnKnowledge, Button btnSkills, Button btnBudget, Button btnDocuments, Button btnPurpose) {
         btnWork.setEnabled(true);
         btnKnowledge.setEnabled(true);
+        btnSkills.setEnabled(true);
         btnPurpose.setEnabled(true);
         btnBudget.setEnabled(true);
         btnDocuments.setEnabled(true);
@@ -221,6 +257,7 @@ public class EmployeeLayout extends VerticalLayout {
     private void hideAllDynamicRows() {
         workContentRow.setVisible(false);
         knowContentRow.setVisible(false);
+        skillContentRow.setVisible(false);
         purpContentRow.setVisible(false);
         docsContentRow.setVisible(false);
         budgContentRow.setVisible(false);

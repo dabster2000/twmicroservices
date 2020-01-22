@@ -21,6 +21,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.NotificationType;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.network.clients.VimeoAPI;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.ContractService;
@@ -28,6 +29,7 @@ import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.SpriteSheet;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.*;
 import dk.trustworks.invoicewebui.web.dashboard.components.ConfirmSpeedDateImpl;
@@ -35,6 +37,7 @@ import dk.trustworks.invoicewebui.web.dashboard.components.NotificationPopupDesi
 import dk.trustworks.invoicewebui.web.dashboard.components.ReleaseNotesPopupDesign;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
+import dk.trustworks.invoicewebui.web.profile.components.KnowledgeChart;
 import dk.trustworks.invoicewebui.web.stats.components.Card;
 import dk.trustworks.invoicewebui.web.stats.components.RevenuePerMonthChart;
 import org.slf4j.Logger;
@@ -108,8 +111,10 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final SpriteSheet spriteSheet;
 
+    private final KnowledgeChart knowledgeChart;
+
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.budgetNewRepository = budgetNewRepository;
@@ -126,6 +131,7 @@ public class   DashboardView extends VerticalLayout implements View {
         this.emailSender = emailSender;
         this.revenuePerMonthChart = revenuePerMonthChart;
         this.spriteSheet = spriteSheet;
+        this.knowledgeChart = knowledgeChart;
     }
 
     @Transactional
@@ -138,81 +144,54 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         board.setSizeFull();
         board.setScrollable(true);
-        //BirthdayCardImpl birthdayCard = new BirthdayCardImpl(trustworksEventRepository, 1, 6, "birthdayCard");
+        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(userService.findCurrentlyWorkingUsers().get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyWorkingUsers().size() - 1))));
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
+        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyEmployedUsers(), emailSender,3, 4, "cateringCard");
         cateringCard.init();
-        //ConsultantLocationCardImpl locationCardDesign = new ConsultantLocationCardImpl(projectRepository, photoRepository, 2, 6, "locationCardDesign");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
         VacationCard vacationCard = new VacationCard();
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
-        //ProjectTimelineImpl projectTimeline = new ProjectTimelineImpl(projectRepository, 2, 6, "projectTimeline");
-
-        //projectTimeline.init();
-
-        //locationCardDesign.init();
-        //locationCardDesign.setWidth("100%");
 
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrustworksStatus()));
         browser2.setHeight("300px");
         browser2.setWidth("100%");
+        monthNewsCardDesign.getCardHolder().addStyleName("dark-grey");
         monthNewsCardDesign.getIframeHolder().addComponent(browser2);
 
         tripVideosCardDesign.setWidth("100%");
         BrowserFrame tripVideoBrowser = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrips()[0]));
         tripVideoBrowser.setHeight("300px");
         tripVideoBrowser.setWidth("100%");
-        //tripVideosCardDesign.getLblTitle().setValue("Trustworks Travel Videos");
         tripVideosCardDesign.getIframeHolder().addComponent(tripVideoBrowser);
 
         dnaCard.getBoxComponent().setHeight("600px");
         cateringCard.getBoxComponent().setHeight("600px");
 
-        photoCard.loadPhoto();
+        photoCard.loadRandomPhoto();
+        knowledgeWheelPhoto.loadResourcePhoto("images/cards/knowledge/lifecycle.png");
 
         createTopBoxes(board);
 
-        Card revenuePerMonthCard = new Card();
-        revenuePerMonthCard.setHeight(300, PIXELS);
-        revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
+        //Card revenuePerMonthCard = new Card();
+        //revenuePerMonthCard.setHeight(300, PIXELS);
+        //revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
         int adjustStartYear = 0;
-        if(LocalDate.now().getMonthValue() >= 1 && LocalDate.now().getMonthValue() <=6)  adjustStartYear = 1;
+        if(LocalDate.now().getMonthValue() <= 6)  adjustStartYear = 1;
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
-        revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
-        /*
-        List<Box> boxes = new ArrayList<>();
-        //boxes.add(birthdayCard);
-        boxes.add(newsCard);
-        boxes.add(photoCard);
-        boxes.add(bubblesCardDesign);
-        //boxes.add(locationCardDesign);
-        boxes.add(cateringCard);
-        boxes.add(monthNewsCardDesign);
-        boxes.add(tripVideosCardDesign);
-        boxes.add(dnaCard);
-        boxes.add(consultantAllocationCard);
+        //revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
+        BoxImpl revenuePerMonthCard = new BoxImpl().instance(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
 
-        //boxes.add(revenuePerMonthCard);
-        //boxes.add(projectTimeline);
-        //boxes.add(statusCard);
-*/
-        //createRows(board, boxes);
         ResponsiveRow mainRow = board.addRow().withGrow(true);
         ResponsiveColumn mainComponentColumn = mainRow.addColumn().withDisplayRules(12, 12, 9, 9);
         ResponsiveColumn leftColumn = mainRow.addColumn().withDisplayRules(12, 12, 3, 3);
         leftColumn.withComponent(newsCard);
-        // Resource res = new ThemeResource("images/hans.png");
-
-        // Display the image without caption
-        // Image image = new Image(null, res);
-        // image.setStyleName("img-circle");
-        // board.addRow().addColumn().withComponent(image);
 
         ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         mainComponentColumn.withComponent(mainLayout);
@@ -220,22 +199,41 @@ public class   DashboardView extends VerticalLayout implements View {
         row0.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantAllocationCard);
 
         ResponsiveRow row1 = mainLayout.addRow();
-        //ResponsiveRow row1 = board.addRow().withGrow(true);
-        //row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(newsCard);
-        row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(photoCard);
-        row1.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(bubblesCardDesign);
 
-        ResponsiveRow row2 = mainLayout.addRow();
-        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthNewsCardDesign);
-        row2.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(tripVideosCardDesign);
+        row1.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeWheelPhoto);
 
-        ResponsiveRow row3 = mainLayout.addRow();
-        row3.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(cateringCard);
-        row3.addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(revenuePerMonthCard);
+        ResponsiveLayout responsiveColumn1Layout = new ResponsiveLayout();
+        ResponsiveLayout responsiveColumn2Layout = new ResponsiveLayout();
+        row1.addColumn().withDisplayRules(12,12,6,6).withComponent(responsiveColumn1Layout);
+        row1.addColumn().withDisplayRules(12,12,6,6).withComponent(responsiveColumn2Layout);
 
-        ResponsiveRow row4 = mainLayout.addRow();
-        row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(vacationCard);
-        row4.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(dnaCard);
+        ResponsiveRow leftRow = responsiveColumn1Layout.addRow();
+        ResponsiveRow rightRow = responsiveColumn2Layout.addRow();
+
+        // *** LEFT COLUMN ***
+
+        if(!VimeoAPI.videoAge.isBefore(LocalDate.now().minusDays(7))) {
+            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(monthNewsCardDesign);
+        } else {
+            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(photoCard);
+        }
+
+        leftRow.addColumn().withDisplayRules(12, 12, 12 ,12).withComponent(revenuePerMonthCard);
+        leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(bubblesCardDesign);
+
+        if(VimeoAPI.videoAge.isBefore(LocalDate.now().minusDays(7))) {
+            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(monthNewsCardDesign);
+        } else {
+            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(photoCard);
+        }
+
+        // *** RIGHT COLUMN ***
+        rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
+        rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
+        rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(cateringCard);
+        rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(vacationCard);
+
+
 
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);

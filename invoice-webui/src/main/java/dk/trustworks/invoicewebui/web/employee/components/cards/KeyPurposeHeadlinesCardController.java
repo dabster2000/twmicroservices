@@ -17,8 +17,6 @@ public class KeyPurposeHeadlinesCardController {
 
     private final KeyPurposeRepository keyPurposeRepository;
 
-    private User user;
-
     @Autowired
     public KeyPurposeHeadlinesCardController(KeyPurposeRepository keyPurposeRepository) {
         this.keyPurposeRepository = keyPurposeRepository;

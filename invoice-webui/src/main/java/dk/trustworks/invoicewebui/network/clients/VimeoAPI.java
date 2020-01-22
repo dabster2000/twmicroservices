@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class VimeoAPI {
 
     private static final Logger log = LoggerFactory.getLogger(VimeoAPI.class);
 
+    public static LocalDate videoAge = LocalDate.now();
 
     @Value("${vimeoToken}")
     private String vimeoToken;
@@ -31,7 +34,9 @@ public class VimeoAPI {
             Response response = mapper.readValue(vimeoResponse.getJson().toString(), Response.class);
             if(response.getData()==null) return "";
             createdTime = response.getData().get(0).getCreatedTime();
-            log.debug("createdTime = " + createdTime);
+            System.out.println("createdTime = " + createdTime); //2020-01-21T21:44:10+00:00
+            videoAge = LocalDate.parse(createdTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+            System.out.println("videoAge = " + videoAge);
             return "https://player.vimeo.com"+response.getData().get(0).getUri().replace("videos", "video");
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,4 +81,5 @@ public class VimeoAPI {
         }
         return new String[0];
     }
+
 }
