@@ -7,6 +7,8 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.Authorizer;
+import dk.trustworks.invoicewebui.web.academy.BasicSkillsView;
+import dk.trustworks.invoicewebui.web.academy.CoursesView;
 import dk.trustworks.invoicewebui.web.admin.UserManagerView;
 import dk.trustworks.invoicewebui.web.bubbles.BubblesView;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
@@ -114,6 +116,14 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(BusinessArchitectureView.VIEW_NAME, businessArchitecture);
         MenuItemContainer projectdescriptions = new MenuItemContainer(order++).createItem(ProjectDescriptionView.MENU_NAME, false, ProjectDescriptionView.VIEW_ICON, ProjectDescriptionView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(ProjectDescriptionView.VIEW_NAME, projectdescriptions);
+
+        MenuItemContainer academy = new MenuItemContainer(order++).createItem("Trustworks Academy ---", true, null, null, false, RoleType.USER);
+        menuItems.put("academy", academy);
+        MenuItemContainer courses = new MenuItemContainer(order++).createItem(CoursesView.MENU_NAME, false, CoursesView.VIEW_ICON, CoursesView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(CoursesView.VIEW_NAME, courses);
+        MenuItemContainer basicskills = new MenuItemContainer(order++).createItem(BasicSkillsView.MENU_NAME, false, BasicSkillsView.VIEW_ICON, BasicSkillsView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(BasicSkillsView.VIEW_NAME, basicskills);
+
 
         MenuItemContainer invoice = new MenuItemContainer(order++).createItem("Invoice ---", true, null, null, false, RoleType.ACCOUNTING);
         menuItems.put("Invoice", invoice);
