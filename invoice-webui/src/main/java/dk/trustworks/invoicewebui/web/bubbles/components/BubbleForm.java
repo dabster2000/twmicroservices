@@ -260,12 +260,7 @@ public class BubbleForm {
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(createButton);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-/*
-        final Optional<Group> optGroup = motherWebApiClient.getGroupList(true).stream().filter(channel -> channel.getId().equals(bubble.getSlackchannel())).findFirst();
-        if(optGroup.isPresent()) {
-            cbSlackChannel.setValue(optGroup.get());
-        }
-        */
+
         bubbleBinder.readBean(bubble);
     }
 

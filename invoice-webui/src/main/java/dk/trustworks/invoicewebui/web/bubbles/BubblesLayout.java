@@ -54,9 +54,6 @@ public class BubblesLayout extends VerticalLayout {
 
     private BubbleForm bubbleForm;
 
-    //@Value("${motherSlackBotToken}")
-    //private String motherSlackToken;
-
     @Value("${bubbleSlackBotToken}")
     private String bubbleSlackToken;
 
