@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "cko_course_list")
-public class MicroCourseStudent {
+public class CkoCourseStudent {
 
     @Id
     private String uuid;
@@ -27,16 +27,16 @@ public class MicroCourseStudent {
 
     @ManyToOne()
     @JoinColumn(name="courseuuid")
-    private MicroCourse microCourse;
+    private CkoCourse ckoCourse;
 
-    public MicroCourseStudent() {
+    public CkoCourseStudent() {
         this.uuid = UUID.randomUUID().toString();
     }
 
-    public MicroCourseStudent(User member, MicroCourse microCourse, String status) {
+    public CkoCourseStudent(User member, CkoCourse ckoCourse, String status) {
         this.uuid = UUID.randomUUID().toString();
         this.useruuid = member.getUuid();
-        this.microCourse = microCourse;
+        this.ckoCourse = ckoCourse;
         this.status = status;
         this.application = LocalDate.now();
     }
@@ -53,12 +53,12 @@ public class MicroCourseStudent {
         this.useruuid = member.getUuid();
     }
 
-    public MicroCourse getMicroCourse() {
-        return microCourse;
+    public CkoCourse getCkoCourse() {
+        return ckoCourse;
     }
 
-    public void setMicroCourse(MicroCourse microCourse) {
-        this.microCourse = microCourse;
+    public void setCkoCourse(CkoCourse ckoCourse) {
+        this.ckoCourse = ckoCourse;
     }
 
     public String getUseruuid() {
@@ -90,7 +90,7 @@ public class MicroCourseStudent {
         return "MicroCourseStudent{" +
                 "uuid=" + uuid +
                 ", useruuid='" + useruuid + '\'' +
-                ", microCourse=" + microCourse +
+                ", microCourse=" + ckoCourse +
                 '}';
     }
 }

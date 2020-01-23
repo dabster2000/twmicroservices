@@ -1,7 +1,5 @@
 package dk.trustworks.invoicewebui.web.academy.components;
 
-import allbegray.slack.type.Group;
-import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
@@ -9,7 +7,6 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.*;
@@ -19,10 +16,9 @@ import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class CourseForm {
+
+    private final String type;
 
     private final UserService userService;
     private final MicroCourseRepository microCourseRepository;
@@ -32,9 +28,10 @@ public class CourseForm {
 
     private final ResponsiveLayout newCourseResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
 
-    private Binder<MicroCourse> microCourseBinder = new Binder<>();
+    private Binder<CkoCourse> courseBinder = new Binder<>();
 
-    public CourseForm(UserService userService, MicroCourseRepository microCourseRepository, PhotoRepository photoRepository) {
+    public CourseForm(String type, UserService userService, MicroCourseRepository microCourseRepository, PhotoRepository photoRepository) {
+        this.type = type;
         this.userService = userService;
         this.microCourseRepository = microCourseRepository;
         this.photoRepository = photoRepository;
@@ -52,24 +49,24 @@ public class CourseForm {
                 .withOffset(ResponsiveLayout.DisplaySize.LG, 10)
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 2, 2)
-                .withComponent(new MButton("New course", event -> {
+                .withComponent(new MVerticalLayout(new MButton("New course", event -> {
                     newCourseDialogRow.setVisible(true);
                     UI.getCurrent().scrollIntoView(newCourseDialogRow);
                     createFormRow(null, newCourse -> createUploadRow(newCourse, newCourse2 -> closeDialogRow()));
-                }).withWidth(100, Sizeable.Unit.PERCENTAGE));
+                }).withWidth(100, Sizeable.Unit.PERCENTAGE)));
         return row;
     }
 
-    public void editPhotoAction(MicroCourse microCourse) {
+    public void editPhotoAction(CkoCourse ckoCourse) {
         newCourseDialogRow.setVisible(true);
         UI.getCurrent().scrollIntoView(newCourseDialogRow);
-        createUploadRow(microCourse, newCourse -> closeDialogRow());
+        createUploadRow(ckoCourse, newCourse -> closeDialogRow());
     }
 
-    public void editFormAction(MicroCourse microCourse) {
+    public void editFormAction(CkoCourse ckoCourse) {
         newCourseDialogRow.setVisible(true);
         UI.getCurrent().scrollIntoView(newCourseDialogRow);
-        createFormRow(microCourse,  newCourse2 -> closeDialogRow());
+        createFormRow(ckoCourse, newCourse2 -> closeDialogRow());
     }
 
     public void closeDialogRow() {
@@ -77,7 +74,7 @@ public class CourseForm {
         Page.getCurrent().reload();
     }
 
-    private void createUploadRow(final MicroCourse prevCourse, Next next) {
+    private void createUploadRow(final CkoCourse prevCourse, Next next) {
         newCourseResponsiveLayout.removeAllComponents();
         ResponsiveRow uploadRow = newCourseResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
@@ -91,54 +88,54 @@ public class CourseForm {
                 }).getUploader());
     }
 
-    private void createFormRow(final MicroCourse prevMicroCourse, Next next) {
+    private void createFormRow(final CkoCourse prevCkoCourse, Next next) {
         newCourseResponsiveLayout.removeAllComponents();
-        final MicroCourse microCourse = (prevMicroCourse != null)?prevMicroCourse:new MicroCourse();
+        final CkoCourse ckoCourse = (prevCkoCourse != null)? prevCkoCourse : new CkoCourse(type);
 
         ResponsiveRow formRow = newCourseResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
-        TextField microCourseName = new TextField("Course name");
-        microCourseName.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        microCourseBinder.forField(microCourseName).bind(MicroCourse::getName, MicroCourse::setName);
-        ComboBox<User> microCourseMaster = new ComboBox<>("Course master");
-        microCourseMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        microCourseMaster.setItems(userService.findCurrentlyEmployedUsers());
-        microCourseMaster.setEmptySelectionAllowed(false);
-        microCourseMaster.setItemCaptionGenerator(User::getUsername);
-        microCourseBinder.forField(microCourseMaster).bind(MicroCourse::getUser, MicroCourse::setUser);
+        TextField courseName = new TextField("Course name");
+        courseName.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        courseBinder.forField(courseName).bind(CkoCourse::getName, CkoCourse::setName);
+        ComboBox<User> courseMaster = new ComboBox<>("Course master");
+        courseMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        courseMaster.setItems(userService.findCurrentlyEmployedUsers());
+        courseMaster.setEmptySelectionAllowed(false);
+        courseMaster.setItemCaptionGenerator(User::getUsername);
+        courseBinder.forField(courseMaster).bind(CkoCourse::getUser, CkoCourse::setUser);
         RichTextArea description = new RichTextArea("Description");
         description.setWidth(100, Sizeable.Unit.PERCENTAGE);
         description.setHeight(300, Sizeable.Unit.PIXELS);
-        microCourseBinder.forField(description).bind(MicroCourse::getDescription, MicroCourse::setDescription);
+        courseBinder.forField(description).bind(CkoCourse::getDescription, CkoCourse::setDescription);
         OnOffSwitch active = new OnOffSwitch();
         active.setCaption("Active");
-        microCourseBinder.forField(active).bind(MicroCourse::isActive, MicroCourse::setActive);
+        courseBinder.forField(active).bind(CkoCourse::isActive, CkoCourse::setActive);
 
-        MButton createButton = new MButton((prevMicroCourse==null)?"Create new course!":"Update course").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
+        MButton createButton = new MButton((prevCkoCourse ==null)?"Create new course!":"Update course").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
             try {
-                microCourseBinder.writeBean(microCourse);
+                courseBinder.writeBean(ckoCourse);
             } catch (ValidationException e) {
                 e.printStackTrace();
                 Notification.show("Error saving course", e.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
 
-            microCourseRepository.save(microCourse);
+            microCourseRepository.save(ckoCourse);
             newCourseResponsiveLayout.removeAllComponents();
-            if(next!=null) next.next(microCourse);
+            if(next!=null) next.next(ckoCourse);
         });
 
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(microCourseName);
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(courseName);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(active);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(microCourseMaster);
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(courseMaster);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(description);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-        if(prevMicroCourse==null) {
+        if(prevCkoCourse ==null) {
             formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
             formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
             formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
@@ -147,7 +144,7 @@ public class CourseForm {
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(createButton);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
 
-        microCourseBinder.readBean(microCourse);
+        courseBinder.readBean(ckoCourse);
     }
 
     private ResponsiveRow getDialogRow(ResponsiveLayout newBubbleResponsiveLayout) {
@@ -169,6 +166,6 @@ public class CourseForm {
 
     @FunctionalInterface
     public interface Next {
-        void next(MicroCourse microCourse);
+        void next(CkoCourse ckoCourse);
     }
 }

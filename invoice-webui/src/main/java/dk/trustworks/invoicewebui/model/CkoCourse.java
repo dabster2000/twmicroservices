@@ -15,12 +15,13 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "cko_courses")
-public class MicroCourse {
+public class CkoCourse {
 
     @Id
     private String uuid;
     private String name;
     private String description;
+    private String type;
     private String owner;
     private boolean active;
 
@@ -28,19 +29,15 @@ public class MicroCourse {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate created;
 
-    public MicroCourse() {
+    public CkoCourse() {
         this.uuid = UUID.randomUUID().toString();
         this.created = LocalDate.now();
         this.active = true;
     }
 
-    public MicroCourse(String name, String description, User user, boolean active) {
-        this.uuid = UUID.randomUUID().toString();
-        this.name = name;
-        this.description = description;
-        this.owner = user.getUuid();
-        this.active = active;
-        this.created = LocalDate.now();
+    public CkoCourse(String type) {
+        this();
+        this.type = type;
     }
 
     public String getUuid() {
@@ -81,6 +78,14 @@ public class MicroCourse {
 
     public LocalDate getCreated() {
         return created;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

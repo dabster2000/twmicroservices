@@ -17,6 +17,9 @@ public class PhotosCardImpl extends PhotosCardDesign implements Box {
     private int boxWidth;
     private String name;
 
+    public PhotosCardImpl() {
+    }
+
     public PhotosCardImpl(DashboardPreloader dashboardPreloader, int priority, int boxWidth, String name) {
         this.dashboardPreloader = dashboardPreloader;
         this.priority = priority;
@@ -53,9 +56,16 @@ public class PhotosCardImpl extends PhotosCardDesign implements Box {
         return this;
     }
 
-    public void loadResourcePhoto(String resource) {
+    public PhotosCardImpl loadResourcePhoto(String resource) {
         getPhoto().setSource(new ThemeResource(resource));
+        getPhoto().setSizeFull();
         getLblPhotoText().setVisible(false);
+        return this;
+    }
+
+    public PhotosCardImpl withFullWidth() {
+        this.setWidth(100, Unit.PERCENTAGE);
+        return this;
     }
 
     public void loadRandomPhoto() {

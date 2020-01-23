@@ -4,12 +4,14 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.MicroCourse;
-import dk.trustworks.invoicewebui.model.MicroCourseStudent;
+import dk.trustworks.invoicewebui.model.CkoCourse;
+import dk.trustworks.invoicewebui.model.CkoCourseStudent;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
@@ -20,8 +22,9 @@ import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.academy.components.CourseForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import javafx.scene.paint.Material;
+import dk.trustworks.invoicewebui.web.dashboard.cards.PhotosCardImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
@@ -53,9 +56,9 @@ public class CoursesLayout extends VerticalLayout {
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public CoursesLayout init() {
-        courseForm = new CourseForm(userService, microCourseRepository, photoRepository);
+        courseForm = new CourseForm("micro", userService, microCourseRepository, photoRepository);
 
-        responsiveLayout.removeAllComponents();
+        responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new PhotosCardImpl().loadResourcePhoto("images/banners/brain-banner.jpeg").withFullWidth());
         responsiveLayout.addRow(courseForm.getNewCourseButton());
         responsiveLayout.addRow(courseForm.getDialogRow());
 
@@ -71,13 +74,13 @@ public class CoursesLayout extends VerticalLayout {
         coursesRow.removeAllComponents();
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
 
-        for (MicroCourse microCourse : microCourseRepository.findByActiveTrueOrderByCreatedDesc()) {
+        for (CkoCourse ckoCourse : microCourseRepository.findByTypeAndActiveTrueOrderByCreatedDesc("micro")) {
             BubblesDesign courseDesign = new BubblesDesign();
 
-            MicroCourseStudent microCourseStudent = microCourseStudentRepository.findByMicroCourseAndUseruuid(microCourse, user.getUuid());
+            CkoCourseStudent ckoCourseStudent = microCourseStudentRepository.findByCkoCourseAndUseruuid(ckoCourse, user.getUuid());
 
-            courseDesign.getLblHeading().setValue(microCourse.getName());
-            courseDesign.getLblDescription().setValue(microCourse.getDescription());
+            courseDesign.getLblHeading().setValue(ckoCourse.getName());
+            courseDesign.getLblDescription().setValue(ckoCourse.getDescription());
 
             courseDesign.getBtnLeave().setVisible(false);
             courseDesign.getBtnEdit().setVisible(false);
@@ -87,44 +90,44 @@ public class CoursesLayout extends VerticalLayout {
 
             courseDesign.getBtnJoin().setDescription("Sign up for micro course");
             courseDesign.getBtnLeave().setDescription("Withdraw your application for micro course");
-            courseDesign.getBtnApply().setDescription("Yay - I graduated from this course!");
+
+            courseDesign.getBtnApply().setStyleName("grey-icon flat tiny");
+            courseDesign.getBtnApply().setDescription("I haven't yet graduated from this course!");
 
             courseDesign.getBtnJoin().setVisible(true);
 
-            courseDesign.getBtnEdit().addClickListener(event -> courseForm.editFormAction(microCourse));
+            courseDesign.getBtnEdit().addClickListener(event -> courseForm.editFormAction(ckoCourse));
 
             courseDesign.getBtnJoin().addClickListener(event -> {
-                microCourseStudentRepository.save(new MicroCourseStudent(user, microCourse, "ENLISTED"));
+                microCourseStudentRepository.save(new CkoCourseStudent(user, ckoCourse, "ENLISTED"));
                 Page.getCurrent().reload();
             });
 
             courseDesign.getBtnLeave().addClickListener(event -> {
-                microCourseStudentRepository.delete(microCourseStudent);
+                microCourseStudentRepository.delete(ckoCourseStudent);
                 Page.getCurrent().reload();
             });
 
             courseDesign.getBtnApply().addClickListener(event -> {
-                if(microCourseStudent==null) microCourseStudentRepository.save(new MicroCourseStudent(user, microCourse, "ENLISTED"));
-                else if(microCourseStudent.getStatus().equals("ENLISTED")) {
-                    microCourseStudent.setStatus("GRADUATED");
-                    microCourseStudentRepository.save(microCourseStudent);
-                } else microCourseStudentRepository.delete(microCourseStudent);
+                if(ckoCourseStudent == null) microCourseStudentRepository.save(new CkoCourseStudent(user, ckoCourse, "GRADUATED"));
+                else if(ckoCourseStudent.getStatus().equals("ENLISTED")) {
+                    ckoCourseStudent.setStatus("GRADUATED");
+                    microCourseStudentRepository.save(ckoCourseStudent);
+                } else microCourseStudentRepository.delete(ckoCourseStudent);
                 Page.getCurrent().reload();
             });
 
-            if(microCourseStudent != null && microCourseStudent.getStatus().equals("ENLISTED")) {
-                courseDesign.getBtnApply().setStyleName("grey-icon flat tiny");
-                courseDesign.getBtnApply().setDescription("I haven't yet graduated from this course!");
+            if(ckoCourseStudent != null && ckoCourseStudent.getStatus().equals("ENLISTED")) {
                 courseDesign.getBtnLeave().setVisible(true);
                 courseDesign.getBtnJoin().setVisible(false);
             }
-            if(microCourseStudent != null && microCourseStudent.getStatus().equals("GRADUATED")) {
+            if(ckoCourseStudent != null && ckoCourseStudent.getStatus().equals("GRADUATED")) {
+                courseDesign.getBtnApply().setDescription("Yay - I graduated from this course!");
+                courseDesign.getBtnApply().setStyleName("flat tiny");
                 courseDesign.getBtnLeave().setVisible(false);
                 courseDesign.getBtnJoin().setVisible(false);
             }
-            if(microCourse.getUser().getUuid().equals(user.getUuid())) {
-                courseDesign.getBtnApply().setStyleName("grey-icon flat tiny");
-                courseDesign.getBtnApply().setDescription("I haven't yet graduated from this course!");
+            if(ckoCourse.getUser().getUuid().equals(user.getUuid())) {
                 courseDesign.getBtnEdit().setVisible(true);
                 courseDesign.getBtnJoin().setVisible(false);
                 courseDesign.getBtnLeave().setVisible(false);
@@ -133,7 +136,7 @@ public class CoursesLayout extends VerticalLayout {
             courseDesign.getPhotosContentHolder().setVisible(false);
             courseDesign.getTextContentHolder().setHeight(300, Unit.PIXELS);
 
-            String relatedID = microCourse.getUuid();
+            String relatedID = ckoCourse.getUuid();
             Resource resource = photoService.getRelatedPhoto(relatedID);
 
             courseDesign.getImgTop().setSource(resource);
