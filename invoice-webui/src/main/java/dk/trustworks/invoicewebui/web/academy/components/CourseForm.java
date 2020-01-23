@@ -26,7 +26,6 @@ public class CourseForm {
 
     private final UserService userService;
     private final MicroCourseRepository microCourseRepository;
-    private final MicroCourseStudentRepository microCourseStudentRepository;
     private final PhotoRepository photoRepository;
 
     private final ResponsiveRow newCourseDialogRow;
@@ -35,10 +34,9 @@ public class CourseForm {
 
     private Binder<MicroCourse> microCourseBinder = new Binder<>();
 
-    public CourseForm(UserService userService, MicroCourseRepository microCourseRepository, MicroCourseStudentRepository microCourseStudentRepository, PhotoRepository photoRepository) {
+    public CourseForm(UserService userService, MicroCourseRepository microCourseRepository, PhotoRepository photoRepository) {
         this.userService = userService;
         this.microCourseRepository = microCourseRepository;
-        this.microCourseStudentRepository = microCourseStudentRepository;
         this.photoRepository = photoRepository;
         newCourseDialogRow = getDialogRow(newCourseResponsiveLayout);
     }
@@ -54,7 +52,7 @@ public class CourseForm {
                 .withOffset(ResponsiveLayout.DisplaySize.LG, 10)
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 2, 2)
-                .withComponent(new MButton("new micro course", event -> {
+                .withComponent(new MButton("New course", event -> {
                     newCourseDialogRow.setVisible(true);
                     UI.getCurrent().scrollIntoView(newCourseDialogRow);
                     createFormRow(null, newCourse -> createUploadRow(newCourse, newCourse2 -> closeDialogRow()));
@@ -93,54 +91,13 @@ public class CourseForm {
                 }).getUploader());
     }
 
-    private void createStudentsRow(final MicroCourse prevCourse, Next next) {
-        newCourseResponsiveLayout.removeAllComponents();
-        microCourseBinder.readBean(new MicroCourse());
-        ResponsiveRow membersRow = newCourseResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
-
-        List<MicroCourseStudent> students = microCourseStudentRepository.findByMicroCourse(prevCourse);
-        User[] currentUsers = new User[students.size()];
-        int i = 0;
-        for (MicroCourseStudent student : students) {
-            currentUsers[i++] = student.getMember();
-        }
-
-        TwinColSelect<User> twinColSelect = new TwinColSelect<>();
-        twinColSelect.setItems(userService.findCurrentlyEmployedUsers());
-        twinColSelect.select(currentUsers);
-        twinColSelect.setRows(12);
-        twinColSelect.setLeftColumnCaption("Outside bubble");
-        twinColSelect.setRightColumnCaption("In the bubble");
-        twinColSelect.setItemCaptionGenerator(User::getUsername);
-        twinColSelect.setWidth(100, Sizeable.Unit.PERCENTAGE);
-
-        MButton doneButton = new MButton("Done").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
-            List<MicroCourseStudent> currentStudents = microCourseStudentRepository.findByMicroCourse(prevCourse);
-            microCourseStudentRepository.delete(currentStudents);
-            List<User> userList = userService.findCurrentlyEmployedUsers();
-            for (User user : twinColSelect.getSelectedItems()) {
-                microCourseStudentRepository.save(new MicroCourseStudent(user, prevCourse, "GRADUATED"));
-                userList = userList.stream().filter(user2 -> !user2.getUuid().equals(user.getUuid())).collect(Collectors.toList());
-            }
-
-            newCourseResponsiveLayout.removeAllComponents();
-            if(next!=null) next.next(prevCourse);
-        });
-        membersRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-        membersRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(twinColSelect, ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        membersRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
-        membersRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new Label());
-        membersRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(doneButton);
-        membersRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new Label());
-    }
-
     private void createFormRow(final MicroCourse prevMicroCourse, Next next) {
         newCourseResponsiveLayout.removeAllComponents();
         final MicroCourse microCourse = (prevMicroCourse != null)?prevMicroCourse:new MicroCourse();
 
         ResponsiveRow formRow = newCourseResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
-        TextField microCourseName = new TextField("Micro Course name");
+        TextField microCourseName = new TextField("Course name");
         microCourseName.setWidth(100, Sizeable.Unit.PERCENTAGE);
         microCourseBinder.forField(microCourseName).bind(MicroCourse::getName, MicroCourse::setName);
         ComboBox<User> microCourseMaster = new ComboBox<>("Course master");

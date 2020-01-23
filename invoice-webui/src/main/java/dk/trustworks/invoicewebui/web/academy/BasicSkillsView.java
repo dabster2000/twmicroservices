@@ -37,7 +37,7 @@ public class BasicSkillsView extends VerticalLayout implements View {
     private BasicSkillsLayout basicSkillsLayout;
 
     public static final String VIEW_NAME = "basicskills";
-    public static final String MENU_NAME = "BASICSKILLS";
+    public static final String MENU_NAME = "BASIC SKILLS";
     public static final String VIEW_BREADCRUMB = "TW Basic Skills";
     public static final FontIcon VIEW_ICON = MaterialIcons.QUESTION_ANSWER;
 

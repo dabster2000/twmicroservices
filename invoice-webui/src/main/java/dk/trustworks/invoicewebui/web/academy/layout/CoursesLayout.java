@@ -21,8 +21,10 @@ import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.academy.components.CourseForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import javafx.scene.paint.Material;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.alump.materialicons.MaterialIcons;
 
 @SpringComponent
 @SpringUI
@@ -51,7 +53,7 @@ public class CoursesLayout extends VerticalLayout {
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public CoursesLayout init() {
-        courseForm = new CourseForm(userService, microCourseRepository, microCourseStudentRepository, photoRepository);
+        courseForm = new CourseForm(userService, microCourseRepository, photoRepository);
 
         responsiveLayout.removeAllComponents();
         responsiveLayout.addRow(courseForm.getNewCourseButton());
@@ -79,8 +81,9 @@ public class CoursesLayout extends VerticalLayout {
 
             courseDesign.getBtnLeave().setVisible(false);
             courseDesign.getBtnEdit().setVisible(false);
-            courseDesign.getBtnApply().setVisible(false);
+            courseDesign.getBtnApply().setVisible(true);
             courseDesign.getBtnJoin().setVisible(false);
+            courseDesign.getBtnApply().setIcon(MaterialIcons.SCHOOL);
 
             courseDesign.getBtnJoin().setDescription("Sign up for micro course");
             courseDesign.getBtnLeave().setDescription("Withdraw your application for micro course");
@@ -99,19 +102,25 @@ public class CoursesLayout extends VerticalLayout {
                 Page.getCurrent().reload();
             });
 
+            courseDesign.getBtnApply().addClickListener(event -> {
+                if(microCourseStudent==null) microCourseStudentRepository.save(new MicroCourseStudent(user, microCourse, "ENLISTED"));
+                else if(microCourseStudent.getStatus().equals("ENLISTED")) microCourseStudent.setStatus("GRADUATED");
+                else microCourseStudentRepository.delete(microCourseStudent);
+                Page.getCurrent().reload();
+            });
+
             if(microCourseStudent != null && microCourseStudent.getStatus().equals("ENLISTED")) {
+                courseDesign.getBtnApply().setStyleName("grey-icon");
                 courseDesign.getBtnLeave().setVisible(true);
-                courseDesign.getBtnApply().setVisible(false);
                 courseDesign.getBtnJoin().setVisible(false);
             }
             if(microCourseStudent != null && microCourseStudent.getStatus().equals("GRADUATED")) {
                 courseDesign.getBtnLeave().setVisible(false);
-                courseDesign.getBtnApply().setVisible(false);
                 courseDesign.getBtnJoin().setVisible(false);
             }
             if(microCourse.getUser().getUuid().equals(user.getUuid())) {
+                courseDesign.getBtnApply().setStyleName("grey-icon");
                 courseDesign.getBtnEdit().setVisible(true);
-                courseDesign.getBtnApply().setVisible(false);
                 courseDesign.getBtnJoin().setVisible(false);
                 courseDesign.getBtnLeave().setVisible(false);
             }

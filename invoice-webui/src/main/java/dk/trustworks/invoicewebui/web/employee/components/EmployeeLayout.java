@@ -218,7 +218,8 @@ public class EmployeeLayout extends VerticalLayout {
             // TODO: Save role
         //});
         //skillRoleRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(select_role);
-        skillRoleRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new Label("Her er en hjælpe tekst. Afventer indhold", ContentMode.HTML));
+        skillRoleRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new Label("<p>Udfyld kompetenceområderne nedenfor, så dine kollegaer kan se hvad du kan og salgsteamet kan se hvilke erfaringer de kan trække på.</p>" +
+                "<p>Hvis du har lyst, kan du samtidig udfylde status for dine kompetence, hvor du angiver hvilke områder du ønsker at forbedre dig inden for, så har du en hurtig oversigt til dine KPC-samtaler og COOPS kan nemt se, hvor du passer perfekt til din næste kundeaftale.</p>", ContentMode.HTML));
 
         BoxImpl skillRoleBox = new BoxImpl();
         skillRoleBox.getContent().addComponent(skillRoleRow);
