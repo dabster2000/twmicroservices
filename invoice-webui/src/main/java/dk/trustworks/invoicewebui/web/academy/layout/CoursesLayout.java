@@ -87,6 +87,7 @@ public class CoursesLayout extends VerticalLayout {
 
             courseDesign.getBtnJoin().setDescription("Sign up for micro course");
             courseDesign.getBtnLeave().setDescription("Withdraw your application for micro course");
+            courseDesign.getBtnApply().setDescription("Yay - I graduated from this course!");
 
             courseDesign.getBtnJoin().setVisible(true);
 
@@ -104,13 +105,16 @@ public class CoursesLayout extends VerticalLayout {
 
             courseDesign.getBtnApply().addClickListener(event -> {
                 if(microCourseStudent==null) microCourseStudentRepository.save(new MicroCourseStudent(user, microCourse, "ENLISTED"));
-                else if(microCourseStudent.getStatus().equals("ENLISTED")) microCourseStudent.setStatus("GRADUATED");
-                else microCourseStudentRepository.delete(microCourseStudent);
+                else if(microCourseStudent.getStatus().equals("ENLISTED")) {
+                    microCourseStudent.setStatus("GRADUATED");
+                    microCourseStudentRepository.save(microCourseStudent);
+                } else microCourseStudentRepository.delete(microCourseStudent);
                 Page.getCurrent().reload();
             });
 
             if(microCourseStudent != null && microCourseStudent.getStatus().equals("ENLISTED")) {
-                courseDesign.getBtnApply().setStyleName("grey-icon");
+                courseDesign.getBtnApply().setStyleName("grey-icon flat tiny");
+                courseDesign.getBtnApply().setDescription("I haven't yet graduated from this course!");
                 courseDesign.getBtnLeave().setVisible(true);
                 courseDesign.getBtnJoin().setVisible(false);
             }
@@ -119,13 +123,14 @@ public class CoursesLayout extends VerticalLayout {
                 courseDesign.getBtnJoin().setVisible(false);
             }
             if(microCourse.getUser().getUuid().equals(user.getUuid())) {
-                courseDesign.getBtnApply().setStyleName("grey-icon");
+                courseDesign.getBtnApply().setStyleName("grey-icon flat tiny");
+                courseDesign.getBtnApply().setDescription("I haven't yet graduated from this course!");
                 courseDesign.getBtnEdit().setVisible(true);
                 courseDesign.getBtnJoin().setVisible(false);
                 courseDesign.getBtnLeave().setVisible(false);
             }
 
-            courseDesign.getPhotoContainer().setVisible(false);
+            courseDesign.getPhotosContentHolder().setVisible(false);
             courseDesign.getTextContentHolder().setHeight(300, Unit.PIXELS);
 
             String relatedID = microCourse.getUuid();
