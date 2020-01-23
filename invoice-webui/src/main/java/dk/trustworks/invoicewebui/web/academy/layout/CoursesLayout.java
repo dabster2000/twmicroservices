@@ -58,6 +58,7 @@ public class CoursesLayout extends VerticalLayout {
     public CoursesLayout init() {
         courseForm = new CourseForm("micro", userService, microCourseRepository, photoRepository);
 
+        responsiveLayout.removeAllComponents();
         responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new PhotosCardImpl().loadResourcePhoto("images/banners/brain-banner.jpeg").withFullWidth());
         responsiveLayout.addRow(courseForm.getNewCourseButton());
         responsiveLayout.addRow(courseForm.getDialogRow());

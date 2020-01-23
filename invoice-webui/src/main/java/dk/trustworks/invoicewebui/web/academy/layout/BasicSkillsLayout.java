@@ -62,7 +62,7 @@ public class BasicSkillsLayout extends VerticalLayout {
 
         responsiveLayout.removeAllComponents();
         responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new PhotosCardImpl().loadResourcePhoto("images/banners/basic-skills-banner.jpeg").withFullWidth());
-        responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new BoxImpl().instance(new Label("<p>Her kan jeg læse om de obligatoriske kurser</p><p>AC1: Når som Trustworker står på siden 'Basis TW Info' under Knowledge har jeg som Trustworker mulighed for at læse om de obligatoriske TW 'kurser'</p>")));
+        //responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new BoxImpl().instance(new Label("<p>Her kan jeg læse om de obligatoriske kurser</p><p>AC1: Når som Trustworker står på siden 'Basis TW Info' under Knowledge har jeg som Trustworker mulighed for at læse om de obligatoriske TW 'kurser'</p>")));
         responsiveLayout.addRow(courseForm.getNewCourseButton());
         responsiveLayout.addRow(courseForm.getDialogRow());
 
