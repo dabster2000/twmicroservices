@@ -170,8 +170,8 @@ public class   DashboardView extends VerticalLayout implements View {
         tripVideoBrowser.setWidth("100%");
         tripVideosCardDesign.getIframeHolder().addComponent(tripVideoBrowser);
 
-        dnaCard.getBoxComponent().setHeight("600px");
-        cateringCard.getBoxComponent().setHeight("600px");
+        //dnaCard.getBoxComponent().setHeight("600px");
+        //cateringCard.getBoxComponent().setHeight("600px");
 
         photoCard.loadRandomPhoto();
         knowledgeWheelPhoto.loadResourcePhoto("images/cards/knowledge/lifecycle.png");
