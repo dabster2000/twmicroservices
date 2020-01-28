@@ -3,23 +3,22 @@ package dk.trustworks.invoicewebui.web.employee.components;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.AmbitionCategory;
-import dk.trustworks.invoicewebui.model.KnowledgeRole;
-import dk.trustworks.invoicewebui.model.Note;
-import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.network.rest.KnowledgeRoleRestService;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
+import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
+import dk.trustworks.invoicewebui.web.common.ImageListItem;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.BubblesCardImpl;
 import dk.trustworks.invoicewebui.web.dashboard.cards.ConsultantAllocationCardImpl;
@@ -36,8 +35,11 @@ import dk.trustworks.invoicewebui.web.stats.components.YourTrustworksForecastCha
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -75,6 +77,8 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final KnowledgeRoleRestService knowledgeRoleRestService;
 
+    private final MicroCourseStudentRepository microCourseStudentRepository;
+
     private final PhotoRepository photoRepository;
 
     private final PhotoService photoService;
@@ -101,7 +105,7 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, MicroCourseStudentRepository microCourseStudentRepository, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
@@ -119,6 +123,7 @@ public class EmployeeLayout extends VerticalLayout {
         this.photoService = photoService;
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
         this.knowledgeRoleRestService = knowledgeRoleRestService;
+        this.microCourseStudentRepository = microCourseStudentRepository;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
         this.employeeContactInfoCardController = employeeContactInfoCardController;
@@ -229,12 +234,30 @@ public class EmployeeLayout extends VerticalLayout {
             skillContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, ambitionCategory));
         }
 
-        knowContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new CKOExpenseImpl(ckoExpenseRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
+        knowContentRow.addColumn().withDisplayRules(12, 12, 7, 7).withComponent(new CKOExpenseImpl(ckoExpenseRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
 
         BubblesCardImpl bubblesCard = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.of(user));
         bubblesCard.getContentHolder().setHeight(200, Unit.PIXELS);
 
         knowContentRow.addColumn().withDisplayRules(12, 12, 5, 5).withComponent(bubblesCard);
+
+        ImageCardDesign cardDesign = new ImageCardDesign();
+        cardDesign.getImgTop().setSource(new ThemeResource("images/cards/knowledge/trustworks-academy.png"));
+
+
+        cardDesign.getVlContent().addComponent(
+                new VerticalLayout(new MVerticalLayout(
+                        new MLabel("TW Academy Courses").withStyleName("large bold"),
+                        new MLabel("List of graduated courses...").withStyleName("small")
+                ).withMargin(false))
+        );
+
+        for (CkoCourseStudent ckoCourseStudent : microCourseStudentRepository.findByUseruuid(user.getUuid())) {
+            ImageListItem courseListItem = new ImageListItem().withComponents(photoService.getRelatedPhoto(ckoCourseStudent.getCkoCourse().getUuid()), ckoCourseStudent.getCkoCourse().getName(), ckoCourseStudent.getApplication().format(DateTimeFormatter.ofPattern("dd. MMMM yyyy")));
+            cardDesign.getVlContent().addComponent(courseListItem);
+        }
+
+        knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(cardDesign);
 
         monthReport.init();
     }
