@@ -59,7 +59,7 @@ public class CoursesLayout extends VerticalLayout {
         courseForm = new CourseForm("micro", userService, microCourseRepository, photoRepository);
 
         responsiveLayout.removeAllComponents();
-        responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new PhotosCardImpl().loadResourcePhoto("images/banners/trustworks-academy.png-courses.png").withFullWidth());
+        responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new PhotosCardImpl().loadResourcePhoto("images/banners/trustworks-academy-courses.png").withFullWidth());
         responsiveLayout.addRow(courseForm.getNewCourseButton());
         responsiveLayout.addRow(courseForm.getDialogRow());
 
