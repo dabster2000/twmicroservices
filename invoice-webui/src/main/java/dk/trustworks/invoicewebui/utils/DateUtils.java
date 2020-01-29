@@ -12,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MONTHS;
 
 @UtilityClass
 public class DateUtils {
@@ -188,6 +189,17 @@ public class DateUtils {
      */
     public static int countDaysBetween(LocalDate dateBefore, LocalDate dateAfter) {
         return Math.toIntExact(DAYS.between(dateBefore, dateAfter));
+    }
+
+    /**
+     * Fra 1. jan til 5. may giver 4 måneder.
+     *
+     * @param dateBefore inclusive
+     * @param dateAfter exclusive
+     * @return
+     */
+    public static int countMonthsBetween(LocalDate dateBefore, LocalDate dateAfter) {
+        return Math.toIntExact(MONTHS.between(dateBefore, dateAfter));
     }
 
     public static String[] getMonthNames(LocalDate localDateStart, LocalDate localDateEnd) {

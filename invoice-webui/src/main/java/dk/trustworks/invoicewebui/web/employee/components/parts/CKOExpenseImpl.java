@@ -11,18 +11,19 @@ import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.ThemeResource;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created by hans on 09/09/2017.
@@ -181,15 +182,21 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         ListSeries expenseSeries = new ListSeries("used");
         ListSeries availableSeries = new ListSeries("available");
 
+        int maxBudgetThisYear = 24000;
+        Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
+        if(firstStatus.isPresent() && DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) < 12)
+            maxBudgetThisYear = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) * 2000;
+        if(!firstStatus.isPresent()) maxBudgetThisYear = 0;
+
         if(expenses.keySet().size() == 0) {
             x.addCategory(LocalDate.now().getYear()+"");
             expenseSeries.addData(0);
-            availableSeries.addData(24000 );
+            availableSeries.addData(maxBudgetThisYear );
         } else {
             for (String year : expenses.keySet()) {
                 x.addCategory(year);
                 expenseSeries.addData(expenses.get(year));
-                availableSeries.addData(24000 - expenses.get(year));
+                availableSeries.addData(maxBudgetThisYear - expenses.get(year));
             }
         }
 
