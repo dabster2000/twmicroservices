@@ -259,12 +259,12 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         );
         headerRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(
                 new MVerticalLayout(
-                        new MLabel("<b>Relevante kompetencer:</b>").withContentMode(ContentMode.HTML),
+                        new MLabel("<b>Relevante kompetencer:</b>").withContentMode(ContentMode.HTML).withVisible(false),
                         new MLabel("- Proceskortlægning&nbsp;&nbsp;&nbsp;" +
                                 "- Forretningsregler<br />" +
                                 "<br />" +
                                 "- User experience&nbsp;&nbsp;&nbsp;" +
-                                "- Behovsafdækning").withContentMode(ContentMode.HTML)
+                                "- Behovsafdækning").withContentMode(ContentMode.HTML).withVisible(false)
                         )
                         .withMargin(true)
                         .withSpacing(true)
