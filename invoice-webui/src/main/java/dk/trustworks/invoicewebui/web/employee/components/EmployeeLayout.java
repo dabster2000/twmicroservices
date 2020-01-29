@@ -42,6 +42,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @SpringComponent
 @SpringUI
@@ -223,8 +224,8 @@ public class EmployeeLayout extends VerticalLayout {
             // TODO: Save role
         //});
         //skillRoleRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(select_role);
-        skillRoleRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new Label("<p>Udfyld kompetenceområderne nedenfor, så dine kollegaer kan se hvad du kan og salgsteamet kan se hvilke erfaringer de kan trække på.</p>" +
-                "<p>Hvis du har lyst, kan du samtidig udfylde status for dine kompetence, hvor du angiver hvilke områder du ønsker at forbedre dig inden for, så har du en hurtig oversigt til dine KPC-samtaler og COOPS kan nemt se, hvor du passer perfekt til din næste kundeaftale.</p>", ContentMode.HTML));
+        skillRoleRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new MLabel("<p>Udfyld kompetenceområderne nedenfor, så dine kollegaer kan se hvad du kan og salgsteamet kan se hvilke erfaringer de kan trække på.</p>" +
+                "<p>Hvis du har lyst, kan du samtidig udfylde status for dine kompetence, hvor du angiver hvilke områder du ønsker at forbedre dig inden for, så har du en hurtig oversigt til dine KPC-samtaler og COOPS kan nemt se, hvor du passer perfekt til din næste kundeaftale.</p>").withContentMode(ContentMode.HTML).withFullWidth());
 
         BoxImpl skillRoleBox = new BoxImpl();
         skillRoleBox.getContent().addComponent(skillRoleRow);
@@ -239,27 +240,32 @@ public class EmployeeLayout extends VerticalLayout {
         BubblesCardImpl bubblesCard = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.of(user));
         bubblesCard.getContentHolder().setHeight(200, Unit.PIXELS);
 
-        knowContentRow.addColumn().withDisplayRules(12, 12, 5, 5).withComponent(bubblesCard);
+        knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(bubblesCard);
 
-        ImageCardDesign cardDesign = new ImageCardDesign();
-        cardDesign.getImgTop().setSource(new ThemeResource("images/cards/knowledge/trustworks-academy.png"));
+        ImageCardDesign graduatedCoursesCard = getTrustworksAcademyCard("GRADUATED","TW Academy Courses","List of graduated courses...");
+        knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(graduatedCoursesCard);
 
+        ImageCardDesign signedCoursesCard = getTrustworksAcademyCard("ENLISTED","TW Academy Courses","Queued for the following courses...");
+        knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(signedCoursesCard);
 
-        cardDesign.getVlContent().addComponent(
+        monthReport.init();
+    }
+
+    private ImageCardDesign getTrustworksAcademyCard(String type, String headline, String byline) {
+        ImageCardDesign graduatedCoursesCard = new ImageCardDesign();
+        graduatedCoursesCard.getImgTop().setSource(new ThemeResource("images/cards/knowledge/trustworks-academy.png"));
+        graduatedCoursesCard.getVlContent().addComponent(
                 new VerticalLayout(new MVerticalLayout(
-                        new MLabel("TW Academy Courses").withStyleName("large bold"),
-                        new MLabel("List of graduated courses...").withStyleName("small")
+                        new MLabel(headline).withStyleName("large bold"),
+                        new MLabel(byline).withStyleName("small")
                 ).withMargin(false))
         );
 
-        for (CkoCourseStudent ckoCourseStudent : microCourseStudentRepository.findByUseruuid(user.getUuid())) {
+        for (CkoCourseStudent ckoCourseStudent : microCourseStudentRepository.findByUseruuid(user.getUuid()).stream().filter(ckoCourseStudent -> ckoCourseStudent.getStatus().equals(type)).collect(Collectors.toList())) {
             ImageListItem courseListItem = new ImageListItem().withComponents(photoService.getRelatedPhoto(ckoCourseStudent.getCkoCourse().getUuid()), ckoCourseStudent.getCkoCourse().getName(), ckoCourseStudent.getApplication().format(DateTimeFormatter.ofPattern("dd. MMMM yyyy")));
-            cardDesign.getVlContent().addComponent(courseListItem);
+            graduatedCoursesCard.getVlContent().addComponent(courseListItem);
         }
-
-        knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(cardDesign);
-
-        monthReport.init();
+        return graduatedCoursesCard;
     }
 
     private void setNewButtonPressState(Button btnWork, Button btnKnowledge, Button btnSkills, Button btnBudget, Button btnDocuments, Button btnPurpose, Button.ClickEvent event, ResponsiveRow contentRow) {
