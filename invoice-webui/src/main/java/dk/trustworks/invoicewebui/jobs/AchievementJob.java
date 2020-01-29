@@ -143,7 +143,7 @@ public class AchievementJob {
         int length = 0;
         boolean found = false;
         for (String key : expensePerYearMap.keySet().stream().sorted().collect(Collectors.toList())) {
-            if(expensePerYearMap.get(key) >= 22000 && expensePerYearMap.get(key) <= 25000) {
+            if(expensePerYearMap.get(key) >= 20400 && expensePerYearMap.get(key) <= 27600) {
                 length++;
             } else {
                 length = 0;
