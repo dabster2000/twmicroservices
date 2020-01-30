@@ -92,7 +92,7 @@ public class BasicSkillsLayout extends VerticalLayout {
             courseDesign.getBtnLeave().setDescription("Withdraw your application for course");
 
             courseDesign.getBtnApply().setStyleName("grey-icon flat tiny");
-            courseDesign.getBtnApply().setDescription("I haven't yet graduated from this course!");
+            courseDesign.getBtnApply().setDescription("I haven't yet graduated from this course! (Click to change status)");
 
             courseDesign.getBtnJoin().setVisible(true);
 
@@ -122,7 +122,7 @@ public class BasicSkillsLayout extends VerticalLayout {
                 courseDesign.getBtnJoin().setVisible(false);
             }
             if(ckoCourseStudent != null && ckoCourseStudent.getStatus().equals("GRADUATED")) {
-                courseDesign.getBtnApply().setDescription("Yay - I graduated from this course!");
+                courseDesign.getBtnApply().setDescription("Yay - I graduated from this course! (Click to change status)");
                 courseDesign.getBtnApply().setStyleName("flat tiny");
                 courseDesign.getBtnLeave().setVisible(false);
                 courseDesign.getBtnJoin().setVisible(false);
