@@ -78,6 +78,7 @@ public class BasicSkillsLayout extends VerticalLayout {
 
             CkoCourseStudent ckoCourseStudent = microCourseStudentRepository.findByCkoCourseAndUseruuid(ckoCourse, user.getUuid());
 
+            courseDesign.getLblHeading().setHeight(50, Unit.PIXELS);
             courseDesign.getLblHeading().setValue(ckoCourse.getName());
             courseDesign.getLblDescription().setValue(ckoCourse.getDescription());
 
