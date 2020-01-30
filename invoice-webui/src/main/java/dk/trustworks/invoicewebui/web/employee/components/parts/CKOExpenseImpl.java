@@ -182,21 +182,26 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         ListSeries expenseSeries = new ListSeries("used");
         ListSeries availableSeries = new ListSeries("available");
 
-        int maxBudgetThisYear = 24000;
+        int maxBudgetFullYear = 24000;
+        int maxBudgetFirstYear = maxBudgetFullYear;
         Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
-        if(firstStatus.isPresent() && DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) < 12)
-            maxBudgetThisYear = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) * 2000;
-        if(!firstStatus.isPresent()) maxBudgetThisYear = 0;
+        if(!firstStatus.isPresent()) return chart;
+
+        if(DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) < 12)
+            maxBudgetFirstYear = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) * 2000;
 
         if(expenses.keySet().size() == 0) {
             x.addCategory(LocalDate.now().getYear()+"");
             expenseSeries.addData(0);
-            availableSeries.addData(maxBudgetThisYear );
+            availableSeries.addData(maxBudgetFirstYear );
         } else {
             for (String year : expenses.keySet()) {
                 x.addCategory(year);
                 expenseSeries.addData(expenses.get(year));
-                availableSeries.addData(maxBudgetThisYear - expenses.get(year));
+                if(Integer.parseInt(year) == firstStatus.get().getStatusdate().getYear())
+                    availableSeries.addData(maxBudgetFirstYear - expenses.get(year));
+                else
+                    availableSeries.addData(maxBudgetFullYear - expenses.get(year));
             }
         }
 
