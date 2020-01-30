@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.web.bubbles;
 
 import allbegray.slack.SlackClientFactory;
+import allbegray.slack.exception.SlackResponseErrorException;
 import allbegray.slack.type.Message;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
@@ -180,13 +181,16 @@ public class BubblesLayout extends VerticalLayout {
             for (int i = 0; i < 60; i++) {
                 activity[i] = 0;
             }
-
-            for (Message message : bubbleWebApiClient.getGroupHistory(bubble.getSlackchannel(), 100).getMessages()) {
-                if(message.getSubtype()!=null) continue;
-                Instant epochMilli = Instant.ofEpochMilli(Long.parseLong(message.getTs().split("\\.")[0])*1000L);
-                LocalDate date = LocalDateTime.ofInstant(epochMilli, ZoneOffset.UTC).toLocalDate();
-                if(DAYS.between(date, LocalDate.now())>59) continue;
-                activity[(int)DAYS.between(date, LocalDate.now())] = (activity[(int)DAYS.between(date, LocalDate.now())].intValue() + 1);
+            try {
+                for (Message message : bubbleWebApiClient.getGroupHistory(bubble.getSlackchannel(), 100).getMessages()) {
+                    if (message.getSubtype() != null) continue;
+                    Instant epochMilli = Instant.ofEpochMilli(Long.parseLong(message.getTs().split("\\.")[0]) * 1000L);
+                    LocalDate date = LocalDateTime.ofInstant(epochMilli, ZoneOffset.UTC).toLocalDate();
+                    if (DAYS.between(date, LocalDate.now()) > 59) continue;
+                    activity[(int) DAYS.between(date, LocalDate.now())] = (activity[(int) DAYS.between(date, LocalDate.now())].intValue() + 1);
+                }
+            }catch (SlackResponseErrorException e) {
+                e.printStackTrace();
             }
 
             bubblesDesign.getGaugeContainer().addComponent(ActivityGauge.getChart(activity));

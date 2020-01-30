@@ -144,6 +144,9 @@ public class BasicSkillsLayout extends VerticalLayout {
             Resource resource = photoService.getRelatedPhoto(relatedID);
 
             courseDesign.getImgTop().setSource(resource);
+            if(ckoCourse.getUser().getUuid().equals(user.getUuid()) || user.getUsername().equals("hans.lassen")) {
+                courseDesign.getImgTop().addClickListener(event -> courseForm.editPhotoAction(ckoCourse));
+            }
 
             //courseDesign.getGaugeContainer().addComponent(ActivityGauge.getChart(activity));
             courseDesign.getGaugeContainer().setVisible(false);
