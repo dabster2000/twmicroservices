@@ -124,6 +124,10 @@ public class PhotoUploader {
         window.setModal(true);
         window.setClosable(true);
         window.setContent(vlPopupContainer);
+        window.addCloseListener(e -> {
+            if(done == null) setupFinalStep();
+            else done.uploaderDone();
+        });
         //window.setWidth(width+50, PIXELS);
         //window.setHeight(height+50, PIXELS);
 
