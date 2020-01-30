@@ -15,6 +15,6 @@ import java.util.List;
 public interface MicroCourseRepository extends CrudRepository<CkoCourse, Integer> {
 
     List<CkoCourse> findByActiveTrue();
-    List<CkoCourse> findByTypeAndActiveTrueOrderByCreatedDesc(@Param("type") String type);
+    List<CkoCourse> findByTypeAndActiveTrueOrderByNameAsc(@Param("type") String type);
 
 }

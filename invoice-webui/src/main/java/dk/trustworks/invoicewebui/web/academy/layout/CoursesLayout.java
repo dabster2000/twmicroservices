@@ -4,11 +4,9 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.CkoCourse;
 import dk.trustworks.invoicewebui.model.CkoCourseStudent;
@@ -22,7 +20,6 @@ import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.academy.components.CourseForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
-import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.PhotosCardImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +72,7 @@ public class CoursesLayout extends VerticalLayout {
         coursesRow.removeAllComponents();
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
 
-        for (CkoCourse ckoCourse : microCourseRepository.findByTypeAndActiveTrueOrderByCreatedDesc("micro")) {
+        for (CkoCourse ckoCourse : microCourseRepository.findByTypeAndActiveTrueOrderByNameAsc("micro")) {
             BubblesDesign courseDesign = new BubblesDesign();
 
             CkoCourseStudent ckoCourseStudent = microCourseStudentRepository.findByCkoCourseAndUseruuid(ckoCourse, user.getUuid());
