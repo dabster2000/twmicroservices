@@ -36,9 +36,9 @@ public class KnowledgeView extends VerticalLayout implements View {
     @Autowired
     private KnowledgeCanvas knowledgeCanvas;
 
-    public static final String VIEW_NAME = "conferences";
-    public static final String MENU_NAME = "CONFERENCES";
-    public static final String VIEW_BREADCRUMB = "Conferences videos";
+    public static final String VIEW_NAME = "keynotes";
+    public static final String MENU_NAME = "KEYNOTES";
+    public static final String VIEW_BREADCRUMB = "Keynote videos";
     public static final FontIcon VIEW_ICON = MaterialIcons.QUESTION_ANSWER;
 
     @PostConstruct
