@@ -108,7 +108,7 @@ public class LeftMenu extends ResponsiveRow {
 
         MenuItemContainer knowledge = new MenuItemContainer(order++).createItem("Knowledge ---", true, null, null, false, RoleType.USER);
         menuItems.put("knowledge", knowledge);
-        MenuItemContainer businessArchitecture = new MenuItemContainer(order++).createItem(BusinessArchitectureView.MENU_NAME, false, BusinessArchitectureView.VIEW_ICON, BusinessArchitectureView.VIEW_NAME, false, RoleType.ADMIN);
+        MenuItemContainer businessArchitecture = new MenuItemContainer(order++).createItem(BusinessArchitectureView.MENU_NAME, false, BusinessArchitectureView.VIEW_ICON, BusinessArchitectureView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(BusinessArchitectureView.VIEW_NAME, businessArchitecture);
         MenuItemContainer bubbles = new MenuItemContainer(order++).createItem(BubblesView.MENU_NAME, false, BubblesView.VIEW_ICON, BubblesView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(BubblesView.VIEW_NAME, bubbles);
