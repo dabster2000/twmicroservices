@@ -70,7 +70,7 @@ public class SalesHeatMap {
         config.getChart().setMarginTop(40);
         config.getChart().setMarginBottom(40);
 
-        config.getTitle().setText("Employee Availability Per Month");
+        config.getTitle().setText("Employee Allocation Per Month");
 
         config.getColorAxis().setMin(0);
         config.getColorAxis().setMax(100);
@@ -85,7 +85,7 @@ public class SalesHeatMap {
         config.getLegend().setY(25);
         config.getLegend().setSymbolHeight(320);
 
-        HeatSeries rs = new HeatSeries("% availability");
+        HeatSeries rs = new HeatSeries("% allocation");
         int userNumber = 0;
 
 
@@ -201,7 +201,7 @@ public class SalesHeatMap {
 
         Configuration conf = chart.getConfiguration();
 
-        conf.setTitle(new Title("Total % availability"));
+        conf.setTitle(new Title("Total % allocation"));
 
         Legend legend = new Legend();
         legend.setLayout(LayoutDirection.VERTICAL);
@@ -218,7 +218,7 @@ public class SalesHeatMap {
         conf.addxAxis(xAxis);
 
         YAxis yAxis = new YAxis();
-        yAxis.setTitle(new AxisTitle("Total Availability"));
+        yAxis.setTitle(new AxisTitle("Total Allocation"));
         conf.addyAxis(yAxis);
 
         Tooltip tooltip = new Tooltip();
