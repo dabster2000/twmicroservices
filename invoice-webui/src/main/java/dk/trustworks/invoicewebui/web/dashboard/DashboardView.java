@@ -146,7 +146,7 @@ public class   DashboardView extends VerticalLayout implements View {
         board.setScrollable(true);
         BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(userService.findCurrentlyWorkingUsers().get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyWorkingUsers().size() - 1))));
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
-        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
+        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto("images/cards/knowledge/lifecycle.png");;
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyEmployedUsers(), emailSender,3, 4, "cateringCard");
@@ -174,7 +174,6 @@ public class   DashboardView extends VerticalLayout implements View {
         //cateringCard.getBoxComponent().setHeight("600px");
 
         photoCard.loadRandomPhoto();
-        knowledgeWheelPhoto.loadResourcePhoto("images/cards/knowledge/lifecycle.png");
 
         createTopBoxes(board);
 
