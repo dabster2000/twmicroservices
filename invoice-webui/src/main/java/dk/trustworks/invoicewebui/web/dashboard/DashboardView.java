@@ -18,6 +18,7 @@ import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.ReminderHistory;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.NotificationType;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
@@ -144,7 +145,7 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         board.setSizeFull();
         board.setScrollable(true);
-        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(userService.findCurrentlyWorkingUsers().get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyWorkingUsers().size() - 1))));
+        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyWorkingUsers().size() - 1))));
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto("images/cards/knowledge/lifecycle.png");;
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
