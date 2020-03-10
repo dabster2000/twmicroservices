@@ -29,11 +29,11 @@ public class FourierAnalyser {
     private double[] a;
     private double[] b;
     private double RMS = -1.0D;
-    double x[];
-    double fr[];
-    double fi[];
-    double gr[];
-    double gi[];
+    double[] x;
+    double[] fr;
+    double[] fi;
+    double[] gr;
+    double[] gi;
 
     public int transform(double[] y) {
         int n = y.length;

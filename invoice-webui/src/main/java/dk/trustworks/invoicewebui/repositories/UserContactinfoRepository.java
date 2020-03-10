@@ -16,5 +16,5 @@ public interface UserContactinfoRepository {
     List<UserContactinfo> findAll();
     Optional<UserContactinfo> findFirstByUser(@Param("user") User user);
 
-    public void save(UserContactinfo contactinfo);
+    void save(UserContactinfo contactinfo);
 }

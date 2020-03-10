@@ -23,6 +23,7 @@ import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -99,21 +100,13 @@ public class PurposeLayout {
         Button saveButton = new MButton("create", event -> {
             if(noteComboBox.getSelectedItem().isPresent()) {
                 Note note = noteComboBox.getValue();
-                try {
-                    note.setContent(getEncoder().encodeToString(noteTextArea.getValue().getBytes("utf-8")));
-                    notesRepository.save(note);
-                    resetNoteForm(user, noteComboBox, dateField, noteTextArea);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                note.setContent(getEncoder().encodeToString(noteTextArea.getValue().getBytes(StandardCharsets.UTF_8)));
+                notesRepository.save(note);
+                resetNoteForm(user, noteComboBox, dateField, noteTextArea);
             } else {
-                try {
-                    Note note = new Note(user, NoteType.KEYPURPOSE, dateField.getValue(), getEncoder().encodeToString(noteTextArea.getValue().getBytes("utf-8")));
-                    notesRepository.save(note);
-                    resetNoteForm(user, noteComboBox, dateField, noteTextArea);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                Note note = new Note(user, NoteType.KEYPURPOSE, dateField.getValue(), getEncoder().encodeToString(noteTextArea.getValue().getBytes(StandardCharsets.UTF_8)));
+                notesRepository.save(note);
+                resetNoteForm(user, noteComboBox, dateField, noteTextArea);
             }
         }).withFullWidth();
 
@@ -123,21 +116,17 @@ public class PurposeLayout {
         }).withFullWidth().withVisible(false);
 
         noteComboBox.addValueChangeListener(event -> {
-            try {
-                if(noteComboBox.getSelectedItem().isPresent()) {
-                    dateField.setVisible(false);
-                    noteTextArea.setValue(new String(getDecoder().decode(event.getSource().getValue().getContent()), "utf-8"));
-                    saveButton.setCaption("update");
-                    deleteButton.setVisible(true);
-                } else {
-                    dateField.setVisible(true);
-                    dateField.setValue(LocalDate.now());
-                    noteTextArea.setValue("");
-                    saveButton.setCaption("create");
-                    deleteButton.setVisible(false);
-                }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+            if(noteComboBox.getSelectedItem().isPresent()) {
+                dateField.setVisible(false);
+                noteTextArea.setValue(new String(getDecoder().decode(event.getSource().getValue().getContent()), StandardCharsets.UTF_8));
+                saveButton.setCaption("update");
+                deleteButton.setVisible(true);
+            } else {
+                dateField.setVisible(true);
+                dateField.setValue(LocalDate.now());
+                noteTextArea.setValue("");
+                saveButton.setCaption("create");
+                deleteButton.setVisible(false);
             }
         });
 

@@ -49,8 +49,7 @@ public class DateUtils {
     public static boolean isBetween(LocalDate testDate, LocalDate from, LocalDate to) {
         if(testDate.isEqual(from)) return true;
         if(testDate.isEqual(to)) return true;
-        if(testDate.isAfter(from) && testDate.isBefore(to)) return true;
-        return false;
+        return testDate.isAfter(from) && testDate.isBefore(to);
     }
 
     /**
@@ -72,9 +71,7 @@ public class DateUtils {
     }
 
     public static boolean isWeekendDay(LocalDate localDate) {
-        if(localDate.getDayOfWeek().equals(DayOfWeek.SATURDAY) || localDate.getDayOfWeek().equals(DayOfWeek.SUNDAY))
-            return true;
-        return false;
+        return localDate.getDayOfWeek().equals(DayOfWeek.SATURDAY) || localDate.getDayOfWeek().equals(DayOfWeek.SUNDAY);
     }
 
     public static int countWeekdayOccurances(DayOfWeek dayOfWeek, LocalDate from, LocalDate to) {

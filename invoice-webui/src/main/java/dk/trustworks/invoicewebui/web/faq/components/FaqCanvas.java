@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.viritin.fields.MTextField;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,14 +62,12 @@ public class FaqCanvas extends VerticalLayout {
                                 if (faq.getTitle().length() == 0 || faq.getContent().length() == 0) continue;
                                 if (StringUtils.containsIgnoreCase(faq.getTitle(), event.getValue())) {
                                     cardColumns.get(faq).setVisibilityRules(true, true, true, true);
-                                } else try {
-                                    if (StringUtils.containsIgnoreCase(new String(getDecoder().decode(faq.getContent()), "utf-8"), event.getValue())) {
+                                } else {
+                                    if (StringUtils.containsIgnoreCase(new String(getDecoder().decode(faq.getContent()), StandardCharsets.UTF_8), event.getValue())) {
                                         cardColumns.get(faq).setVisibilityRules(true, true, true, true);
                                     } else {
                                         cardColumns.get(faq).setVisibilityRules(false, false, false, false);
                                     }
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
                                 }
                             }
                         }));
@@ -215,11 +214,7 @@ public class FaqCanvas extends VerticalLayout {
         addFaqCardDesign.getBtnAddFaq().addClickListener(event -> {
             FaqCardDesign cardDesign = new FaqCardDesign();
             Faq faq1 = null;
-            try {
-                faq1 = new Faq("NewGroup", "New Title", getEncoder().encodeToString("New Content".getBytes("utf-8")));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            faq1 = new Faq("NewGroup", "New Title", getEncoder().encodeToString("New Content".getBytes(StandardCharsets.UTF_8)));
             faqRepository.save(faq1);
             cardRow.removeComponent(cardColumns.get(addFaq));
             ResponsiveColumn cardColumn2 = cardRow.addColumn()
@@ -236,27 +231,15 @@ public class FaqCanvas extends VerticalLayout {
 
     private void createFaqCard(Map<Faq, ResponsiveColumn> cardColumns, ResponsiveRow cardRow, FaqCardDesign faqCard, Faq faq) {
         faqCard.getLblTitle().setValue(faq.getTitle());
-        try {
-            faqCard.getLblContent().setValue(new String(getDecoder().decode(faq.getContent()), "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        faqCard.getLblContent().setValue(new String(getDecoder().decode(faq.getContent()), StandardCharsets.UTF_8));
         faqCard.getTxtTitle().setValue(faq.getTitle());
-        try {
-            faqCard.getTxtContent().setValue(new String(getDecoder().decode(faq.getContent()), "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        faqCard.getTxtContent().setValue(new String(getDecoder().decode(faq.getContent()), StandardCharsets.UTF_8));
 
         final FaqCardDesign sFaqCard = faqCard;
 
         faqCard.getBtnSave().addClickListener(event -> {
             faq.setTitle(sFaqCard.getTxtTitle().getValue());
-            try {
-                faq.setContent(getEncoder().encodeToString(sFaqCard.getTxtContent().getValue().getBytes("utf-8")));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            faq.setContent(getEncoder().encodeToString(sFaqCard.getTxtContent().getValue().getBytes(StandardCharsets.UTF_8)));
             System.out.println("faq = " + faq);
             sFaqCard.getLblTitle().setValue(sFaqCard.getTxtTitle().getValue());
             sFaqCard.getLblContent().setValue(sFaqCard.getTxtContent().getValue());

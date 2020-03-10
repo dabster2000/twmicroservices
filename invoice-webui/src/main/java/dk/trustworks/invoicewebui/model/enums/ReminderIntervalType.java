@@ -6,7 +6,7 @@ public enum ReminderIntervalType {
 
     private final int months;
 
-    private ReminderIntervalType(int months) {
+    ReminderIntervalType(int months) {
         this.months = months;
     }
 

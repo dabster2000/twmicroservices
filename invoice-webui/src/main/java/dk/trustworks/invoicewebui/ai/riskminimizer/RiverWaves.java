@@ -97,7 +97,7 @@ public class RiverWaves {
                     neuralNet.setInput(testElement.getInput());
                     neuralNet.calculate();
                     double[] networkOutput = neuralNet.getOutput();
-                    difs = difs + Math.abs((Double) networkOutput[0] - (Double) aDataListFull.getOutput().get(0));
+                    difs = difs + Math.abs((Double) networkOutput[0] - aDataListFull.getOutput().get(0));
                     sum = sum + (Double) aDataListFull.getOutput().get(0);
                 }
             }

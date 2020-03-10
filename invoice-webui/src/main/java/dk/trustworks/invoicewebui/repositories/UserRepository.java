@@ -36,7 +36,7 @@ public interface UserRepository {
     int calculateCapacityByMonthByUser(@Param("useruuid") String useruuid, @Param("statusdate") String statusdate);
 
 
-    public void save(User user);
+    void save(User user);
 
-    public User findOne(String userUUID);
+    User findOne(String userUUID);
 }

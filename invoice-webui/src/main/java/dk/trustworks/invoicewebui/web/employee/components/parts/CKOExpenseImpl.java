@@ -267,7 +267,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
             formatter.setMaximumFractionDigits(2);
             formatter.setMinimumFractionDigits(2);
-            return String.valueOf(formatter.format(aDouble));
+            return formatter.format(aDouble);
         }
     }
 }

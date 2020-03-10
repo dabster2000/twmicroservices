@@ -10,7 +10,6 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 
 import java.time.LocalDate;
@@ -36,7 +35,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
 
         LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
         LocalDate localDateEnd = LocalDate.now().withDayOfMonth(1).plusMonths(11);
-        String[] monthNames = DateUtils.getMonthNames(localDateStart, localDateEnd);
+        String[] monthNames = dk.trustworks.invoicewebui.utils.DateUtils.getMonthNames(localDateStart, localDateEnd);
 
         Chart chart = new Chart();
         chart.setWidth("100%");
