@@ -82,6 +82,7 @@ jms:
 rtmUrl: https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads
 slackIncomingWebhookUrl: https://hooks.slack.com/services/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
 
+slackApi: https://slack.com/api
 halSlackBotToken: ${HALSLACKBOTTOKEN}
 halOAuthAccessToken: ${HALOAUTHACCESSTOKEN}
 halBotUserOAuthAccessToken: ${BOTUUSEROAUTHACCESSTOKEN}
