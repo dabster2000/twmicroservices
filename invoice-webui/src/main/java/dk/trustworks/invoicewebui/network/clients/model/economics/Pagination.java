@@ -19,6 +19,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
     "results",
     "resultsWithoutFilter",
     "firstPage",
+        "nextPage",
     "lastPage"
 })
 public class Pagination {
@@ -35,6 +36,8 @@ public class Pagination {
     private int resultsWithoutFilter;
     @JsonProperty("firstPage")
     private String firstPage;
+    @JsonProperty("nextPage")
+    private String nextPage;
     @JsonProperty("lastPage")
     private String lastPage;
     @JsonIgnore
@@ -50,6 +53,7 @@ public class Pagination {
     /**
      * 
      * @param firstPage
+     * @param nextPage
      * @param lastPage
      * @param maxPageSizeAllowed
      * @param resultsWithoutFilter
@@ -57,7 +61,7 @@ public class Pagination {
      * @param pageSize
      * @param results
      */
-    public Pagination(int maxPageSizeAllowed, int skipPages, int pageSize, int results, int resultsWithoutFilter, String firstPage, String lastPage) {
+    public Pagination(int maxPageSizeAllowed, int skipPages, int pageSize, int results, int resultsWithoutFilter, String firstPage, String nextPage, String lastPage) {
         super();
         this.maxPageSizeAllowed = maxPageSizeAllowed;
         this.skipPages = skipPages;
@@ -65,6 +69,7 @@ public class Pagination {
         this.results = results;
         this.resultsWithoutFilter = resultsWithoutFilter;
         this.firstPage = firstPage;
+        this.nextPage = nextPage;
         this.lastPage = lastPage;
     }
 
@@ -126,6 +131,16 @@ public class Pagination {
     @JsonProperty("firstPage")
     public void setFirstPage(String firstPage) {
         this.firstPage = firstPage;
+    }
+
+    @JsonProperty("nextPage")
+    public String getNextPage() {
+        return nextPage;
+    }
+
+    @JsonProperty("nextPage")
+    public void setNextPage(String nextPage) {
+        this.nextPage = nextPage;
     }
 
     @JsonProperty("lastPage")
