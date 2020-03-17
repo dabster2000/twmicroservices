@@ -225,7 +225,7 @@ public class StatisticsCachedService {
             }
 
              */
-            if(invoice.getBookingdate().isEqual(LocalDate.of(2019,1,1))) {
+            if(invoice.getBookingdate().isEqual(LocalDate.of(1900,1,1))) {
                 invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getInvoicedate(), sum));
             } else {
                 invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getBookingdate(), sum));
