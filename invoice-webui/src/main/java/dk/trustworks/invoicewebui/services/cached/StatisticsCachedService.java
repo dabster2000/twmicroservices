@@ -302,7 +302,7 @@ public class StatisticsCachedService {
             }
             //System.out.println();
             startDate = startDate.plusMonths(1);
-        } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
+        } while (startDate.isBefore(LocalDate.now().minusDays(15)));
 
         return expenseDocumentList;
     }
