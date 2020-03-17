@@ -1,13 +1,8 @@
 package dk.trustworks.invoicewebui.jobs;
 
 
-import dk.trustworks.invoicewebui.ai.riskminimizer.RiverWaves;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ForecastJob {
@@ -60,40 +54,6 @@ public class ForecastJob {
 
         //incomeForcastRepository.deleteByCreatedAndItemtype(Date.valueOf(LocalDate.now()), "INCOME");
 
-        String pattern = "yyyy-MM-dd";
-        Map<String, Double> workByDate = new HashMap<>();
-        for (Work work : workRepository.findByPeriod(startDate.format(DateTimeFormatter.ofPattern(pattern)), now.format(DateTimeFormatter.ofPattern(pattern)))) {
-            String dateString = DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern(pattern));
-            if(!workByDate.containsKey(dateString)) {
-                workByDate.put(dateString, 0.0);
-            }
-            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
-            if(rate != null && rate > 0.0) {
-                double income = workByDate.get(dateString) + (work.getWorkduration() * rate);
-                workByDate.put(dateString, income);
-            }
-        }
-        System.out.println("workByDate.size() = " + workByDate.size());
-        double[] y = new double[workByDate.size()-5];
-        List<String> collect = workByDate.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
-        for (int i = 0, collectSize = collect.size(); i < collectSize-5; i++) {
-            String key = collect.get(i);
-            y[i] = workByDate.get(key);
-        }
-
-        log.info("dailyForecast.size() = " + y.length);
-        log.info("values: " + Arrays.toString(y));
-
-        double[] resultArray = new double[12];
-        for (int i = 0; i < 12; i++) {
-            RiverWaves td = new RiverWaves();
-            double result = td.autodetection(ArrayUtils.clone(y));
-            resultArray[i] = result * RiverWaves.daxmax;
-            System.out.println("Autopredicted Value is " + result);
-            y = ArrayUtils.add( y, result);
-        }
-
         log.info("dailyForecast.size() = " + dailyForecast.size());
-        log.info("forecast = " + Arrays.toString(resultArray));
     }
 }

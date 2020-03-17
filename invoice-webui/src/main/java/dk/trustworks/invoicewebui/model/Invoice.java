@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.model.enums.InvoiceType;
+import jdk.nashorn.internal.objects.annotations.Property;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -34,6 +35,8 @@ public class Invoice {
     public String cvr;
     public String ean;
     public String attention;
+    @Column(name = "invoice_ref")
+    public int invoiceref;
     public int invoicenumber;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -63,6 +66,7 @@ public class Invoice {
     public Invoice(InvoiceType type, String contractuuid, String projectuuid, String projectname, double discount, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
         this();
         this.type = type;
+        if(type.equals(InvoiceType.CREDIT_NOTE)) invoiceref = invoicenumber;
         this.contractuuid = contractuuid;
         this.discount = discount;
         this.otheraddressinfo = otheraddressinfo;
@@ -162,6 +166,14 @@ public class Invoice {
 
     public void setZipcity(String zipcity) {
         this.zipcity = zipcity;
+    }
+
+    public int getInvoiceref() {
+        return invoiceref;
+    }
+
+    public void setInvoiceref(int invoiceref) {
+        this.invoiceref = invoiceref;
     }
 
     public String getCvr() {

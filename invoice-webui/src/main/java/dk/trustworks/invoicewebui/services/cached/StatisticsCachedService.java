@@ -211,7 +211,17 @@ public class StatisticsCachedService {
         for (Invoice invoice : invoices) {
             double sum = invoice.getInvoiceitems().stream().mapToDouble(value -> value.hours * value.rate).sum();
             sum -= sum * (invoice.discount / 100.0);
-            invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getInvoicedate(), sum));
+            if(invoice.getStatus().equals(InvoiceStatus.CREDIT_NOTE)) {
+                // sæt kreditnota invoice datoen til at være datoen på den oprindelige invoice
+                for (Invoice searchInvoice : invoices) {
+                    if(searchInvoice.invoicenumber == invoice.invoiceref) {
+                        invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), searchInvoice.getInvoicedate(), sum));
+                        break;
+                    }
+                }
+            } else {
+                invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getInvoicedate(), sum));
+            }
         }
         return invoicedDocumentList;
     }
