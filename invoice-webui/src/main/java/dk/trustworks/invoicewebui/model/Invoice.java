@@ -41,6 +41,9 @@ public class Invoice {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate invoicedate;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    public LocalDate bookingdate; //date from e-conomics
     public String projectref;
     public String contractref;
     public String specificdescription;
@@ -214,6 +217,14 @@ public class Invoice {
 
     public void setInvoicedate(LocalDate invoicedate) {
         this.invoicedate = invoicedate;
+    }
+
+    public LocalDate getBookingdate() {
+        return bookingdate;
+    }
+
+    public void setBookingdate(LocalDate bookingdate) {
+        this.bookingdate = bookingdate;
     }
 
     public String getProjectref() {
