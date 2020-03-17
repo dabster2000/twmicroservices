@@ -115,7 +115,8 @@ public class StatisticsService extends StatisticsCachedService {
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
+            //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 result.put(currentDate, invoicedAmountByMonth);
             } else {
@@ -169,7 +170,8 @@ public class StatisticsService extends StatisticsCachedService {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
+            //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }

@@ -89,7 +89,7 @@ public class CumulativeRevenuePerMonthChart {
 
             double expense;
 
-            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            double invoicedAmountByMonth = statisticsService.getTotalInvoiceSumByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
                 expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));//expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();

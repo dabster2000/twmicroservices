@@ -13,6 +13,7 @@ import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,21 +42,19 @@ public class ProfitsPerMonthChart {
 
     private final WorkService workService;
 
-    private final InvoiceService invoiceService;
+    private final StatisticsService statisticsService;
 
     @Autowired
-    public ProfitsPerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, InvoiceService invoiceService) {
+    public ProfitsPerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, StatisticsService statisticsService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.expenseRepository = expenseRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.workService = workService;
-        this.invoiceService = invoiceService;
+        this.statisticsService = statisticsService;
     }
 
     public Chart createCumulativeRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
-        System.out.println("CumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart");
-        System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "]");
         Chart chart = new Chart();
         chart.setSizeFull();
         int period = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -108,7 +107,8 @@ public class ProfitsPerMonthChart {
             LocalDate currentDate = periodStart.plusMonths(i);
             double expense = 0.0;
 
-            double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
+            double invoicedAmountByMonth = statisticsService.getTotalInvoiceSumByMonth(currentDate);
+            //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
                 expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();

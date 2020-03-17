@@ -57,12 +57,6 @@ public class InvoiceService {
         return invoiceRepository.save(creditNote);
     }
 
-    public double invoicedAmountByMonth(LocalDate date) {
-        double invoiceSum = invoiceRepository.invoicedAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        double creditNoteSum = invoiceRepository.creditNoteAmountByPeriod(date.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), date.withDayOfMonth(date.getMonth().length(date.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        return invoiceSum - creditNoteSum;
-    }
-
     public byte[] createInvoicePdf(Invoice invoice) {
         return invoiceAPI.createInvoicePDF(invoice);
     }
