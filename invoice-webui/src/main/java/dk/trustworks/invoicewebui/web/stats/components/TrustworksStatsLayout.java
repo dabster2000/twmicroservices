@@ -278,7 +278,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 */
         Card revenuePerMonthEmployeeAvgCard = new Card();
         revenuePerMonthEmployeeAvgCard.getLblTitle().setValue("Average Revenue per Consultant");
-        revenuePerMonthEmployeeAvgCard.getContent().addComponent(revenuePerMonthEmployeeAvgChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
+        revenuePerMonthEmployeeAvgCard.getContent().addComponent(revenuePerMonthEmployeeAvgChart.createRevenuePerMonthChart(localDateStart, localDateEnd.withDayOfMonth(1).minusMonths(1)));
         notification.setDescription("8 out of 10 charts created!");
         System.out.println("timeMillis 8 = " + (System.currentTimeMillis() - timeMillis));
 

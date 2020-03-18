@@ -10,6 +10,7 @@ import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,11 +35,14 @@ public class RevenuePerMonthEmployeeAvgChart {
 
     private final UserService userService;
 
+    private final StatisticsService statisticsService;
+
     @Autowired
-    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, UserService userService) {
+    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, UserService userService, StatisticsService statisticsService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.expenseRepository = expenseRepository;
         this.userService = userService;
+        this.statisticsService = statisticsService;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -78,7 +82,8 @@ public class RevenuePerMonthEmployeeAvgChart {
 
                 revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), (amountPerItem.getValue() / consultants)));
 
-                double expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+                double expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                //double expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                 if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), ((amountPerItem.getValue() - expense) / consultants)));
 
                 if(periodStart.plusMonths(i).isBefore(LocalDate.now().withDayOfMonth(1))) {

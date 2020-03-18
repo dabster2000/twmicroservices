@@ -79,7 +79,7 @@ public class AverageConsultantRevenueChart {
                     map.put(currentDate, revenue - expenseSum);
 
                 currentDate = currentDate.plusMonths(1);
-            } while (currentDate.isBefore(LocalDate.now().withDayOfMonth(1).minusDays(1)));
+            } while (currentDate.isBefore(LocalDate.now().withDayOfMonth(1).minusMonths(1)));
         }
 
 
