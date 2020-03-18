@@ -211,20 +211,7 @@ public class StatisticsCachedService {
         for (Invoice invoice : invoices) {
             double sum = invoice.getInvoiceitems().stream().mapToDouble(value -> value.hours * value.rate).sum();
             sum -= sum * (invoice.discount / 100.0);
-            /*
-            if(invoice.getStatus().equals(InvoiceStatus.CREDIT_NOTE)) {
-                // sæt kreditnota invoice datoen til at være datoen på den oprindelige invoice
-                for (Invoice searchInvoice : invoices) {
-                    if(searchInvoice.invoicenumber == invoice.invoiceref) {
-                        invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), searchInvoice.getInvoicedate(), sum));
-                        break;
-                    }
-                }
-            } else {
-                invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getInvoicedate(), sum));
-            }
 
-             */
             if(invoice.getBookingdate().isEqual(LocalDate.of(1900,1,1))) {
                 invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getInvoicedate(), sum));
             } else {
@@ -300,9 +287,8 @@ public class StatisticsCachedService {
                     expenseDocumentList.add(expenseDocument);
                 }
             }
-            //System.out.println();
             startDate = startDate.plusMonths(1);
-        } while (startDate.isBefore(LocalDate.now().minusDays(15)));
+        } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1)));
 
         return expenseDocumentList;
     }

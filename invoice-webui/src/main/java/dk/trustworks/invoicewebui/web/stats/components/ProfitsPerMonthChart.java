@@ -34,8 +34,6 @@ public class ProfitsPerMonthChart {
 
     private final GraphKeyValueRepository graphKeyValueRepository;
 
-    private final ExpenseRepository expenseRepository;
-
     private final ContractService contractService;
 
     private final BudgetNewRepository budgetNewRepository;
@@ -47,7 +45,6 @@ public class ProfitsPerMonthChart {
     @Autowired
     public ProfitsPerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, StatisticsService statisticsService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
-        this.expenseRepository = expenseRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.workService = workService;
@@ -111,12 +108,14 @@ public class ProfitsPerMonthChart {
             //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+                expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                //expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             } else {
                 if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
                     cumulativeRevenuePerMonth += amountPerItemList.get(i).getValue();
-                    expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+                    expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                    //expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                     cumulativeExpensePerMonth += expense;
                 }
             }

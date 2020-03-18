@@ -45,8 +45,6 @@ public class StatisticsService extends StatisticsCachedService {
 
     private final WorkService workService;
 
-    private final InvoiceService invoiceService;
-
     private final UserService userService;
 
     @Autowired
@@ -57,7 +55,6 @@ public class StatisticsService extends StatisticsCachedService {
         this.budgetNewRepository = budgetNewRepository;
         this.expenseRepository = expenseRepository;
         this.workService = workService;
-        this.invoiceService = invoiceService;
         this.userService = userService;
     }
 
@@ -172,7 +169,8 @@ public class StatisticsService extends StatisticsCachedService {
 
             double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
             //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
-            double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+            double expense = getAllExpensesByMonth(currentDate.withDayOfMonth(1));
+            //double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }
         return earningsSeries;
@@ -311,6 +309,7 @@ public class StatisticsService extends StatisticsCachedService {
                     revenueSum = 0.0;
                     continue;
                 }
+
 
                 double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
                 int userSalary = userService.getUserSalary(user, currentDate);
