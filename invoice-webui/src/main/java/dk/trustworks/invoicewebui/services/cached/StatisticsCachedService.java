@@ -346,6 +346,11 @@ public class StatisticsCachedService {
                 .mapToDouble(WorkDocument::getWorkHours).sum();
     }
 
+    public double getHoursByMonth(LocalDate month) {
+        List<WorkDocument> incomeData = getIncomeData();
+        return incomeData.stream().filter(workDocument -> workDocument.getMonth().isEqual(month.withDayOfMonth(1))).mapToDouble(WorkDocument::getWorkHours).sum();
+    }
+
     public double getTotalInvoiceSumByMonth(LocalDate month) {
         return getInvoiceData().stream()
                 .filter(invoicedDocument -> invoicedDocument.getMonth().withDayOfMonth(1).isEqual(month.withDayOfMonth(1)))

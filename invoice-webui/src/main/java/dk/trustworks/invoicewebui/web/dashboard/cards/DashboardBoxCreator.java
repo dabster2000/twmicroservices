@@ -50,8 +50,8 @@ public class DashboardBoxCreator {
     }
 
     public TopCardContent getGoodPeopleBox() {
-        float goodPeopleNow =  userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
-        float goodPeopleLastYear = userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleNow = statisticsService.countActiveEmployeeTypesByMonth(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT); //userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleLastYear = statisticsService.countActiveEmployeeTypesByMonth(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);//userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
         int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
         return new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Good People", percent + "% more than last year", Math.round(goodPeopleNow)+"", "dark-blue");
     }
@@ -161,36 +161,58 @@ public class DashboardBoxCreator {
 
     @Cacheable("billablehours")
     public TopCardContent createBillableHoursBox() {
+        /*
         LocalDate startDate = LocalDate.now().minusMonths(1);
         LocalDate endDate = LocalDate.now();
         LocalDate lastStartDate = startDate.minusYears(1);
         LocalDate lastEndDate = endDate.minusYears(1);
-        //Map<String, Project> currentProjectSet = new HashMap<>();
-        //Map<String, Project> noProjectSet = new HashMap<>();
+         */
+
+        LocalDate startDate = DateUtils.getCurrentFiscalStartDate();
+        LocalDate endDate = LocalDate.now();
+        LocalDate lastStartDate = startDate.minusYears(1);
+
+        double hoursSumAvg = 0;
+        double lastHoursSumAvg = 0;
+
+        do {
+            double consultants = statisticsService.countActiveConsultantCountByMonth(startDate);
+            double lastConsultants = statisticsService.countActiveConsultantCountByMonth(lastStartDate);
+
+            double hoursByMonth = statisticsService.getHoursByMonth(startDate);
+            double lastHoursByMonth = statisticsService.getHoursByMonth(lastStartDate);
+
+            hoursSumAvg += (hoursByMonth / consultants);
+            lastHoursSumAvg += (lastHoursByMonth / lastConsultants);
+
+            startDate = startDate.plusMonths(1);
+            lastStartDate = lastStartDate.plusMonths(1);
+        } while (startDate.isBefore(endDate));
+
+
+/*
         float billableHoursThisYear = 0f;
         for (Work work : workService.findByPeriod(startDate, endDate)) {
             Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 billableHoursThisYear += work.getWorkduration();
-                //currentProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            } //else {
-                //noProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
-            //}
+            }
         }
 
-        //Map<String, Project> lastProjectSet = new HashMap<>();
         float billableHoursLastYear = 0f;
         for (Work work : workService.findByPeriod(lastStartDate, lastEndDate)) {
             Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
             if(rate != null && rate > 0 && work.getWorkduration() > 0) {
                 billableHoursLastYear += work.getWorkduration();
-                //lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
             }
         }
-        int percentBillableHours = Math.round((billableHoursThisYear / billableHoursLastYear) * 100) - 100;
+         */
+
+        double percentBillableHours = Math.round((hoursSumAvg / lastHoursSumAvg) * 100) - 100;
         String hoursMoreOrLess = "more";
         if(percentBillableHours < 0) hoursMoreOrLess = "less";
-        return new TopCardContent("images/icons/trustworks_icon_ur.svg", "Billable Hours", percentBillableHours+"% "+hoursMoreOrLess+" than last year", ""+Math.round(billableHoursThisYear), "dark-blue");
+
+        return new TopCardContent("images/icons/trustworks_icon_ur.svg", "Avg Hours per Consultant", percentBillableHours+"% "+hoursMoreOrLess+" than last year", ""+Math.round(hoursSumAvg), "dark-blue");
     }
 
     @Cacheable("consultantsperproject")
