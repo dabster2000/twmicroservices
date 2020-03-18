@@ -277,7 +277,6 @@ public class   DashboardView extends VerticalLayout implements View {
             break;
         }
 
-
         List<ReminderHistory> otherReminderHistories = reminderHistoryRepository.findByTargetuuidAndType(user.getUuid(), ReminderType.SPEEDDATE);
         List<ReminderHistory> myReminderHistories = reminderHistoryRepository.findByTypeAndUseruuidOrderByTransmissionDateDesc(ReminderType.SPEEDDATE, user.getUuid());
         for (ReminderHistory otherReminderHistory : otherReminderHistories) {
