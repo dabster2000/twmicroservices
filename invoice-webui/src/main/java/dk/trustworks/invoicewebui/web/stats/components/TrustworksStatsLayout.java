@@ -27,6 +27,7 @@ import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
 import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
 import dk.trustworks.invoicewebui.web.stats.components.charts.expenses.AvgExpensesPerYearChart;
 import dk.trustworks.invoicewebui.web.stats.components.charts.utilization.UtilizationPerYearChart;
+import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.haijian.Exporter;
@@ -77,6 +78,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private YourTrustworksForecastChart yourTrustworksForecastChart;
 
     @Autowired
+    private UtilizationPerYearChart utilizationPerYearChart;
+
+    @Autowired
     private BudgetTable budgetTable;
 
     @Autowired
@@ -86,7 +90,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private ConsultantsBudgetRealizationChart consultantsBudgetRealizationChart;
 
     @Autowired
-    private ExpensesPerMonthChart expensesPerMonthChart;
+    private ExpensesSalariesRevenuePerMonthChart expensesSalariesRevenuePerMonthChart;
 
     @Autowired
     private RevenuePerConsultantChart revenuePerConsultantChart;
@@ -95,7 +99,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private AvgExpensesPerYearChart avgExpensesPerYearChart;
 
     @Autowired
-    private UtilizationPerYearChart utilizationPerYearChart;
+    private ExpensesPerMonthChart expensesPerMonthChart;
+
+    @Autowired
+    private UtilizationPerMonthChart utilizationPerMonthChart;
 
     @Autowired
     private TalentPassionResultBox talentPassionResultBox;
@@ -130,6 +137,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private ResponsiveRow empty4ContentRow;
 
     public TrustworksStatsLayout init() {
+        this.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         responsiveLayout.setSizeFull();
         responsiveLayout.setScrollable(true);
@@ -210,7 +218,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
                 .withStyleName("tiny", "flat", "large-icon","icon-align-top")
-                .withHeight(70, Unit.PIXELS)
+                .withHeight(125, Unit.PIXELS)
                 .withFullWidth()
                 .withIcon(MaterialIcons.TIMELINE);
 
@@ -219,15 +227,16 @@ public class TrustworksStatsLayout extends VerticalLayout {
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withHeight(70, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withHeight(70, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
+        searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
@@ -240,10 +249,15 @@ public class TrustworksStatsLayout extends VerticalLayout {
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
 
         Box avgExpensesPerMonthCard = new Box();
-        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
+        avgExpensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
         Box cumulativeRevenuePerMonthCard = new Box();
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
+
+        Box utilizationPerMonthCard = new Box();
+        cumulativeRevenuePerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart.minusMonths(12), LocalDate.now().withDayOfMonth(1).plusMonths(10)));
+
+
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
@@ -254,6 +268,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(cumulativeRevenuePerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(utilizationPerMonthCard);
     }
 
     public void old() {
@@ -466,7 +483,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         Card expensesPerEmployee = new Card();
         expensesPerEmployee.getLblTitle().setValue("Average Historical Economic Overview per Employee");
-        expensesPerEmployee.getContent().addComponent(expensesPerMonthChart.createExpensesPerMonthChart());
+        expensesPerEmployee.getContent().addComponent(expensesSalariesRevenuePerMonthChart.createExpensesPerMonthChart());
         notification.setDescription("10 out of 10 charts created!");
         System.out.println("timeMillis 10 = " + (System.currentTimeMillis() - timeMillis));
 

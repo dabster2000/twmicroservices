@@ -112,7 +112,7 @@ public class SalesLayout extends VerticalLayout {
 
         Card allocationChartCard = new Card();
         allocationChartCard.getLblTitle().setValue("Utilization per month");
-        allocationChartCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart.minusMonths(12)));
+        allocationChartCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart.minusMonths(12), LocalDate.now().withDayOfMonth(1).plusMonths(10)));
 
         row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(allocationChartCard);
 

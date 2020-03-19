@@ -38,8 +38,8 @@ public class UtilizationPerMonthChart {
         this.statisticsService = statisticsService;
     }
 
-    public Chart createUtilizationPerMonthChart(LocalDate periodStart) {
-        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(10))+1;
+    public Chart createUtilizationPerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
+        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd)+1;
 
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -52,7 +52,7 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().getxAxis().setTickWidth(0);
         chart.getConfiguration().getyAxis().setTitle("%");
         chart.getConfiguration().getyAxes().getAxis(0).setMax(100);
-        chart.getConfiguration().getLegend().setEnabled(true    );
+        chart.getConfiguration().getLegend().setEnabled(true);
 
         Tooltip tooltip = new Tooltip();
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");
