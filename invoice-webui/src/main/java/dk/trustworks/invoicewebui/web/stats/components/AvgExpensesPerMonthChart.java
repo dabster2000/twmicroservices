@@ -32,9 +32,9 @@ public class AvgExpensesPerMonthChart {
         this.statisticsService = statisticsService;
     }
 
-    public Chart createExpensePerMonthChart() {
-        LocalDate periodStart = LocalDate.of(2016, 7, 1);
-        LocalDate periodEnd = LocalDate.now().withDayOfMonth(1).minusMonths(1);
+    public Chart createExpensePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
+        //LocalDate periodStart = LocalDate.of(2016, 7, 1);
+        //LocalDate periodEnd = LocalDate.now().withDayOfMonth(1).minusMonths(1);
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
@@ -83,7 +83,7 @@ public class AvgExpensesPerMonthChart {
         poc4.setColor(new SolidColor("#CFD6E3"));
         ListSeries salarySeries = new ListSeries("Average salaries");
         salarySeries.setPlotOptions(poc4);
-        chart.getConfiguration().addSeries(salarySeries);
+        //chart.getConfiguration().addSeries(salarySeries);
 
 /*
         PlotOptionsArea plotOptionsArea2 = new PlotOptionsArea();
@@ -96,7 +96,7 @@ public class AvgExpensesPerMonthChart {
         PlotOptionsColumn poc2 = new PlotOptionsColumn();
         poc2.setColor(new SolidColor("#7084AC"));
         sharedExpensesSeries.setPlotOptions(poc2);
-        chart.getConfiguration().addSeries(sharedExpensesSeries);
+        //chart.getConfiguration().addSeries(sharedExpensesSeries);
 
         /*
         PlotOptionsArea plotOptionsArea3 = new PlotOptionsArea();
@@ -110,7 +110,7 @@ public class AvgExpensesPerMonthChart {
         PlotOptionsColumn poc3 = new PlotOptionsColumn();
         poc3.setColor(new SolidColor("#123375"));
         staffSalarySeries.setPlotOptions(poc3);
-        chart.getConfiguration().addSeries(staffSalarySeries);
+        //chart.getConfiguration().addSeries(staffSalarySeries);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 

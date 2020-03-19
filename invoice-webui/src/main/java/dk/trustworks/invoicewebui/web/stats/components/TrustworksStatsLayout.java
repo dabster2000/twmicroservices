@@ -209,7 +209,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         AtomicReference<LocalDate> currentFiscalYear = new AtomicReference<>(DateUtils.getCurrentFiscalStartDate());
 
         Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
-                .withStyleName("tiny", "flat", "large-icon","icon-align-top").withFullWidth()
+                .withStyleName("tiny", "flat", "large-icon","icon-align-top")
+                .withHeight(70, Unit.PIXELS)
+                .withFullWidth()
                 .withIcon(MaterialIcons.TIMELINE);
 
         Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, " ", event -> {
@@ -217,14 +219,14 @@ public class TrustworksStatsLayout extends VerticalLayout {
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(70, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(70, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
@@ -238,7 +240,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
 
         Box avgExpensesPerMonthCard = new Box();
-        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart());
+        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
         Box cumulativeRevenuePerMonthCard = new Box();
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
@@ -377,7 +379,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         Card avgExpensesPerMonthCard = new Card();
         avgExpensesPerMonthCard.getLblTitle().setValue("Average Expenses Per Month");
-        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart());
+        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
         notification.setDescription("1b out of 10 charts created!");
         System.out.println("timeMillis 1b = " + (System.currentTimeMillis() - timeMillis));
 

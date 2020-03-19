@@ -50,8 +50,8 @@ public class DashboardBoxCreator {
     }
 
     public TopCardContent getGoodPeopleBox() {
-        float goodPeopleNow = statisticsService.countActiveEmployeeTypesByMonth(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT); //userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
-        float goodPeopleLastYear = statisticsService.countActiveEmployeeTypesByMonth(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);//userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleNow = statisticsService.getActiveEmployeeCountByMonth(LocalDate.now()); //userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleLastYear = statisticsService.getActiveEmployeeCountByMonth(LocalDate.now().minusYears(1));//userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
         int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
         return new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Good People", percent + "% more than last year", Math.round(goodPeopleNow)+"", "dark-blue");
     }
