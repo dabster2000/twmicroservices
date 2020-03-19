@@ -154,7 +154,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         }
         fiscalPeriodList.add(startFiscalPeriod);
 
-        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear)).withStyleName("flat huge borderless");;
+        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear)).withStyleName("flat huge");;
 
         Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, "", event -> {
             chartRow.removeAllComponents();
@@ -172,7 +172,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
 
 
-        searchRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new MVerticalLayout(btnDescFiscalYear, btnFiscalYear, btnIncFiscalYear), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""))
+        searchRow.addColumn().withDisplayRules(12, 12, 4, 4)
+                .withComponent(new MVerticalLayout(btnDescFiscalYear, btnFiscalYear, btnIncFiscalYear));
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""))
 
         //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodStartComboBox);
         //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodEndComboBox);
