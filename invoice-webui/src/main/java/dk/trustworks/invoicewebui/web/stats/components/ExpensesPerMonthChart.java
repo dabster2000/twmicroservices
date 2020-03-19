@@ -49,7 +49,7 @@ public class ExpensesPerMonthChart {
 
         YAxis yAxis = new YAxis();
         yAxis.setMin(0);
-        yAxis.setTitle(new AxisTitle("kr"));
+        chart.getConfiguration().getyAxis().setTitle("");
         StackLabels sLabels = new StackLabels(true);
         yAxis.setStackLabels(sLabels);
         chart.getConfiguration().addyAxis(yAxis);

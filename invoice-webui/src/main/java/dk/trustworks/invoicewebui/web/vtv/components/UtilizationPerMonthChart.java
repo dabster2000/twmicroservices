@@ -45,14 +45,14 @@ public class UtilizationPerMonthChart {
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
         chart.setCaption(null);
-        chart.getConfiguration().setTitle("");
+        chart.getConfiguration().setTitle("Budget and Realized Utilization");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
         chart.getConfiguration().getxAxis().getLabels().setEnabled(true);
         chart.getConfiguration().getxAxis().setTickWidth(0);
-        chart.getConfiguration().getyAxis().setTitle("%");
+        chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getyAxes().getAxis(0).setMax(100);
-        chart.getConfiguration().getLegend().setEnabled(true);
+        chart.getConfiguration().getLegend().setEnabled(false);
 
         Tooltip tooltip = new Tooltip();
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");
