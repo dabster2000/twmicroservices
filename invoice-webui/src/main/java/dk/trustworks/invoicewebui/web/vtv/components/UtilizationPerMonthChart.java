@@ -88,7 +88,7 @@ public class UtilizationPerMonthChart {
          */
 
         ListSeries budgetListSeries = new ListSeries("Budget utilization");
-        PlotOptionsColumn poc1 = new PlotOptionsColumn();
+        PlotOptionsAreaspline poc1 = new PlotOptionsAreaspline();
         poc1.setColor(new SolidColor("#123375"));
         budgetListSeries.setPlotOptions(poc1);
         for (int j = 0; j < monthPeriod; j++) {
@@ -98,8 +98,10 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().addSeries(budgetListSeries);
 
         DataSeries actualDataSeries = new DataSeries("Actual utilization");
-        PlotOptionsColumn poc2 = new PlotOptionsColumn();
-        poc2.setColor(new SolidColor("#FD5F5B"));
+        PlotOptionsAreaspline poc2 = new PlotOptionsAreaspline();
+        poc2.setColor(new SolidColor("#54D69E"));
+        poc2.setThreshold(75);
+        poc2.setNegativeColor(new SolidColor("#FD5F5B"));
         actualDataSeries.setPlotOptions(poc2);
         actualDataSeries.setData(getAverageAllocationByYear(periodStart));
         chart.getConfiguration().addSeries(actualDataSeries);
