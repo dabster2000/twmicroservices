@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.services;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.addon.charts.model.PlotOptionsArea;
+import com.vaadin.addon.charts.model.PlotOptionsAreaspline;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
@@ -130,9 +131,9 @@ public class StatisticsService extends StatisticsCachedService {
      * @return
      */
     public DataSeries calcRegisteredHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        DataSeries revenueSeries = new DataSeries("Registered Hours Revenue");
+        DataSeries revenueSeries = new DataSeries("Registered Hours Amount");
 
-        PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
+        PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#7084AC"));
         revenueSeries.setPlotOptions(plotOptionsArea);
 
@@ -147,7 +148,7 @@ public class StatisticsService extends StatisticsCachedService {
     public DataSeries calcBudgetPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries budgetSeries = new DataSeries("Budget");
 
-        PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
+        PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#123375"));
         budgetSeries.setPlotOptions(plotOptionsArea);
 
@@ -163,7 +164,7 @@ public class StatisticsService extends StatisticsCachedService {
     public DataSeries calcEarningsPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries earningsSeries = new DataSeries("Earnings");
 
-        PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
+        PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#54D69E"));
         plotOptionsArea.setNegativeColor(new SolidColor("#FD5F5B"));
         earningsSeries.setPlotOptions(plotOptionsArea);
