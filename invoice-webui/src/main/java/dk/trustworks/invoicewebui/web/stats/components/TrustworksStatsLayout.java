@@ -155,21 +155,22 @@ public class TrustworksStatsLayout extends VerticalLayout {
         }
         fiscalPeriodList.add(startFiscalPeriod);
 
-        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear)).withStyleName("flat huge");;
+        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
+                .withStyleName("tiny", "flat", "large-icon","icon-align-top").withFullWidth();
 
         Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, "", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withStyleName("flat huge borderless");
+        }).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, "", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withStyleName("flat huge borderless");
+        }).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
 
 
