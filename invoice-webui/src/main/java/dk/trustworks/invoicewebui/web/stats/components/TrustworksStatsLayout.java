@@ -178,18 +178,28 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getUserAllocationBox()));
 
-        final Button btnCompany = new MButton(MaterialIcons.WORK, "trustworks", event -> {
+        final Button btnCompany = new MButton(MaterialIcons.BUSINESS, "trustworks", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+
+
+        final Button btnConsultants = new MButton(MaterialIcons.FACE, "consultants", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+
+        // Stats that show yearly progress
+        final Button btnEmpty1 = new MButton(MaterialIcons.HISTORY,"History", event -> {
         }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
-        final Button btnConsultants = new MButton(MaterialIcons.PEOPLE, "consultants", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
-        final Button btnEmpty1 = new MButton("", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
-        final Button btnEmpty2 = new MButton("", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
-        final Button btnEmpty3 = new MButton( "", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+
+        // Stats that show customer distributions
+        final Button btnEmpty2 = new MButton(MaterialIcons.PEOPLE,"Customers", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
+
+        // Stats for administration, like salary, vacation, illness
+        final Button btnEmpty3 = new MButton(MaterialIcons.INBOX, "Administration", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
+
+        // UNKNOWN
         final Button btnEmpty4 = new MButton( "", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
 
         btnCompany.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, companyContentRow));
         btnConsultants.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, consultantsContentRow));
@@ -257,6 +267,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         Box utilizationPerMonthCard = new Box();
         utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
+
+        // Weighted Average Margin Per Month
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
