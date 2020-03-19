@@ -255,9 +255,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
 
         Box utilizationPerMonthCard = new Box();
-        cumulativeRevenuePerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart.minusMonths(12), LocalDate.now().withDayOfMonth(1).plusMonths(10)));
-
-
+        utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
