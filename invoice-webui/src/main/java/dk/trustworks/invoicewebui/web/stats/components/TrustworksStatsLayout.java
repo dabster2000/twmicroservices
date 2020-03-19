@@ -1,11 +1,11 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
+import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -21,7 +21,6 @@ import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.StringUtils;
 import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
@@ -29,6 +28,7 @@ import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
 import dk.trustworks.invoicewebui.web.stats.components.charts.expenses.AvgExpensesPerYearChart;
 import dk.trustworks.invoicewebui.web.stats.components.charts.utilization.UtilizationPerYearChart;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -37,6 +37,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -122,9 +123,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
     public TrustworksStatsLayout init() {
         this.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        ResponsiveRow searchRow = responsiveLayout.addRow();
 
         ResponsiveRow boxRow = responsiveLayout.addRow();
+        ResponsiveRow searchRow = responsiveLayout.addRow();
+
         boxRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getGoodPeopleBox()));
@@ -144,16 +146,36 @@ public class TrustworksStatsLayout extends VerticalLayout {
         LocalDate startFiscalPeriod = LocalDate.of(2014, 7, 1);
         ComboBox<LocalDate> fiscalPeriodStartComboBox = new ComboBox<>();
         ComboBox<LocalDate> fiscalPeriodEndComboBox = new ComboBox<>();
-        LocalDate currentFiscalYear = DateUtils.getCurrentFiscalStartDate();
+        AtomicReference<LocalDate> currentFiscalYear = new AtomicReference<>(DateUtils.getCurrentFiscalStartDate());
         List<LocalDate> fiscalPeriodList = new ArrayList<>();
-        while(startFiscalPeriod.isBefore(currentFiscalYear) || startFiscalPeriod.isEqual(currentFiscalYear)) {
+        while(startFiscalPeriod.isBefore(currentFiscalYear.get()) || startFiscalPeriod.isEqual(currentFiscalYear.get())) {
             fiscalPeriodList.add(startFiscalPeriod);
             startFiscalPeriod = startFiscalPeriod.plusYears(1);
         }
         fiscalPeriodList.add(startFiscalPeriod);
 
-        searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodStartComboBox);
-        searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodEndComboBox);
+        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear)).withStyleName("flat huge borderless");;
+
+        Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, "", event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        }).withStyleName("flat huge borderless");
+
+        Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, "", event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        }).withStyleName("flat huge borderless");
+
+
+
+        searchRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new MVerticalLayout(btnDescFiscalYear, btnFiscalYear, btnIncFiscalYear), ResponsiveColumn.ColumnComponentAlignment.CENTER);
+
+        //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodStartComboBox);
+        //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodEndComboBox);
 
         int adjustStartYear = 0;
         if(LocalDate.now().getMonthValue() >= 1 && LocalDate.now().getMonthValue() <=6)  adjustStartYear = 1;
@@ -188,6 +210,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
         this.addComponent(responsiveLayout);
 
         return this;
+    }
+
+    private String createFiscalYearText(AtomicReference<LocalDate> currentFiscalYear) {
+        return "Fiscal year " + currentFiscalYear.get().getYear() + "/" + currentFiscalYear.get().plusYears(1).format(DateTimeFormatter.ofPattern("yy"));
     }
 
     private Notification getCreateChartsNotification() {
