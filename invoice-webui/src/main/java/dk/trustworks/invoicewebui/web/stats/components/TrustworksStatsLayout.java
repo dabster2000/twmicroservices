@@ -21,6 +21,7 @@ import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
@@ -172,10 +173,11 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
 
 
-        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""));
-        searchRow.addColumn().withDisplayRules(12, 12, 4, 4)
-                .withComponent(new MVerticalLayout(btnDescFiscalYear, btnFiscalYear, btnIncFiscalYear));
-        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""));
+        //searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""));
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
+        //searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""));
 
         //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodStartComboBox);
         //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodEndComboBox);
@@ -230,10 +232,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     private void createCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
         long timeMillis = System.currentTimeMillis();
-        Card revenuePerMonthCard = new Card();
-        revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
+        Box revenuePerMonthCard = new Box();
+        //revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
-        notification.setDescription("1 out of 10 charts created!");
+        notification.setDescription("Revenue per month created!");
         System.out.println("timeMillis 1 = " + (System.currentTimeMillis() - timeMillis));
 
         Card avgExpensesPerMonthCard = new Card();
@@ -383,7 +385,7 @@ excelFileDownloader.extend(downloadAsExcel);
          */
 
         chartRow.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
+                .withDisplayRules(12, 12, 12, 12)
                 .withComponent(revenuePerMonthCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
