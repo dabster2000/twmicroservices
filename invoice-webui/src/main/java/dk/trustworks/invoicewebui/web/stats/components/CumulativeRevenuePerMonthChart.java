@@ -32,13 +32,11 @@ public class CumulativeRevenuePerMonthChart {
     }
 
     public Chart createCumulativeRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
-        System.out.println("CumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart");
-        System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "]");
         Chart chart = new Chart();
         chart.setSizeFull();
         int period = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
-        chart.setCaption("Cumulative Revenue during Fiscal Year 07/"+(periodStart.getYear())+" - 06/"+periodEnd.getYear());
+        chart.setCaption("Cumulative Revenue and Earnings");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);

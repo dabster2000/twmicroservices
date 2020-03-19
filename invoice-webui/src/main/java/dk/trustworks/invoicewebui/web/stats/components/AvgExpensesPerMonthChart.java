@@ -49,7 +49,7 @@ public class AvgExpensesPerMonthChart {
         chart.getConfiguration().getLegend().setEnabled(false);
          */
 
-        chart.setCaption("Average Expenses");
+        chart.setCaption("Average Expenses per Month");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -62,7 +62,6 @@ public class AvgExpensesPerMonthChart {
 
         YAxis yAxis = new YAxis();
         yAxis.setMin(0);
-        yAxis.setTitle(new AxisTitle("kr"));
         StackLabels sLabels = new StackLabels(true);
         yAxis.setStackLabels(sLabels);
         chart.getConfiguration().addyAxis(yAxis);
