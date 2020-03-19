@@ -206,6 +206,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty4);
 
         addCompanyCharts();
+        addConsultantCharts();
     }
 
     public void addCompanyCharts() {
