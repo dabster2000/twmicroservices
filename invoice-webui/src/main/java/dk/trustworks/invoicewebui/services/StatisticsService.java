@@ -130,10 +130,10 @@ public class StatisticsService extends StatisticsCachedService {
      * @return
      */
     public DataSeries calcRegisteredHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        DataSeries revenueSeries = new DataSeries("Billable Hours Revenue");
+        DataSeries revenueSeries = new DataSeries("Registered Hours Revenue");
 
         PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
-        plotOptionsArea.setColor(new SolidColor(84, 214, 158));
+        plotOptionsArea.setColor(new SolidColor("#7084AC"));
         revenueSeries.setPlotOptions(plotOptionsArea);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -148,7 +148,7 @@ public class StatisticsService extends StatisticsCachedService {
         DataSeries budgetSeries = new DataSeries("Budget");
 
         PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
-        plotOptionsArea.setColor(new SolidColor(18, 51, 117));
+        plotOptionsArea.setColor(new SolidColor("#123375"));
         budgetSeries.setPlotOptions(plotOptionsArea);
 
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -162,6 +162,11 @@ public class StatisticsService extends StatisticsCachedService {
 
     public DataSeries calcEarningsPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries earningsSeries = new DataSeries("Earnings");
+
+        PlotOptionsArea plotOptionsArea = new PlotOptionsArea();
+        plotOptionsArea.setColor(new SolidColor("#54D69E"));
+        plotOptionsArea.setNegativeColor(new SolidColor("#FD5F5B"));
+        earningsSeries.setPlotOptions(plotOptionsArea);
 
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
         for (int i = 0; i < months; i++) {

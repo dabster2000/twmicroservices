@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.web.vtv.components;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -61,8 +62,17 @@ public class UtilizationPerMonthChart {
         double[] monthTotalAvailabilites = new double[monthPeriod+1];
         double[] monthAvailabilites = new double[monthPeriod+1];
 
-        LocalDate localDate = periodStart.withDayOfMonth(1);
-        int m = 0;
+        for (int m = 0; m < monthPeriod; m++) {
+            LocalDate localDate = periodStart.plusMonths(1);
+            for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
+                if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
+                double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate);
+                monthAvailabilites[m] += budget;
+                double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getNetAvailableHours();
+                monthTotalAvailabilites[m] += availability;
+            }
+        }
+        /*
         do {
             for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
@@ -75,7 +85,12 @@ public class UtilizationPerMonthChart {
             localDate = localDate.plusMonths(1);
         } while (m<=monthPeriod);
 
+         */
+
         ListSeries budgetListSeries = new ListSeries("Budget utilization");
+        PlotOptionsColumn poc1 = new PlotOptionsColumn();
+        poc1.setColor(new SolidColor("#123375"));
+        budgetListSeries.setPlotOptions(poc1);
         for (int j = 0; j < monthPeriod; j++) {
             budgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
         }
@@ -83,10 +98,13 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().addSeries(budgetListSeries);
 
         DataSeries actualDataSeries = new DataSeries("Actual utilization");
+        PlotOptionsColumn poc2 = new PlotOptionsColumn();
+        poc2.setColor(new SolidColor("#FD5F5B"));
+        actualDataSeries.setPlotOptions(poc2);
         actualDataSeries.setData(getAverageAllocationByYear(periodStart));
         chart.getConfiguration().addSeries(actualDataSeries);
 
-        chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
+        chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, periodEnd));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;
