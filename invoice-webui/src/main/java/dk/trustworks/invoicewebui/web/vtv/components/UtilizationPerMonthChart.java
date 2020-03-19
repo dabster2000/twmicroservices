@@ -63,7 +63,7 @@ public class UtilizationPerMonthChart {
         double[] monthAvailabilites = new double[monthPeriod+1];
 
         for (int m = 0; m < monthPeriod; m++) {
-            LocalDate localDate = periodStart.plusMonths(1);
+            LocalDate localDate = periodStart.plusMonths(m);
             for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
                 double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate);
@@ -98,7 +98,7 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().addSeries(budgetListSeries);
 
         DataSeries actualDataSeries = new DataSeries("Actual utilization");
-        PlotOptionsAreaspline poc2 = new PlotOptionsAreaspline();
+        PlotOptionsSpline poc2 = new PlotOptionsSpline();
         poc2.setColor(new SolidColor("#54D69E"));
         poc2.setThreshold(75);
         poc2.setNegativeColor(new SolidColor("#FD5F5B"));
