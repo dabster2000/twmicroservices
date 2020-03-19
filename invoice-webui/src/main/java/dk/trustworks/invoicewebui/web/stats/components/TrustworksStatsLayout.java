@@ -221,21 +221,21 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withStyleName("tiny", "flat", "large-icon","icon-align-top")
                 .withHeight(125, Unit.PIXELS)
                 .withFullWidth()
-                .withIcon(MaterialIcons.TIMELINE);
+                .withIcon(MaterialIcons.INSERT_INVITATION);
 
         Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, null, event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, null, event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
@@ -284,21 +284,21 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withStyleName("tiny", "flat", "large-icon","icon-align-top")
                 .withHeight(125, Unit.PIXELS)
                 .withFullWidth()
-                .withIcon(MaterialIcons.TIMELINE);
+                .withIcon(MaterialIcons.INSERT_INVITATION);
 
         Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
-        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
