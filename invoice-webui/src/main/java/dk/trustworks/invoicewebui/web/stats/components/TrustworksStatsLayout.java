@@ -290,14 +290,14 @@ public class TrustworksStatsLayout extends VerticalLayout {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
-            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+            createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
         }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
-            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+            createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
         }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
         searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
