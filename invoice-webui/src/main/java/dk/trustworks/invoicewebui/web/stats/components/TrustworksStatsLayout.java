@@ -2,11 +2,9 @@ package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -23,13 +21,10 @@ import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
-import dk.trustworks.invoicewebui.web.common.BoxImpl;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
 import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
-import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import dk.trustworks.invoicewebui.web.stats.components.charts.expenses.AvgExpensesPerYearChart;
 import dk.trustworks.invoicewebui.web.stats.components.charts.utilization.UtilizationPerYearChart;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -214,16 +209,17 @@ public class TrustworksStatsLayout extends VerticalLayout {
         AtomicReference<LocalDate> currentFiscalYear = new AtomicReference<>(DateUtils.getCurrentFiscalStartDate());
 
         Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
-                .withStyleName("tiny", "flat", "large-icon","icon-align-top").withFullWidth();
+                .withStyleName("tiny", "flat", "large-icon","icon-align-top").withFullWidth()
+                .withIcon(MaterialIcons.TIMELINE);
 
-        Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, "", event -> {
+        Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
             createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
         }).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
 
-        Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, "", event -> {
+        Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
@@ -233,6 +229,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
+
+        createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
     }
 
     private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
@@ -240,7 +238,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
 
         Box avgExpensesPerMonthCard = new Box();
-        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createRevenuePerMonthChart());
+        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart());
 
         Box cumulativeRevenuePerMonthCard = new Box();
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
@@ -379,7 +377,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         Card avgExpensesPerMonthCard = new Card();
         avgExpensesPerMonthCard.getLblTitle().setValue("Average Expenses Per Month");
-        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createRevenuePerMonthChart());
+        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart());
         notification.setDescription("1b out of 10 charts created!");
         System.out.println("timeMillis 1b = " + (System.currentTimeMillis() - timeMillis));
 

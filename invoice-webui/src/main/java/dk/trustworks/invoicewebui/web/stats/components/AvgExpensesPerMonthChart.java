@@ -32,13 +32,13 @@ public class AvgExpensesPerMonthChart {
         this.statisticsService = statisticsService;
     }
 
-    public Chart createRevenuePerMonthChart() {
-        System.out.println("RevenuePerMonthChart.createRevenuePerMonthChart");
+    public Chart createExpensePerMonthChart() {
         LocalDate periodStart = LocalDate.of(2016, 7, 1);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1).minusMonths(1);
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
+        /*
         chart.setCaption("Average Expenses");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
@@ -47,27 +47,70 @@ public class AvgExpensesPerMonthChart {
         chart.getConfiguration().getxAxis().setTickWidth(0);
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
+         */
+
+        chart.setCaption("Average Expenses");
+        chart.getConfiguration().setTitle("");
+        chart.getConfiguration().getChart().setType(ChartType.COLUMN);
+        chart.getConfiguration().getChart().setAnimation(true);
+        chart.getConfiguration().getyAxis().setTitle("");
+        chart.getConfiguration().getLegend().setEnabled(false);
+
+        PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
+        plotOptionsColumn.setStacking(Stacking.NORMAL);
+        chart.getConfiguration().setPlotOptions(plotOptionsColumn);
+
+        YAxis yAxis = new YAxis();
+        yAxis.setMin(0);
+        yAxis.setTitle(new AxisTitle("kr"));
+        StackLabels sLabels = new StackLabels(true);
+        yAxis.setStackLabels(sLabels);
+        chart.getConfiguration().addyAxis(yAxis);
 
         Tooltip tooltip = new Tooltip();
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
+
+        /*
         PlotOptionsArea plotOptionsArea1 = new PlotOptionsArea();
         plotOptionsArea1.setColor(new SolidColor(18, 51, 117));
-
         DataSeries salarySeries = new DataSeries("Average salaries");
         salarySeries.setPlotOptions(plotOptionsArea1);
+         */
 
+        PlotOptionsColumn poc4 = new PlotOptionsColumn();
+        poc4.setColor(new SolidColor("#CFD6E3"));
+        ListSeries salarySeries = new ListSeries("Average salaries");
+        salarySeries.setPlotOptions(poc4);
+        chart.getConfiguration().addSeries(salarySeries);
+
+/*
         PlotOptionsArea plotOptionsArea2 = new PlotOptionsArea();
-
         DataSeries sharedExpensesSeries = new DataSeries("Average shared expenses");
         sharedExpensesSeries.setPlotOptions(plotOptionsArea2);
 
+ */
+
+        ListSeries sharedExpensesSeries = new ListSeries("Average shared expenses");
+        PlotOptionsColumn poc2 = new PlotOptionsColumn();
+        poc2.setColor(new SolidColor("#7084AC"));
+        sharedExpensesSeries.setPlotOptions(poc2);
+        chart.getConfiguration().addSeries(sharedExpensesSeries);
+
+        /*
         PlotOptionsArea plotOptionsArea3 = new PlotOptionsArea();
         plotOptionsArea3.setColor(new SolidColor(253, 95, 91));
-
         DataSeries staffSalarySeries = new DataSeries("Average staff salaries");
         staffSalarySeries.setPlotOptions(plotOptionsArea3);
+
+         */
+
+        ListSeries staffSalarySeries = new ListSeries("Average staff salaries");
+        PlotOptionsColumn poc3 = new PlotOptionsColumn();
+        poc3.setColor(new SolidColor("#123375"));
+        staffSalarySeries.setPlotOptions(poc3);
+        chart.getConfiguration().addSeries(staffSalarySeries);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
@@ -77,9 +120,9 @@ public class AvgExpensesPerMonthChart {
 
             List<ExpenseDocument> expensesByMonth = statisticsService.getExpensesByMonth(currentDate);
 
-            salarySeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSalary).average().orElse(0.0))));
-            sharedExpensesSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSharedExpense).average().orElse(0.0))));
-            staffSalarySeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getStaffSalaries).average().orElse(0.0))));
+            salarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSalary).average().orElse(0.0)));
+            sharedExpensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSharedExpense).average().orElse(0.0)));
+            staffSalarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getStaffSalaries).average().orElse(0.0)));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
