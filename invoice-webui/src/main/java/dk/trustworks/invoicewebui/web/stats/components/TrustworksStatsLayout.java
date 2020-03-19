@@ -172,10 +172,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
 
 
-        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""))
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""));
         searchRow.addColumn().withDisplayRules(12, 12, 4, 4)
                 .withComponent(new MVerticalLayout(btnDescFiscalYear, btnFiscalYear, btnIncFiscalYear));
-        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""))
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withVisibilityRules(false, false,true,true).withComponent(new Label(""));
 
         //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodStartComboBox);
         //searchRow.addColumn().withDisplayRules(12, 6, 4, 3).withComponent(fiscalPeriodEndComboBox);
