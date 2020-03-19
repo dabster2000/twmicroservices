@@ -31,8 +31,6 @@ public class RevenuePerMonthEmployeeAvgChart {
 
     private final GraphKeyValueRepository graphKeyValueRepository;
 
-    private final ExpenseRepository expenseRepository;
-
     private final UserService userService;
 
     private final StatisticsService statisticsService;
@@ -40,7 +38,6 @@ public class RevenuePerMonthEmployeeAvgChart {
     @Autowired
     public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, UserService userService, StatisticsService statisticsService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
-        this.expenseRepository = expenseRepository;
         this.userService = userService;
         this.statisticsService = statisticsService;
     }
@@ -50,7 +47,7 @@ public class RevenuePerMonthEmployeeAvgChart {
         chart.setSizeFull();
         int period = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
-        chart.setCaption("Average Revenue per Consultant Year 07/"+(periodStart.getYear())+" - 06/"+periodEnd.getYear());
+        chart.setCaption("Average Revenue and Earnings per Consultant");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);

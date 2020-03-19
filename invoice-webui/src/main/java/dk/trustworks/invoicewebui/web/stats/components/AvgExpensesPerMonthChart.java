@@ -49,7 +49,7 @@ public class AvgExpensesPerMonthChart {
         chart.getConfiguration().getLegend().setEnabled(false);
          */
 
-        chart.setCaption("Average Expenses per Month");
+        chart.setCaption("Categorized Average Expenses");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);

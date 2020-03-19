@@ -36,7 +36,7 @@ public class ExpensesPerMonthChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption("Expenses per Month");
+        chart.setCaption("Categorized Expenses");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);

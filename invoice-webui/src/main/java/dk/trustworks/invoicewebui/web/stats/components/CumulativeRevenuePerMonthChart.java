@@ -36,7 +36,7 @@ public class CumulativeRevenuePerMonthChart {
         chart.setSizeFull();
         int period = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
-        chart.setCaption("Cumulative Revenue and Earnings");
+        chart.setCaption("Cumulative Revenue, Budget, and Earnings");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);

@@ -37,7 +37,7 @@ public class RevenuePerMonthChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption("Revenue and Earnings per Month");
+        chart.setCaption("Revenue, Budget, and Earnings");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);

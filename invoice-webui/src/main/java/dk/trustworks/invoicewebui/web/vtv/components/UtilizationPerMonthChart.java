@@ -44,8 +44,8 @@ public class UtilizationPerMonthChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption(null);
-        chart.getConfiguration().setTitle("Budget and Realized Utilization");
+        chart.setCaption("Budget and Realized Utilization");
+        chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
         chart.getConfiguration().getxAxis().getLabels().setEnabled(true);
