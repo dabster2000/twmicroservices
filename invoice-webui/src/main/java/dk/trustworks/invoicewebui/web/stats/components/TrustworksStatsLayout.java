@@ -1,11 +1,12 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
-import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -22,17 +23,19 @@ import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
+import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import dk.trustworks.invoicewebui.web.model.stats.BudgetItem;
 import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
+import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import dk.trustworks.invoicewebui.web.stats.components.charts.expenses.AvgExpensesPerYearChart;
 import dk.trustworks.invoicewebui.web.stats.components.charts.utilization.UtilizationPerYearChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -120,13 +123,149 @@ public class TrustworksStatsLayout extends VerticalLayout {
     @Autowired
     private InvoiceService invoiceService;
 
+    private ResponsiveRow baseContentRow;
+
+    private ResponsiveRow buttonContentRow;
+
+    private ResponsiveRow companyContentRow;
+    private ResponsiveRow consultantsContentRow;
+    private ResponsiveRow empty1ContentRow;
+    private ResponsiveRow empty2ContentRow;
+    private ResponsiveRow empty3ContentRow;
+    private ResponsiveRow empty4ContentRow;
 
     public TrustworksStatsLayout init() {
-        this.removeAllComponents();
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        responsiveLayout.setSizeFull();
+        responsiveLayout.setScrollable(true);
+
+        baseContentRow = responsiveLayout.addRow();
+        buttonContentRow = responsiveLayout.addRow();
+        companyContentRow = responsiveLayout.addRow();
+        consultantsContentRow = responsiveLayout.addRow();
+        consultantsContentRow.setVisible(false);
+        empty1ContentRow = responsiveLayout.addRow();
+        empty1ContentRow.setVisible(false);
+        empty2ContentRow = responsiveLayout.addRow();
+        empty2ContentRow.setVisible(false);
+        empty3ContentRow = responsiveLayout.addRow();
+        empty3ContentRow.setVisible(false);
+        empty4ContentRow = responsiveLayout.addRow();
+        empty4ContentRow.setVisible(false);
+        addComponent(responsiveLayout);
+        loadData();
+        return this;
+    }
+
+    private void loadData() {
+        createMonthReportCard();
+    }
+
+    private void createMonthReportCard() {
+        baseContentRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getGoodPeopleBox()));
+        baseContentRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getCumulativeGrossRevenue()));
+        baseContentRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getPayout()));
+        baseContentRow.addColumn()
+                .withDisplayRules(12, 6, 3, 3)
+                .withComponent(new TopCardImpl(dashboardBoxCreator.getUserAllocationBox()));
+
+        final Button btnCompany = new MButton(MaterialIcons.WORK, "trustworks", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
+        final Button btnConsultants = new MButton(MaterialIcons.PEOPLE, "consultants", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+        final Button btnEmpty1 = new MButton("", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+        final Button btnEmpty2 = new MButton("", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+        final Button btnEmpty3 = new MButton( "", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+        final Button btnEmpty4 = new MButton( "", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
+
+        btnCompany.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, companyContentRow));
+        btnConsultants.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, consultantsContentRow));
+        btnEmpty1.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, empty1ContentRow));
+        btnEmpty2.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, empty2ContentRow));
+        btnEmpty3.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, empty3ContentRow));
+        btnEmpty4.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnConsultants, event, empty4ContentRow));
+
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnCompany);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnConsultants);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty1);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty2);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty3);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty4);
+
+        addCompanyCharts();
+    }
+
+    public void addCompanyCharts() {
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        companyContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
+        ResponsiveRow searchRow = responsiveLayout.addRow();
+        final ResponsiveRow chartRow = responsiveLayout.addRow();
+
+        AtomicReference<LocalDate> currentFiscalYear = new AtomicReference<>(DateUtils.getCurrentFiscalStartDate());
+
+        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
+                .withStyleName("tiny", "flat", "large-icon","icon-align-top").withFullWidth();
+
+        Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, "", event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        }).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+
+        Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, "", event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        }).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
+    }
+
+    private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
+        Box revenuePerMonthCard = new Box();
+        revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
+
+        Box avgExpensesPerMonthCard = new Box();
+        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createRevenuePerMonthChart());
+
+        Box cumulativeRevenuePerMonthCard = new Box();
+        cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
+
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(revenuePerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(avgExpensesPerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(cumulativeRevenuePerMonthCard);
+    }
+
+    public void old() {
+        // *** OLD ***
+
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
 
         ResponsiveRow boxRow = responsiveLayout.addRow();
+        buttonContentRow = responsiveLayout.addRow();
+
         ResponsiveRow searchRow = responsiveLayout.addRow();
+
 
         boxRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
@@ -215,7 +354,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         this.addComponent(responsiveLayout);
 
-        return this;
+        //return this;
     }
 
     private String createFiscalYearText(AtomicReference<LocalDate> currentFiscalYear) {
@@ -234,7 +373,6 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private void createCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
         long timeMillis = System.currentTimeMillis();
         Box revenuePerMonthCard = new Box();
-        //revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
         notification.setDescription("Revenue per month created!");
         System.out.println("timeMillis 1 = " + (System.currentTimeMillis() - timeMillis));
@@ -505,6 +643,31 @@ excelFileDownloader.extend(downloadAsExcel);
                 .withComponent(utilizationPerYearCard);
 
         notification.setDelayMsec(1000);
+    }
+
+    private void setNewButtonPressState(Button btnWork, Button btnKnowledge, Button btnSkills, Button btnBudget, Button btnDocuments, Button btnPurpose, Button.ClickEvent event, ResponsiveRow contentRow) {
+        hideAllDynamicRows();
+        enableAllButtons(btnWork, btnKnowledge, btnSkills, btnBudget, btnDocuments, btnPurpose);
+        event.getButton().setEnabled(false);
+        contentRow.setVisible(true);
+    }
+
+    private void enableAllButtons(Button btnWork, Button btnKnowledge, Button btnSkills, Button btnBudget, Button btnDocuments, Button btnPurpose) {
+        btnWork.setEnabled(true);
+        btnKnowledge.setEnabled(true);
+        btnSkills.setEnabled(true);
+        btnPurpose.setEnabled(true);
+        btnBudget.setEnabled(true);
+        btnDocuments.setEnabled(true);
+    }
+
+    private void hideAllDynamicRows() {
+        companyContentRow.setVisible(false);
+        consultantsContentRow.setVisible(false);
+        empty1ContentRow.setVisible(false);
+        empty3ContentRow.setVisible(false);
+        empty2ContentRow.setVisible(false);
+        empty4ContentRow.setVisible(false);
     }
 
 }
