@@ -37,7 +37,8 @@ public class RevenuePerMonthChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption("Revenue, Budget, and Earnings");
+        chart.setCaption("Revenue and Budget");
+        if(showEarnings) chart.setCaption("Revenue, Budget, and Gross Profit");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -53,7 +54,7 @@ public class RevenuePerMonthChart {
         chart.getConfiguration().addSeries(statisticsService.calcBudgetPerMonth(periodStart, periodEnd));
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, periodEnd));
         chart.getConfiguration().addSeries(statisticsService.calcRegisteredHoursRevenuePerMonth(periodStart, periodEnd));
-        if(showEarnings) chart.getConfiguration().addSeries(createDataSeries(statisticsService.calcActualRevenuePerMonth(periodStart, (periodEnd.isBefore(LocalDate.now()))?periodEnd:LocalDate.now().withDayOfMonth(1)), "Invoiced Amount", "#CFD6E3"));
+        if(showEarnings) chart.getConfiguration().addSeries(createDataSeries(statisticsService.calcActualRevenuePerMonth(periodStart, (periodEnd.isBefore(LocalDate.now()))?periodEnd:LocalDate.now().withDayOfMonth(1)), "Invoiced Revenue", "#CFD6E3"));
         if(showEarnings) chart.getConfiguration().addSeries(statisticsService.calcEarningsPerMonth(periodStart, (periodEnd.isBefore(LocalDate.now()))?periodEnd:LocalDate.now().withDayOfMonth(1)));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);

@@ -131,7 +131,7 @@ public class StatisticsService extends StatisticsCachedService {
      * @return
      */
     public DataSeries calcRegisteredHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        DataSeries revenueSeries = new DataSeries("Registered Hours Amount");
+        DataSeries revenueSeries = new DataSeries("Registered Hours Revenue");
 
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#7084AC"));
@@ -146,7 +146,7 @@ public class StatisticsService extends StatisticsCachedService {
     }
 
     public DataSeries calcBudgetPerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        DataSeries budgetSeries = new DataSeries("Budget");
+        DataSeries budgetSeries = new DataSeries("Budget Revenue");
 
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#123375"));
@@ -162,7 +162,7 @@ public class StatisticsService extends StatisticsCachedService {
     }
 
     public DataSeries calcEarningsPerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        DataSeries earningsSeries = new DataSeries("Earnings");
+        DataSeries earningsSeries = new DataSeries("Gross Profit");
 
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#54D69E"));
