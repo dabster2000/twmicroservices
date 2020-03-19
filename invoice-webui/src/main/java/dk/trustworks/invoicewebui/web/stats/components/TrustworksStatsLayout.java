@@ -222,6 +222,69 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withFullWidth()
                 .withIcon(MaterialIcons.TIMELINE);
 
+        Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, null, event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+
+        Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, null, event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon","icon-align-top").withFullWidth();
+
+        searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
+
+        createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+    }
+
+    private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
+        Box revenuePerMonthCard = new Box();
+        revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
+
+        Box expensesPerMonthCard = new Box();
+        expensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
+
+        Box cumulativeRevenuePerMonthCard = new Box();
+        cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
+
+        Box utilizationPerMonthCard = new Box();
+        utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
+
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(revenuePerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(expensesPerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(cumulativeRevenuePerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(utilizationPerMonthCard);
+    }
+
+    public void addConsultantCharts() {
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        consultantsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
+        ResponsiveRow searchRow = responsiveLayout.addRow();
+        final ResponsiveRow chartRow = responsiveLayout.addRow();
+
+        AtomicReference<LocalDate> currentFiscalYear = new AtomicReference<>(DateUtils.getCurrentFiscalStartDate());
+
+        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
+                .withStyleName("tiny", "flat", "large-icon","icon-align-top")
+                .withHeight(125, Unit.PIXELS)
+                .withFullWidth()
+                .withIcon(MaterialIcons.TIMELINE);
+
         Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
@@ -241,34 +304,22 @@ public class TrustworksStatsLayout extends VerticalLayout {
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
 
-        createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
     }
 
-    private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
-        Box revenuePerMonthCard = new Box();
-        revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
+    private void createConsultantCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
+        Box topGrossingConsultantsBox = new Box();
+        topGrossingConsultantsBox.getContent().addComponent(topGrossingConsultantsChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
 
         Box avgExpensesPerMonthCard = new Box();
-        avgExpensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
-
-        Box cumulativeRevenuePerMonthCard = new Box();
-        cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
-
-        Box utilizationPerMonthCard = new Box();
-        utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
+        avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
-                .withComponent(revenuePerMonthCard);
+                .withComponent(topGrossingConsultantsBox);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(avgExpensesPerMonthCard);
-        chartRow.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
-                .withComponent(cumulativeRevenuePerMonthCard);
-        chartRow.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
-                .withComponent(utilizationPerMonthCard);
     }
 
     public void old() {
@@ -386,7 +437,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
+
         long timeMillis = System.currentTimeMillis();
+        /*
         Box revenuePerMonthCard = new Box();
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
         notification.setDescription("Revenue per month created!");
@@ -409,7 +462,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
         notification.setDescription("2 out of 10 charts created!");
         System.out.println("timeMillis 2 = " + (System.currentTimeMillis() - timeMillis));
-
+*/
         Card consultantGrossingCard = new Card();
         consultantGrossingCard.getLblTitle().setValue("Top Grossing Consultants");
         consultantGrossingCard.getContent().addComponent(topGrossingConsultantsChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
@@ -537,7 +590,7 @@ StreamResource excelStreamResource = new StreamResource((StreamResource.StreamSo
 FileDownloader excelFileDownloader = new FileDownloader(excelStreamResource);
 excelFileDownloader.extend(downloadAsExcel);
          */
-
+/*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(revenuePerMonthCard);
@@ -550,6 +603,8 @@ excelFileDownloader.extend(downloadAsExcel);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(cumulativeRevenuePerMonthCard);
+
+ */
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantGrossingCard);

@@ -39,7 +39,7 @@ public class UtilizationPerMonthChart {
     }
 
     public Chart createUtilizationPerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
-        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd)+1;
+        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
