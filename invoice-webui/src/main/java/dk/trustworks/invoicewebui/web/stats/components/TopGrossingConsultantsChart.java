@@ -43,7 +43,7 @@ public class TopGrossingConsultantsChart {
         Chart chart = new Chart();
         chart.setSizeFull();
 
-        chart.setCaption("Top Grossing Consultants");
+        chart.setCaption("Total Revenue");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.COLUMN);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -73,7 +73,12 @@ public class TopGrossingConsultantsChart {
         double avgRevenue = sumRevenue / amountPerItemList.size();
 
         String[] categories = new String[amountPerItemList.size()];
+
         DataSeries revenueList = new DataSeries("Revenue");
+        PlotOptionsColumn poc3 = new PlotOptionsColumn();
+        poc3.setColor(new SolidColor("#123375"));
+        revenueList.setPlotOptions(poc3);
+
         DataSeries avgRevenueList = new DataSeries("Average Revenue");
         PlotOptionsLine options2 = new PlotOptionsLine();
         options2.setColor(SolidColor.BLACK);
