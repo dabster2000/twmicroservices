@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class EconomicsAPI {
 
-    public static final int[] OMSAETNING = {2101};
+    public static final int[] OMSAETNING = {2101, 2102, 2103, 2115, 2150};
     public static final int[] PRODUKTION = {3010, 3030, 3040, 3050, 3080};
     public static final int[] LOENNINGER = {3502, 3503, 3504, 3510, 3531, 3578, 3591, 3597};
     public static final int[] PERSONALE = {3505, 3530, 3560, 3570, 3575, 3580, 3583, 3585, 3586, 3589, 3594};
