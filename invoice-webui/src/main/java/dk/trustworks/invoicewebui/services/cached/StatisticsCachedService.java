@@ -270,13 +270,13 @@ public class StatisticsCachedService {
             int consultantSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
             final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
             final double expenseSalaries = expenseList.stream()
-                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER) || expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE))
                     .mapToDouble(Expense::getAmount)
                     .sum();
 
             final long consultantCount = countActiveConsultantCountByMonth(finalStartDate);
             final double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
-            final double sharedExpense = expenseList.stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
+            final double sharedExpense = expenseList.stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER) && !expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE)).mapToDouble(Expense::getAmount).sum() / consultantCount;
 
             if(expenseSalaries <= 0) {
                 startDate = startDate.plusMonths(1);
