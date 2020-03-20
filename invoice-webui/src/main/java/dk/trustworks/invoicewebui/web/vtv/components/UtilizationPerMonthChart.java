@@ -100,7 +100,7 @@ public class UtilizationPerMonthChart {
         DataSeries actualDataSeries = new DataSeries("Actual utilization");
         PlotOptionsSpline poc2 = new PlotOptionsSpline();
         poc2.setColor(new SolidColor("#54D69E"));
-        poc2.setThreshold(75);
+        poc2.setThreshold(80);
         poc2.setNegativeColor(new SolidColor("#FD5F5B"));
         actualDataSeries.setPlotOptions(poc2);
         actualDataSeries.setData(getAverageAllocationByYear(periodStart));

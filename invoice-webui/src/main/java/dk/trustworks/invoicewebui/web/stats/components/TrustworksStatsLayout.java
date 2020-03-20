@@ -4,6 +4,7 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -179,8 +180,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getUserAllocationBox()));
 
         final Button btnCompany = new MButton(MaterialIcons.BUSINESS, "trustworks", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
-
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top")
+                .withEnabled(false);
 
         final Button btnTeam = new MButton(MaterialIcons.FACE, "team", event -> {
         }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
@@ -225,6 +226,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
         ResponsiveRow searchRow = responsiveLayout.addRow();
         final ResponsiveRow chartRow = responsiveLayout.addRow();
 
+        AtomicReference<LocalDate> currentFiscalYear = createDateSelectorHeader(searchRow, chartRow);
+
+        createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+    }
+
+    private AtomicReference<LocalDate> createDateSelectorHeader(ResponsiveRow searchRow, ResponsiveRow chartRow) {
         AtomicReference<LocalDate> currentFiscalYear = new AtomicReference<>(DateUtils.getCurrentFiscalStartDate());
 
         Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
@@ -251,8 +258,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
-
-        createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        return currentFiscalYear;
     }
 
     private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
@@ -302,14 +308,14 @@ public class TrustworksStatsLayout extends VerticalLayout {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
-            createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+            createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1));
         }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, " ", event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
-            createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+            createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1));
         }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
@@ -317,10 +323,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
         searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
 
-        createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        createConsultantCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1));
     }
 
-    private void createConsultantCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
+    private void createConsultantCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd) {
         Box topGrossingConsultantsBox = new Box();
         topGrossingConsultantsBox.getContent().addComponent(topGrossingConsultantsChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
 
@@ -330,7 +336,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         /*
         Box averageConsultantRevenueByYearCard = new Box();
         averageConsultantRevenueByYearCard.getContent().addComponent(averageConsultantRevenueByYearChart.createRevenuePerConsultantChart());
-         */
+        */
 
         Box yourTrustworksForecastCard = new Box();
         yourTrustworksForecastCard.getContent().addComponent(yourTrustworksForecastChart.createChart(localDateStart, localDateEnd));

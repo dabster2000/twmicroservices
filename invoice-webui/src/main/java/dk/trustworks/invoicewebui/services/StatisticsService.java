@@ -81,8 +81,8 @@ public class StatisticsService extends StatisticsCachedService {
     }
 
     public Number[] getPayoutsByPeriod(LocalDate periodStart, LocalDate periodEnd) {
-        double forecastedExpenses = 33000;
-        double forecastedSalaries = 60000;
+        double forecastedExpenses = 43000;
+        double forecastedSalaries = 64000;
         double forecastedConsultants = countActiveEmployeeTypesByMonth(periodEnd, ConsultantType.CONSULTANT, ConsultantType.STAFF);
         double totalForecastedExpenses = (forecastedExpenses + forecastedSalaries) * forecastedConsultants;
 
@@ -114,7 +114,6 @@ public class StatisticsService extends StatisticsCachedService {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
-            //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 result.put(currentDate, invoicedAmountByMonth);
             } else {
@@ -174,9 +173,7 @@ public class StatisticsService extends StatisticsCachedService {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
-            //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             double expense = getAllExpensesByMonth(currentDate.withDayOfMonth(1));
-            //double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }
         return earningsSeries;

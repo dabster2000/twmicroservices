@@ -26,15 +26,12 @@ import java.util.stream.Collectors;
 @SpringUI
 public class TopGrossingConsultantsChart {
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-
     private final StatisticsService statisticsService;
 
     private final UserService userService;
 
     @Autowired
     public TopGrossingConsultantsChart(GraphKeyValueRepository graphKeyValueRepository, StatisticsService statisticsService, UserService userService) {
-        this.graphKeyValueRepository = graphKeyValueRepository;
         this.statisticsService = statisticsService;
         this.userService = userService;
     }
@@ -64,7 +61,6 @@ public class TopGrossingConsultantsChart {
             } while (currentDate.isBefore(periodEnd.plusMonths(1)));
             if(gkv.getValue()>0) amountPerItemList.add(gkv);
         }
-
 
         double sumRevenue = 0.0;
         for (GraphKeyValue amountPerItem : amountPerItemList) {
