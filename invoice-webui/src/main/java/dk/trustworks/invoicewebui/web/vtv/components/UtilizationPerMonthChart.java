@@ -103,7 +103,7 @@ public class UtilizationPerMonthChart {
         poc2.setThreshold(80);
         poc2.setNegativeColor(new SolidColor("#FD5F5B"));
         actualDataSeries.setPlotOptions(poc2);
-        actualDataSeries.setData(getAverageAllocationByYear(periodStart));
+        actualDataSeries.setData(getAverageAllocationByYear(periodStart, periodEnd));
         chart.getConfiguration().addSeries(actualDataSeries);
 
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, periodEnd));
@@ -112,46 +112,30 @@ public class UtilizationPerMonthChart {
         return chart;
     }
 
-    private List<DataSeriesItem> getAverageAllocationByYear(LocalDate startDate) {
+    private List<DataSeriesItem> getAverageAllocationByYear(LocalDate startDate, LocalDate endDate) {
         startDate = startDate.withDayOfMonth(1);
         List<DataSeriesItem> dataSeriesItemList = new ArrayList<>();
         do {
             double totalBillableHours = 0.0;
             double totalAvailableHours = 0.0;
-            double totalAllocation = 0.0;
+            double totalAllocation;
             double countEmployees = 0.0;
-            //System.out.println("*** AVAILABILITY ***");
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                //System.out.print(user.getUsername()+";");
-
                 double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                //System.out.print(billableWorkHours+";");
                 AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
                 if (availability == null || !availability.getStatusType().equals(StatusType.ACTIVE)) {
-                    //System.out.println("user availability is null or not active = " + user.getUsername());
                     continue;
-                    //availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
-                //System.out.print(availability.getNetAvailableHours()+";");
                 totalAvailableHours += availability.getNetAvailableHours();
                 totalBillableHours += billableWorkHours;
-                //double monthAllocation = 0.0;
-                //if (billableWorkHours > 0.0 && availability.getNetAvailableHours() > 0.0) {
-                //    monthAllocation = (billableWorkHours / availability.getNetAvailableHours()) * 100.0;
-                //}
-                //System.out.print(monthAllocation+";");
                 countEmployees++;
-                //totalAllocation += monthAllocation;
-                //System.out.println();
             }
             totalAllocation = Math.floor(((totalBillableHours / countEmployees) / (totalAvailableHours / countEmployees)) * 100.0);
-            //System.out.println("allocation = " + totalAllocation);
-            //System.out.println("countEmployees = " + countEmployees);
             dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), NumberUtils.round(totalAllocation, 0)));
             startDate = startDate.plusMonths(1);
-        } while (startDate.isBefore(LocalDate.now()));
+        } while (startDate.isBefore(endDate));
         return dataSeriesItemList;
     }
 }

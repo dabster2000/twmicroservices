@@ -227,7 +227,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         AtomicReference<LocalDate> currentFiscalYear = createDateSelectorHeader(searchRow, chartRow);
 
-        createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+        createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1));
     }
 
     private AtomicReference<LocalDate> createDateSelectorHeader(ResponsiveRow searchRow, ResponsiveRow chartRow) {
@@ -243,14 +243,14 @@ public class TrustworksStatsLayout extends VerticalLayout {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
-            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1));
         }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, null, event -> {
             chartRow.removeAllComponents();
             currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
             btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
-            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1), getCreateChartsNotification());
+            createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1));
         }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
 
         searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
@@ -260,7 +260,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         return currentFiscalYear;
     }
 
-    private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd, Notification notification) {
+    private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd) {
         Box revenuePerMonthCard = new Box();
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
 
