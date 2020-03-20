@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.services.cached;
 
-import dk.trustworks.invoicewebui.TrustworksConfiguration;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.*;
 import dk.trustworks.invoicewebui.model.enums.*;
@@ -9,7 +8,6 @@ import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -57,6 +55,13 @@ public class StatisticsCachedService {
         return cachedAvailabilityData;
     }
 
+    private List<UserExpenseDocument> cachedUserExpenseData = new ArrayList<>();
+
+    public List<UserExpenseDocument> getUserExpenseData() {
+        if(cachedUserExpenseData.isEmpty()) cachedUserExpenseData = createUserExpenseData();
+        return cachedUserExpenseData;
+    }
+
     private List<ExpenseDocument> cachedExpenseData = new ArrayList<>();
 
     public List<ExpenseDocument> getExpenseData() {
@@ -81,13 +86,13 @@ public class StatisticsCachedService {
     public void refreshCache() {
         cachedBudgetData = new ArrayList<>();
         cachedAvailabilityData = new ArrayList<>();
-        cachedExpenseData = new ArrayList<>();
+        cachedUserExpenseData = new ArrayList<>();
         cachedIncomeData = new ArrayList<>();
         cachedInvoiceData = new ArrayList<>();
 
         cachedBudgetData = createBudgetData();
         cachedAvailabilityData = createAvailabilityData();
-        cachedExpenseData = createExpenseData();
+        cachedUserExpenseData = createUserExpenseData();
         cachedIncomeData = createIncomeData();
         cachedInvoiceData = createInvoiceData();
     }
@@ -257,20 +262,21 @@ public class StatisticsCachedService {
     }
 
 
-    private List<ExpenseDocument> createExpenseData() {
-        List<ExpenseDocument> expenseDocumentList = new ArrayList<>();
+    private List<UserExpenseDocument> createUserExpenseData() {
+        List<UserExpenseDocument> userExpenseDocumentList = new ArrayList<>();
         LocalDate startDate = LocalDate.of(2014, 7, 1);
         do {
             LocalDate finalStartDate = startDate;
             int consultantSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
-            double expenseSalaries = expenseRepository.findByPeriod(
-                    finalStartDate.withDayOfMonth(1)).stream()
+            final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
+            final double expenseSalaries = expenseList.stream()
                     .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
                     .mapToDouble(Expense::getAmount)
                     .sum();
-            long consultantCount = countActiveConsultantCountByMonth(finalStartDate);
-            double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
-            double sharedExpense = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1)).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
+
+            final long consultantCount = countActiveConsultantCountByMonth(finalStartDate);
+            final double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
+            final double sharedExpense = expenseList.stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
 
             if(expenseSalaries <= 0) {
                 startDate = startDate.plusMonths(1);
@@ -283,16 +289,55 @@ public class StatisticsCachedService {
                     AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, finalStartDate);
                     if (availability == null || availability.getGrossAvailableHours() <= 0.0) continue;
                     int salary = userService.getUserSalary(user, finalStartDate);
-                    ExpenseDocument expenseDocument = new ExpenseDocument(finalStartDate, user, sharedExpense, salary, staffSalaries);
-                    expenseDocumentList.add(expenseDocument);
+                    UserExpenseDocument userExpenseDocument = new UserExpenseDocument(finalStartDate, user, sharedExpense, salary, staffSalaries);
+                    userExpenseDocumentList.add(userExpenseDocument);
                 }
             }
             startDate = startDate.plusMonths(1);
         } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1)));
 
-        return expenseDocumentList;
+        return userExpenseDocumentList;
     }
 
+    private List<ExpenseDocument> createExpenseData() {
+        List<ExpenseDocument> expenseDocumentList = new ArrayList<>();
+        LocalDate startDate = LocalDate.of(2014, 7, 1);
+        do {
+            LocalDate finalStartDate = startDate;
+            final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
+            final double expenseSalaries = expenseList.stream()
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
+                    .mapToDouble(Expense::getAmount)
+                    .sum();
+            final double expensePersonale = expenseList.stream()
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE))
+                    .mapToDouble(Expense::getAmount)
+                    .sum();
+            final double expenseAdministration = expenseList.stream()
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.ADMINISTRATION))
+                    .mapToDouble(Expense::getAmount)
+                    .sum();
+            final double expenseLokale = expenseList.stream()
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LOKALE))
+                    .mapToDouble(Expense::getAmount)
+                    .sum();
+            final double expenseProduktion = expenseList.stream()
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.PRODUKTION))
+                    .mapToDouble(Expense::getAmount)
+                    .sum();
+            final double expenseSalg = expenseList.stream()
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.SALG))
+                    .mapToDouble(Expense::getAmount)
+                    .sum();
+
+            ExpenseDocument expenseDocument = new ExpenseDocument(finalStartDate, expenseSalaries, expensePersonale, expenseLokale, expenseSalg, expenseAdministration, expenseProduktion);
+            expenseDocumentList.add(expenseDocument);
+
+            startDate = startDate.plusMonths(1);
+        } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1)));
+
+        return expenseDocumentList;
+    }
 
     public long getActiveEmployeeCountByMonth(LocalDate month) {
         List<AvailabilityDocument> availabilityData = getAvailabilityData();
@@ -387,31 +432,38 @@ public class StatisticsCachedService {
                 .findAny().orElse(null);
     }
 
-    public double getAllExpensesByMonth(LocalDate month) {
+    public double getAllUserExpensesByMonth(LocalDate month) {
+        List<UserExpenseDocument> userExpenseData = getUserExpenseData();
+        return userExpenseData.stream()
+                .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
+                .mapToDouble(UserExpenseDocument::getExpenseSum).sum();
+    }
+
+    public List<ExpenseDocument> getAllExpensesByMonth(LocalDate month) {
         List<ExpenseDocument> expenseData = getExpenseData();
         return expenseData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
-                .mapToDouble(ExpenseDocument::getExpenseSum).sum();
+                .collect(Collectors.toList());
     }
 
     public double getSharedExpensesAndStaffSalariesByMonth(LocalDate month) {
-        List<ExpenseDocument> expenseData = getExpenseData();
+        List<UserExpenseDocument> expenseData = getUserExpenseData();
         return expenseData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(expenseDocument1 -> (expenseDocument1.getSharedExpense()+expenseDocument1.getStaffSalaries())).sum();
     }
 
-    public ExpenseDocument getConsultantExpensesByMonth(User user, LocalDate month) {
-        List<ExpenseDocument> expenceData = getExpenseData();
+    public UserExpenseDocument getConsultantExpensesByMonth(User user, LocalDate month) {
+        List<UserExpenseDocument> expenceData = getUserExpenseData();
         return expenceData.stream()
                 .filter(
                         expenseDocument -> expenseDocument.getUser().getUuid().equals(user.getUuid())
                                 && expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
-                .findAny().orElse(new ExpenseDocument(month, user, 0.0, 0.0, 0.0));
+                .findAny().orElse(new UserExpenseDocument(month, user, 0.0, 0.0, 0.0));
     }
 
-    public List<ExpenseDocument> getExpensesByMonth(LocalDate month) {
-        List<ExpenseDocument> expenceData = getExpenseData();
+    public List<UserExpenseDocument> getConsultantsExpensesByMonth(LocalDate month) {
+        List<UserExpenseDocument> expenceData = getUserExpenseData();
         return expenceData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1))).collect(Collectors.toList());
     }

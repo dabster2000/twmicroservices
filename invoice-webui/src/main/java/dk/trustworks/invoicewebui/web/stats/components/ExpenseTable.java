@@ -5,7 +5,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
 import dk.trustworks.invoicewebui.model.Expense;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
@@ -70,9 +70,9 @@ public class ExpenseTable {
             currentDate = startDate.plusMonths(i);
             double sharedExpenses = 0.0;
             double staffSalaries = 0.0;
-            for (ExpenseDocument expenseDocument : statisticsService.getExpensesByMonth(currentDate)) {
-                staffSalaries += expenseDocument.getStaffSalaries();
-                sharedExpenses += expenseDocument.getSharedExpense();
+            for (UserExpenseDocument userExpenseDocument : statisticsService.getConsultantsExpensesByMonth(currentDate)) {
+                staffSalaries += userExpenseDocument.getStaffSalaries();
+                sharedExpenses += userExpenseDocument.getSharedExpense();
             }
 
             //double sharedExpenses = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate), 0);

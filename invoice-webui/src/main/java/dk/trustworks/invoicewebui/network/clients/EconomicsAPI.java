@@ -20,7 +20,8 @@ public class EconomicsAPI {
 
     public static final int[] OMSAETNING = {2101};
     public static final int[] PRODUKTION = {3010, 3030, 3040, 3050, 3080};
-    public static final int[] LOENNINGER = {3502, 3505, 3510, 3530, 3531, 3560, 3570, 3575, 3578, 3580, 3583, 3585, 3586, 3589, 3591, 3594};
+    public static final int[] LOENNINGER = {3505, 3530, 3560, 3570, 3575, 3580, 3583, 3585, 3586, 3589, 3594};
+    public static final int[] PERSONALE = {3502, 3503, 3504, 3510, 3531, 3578, 3591, 3597};
     public static final int[] VARIABEL = {3601, 3608};
     public static final int[] LOKALE = {3701, 3709, 3717, 3729, 3730, 3735, 3737, 3738, 3797};
     public static final int[] SALGSFREMMENDE = {4001, 4003, 4006, 4007, 4008, 4020, 4030, 4042, 4050, 4055, 4066};

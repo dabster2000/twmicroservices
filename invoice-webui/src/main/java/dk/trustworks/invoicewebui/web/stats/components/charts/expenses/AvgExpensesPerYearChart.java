@@ -6,7 +6,7 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -72,18 +72,18 @@ public class AvgExpensesPerYearChart {
         String[] yearNames = new String[years];
         int monthCount = 0;
         for (int i = 0; i < years; i++) {
-            List<ExpenseDocument> expensesByMonth = new ArrayList<>();
+            List<UserExpenseDocument> expensesByMonth = new ArrayList<>();
             LocalDate fiscalDate = periodStart.plusMonths(monthCount);
             for (int j = 0; j < 12; j++) {
                 LocalDate currentDate = periodStart.plusMonths(monthCount);
                 if(currentDate.isAfter(periodEnd)) break;
-                expensesByMonth.addAll(statisticsService.getExpensesByMonth(currentDate));
+                expensesByMonth.addAll(statisticsService.getConsultantsExpensesByMonth(currentDate));
                 monthCount++;
             }
 
-            salarySeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSalary).average().orElse(0.0))));
-            sharedExpensesSeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSharedExpense).average().orElse(0.0))));
-            staffSalarySeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getStaffSalaries).average().orElse(0.0))));
+            salarySeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSalary).average().orElse(0.0))));
+            sharedExpensesSeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSharedExpense).average().orElse(0.0))));
+            staffSalarySeries.add(new DataSeriesItem(fiscalDate.format(DateTimeFormatter.ofPattern("yyyy")), Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getStaffSalaries).average().orElse(0.0))));
 
             yearNames[i] = fiscalDate.format(DateTimeFormatter.ofPattern("yyyy"));
 

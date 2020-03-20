@@ -48,7 +48,6 @@ public class EconomicsJob {
 
         for (String period : periods) {
             fetchAccountYear(invoiceList, period);
-
         }
     }
 
@@ -77,6 +76,7 @@ public class EconomicsJob {
             expenseRepository.save(getExpenseMap(ExcelExpenseType.LOKALE, EconomicsAPI.LOKALE, period).values());
             expenseRepository.save(getExpenseMap(ExcelExpenseType.PRODUKTION, EconomicsAPI.PRODUKTION, period).values());
             expenseRepository.save(getExpenseMap(ExcelExpenseType.SALG, EconomicsAPI.SALGSFREMMENDE, period).values());
+            expenseRepository.save(getExpenseMap(ExcelExpenseType.PERSONALE, EconomicsAPI.PERSONALE, period).values());
             //expenseRepository.save(getExpenseMap(ExcelEx EconomicsAPI.VARIABEL, period).values());
         }
     }

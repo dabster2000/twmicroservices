@@ -4,7 +4,6 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -12,7 +11,7 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -266,7 +265,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
 
         Box expensesPerMonthCard = new Box();
-        expensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
+        expensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createUserExpensePerMonthChart(localDateStart, localDateEnd));
+
+        Box userExpensesPerMonthCard = new Box();
+        userExpensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
         Box cumulativeRevenuePerMonthCard = new Box();
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
@@ -713,7 +715,7 @@ excelFileDownloader.extend(downloadAsExcel);
                             .withComponent(workText);
 
                     String expenseResult = "date;user;expensesum;salary;shared;staff\n";
-                    for (ExpenseDocument document : statisticsService.getExpenseData()) {
+                    for (UserExpenseDocument document : statisticsService.getUserExpenseData()) {
                         expenseResult += document.getMonth()+";"+
                                 document.getUser().getUsername()+";"+
                                 document.getExpenseSum()+";"+

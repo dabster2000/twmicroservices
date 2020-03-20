@@ -48,6 +48,7 @@ public class CumulativeRevenuePerMonthChart {
         String[] categories = new String[period];
         DataSeries registeredRevenueSeries = new DataSeries("Registered Revenue");
         DataSeries budgetSeries = new DataSeries("Budget");
+        DataSeries expensesSeries = new DataSeries("Expenses");
         DataSeries earningsSeries = new DataSeries("Earnings");
 
         //List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
@@ -90,11 +91,11 @@ public class CumulativeRevenuePerMonthChart {
             double invoicedAmountByMonth = statisticsService.getTotalInvoiceSumByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));//expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+                expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 cumulativeExpensePerMonth += expense;
             } else {
-                cumulativeRevenuePerMonth += statisticsService.getMonthRevenue(currentDate);//amountPerItemList.get(i).getValue();
-                expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));//expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
+                cumulativeRevenuePerMonth += statisticsService.getMonthRevenue(currentDate);
+                expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 cumulativeExpensePerMonth += expense;
             }
 
@@ -104,12 +105,14 @@ public class CumulativeRevenuePerMonthChart {
 
             cumulativeBudgetPerMonth += statisticsService.getMonthBudget(periodStart.plusMonths(i).withDayOfMonth(1));
 
+            expensesSeries.add(new DataSeriesItem(periodStart.plusMonths(1).format(DateTimeFormatter.ofPattern("MMM-YYY")), Math.round(cumulativeExpensePerMonth)));
             budgetSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeBudgetPerMonth)));
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
         chart.getConfiguration().getxAxis().setCategories(categories);
-        chart.getConfiguration().addSeries(registeredRevenueSeries);
         chart.getConfiguration().addSeries(budgetSeries);
+        chart.getConfiguration().addSeries(registeredRevenueSeries);
+        chart.getConfiguration().addSeries(expensesSeries);
         chart.getConfiguration().addSeries(earningsSeries);
         chart.getConfiguration().addSeries(avgRevenueList);
         Credits c = new Credits("");

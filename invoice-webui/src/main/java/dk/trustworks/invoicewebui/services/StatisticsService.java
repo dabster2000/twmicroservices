@@ -2,7 +2,6 @@ package dk.trustworks.invoicewebui.services;
 
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
-import com.vaadin.addon.charts.model.PlotOptionsArea;
 import com.vaadin.addon.charts.model.PlotOptionsAreaspline;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import dk.trustworks.invoicewebui.model.*;
@@ -173,7 +172,7 @@ public class StatisticsService extends StatisticsCachedService {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
-            double expense = getAllExpensesByMonth(currentDate.withDayOfMonth(1));
+            double expense = getAllUserExpensesByMonth(currentDate.withDayOfMonth(1));
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }
         return earningsSeries;

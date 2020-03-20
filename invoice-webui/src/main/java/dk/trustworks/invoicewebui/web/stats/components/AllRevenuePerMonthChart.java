@@ -65,7 +65,7 @@ public class AllRevenuePerMonthChart {
         //expensesDataSeries.getConfiguration().setTooltip(tooltip);
         LocalDate currentDate = periodStart;
         do {
-            double allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
+            double allExpensesByMonth = statisticsService.getAllUserExpensesByMonth(currentDate);
             DataSeriesItem item = new DataSeriesItem();
             item.setX(DateUtils.convertLocalDateToDate(currentDate));
             item.setY(Math.round(allExpensesByMonth));

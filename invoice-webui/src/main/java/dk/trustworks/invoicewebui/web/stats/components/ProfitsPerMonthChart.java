@@ -12,7 +12,6 @@ import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,13 +107,13 @@ public class ProfitsPerMonthChart {
             //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 //expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             } else {
                 if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
                     cumulativeRevenuePerMonth += amountPerItemList.get(i).getValue();
-                    expense = statisticsService.getAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                    expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                     //expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                     cumulativeExpensePerMonth += expense;
                 }

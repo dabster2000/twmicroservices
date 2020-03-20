@@ -6,7 +6,7 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,8 +14,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
-import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
 
 /**
  * Created by hans on 20/09/2017.
@@ -117,11 +115,11 @@ public class AvgExpensesPerMonthChart {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            List<ExpenseDocument> expensesByMonth = statisticsService.getExpensesByMonth(currentDate);
+            List<UserExpenseDocument> expensesByMonth = statisticsService.getConsultantsExpensesByMonth(currentDate);
 
-            salarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSalary).average().orElse(0.0)));
-            sharedExpensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getSharedExpense).average().orElse(0.0)));
-            staffSalarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(ExpenseDocument::getStaffSalaries).average().orElse(0.0)));
+            salarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSalary).average().orElse(0.0)));
+            sharedExpensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSharedExpense).average().orElse(0.0)));
+            staffSalarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getStaffSalaries).average().orElse(0.0)));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
