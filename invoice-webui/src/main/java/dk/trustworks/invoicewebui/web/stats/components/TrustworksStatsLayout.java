@@ -276,6 +276,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
         Box utilizationPerMonthCard = new Box();
         utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
 
+        Box expenseTableCard = new Box();
+        expenseTableCard.getContent().addComponents(expenseTable.createRevenuePerConsultantChart());
+
+
         // Weighted Average Margin Per Month
 
         chartRow.addColumn()
@@ -290,6 +294,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(utilizationPerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(expenseTableCard);
     }
 
     public void addConsultantCharts() {
