@@ -267,7 +267,8 @@ public class StatisticsCachedService {
         LocalDate startDate = LocalDate.of(2014, 7, 1);
         do {
             LocalDate finalStartDate = startDate;
-            int consultantSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
+            int consultantNetSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
+            int staffNetSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.STAFF.toString());
             final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
             final double expenseSalaries = expenseList.stream()
                     .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
@@ -275,8 +276,17 @@ public class StatisticsCachedService {
                     .sum();
 
             final long consultantCount = countActiveConsultantCountByMonth(finalStartDate);
-            final double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
-            final double sharedExpense = expenseList.stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER) && !expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE)).mapToDouble(Expense::getAmount).sum() / consultantCount;
+
+            double totalSalaries = consultantNetSalaries + staffNetSalaries;
+
+            double forholdstal = expenseSalaries / totalSalaries;
+
+            final double staffSalaries = (staffNetSalaries * forholdstal) / consultantCount;//(expenseSalaries - consultantSalaries) / consultantCount;
+
+            final double consultantSalaries = (consultantNetSalaries * forholdstal) / consultantCount;
+
+            final double sharedExpense = expenseList.stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER) && !expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE)).mapToDouble(Expense::getAmount).sum() / consultantCount + consultantSalaries;
+
             final double personaleExpenses = expenseList.stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE)).mapToDouble(Expense::getAmount).sum() / consultantCount;
 
             if(expenseSalaries <= 0) {

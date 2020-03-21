@@ -119,11 +119,13 @@ public class EconomicsAPI {
                     System.out.println("collection.accountNumber = " + collection.getAccount().getAccountNumber());
                 }
                 collectionResultMap.keySet().forEach(integerRange -> {
-                    if(integerRange.contains(accountNumber)) collectionResultMap.get(integerRange).add(collection);
+                    if(integerRange.contains(collection.getAccount().getAccountNumber())) collectionResultMap.get(integerRange).add(collection);
                 });
             }
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);
+
+        System.out.println("PERSONALE OMKOSTNINGER = " + collectionResultMap.get(PERSONALE_ACCOUNTS).stream().mapToDouble(Collection::getAmount).sum());
 
         return collectionResultMap;
     }
