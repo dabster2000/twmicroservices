@@ -42,7 +42,6 @@ public class EconomicsJob {
     public void init() {
         synchronizeAllExpenseAccounts();
         synchronizeInvoiceBookingDates();
-        //synchronizeExpenses();
     }
 
     @Scheduled(cron = "0 0 22 * * ?")
@@ -100,7 +99,6 @@ public class EconomicsJob {
             expenseRepository.save(getExpenseMap(ExcelExpenseType.PRODUKTION, EconomicsAPI.PRODUKTION, period).values());
             expenseRepository.save(getExpenseMap(ExcelExpenseType.SALG, EconomicsAPI.SALGSFREMMENDE, period).values());
             expenseRepository.save(getExpenseMap(ExcelExpenseType.PERSONALE, EconomicsAPI.PERSONALE, period).values());
-            //expenseRepository.save(getExpenseMap(ExcelEx EconomicsAPI.VARIABEL, period).values());
         }
     }
 

@@ -12,13 +12,15 @@ public class UserExpenseDocument {
     private final double sharedExpense;
     private final double salary;
     private final double staffSalaries;
+    private final double personaleExpense;
 
-    public UserExpenseDocument(LocalDate month, User user, double sharedExpense, double salary, double staffSalaries) {
+    public UserExpenseDocument(LocalDate month, User user, double sharedExpense, double salary, double staffSalaries, double personaleExpense) {
         this.month = month;
         this.user = user;
         this.sharedExpense = sharedExpense;
         this.salary = salary;
         this.staffSalaries = staffSalaries;
+        this.personaleExpense = personaleExpense;
     }
 
     public LocalDate getMonth() {
@@ -45,6 +47,10 @@ public class UserExpenseDocument {
         return sharedExpense + salary + staffSalaries;
     }
 
+    public double getPersonaleExpense() {
+        return personaleExpense;
+    }
+
     @Override
     public String toString() {
         return "UserExpenseDocument{" +
@@ -53,6 +59,7 @@ public class UserExpenseDocument {
                 ", sharedExpense=" + sharedExpense +
                 ", salary=" + salary +
                 ", staffSalaries=" + staffSalaries +
+                ", personaleExpense=" + personaleExpense +
                 '}';
     }
 }

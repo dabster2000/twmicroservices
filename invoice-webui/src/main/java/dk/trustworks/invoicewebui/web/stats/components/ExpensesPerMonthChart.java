@@ -57,19 +57,24 @@ public class ExpensesPerMonthChart {
         chart.getConfiguration().setTooltip(tooltip);
 
         PlotOptionsColumn poc4 = new PlotOptionsColumn();
-        poc4.setColor(new SolidColor("#CFD6E3"));
+        poc4.setColor(new SolidColor("#54D69E"));
         ListSeries salarySeries = new ListSeries("Average salaries");
         salarySeries.setPlotOptions(poc4);
+
+        ListSeries staffSalarySeries = new ListSeries("Average staff salaries");
+        PlotOptionsColumn poc3 = new PlotOptionsColumn();
+        poc3.setColor(new SolidColor("#CFD6E3"));
+        staffSalarySeries.setPlotOptions(poc3);
 
         ListSeries sharedExpensesSeries = new ListSeries("Average shared expenses");
         PlotOptionsColumn poc2 = new PlotOptionsColumn();
         poc2.setColor(new SolidColor("#7084AC"));
         sharedExpensesSeries.setPlotOptions(poc2);
 
-        ListSeries staffSalarySeries = new ListSeries("Average staff salaries");
-        PlotOptionsColumn poc3 = new PlotOptionsColumn();
-        poc3.setColor(new SolidColor("#123375"));
-        staffSalarySeries.setPlotOptions(poc3);
+        PlotOptionsColumn poc5 = new PlotOptionsColumn();
+        poc5.setColor(new SolidColor("#123375"));
+        ListSeries staffExensesSeries = new ListSeries("Everage consultant expenses");
+        staffExensesSeries.setPlotOptions(poc5);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
@@ -82,14 +87,16 @@ public class ExpensesPerMonthChart {
             salarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSalary).sum()));
             sharedExpensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSharedExpense).sum()));
             staffSalarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getStaffSalaries).sum()));
+            staffExensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getPersonaleExpense).sum()));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
 
         chart.getConfiguration().getxAxis().setCategories(monthNames);
         chart.getConfiguration().addSeries(salarySeries);
-        chart.getConfiguration().addSeries(sharedExpensesSeries);
         chart.getConfiguration().addSeries(staffSalarySeries);
+        chart.getConfiguration().addSeries(sharedExpensesSeries);
+        chart.getConfiguration().addSeries(staffExensesSeries);
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;
@@ -122,19 +129,24 @@ public class ExpensesPerMonthChart {
         chart.getConfiguration().setTooltip(tooltip);
 
         PlotOptionsColumn poc4 = new PlotOptionsColumn();
-        poc4.setColor(new SolidColor("#CFD6E3"));
+        poc4.setColor(new SolidColor("#54D69E"));
         ListSeries salarySeries = new ListSeries("Average salaries");
         salarySeries.setPlotOptions(poc4);
+
+        ListSeries staffSalarySeries = new ListSeries("Average staff salaries");
+        PlotOptionsColumn poc3 = new PlotOptionsColumn();
+        poc3.setColor(new SolidColor("#CFD6E3"));
+        staffSalarySeries.setPlotOptions(poc3);
 
         ListSeries sharedExpensesSeries = new ListSeries("Average shared expenses");
         PlotOptionsColumn poc2 = new PlotOptionsColumn();
         poc2.setColor(new SolidColor("#7084AC"));
         sharedExpensesSeries.setPlotOptions(poc2);
 
-        ListSeries staffSalarySeries = new ListSeries("Average staff salaries");
-        PlotOptionsColumn poc3 = new PlotOptionsColumn();
-        poc3.setColor(new SolidColor("#123375"));
-        staffSalarySeries.setPlotOptions(poc3);
+        PlotOptionsColumn poc5 = new PlotOptionsColumn();
+        poc5.setColor(new SolidColor("#123375"));
+        ListSeries staffExensesSeries = new ListSeries("Everage consultant expenses");
+        staffExensesSeries.setPlotOptions(poc5);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
@@ -147,14 +159,16 @@ public class ExpensesPerMonthChart {
             salarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSalary).sum()));
             sharedExpensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSharedExpense).sum()));
             staffSalarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getStaffSalaries).sum()));
+            staffExensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getPersonaleExpense).sum()));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
 
         chart.getConfiguration().getxAxis().setCategories(monthNames);
         chart.getConfiguration().addSeries(salarySeries);
-        chart.getConfiguration().addSeries(sharedExpensesSeries);
         chart.getConfiguration().addSeries(staffSalarySeries);
+        chart.getConfiguration().addSeries(sharedExpensesSeries);
+        chart.getConfiguration().addSeries(staffExensesSeries);
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;

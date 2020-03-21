@@ -270,13 +270,14 @@ public class StatisticsCachedService {
             int consultantSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
             final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
             final double expenseSalaries = expenseList.stream()
-                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER) || expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE))
+                    .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
                     .mapToDouble(Expense::getAmount)
                     .sum();
 
             final long consultantCount = countActiveConsultantCountByMonth(finalStartDate);
             final double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
             final double sharedExpense = expenseList.stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER) && !expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE)).mapToDouble(Expense::getAmount).sum() / consultantCount;
+            final double personaleExpenses = expenseList.stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.PERSONALE)).mapToDouble(Expense::getAmount).sum() / consultantCount;
 
             if(expenseSalaries <= 0) {
                 startDate = startDate.plusMonths(1);
@@ -289,7 +290,7 @@ public class StatisticsCachedService {
                     AvailabilityDocument availability = getConsultantAvailabilityByMonth(user, finalStartDate);
                     if (availability == null || availability.getGrossAvailableHours() <= 0.0) continue;
                     int salary = userService.getUserSalary(user, finalStartDate);
-                    UserExpenseDocument userExpenseDocument = new UserExpenseDocument(finalStartDate, user, sharedExpense, salary, staffSalaries);
+                    UserExpenseDocument userExpenseDocument = new UserExpenseDocument(finalStartDate, user, sharedExpense, salary, staffSalaries, personaleExpenses);
                     userExpenseDocumentList.add(userExpenseDocument);
                 }
             }
@@ -459,7 +460,7 @@ public class StatisticsCachedService {
                 .filter(
                         expenseDocument -> expenseDocument.getUser().getUuid().equals(user.getUuid())
                                 && expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
-                .findAny().orElse(new UserExpenseDocument(month, user, 0.0, 0.0, 0.0));
+                .findAny().orElse(new UserExpenseDocument(month, user, 0.0, 0.0, 0.0, 0.0));
     }
 
     public List<UserExpenseDocument> getConsultantsExpensesByMonth(LocalDate month) {
