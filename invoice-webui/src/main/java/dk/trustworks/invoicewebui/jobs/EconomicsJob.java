@@ -5,8 +5,10 @@ import dk.trustworks.invoicewebui.model.Expense;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.network.clients.EconomicsAPI;
+import dk.trustworks.invoicewebui.network.clients.model.economics.Collection;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.services.InvoiceService;
+import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,29 @@ public class EconomicsJob {
 
     @PostConstruct
     public void init() {
+        synchronizeAllExpenseAccounts();
         synchronizeInvoiceBookingDates();
-        synchronizeExpenses();
+        //synchronizeExpenses();
+    }
+
+    @Scheduled(cron = "0 0 22 * * ?")
+    public void synchronizeAllExpenseAccounts() {
+        LocalDate runThrough = LocalDate.of(2016, 1, 1);
+        do {
+            expenseRepository.deleteByPeriod(runThrough);
+            runThrough = runThrough.plusMonths(1);
+        } while (runThrough.isBefore(LocalDate.now()));
+
+        for (String period : periods) {
+            Map<Range<Integer>, List<Collection>> allEntries = economicsAPI.getAllEntries(period);
+
+            expenseRepository.save(getExpenseMap(ExcelExpenseType.LØNNINGER, allEntries.get(EconomicsAPI.LOENNINGER_ACCOUNTS)).values());
+            expenseRepository.save(getExpenseMap(ExcelExpenseType.ADMINISTRATION, allEntries.get(EconomicsAPI.ADMINISTRATION_ACCOUNTS)).values());
+            expenseRepository.save(getExpenseMap(ExcelExpenseType.LOKALE, allEntries.get(EconomicsAPI.LOKALE_ACCOUNTS)).values());
+            expenseRepository.save(getExpenseMap(ExcelExpenseType.PRODUKTION, allEntries.get(EconomicsAPI.PRODUKTION_ACCOUNTS)).values());
+            expenseRepository.save(getExpenseMap(ExcelExpenseType.SALG, allEntries.get(EconomicsAPI.SALG_ACCOUNTS)).values());
+            expenseRepository.save(getExpenseMap(ExcelExpenseType.PERSONALE, allEntries.get(EconomicsAPI.PERSONALE_ACCOUNTS)).values());
+        }
     }
 
     @Scheduled(cron = "0 0 23 * * ?")
@@ -61,7 +84,7 @@ public class EconomicsJob {
                         }));
     }
 
-    @Scheduled(cron = "0 0 22 * * ?")
+    //@Scheduled(cron = "0 0 22 * * ?")
     public void synchronizeExpenses() {
 
         LocalDate runThrough = LocalDate.of(2016, 1, 1);
@@ -84,6 +107,16 @@ public class EconomicsJob {
     private Map<LocalDate, Expense> getExpenseMap(ExcelExpenseType excelType, int[] type, String year) {
         Map<LocalDate, Expense> map = new HashMap<>();
         economicsAPI.getInvoices(type, year).forEach(collection -> {
+            LocalDate period = LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).withDayOfMonth(1);
+            if(!map.containsKey(period)) map.put(period, new Expense(period, excelType, 0.0));
+            map.get(period).setAmount(map.get(period).getAmount() + collection.getAmount());
+        });
+        return map;
+    }
+
+    private Map<LocalDate, Expense> getExpenseMap(ExcelExpenseType excelType, List<Collection> collectionList) {
+        Map<LocalDate, Expense> map = new HashMap<>();
+        collectionList.forEach(collection -> {
             LocalDate period = LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).withDayOfMonth(1);
             if(!map.containsKey(period)) map.put(period, new Expense(period, excelType, 0.0));
             map.get(period).setAmount(map.get(period).getAmount() + collection.getAmount());
