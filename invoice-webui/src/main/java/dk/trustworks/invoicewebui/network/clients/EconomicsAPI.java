@@ -113,12 +113,13 @@ public class EconomicsAPI {
             EconomicsInvoice economicsInvoice = response.getBody();
             for (Collection collection : economicsInvoice.getCollection()) {
                 int accountNumber = collection.getAccount().getAccountNumber();
+                if(Arrays.binarySearch(PERSONALE, accountNumber) > -1) {
+                    System.out.println("accountNumber = " + accountNumber);
+                    collection.getAccount().setAccountNumber(accountNumber-LOENNINGER_ACCOUNTS.getMinimum()+PERSONALE_ACCOUNTS.getMinimum());
+                    System.out.println("collection.accountNumber = " + collection.getAccount().getAccountNumber());
+                }
                 collectionResultMap.keySet().forEach(integerRange -> {
-                    if(Arrays.binarySearch(PERSONALE, accountNumber) > -1) {
-                        collection.getAccount().setAccountNumber(accountNumber-LOENNINGER_ACCOUNTS.getMinimum()+PERSONALE_ACCOUNTS.getMinimum());
-                        collectionResultMap.get(PERSONALE_ACCOUNTS).add(collection);
-                    }
-                    else if(integerRange.contains(accountNumber)) collectionResultMap.get(integerRange).add(collection);
+                    if(integerRange.contains(accountNumber)) collectionResultMap.get(integerRange).add(collection);
                 });
             }
             url = economicsInvoice.getPagination().getNextPage();
