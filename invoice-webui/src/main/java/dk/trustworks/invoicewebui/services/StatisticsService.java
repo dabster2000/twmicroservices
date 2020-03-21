@@ -172,7 +172,7 @@ public class StatisticsService extends StatisticsCachedService {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
-            double expense = getAllUserExpensesByMonth(currentDate.withDayOfMonth(1));
+            double expense = calcAllExpensesByMonth(currentDate.withDayOfMonth(1));// getAllUserExpensesByMonth(currentDate.withDayOfMonth(1));
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }
         return earningsSeries;

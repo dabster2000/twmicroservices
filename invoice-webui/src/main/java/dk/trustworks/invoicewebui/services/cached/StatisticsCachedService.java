@@ -443,7 +443,7 @@ public class StatisticsCachedService {
                 .findAny().orElse(null);
     }
 
-    public double getAllUserExpensesByMonth(LocalDate month) {
+    public double calcAllUserExpensesByMonth(LocalDate month) {
         List<UserExpenseDocument> userExpenseData = getUserExpenseData();
         return userExpenseData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
@@ -455,6 +455,13 @@ public class StatisticsCachedService {
         return expenseData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .collect(Collectors.toList());
+    }
+
+    public double calcAllExpensesByMonth(LocalDate month) {
+        List<ExpenseDocument> expenseData = getExpenseData();
+        return expenseData.stream()
+                .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1)))
+                .mapToDouble(ExpenseDocument::sum).sum();
     }
 
     public double getSharedExpensesAndStaffSalariesByMonth(LocalDate month) {

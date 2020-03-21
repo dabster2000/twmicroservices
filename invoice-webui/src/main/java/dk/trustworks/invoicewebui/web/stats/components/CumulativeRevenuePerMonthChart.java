@@ -91,11 +91,11 @@ public class CumulativeRevenuePerMonthChart {
             double invoicedAmountByMonth = statisticsService.getTotalInvoiceSumByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                expense = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 cumulativeExpensePerMonth += expense;
             } else {
                 cumulativeRevenuePerMonth += statisticsService.getMonthRevenue(currentDate);
-                expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                expense = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 cumulativeExpensePerMonth += expense;
             }
 

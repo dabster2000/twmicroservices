@@ -107,13 +107,13 @@ public class ProfitsPerMonthChart {
             //double invoicedAmountByMonth = invoiceService.invoicedAmountByMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                expense = statisticsService.calcAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 //expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                 cumulativeExpensePerMonth += expense;
             } else {
                 if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
                     cumulativeRevenuePerMonth += amountPerItemList.get(i).getValue();
-                    expense = statisticsService.getAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                    expense = statisticsService.calcAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                     //expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
                     cumulativeExpensePerMonth += expense;
                 }

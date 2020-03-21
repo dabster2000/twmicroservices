@@ -50,6 +50,10 @@ public class ExpenseDocument {
         return eProduktion;
     }
 
+    public double sum() {
+        return eSalaries+eEmployee_expenses+eHousing+eSales+eAdministration+eProduktion;
+    }
+
     @Override
     public String toString() {
         return "ExpenseDocument{" +
