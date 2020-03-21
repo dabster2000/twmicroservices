@@ -104,8 +104,6 @@ public class ExpensesPerMonthChart {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            //List<UserExpenseDocument> expensesByMonth = statisticsService.getConsultantsExpensesByMonth(currentDate);
-
             List<ExpenseDocument> allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
 
             double consultantNetSalaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
@@ -128,14 +126,6 @@ public class ExpensesPerMonthChart {
             salgExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSales).sum());
             productionExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteProduktion).sum());
             administrationExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteAdministration).sum());
-
-            /*
-            consultantSalarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSalary).sum()));
-            personaleExpensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getSharedExpense).sum()));
-            staffSalarySeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getStaffSalaries).sum()));
-            lokaleExensesSeries.addData(Math.round(expensesByMonth.stream().mapToDouble(UserExpenseDocument::getPersonaleExpense).sum()));
-            */
-
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
