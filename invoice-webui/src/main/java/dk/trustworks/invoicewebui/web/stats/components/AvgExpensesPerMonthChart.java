@@ -123,20 +123,19 @@ public class AvgExpensesPerMonthChart {
             double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSalaries).sum());
 
             long numberOfConsultants = statisticsService.countActiveConsultantCountByMonth(currentDate);
-            long numberOfStaff = statisticsService.countActiveEmployeeTypesByMonth(currentDate, ConsultantType.STAFF);
 
             double forholdstal = totalSalaries / (consultantNetSalaries + staffNetSalaries);
 
-            final double staffSalaries = NumberUtils.round(((staffNetSalaries * forholdstal) / numberOfStaff), 0);//(expenseSalaries - consultantSalaries) / consultantCount;
+            final double staffSalaries = NumberUtils.round(((staffNetSalaries * forholdstal) / numberOfConsultants), 0);//(expenseSalaries - consultantSalaries) / consultantCount;
             final double consultantSalaries = NumberUtils.round(((consultantNetSalaries * forholdstal) / numberOfConsultants), 0);
 
             consultantSalarySeries.addData(consultantSalaries);
             staffSalarySeries.addData(staffSalaries);
-            personaleExpensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteEmployee_expenses).average().orElse(0.0));
-            lokaleExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteHousing).average().orElse(0.0));
-            salgExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSales).average().orElse(0.0));
-            productionExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteProduktion).average().orElse(0.0));
-            administrationExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteAdministration).average().orElse(0.0));
+            personaleExpensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteEmployee_expenses).average().orElse(0.0) / numberOfConsultants, 0));
+            lokaleExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteHousing).average().orElse(0.0) / numberOfConsultants, 0));
+            salgExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSales).average().orElse(0.0) / numberOfConsultants, 0));
+            productionExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteProduktion).average().orElse(0.0) / numberOfConsultants, 0));
+            administrationExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteAdministration).average().orElse(0.0) / numberOfConsultants, 0));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
