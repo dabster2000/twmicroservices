@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.DoubleStream;
 
 /**
  * Created by hans on 20/09/2017.
@@ -131,11 +132,11 @@ public class AvgExpensesPerMonthChart {
 
             consultantSalarySeries.addData(consultantSalaries);
             staffSalarySeries.addData(staffSalaries);
-            personaleExpensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteEmployee_expenses).average().orElse(0.0) / numberOfConsultants, 0));
-            lokaleExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteHousing).average().orElse(0.0) / numberOfConsultants, 0));
-            salgExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSales).average().orElse(0.0) / numberOfConsultants, 0));
-            productionExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteProduktion).average().orElse(0.0) / numberOfConsultants, 0));
-            administrationExensesSeries.addData(NumberUtils.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteAdministration).average().orElse(0.0) / numberOfConsultants, 0));
+            addSeries(personaleExpensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteEmployee_expenses));
+            addSeries(lokaleExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteHousing));
+            addSeries(salgExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSales));
+            addSeries(productionExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteProduktion));
+            addSeries(administrationExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteAdministration));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
@@ -151,5 +152,9 @@ public class AvgExpensesPerMonthChart {
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;
+    }
+
+    private void addSeries(ListSeries personaleExpensesSeries, long numberOfConsultants, DoubleStream doubleStream) {
+        personaleExpensesSeries.addData(NumberUtils.round(doubleStream.average().orElse(0.0) / numberOfConsultants, 0));
     }
 }
