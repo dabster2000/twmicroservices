@@ -64,8 +64,6 @@ public class AvailabilityDocument {
      * @return availability uden ferie, sygdom og fredage
      */
     public double getNetAvailableHours() {
-        if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
-            System.out.println("(("+ availableHours +" - "+ adjustForOffHours()+" ) * "+weeks+") - "+getNetVacation()+" - "+getNetSickdays()+"");
         return Math.max((availableHours * weeks) - adjustForOffHours() - getNetVacation() - getNetSickdays(), 0.0); // F.eks. 2019-12-01: ((37 - 2) * 3,6) - (7,4 * 2 - 0.4) - (0 * 1)) = 111,2
     }
 

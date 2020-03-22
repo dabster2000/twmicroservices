@@ -59,7 +59,8 @@ public class UtilizationPerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        double[] monthTotalAvailabilites = new double[monthPeriod+1];
+        double[] monthTotalNetAvailabilites = new double[monthPeriod+1];
+        double[] monthTotalGrossAvailabilites = new double[monthPeriod+1];
         double[] monthAvailabilites = new double[monthPeriod+1];
 
         for (int m = 0; m < monthPeriod; m++) {
@@ -68,31 +69,31 @@ public class UtilizationPerMonthChart {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
                 double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate);
                 monthAvailabilites[m] += budget;
-                double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getNetAvailableHours();
-                monthTotalAvailabilites[m] += availability;
+                double netAvailability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getNetAvailableHours();
+                monthTotalNetAvailabilites[m] += netAvailability;
+                double grossAvailability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getGrossAvailableHours();
+                monthTotalGrossAvailabilites[m] += grossAvailability;
             }
         }
-        /*
-        do {
-            for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
-                if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
-                double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate);
-                monthAvailabilites[m] += budget;
-                double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getNetAvailableHours();
-                monthTotalAvailabilites[m] += availability;
-            }
-            m++;
-            localDate = localDate.plusMonths(1);
-        } while (m<=monthPeriod);
 
-         */
-
-        ListSeries budgetListSeries = new ListSeries("Budget utilization");
+        ListSeries budgetListSeries = new ListSeries("Net Budget utilization");
         PlotOptionsAreaspline poc1 = new PlotOptionsAreaspline();
         poc1.setColor(new SolidColor("#123375"));
         budgetListSeries.setPlotOptions(poc1);
         for (int j = 0; j < monthPeriod; j++) {
-            budgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalAvailabilites[j]) * 100.0));
+            budgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalGrossAvailabilites[j]) * 100.0));
+        }
+
+        chart.getConfiguration().addSeries(budgetListSeries);
+
+        ListSeries grossBudgetListSeries = new ListSeries("Gross Budget utilization");
+        PlotOptionsSpline poc3 = new PlotOptionsSpline();
+        poc3.setColor(new SolidColor("#A3D3D2"));
+        poc3.setThreshold(80);
+        poc3.setNegativeColor(new SolidColor("#FD5F5B"));
+        grossBudgetListSeries.setPlotOptions(poc3);
+        for (int j = 0; j < monthPeriod; j++) {
+            grossBudgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalNetAvailabilites[j]) * 100.0));
         }
 
         chart.getConfiguration().addSeries(budgetListSeries);
