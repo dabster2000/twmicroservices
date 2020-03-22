@@ -348,7 +348,6 @@ public class Invoice {
                 ", errors=" + errors +
                 ", type=" + type +
                 ", status=" + status +
-                ", pdf=" + Arrays.toString(pdf) +
                 ", sumNoTax=" + sumNoTax +
                 ", sumWithTax=" + sumWithTax +
                 '}';
