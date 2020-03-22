@@ -408,6 +408,9 @@ public class StatisticsCachedService {
     }
 
     public double getTotalInvoiceSumByMonth(LocalDate month) {
+        getInvoiceData().stream().filter(invoicedDocument -> invoicedDocument.getMonth().withDayOfMonth(1).isEqual(LocalDate.of(2019,7,1)))
+                .forEach(invoicedDocument -> System.out.println("invoicedDocument = " + invoicedDocument));
+
         return getInvoiceData().stream()
                 .filter(invoicedDocument -> invoicedDocument.getMonth().withDayOfMonth(1).isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(value -> value.getInvoiceType().equals(InvoiceType.CREDIT_NOTE)?(-value.getInvoiced()):value.getInvoiced()).sum();

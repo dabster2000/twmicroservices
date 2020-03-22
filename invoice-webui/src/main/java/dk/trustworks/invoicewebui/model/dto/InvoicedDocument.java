@@ -28,4 +28,13 @@ public class InvoicedDocument {
     public double getInvoiced() {
         return invoiced;
     }
+
+    @Override
+    public String toString() {
+        return "InvoicedDocument{" +
+                "invoiceType=" + invoiceType +
+                ", month=" + month +
+                ", invoiced=" + invoiced +
+                '}';
+    }
 }

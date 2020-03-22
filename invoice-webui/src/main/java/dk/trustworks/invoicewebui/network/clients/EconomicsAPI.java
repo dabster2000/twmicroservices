@@ -19,7 +19,7 @@ import java.util.*;
 @Service
 public class EconomicsAPI {
 
-    public static final int[] OMSAETNING = {2101, 2102, 2103, 2105, 2115, 2150, 2160};
+    public static final int[] OMSAETNING = {2101, 2102, 2103, 2105, 2110, 2115, 2120, 2130, 2140, 2150, 2160};
     public static final int[] PRODUKTION = {3010, 3030, 3040, 3050, 3080};
     public static final int[] LOENNINGER = {3502, 3503, 3504, 3510, 3531, 3556, 3578, 3591, 3597, 359};
     public static final int[] PERSONALE = {3505, 3530, 3560, 3570, 3575, 3580, 3583, 3585, 3586, 3589, 3594};
