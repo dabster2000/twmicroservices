@@ -6,6 +6,7 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
 import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
@@ -47,6 +48,13 @@ public class ExpensesPerMonthChart {
         chart.getConfiguration().getChart().setAnimation(true);
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
+
+        chart.addPointClickListener(event -> {
+            int pointIndex = event.getPointIndex();
+            String category = event.getCategory();
+            Series series = event.getSeries();
+            Notification.show("Click", "category = "+category+", pointIndex = "+pointIndex+", series = "+series.getName(), Notification.Type.HUMANIZED_MESSAGE);
+        });
 
         PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
         plotOptionsColumn.setStacking(Stacking.NORMAL);
