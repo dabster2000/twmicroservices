@@ -41,7 +41,7 @@ public class EconomicsJob {
     @PostConstruct
     public void init() {
         synchronizeAllExpenseAccounts();
-        synchronizeInvoiceBookingDates();
+        //synchronizeInvoiceBookingDates();
     }
 
     @Scheduled(cron = "0 0 22 * * ?")
@@ -55,6 +55,15 @@ public class EconomicsJob {
         for (String period : periods) {
             Map<Range<Integer>, List<Collection>> allEntries = economicsAPI.getAllEntries(period);
 
+            List<Invoice> invoiceList = invoiceService.findAll();
+
+            allEntries.get(EconomicsAPI.OMSAETNING_ACCOUNTS).forEach(collection -> invoiceList.stream().filter(invoice -> invoice.invoicenumber == collection.getInvoiceNumber())
+                            .findFirst()
+                            .ifPresent(invoice -> {
+                                invoice.setBookingdate(LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                                invoiceService.save(invoice);
+                            }));
+
             expenseRepository.save(getExpenseMap(ExcelExpenseType.LØNNINGER, allEntries.get(EconomicsAPI.LOENNINGER_ACCOUNTS)).values());
             expenseRepository.save(getExpenseMap(ExcelExpenseType.ADMINISTRATION, allEntries.get(EconomicsAPI.ADMINISTRATION_ACCOUNTS)).values());
             expenseRepository.save(getExpenseMap(ExcelExpenseType.LOKALE, allEntries.get(EconomicsAPI.LOKALE_ACCOUNTS)).values());
@@ -64,7 +73,7 @@ public class EconomicsJob {
         }
     }
 
-    @Scheduled(cron = "0 0 23 * * ?")
+    //@Scheduled(cron = "0 0 23 * * ?")
     public void synchronizeInvoiceBookingDates() {
         List<Invoice> invoiceList = invoiceService.findAll();
 
@@ -74,7 +83,7 @@ public class EconomicsJob {
     }
 
     private void fetchAccountYear(List<Invoice> invoiceList, String accountPeriod) {
-        economicsAPI.getInvoices(EconomicsAPI.OMSAETNING, accountPeriod).parallelStream()
+        economicsAPI.getInvoices(EconomicsAPI.OMSAETNING, accountPeriod)
                 .forEach(collection -> invoiceList.stream().filter(invoice -> invoice.invoicenumber == collection.getInvoiceNumber())
                         .findFirst()
                         .ifPresent(invoice -> {
