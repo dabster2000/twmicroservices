@@ -81,7 +81,7 @@ public class UtilizationPerMonthChart {
         poc1.setColor(new SolidColor("#123375"));
         budgetListSeries.setPlotOptions(poc1);
         for (int j = 0; j < monthPeriod; j++) {
-            budgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalGrossAvailabilites[j]) * 100.0));
+            budgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalNetAvailabilites[j]) * 100.0));
         }
 
         chart.getConfiguration().addSeries(budgetListSeries);
@@ -93,10 +93,10 @@ public class UtilizationPerMonthChart {
         poc3.setNegativeColor(new SolidColor("#FD5F5B"));
         grossBudgetListSeries.setPlotOptions(poc3);
         for (int j = 0; j < monthPeriod; j++) {
-            grossBudgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalNetAvailabilites[j]) * 100.0));
+            grossBudgetListSeries.addData(Math.round((monthAvailabilites[j] / monthTotalGrossAvailabilites[j]) * 100.0));
         }
 
-        chart.getConfiguration().addSeries(budgetListSeries);
+        chart.getConfiguration().addSeries(grossBudgetListSeries);
 
         DataSeries actualDataSeries = new DataSeries("Actual utilization");
         PlotOptionsSpline poc2 = new PlotOptionsSpline();
