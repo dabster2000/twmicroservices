@@ -19,10 +19,7 @@ public class InvoiceAPI {
     RestTemplate restTemplate;
 
     public byte[] createInvoicePDF(Invoice invoice) {
-        System.out.println("InvoiceAPI.createInvoicePDF");
-        System.out.println("invoice = [" + invoice + "]");
         InvoiceDTO invoiceDTO = new InvoiceDTO(invoice);
-        System.out.println("invoiceDTO = " + invoiceDTO);
 
 
         MappingJackson2HttpMessageConverter jsonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
@@ -35,7 +32,6 @@ public class InvoiceAPI {
         HttpEntity<InvoiceDTO> entity = new HttpEntity<>(invoiceDTO, requestHeaders);
 
         ResponseEntity<byte[]> exchange = restTemplate.exchange("https://invoice-generator.com", HttpMethod.POST, entity, byte[].class);
-        System.out.println("exchange = " + exchange.getBody().length);
         return exchange.getBody();
     }
 

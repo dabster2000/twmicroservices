@@ -114,9 +114,7 @@ public class EconomicsAPI {
             for (Collection collection : economicsInvoice.getCollection()) {
                 int accountNumber = collection.getAccount().getAccountNumber();
                 if(Arrays.binarySearch(PERSONALE, accountNumber) > -1) {
-                    System.out.println("accountNumber = " + accountNumber);
                     collection.getAccount().setAccountNumber(accountNumber-LOENNINGER_ACCOUNTS.getMinimum()+PERSONALE_ACCOUNTS.getMinimum());
-                    System.out.println("collection.accountNumber = " + collection.getAccount().getAccountNumber());
                 }
                 collectionResultMap.keySet().forEach(integerRange -> {
                     if(integerRange.contains(collection.getAccount().getAccountNumber())) collectionResultMap.get(integerRange).add(collection);
@@ -124,8 +122,6 @@ public class EconomicsAPI {
             }
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);
-
-        System.out.println("PERSONALE OMKOSTNINGER = " + collectionResultMap.get(PERSONALE_ACCOUNTS).stream().mapToDouble(Collection::getAmount).sum());
 
         return collectionResultMap;
     }
