@@ -58,6 +58,7 @@ public class EconomicsJob {
             List<Invoice> invoiceList = invoiceService.findAll();
 
             allEntries.get(EconomicsAPI.OMSAETNING_ACCOUNTS).forEach(collection -> {
+                System.out.println("collection.invoiceNumber = " + collection.getInvoiceNumber());
                 if(collection.getInvoiceNumber()==15239) System.out.println("FOUND collection = " + collection);
                 invoiceList.stream().filter(invoice -> invoice.invoicenumber == collection.getInvoiceNumber())
                         .findFirst()
