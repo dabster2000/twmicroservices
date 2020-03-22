@@ -57,12 +57,18 @@ public class EconomicsJob {
 
             List<Invoice> invoiceList = invoiceService.findAll();
 
-            allEntries.get(EconomicsAPI.OMSAETNING_ACCOUNTS).forEach(collection -> invoiceList.stream().filter(invoice -> invoice.invoicenumber == collection.getInvoiceNumber())
-                            .findFirst()
-                            .ifPresent(invoice -> {
-                                invoice.setBookingdate(LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                                invoiceService.save(invoice);
-                            }));
+            allEntries.get(EconomicsAPI.OMSAETNING_ACCOUNTS).forEach(collection -> {
+                if(collection.getAccount().getAccountNumber()==15239) System.out.println("collection = " + collection);
+                invoiceList.stream().filter(invoice -> invoice.invoicenumber == collection.getInvoiceNumber())
+                        .findFirst()
+                        .ifPresent(invoice -> {
+                            System.out.println("invoice = " + invoice);
+                            System.out.println("collection = " + collection);
+                            invoice.setBookingdate(LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                            invoiceService.save(invoice);
+                        });
+
+            });
 
             expenseRepository.save(getExpenseMap(ExcelExpenseType.LØNNINGER, allEntries.get(EconomicsAPI.LOENNINGER_ACCOUNTS)).values());
             expenseRepository.save(getExpenseMap(ExcelExpenseType.ADMINISTRATION, allEntries.get(EconomicsAPI.ADMINISTRATION_ACCOUNTS)).values());

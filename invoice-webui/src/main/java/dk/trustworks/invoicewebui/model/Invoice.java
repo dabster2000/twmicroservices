@@ -324,6 +324,11 @@ public class Invoice {
     public String toString() {
         String s = "Invoice{" +
                 "uuid='" + uuid + '\'' +
+                ", contractuuid='" + contractuuid + '\'' +
+                ", projectuuid='" + projectuuid + '\'' +
+                ", projectname='" + projectname + '\'' +
+                ", year=" + year +
+                ", month=" + month +
                 ", discount=" + discount +
                 ", clientname='" + clientname + '\'' +
                 ", clientaddresse='" + clientaddresse + '\'' +
@@ -332,14 +337,21 @@ public class Invoice {
                 ", cvr='" + cvr + '\'' +
                 ", ean='" + ean + '\'' +
                 ", attention='" + attention + '\'' +
+                ", invoiceref=" + invoiceref +
                 ", invoicenumber=" + invoicenumber +
                 ", invoicedate=" + invoicedate +
+                ", bookingdate=" + bookingdate +
+                ", projectref='" + projectref + '\'' +
+                ", contractref='" + contractref + '\'' +
                 ", specificdescription='" + specificdescription + '\'' +
+                ", invoiceitems=" + invoiceitems +
+                ", errors=" + errors +
                 ", type=" + type +
                 ", status=" + status +
+                ", pdf=" + Arrays.toString(pdf) +
                 ", sumNoTax=" + sumNoTax +
                 ", sumWithTax=" + sumWithTax +
-                "}\n";
+                '}';
         s += "{\n";
         for (InvoiceItem invoiceitem : getInvoiceitems()) {
             s+="invoiceitem = " + invoiceitem + "\n";
