@@ -58,12 +58,12 @@ public class EconomicsJob {
             List<Invoice> invoiceList = invoiceService.findAll();
 
             allEntries.get(EconomicsAPI.OMSAETNING_ACCOUNTS).forEach(collection -> {
-                if(collection.getAccount().getAccountNumber()==15239) System.out.println("FOUND collection = " + collection);
+                if(collection.getInvoiceNumber()==15239) System.out.println("FOUND collection = " + collection);
                 invoiceList.stream().filter(invoice -> invoice.invoicenumber == collection.getInvoiceNumber())
                         .findFirst()
                         .ifPresent(invoice -> {
-                            if(collection.getAccount().getAccountNumber()==15239) System.out.println(">> invoice = " + invoice);
-                            if(collection.getAccount().getAccountNumber()==15239) System.out.println(">> collection = " + collection);
+                            if(collection.getInvoiceNumber()==15239) System.out.println(">> invoice = " + invoice);
+                            if(collection.getInvoiceNumber()==15239) System.out.println(">> collection = " + collection);
                             invoice.setBookingdate(LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
                             invoiceService.save(invoice);
                         });
