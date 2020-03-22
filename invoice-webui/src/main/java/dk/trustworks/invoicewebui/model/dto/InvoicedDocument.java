@@ -7,11 +7,13 @@ import java.time.LocalDate;
 
 public class InvoicedDocument {
 
+    private final int invoicenumber;
     private final InvoiceType invoiceType;
     private final LocalDate month;
     private final double invoiced;
 
-    public InvoicedDocument(InvoiceType invoiceType, LocalDate month, double invoiced) {
+    public InvoicedDocument(int invoicenumber, InvoiceType invoiceType, LocalDate month, double invoiced) {
+        this.invoicenumber = invoicenumber;
         this.invoiceType = invoiceType;
         this.month = month;
         this.invoiced = invoiced;
@@ -32,7 +34,8 @@ public class InvoicedDocument {
     @Override
     public String toString() {
         return "InvoicedDocument{" +
-                "invoiceType=" + invoiceType +
+                "invoicenumber=" + invoicenumber +
+                ", invoiceType=" + invoiceType +
                 ", month=" + month +
                 ", invoiced=" + invoiced +
                 '}';

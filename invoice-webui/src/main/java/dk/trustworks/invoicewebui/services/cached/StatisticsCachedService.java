@@ -218,9 +218,9 @@ public class StatisticsCachedService {
             sum -= sum * (invoice.discount / 100.0);
 
             if(invoice.getBookingdate().isEqual(LocalDate.of(1900,1,1))) {
-                invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getInvoicedate(), sum));
+                invoicedDocumentList.add(new InvoicedDocument(invoice.invoicenumber, invoice.getType(), invoice.getInvoicedate(), sum));
             } else {
-                invoicedDocumentList.add(new InvoicedDocument(invoice.getType(), invoice.getBookingdate(), sum));
+                invoicedDocumentList.add(new InvoicedDocument(invoice.invoicenumber, invoice.getType(), invoice.getBookingdate(), sum));
             }
         }
         return invoicedDocumentList;
