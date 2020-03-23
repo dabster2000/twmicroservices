@@ -59,7 +59,7 @@ public class AverageConsultantRevenueByYearChart {
         poc7.setColor(new SolidColor("#123375"));
         revenueSeries.setPlotOptions(poc7);
 
-        LocalDate currentDate = LocalDate.of(2014, 7, 1);
+        LocalDate currentDate = LocalDate.of(2016, 7, 1);
 
         Map<LocalDate, Double> averagePerYearMap = new HashMap<>();
         LocalDate periodStart = currentDate;
