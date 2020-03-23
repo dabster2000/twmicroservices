@@ -1,8 +1,10 @@
 package dk.trustworks.invoicewebui.network.clients;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
+import dk.trustworks.invoicewebui.model.ExpenseDetails;
 import dk.trustworks.invoicewebui.network.clients.model.economics.Collection;
 import dk.trustworks.invoicewebui.network.clients.model.economics.EconomicsInvoice;
+import dk.trustworks.invoicewebui.repositories.ExpenseDetailsRepository;
 import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -21,8 +25,8 @@ public class EconomicsAPI {
 
     public static final int[] OMSAETNING = {2101, 2102, 2103, 2105, 2110, 2115, 2120, 2130, 2140, 2150, 2160};
     public static final int[] PRODUKTION = {3010, 3030, 3040, 3050, 3080};
-    public static final int[] LOENNINGER = {3502, 3503, 3504, 3510, 3531, 3556, 3578, 3591, 3597, 359};
-    public static final int[] PERSONALE = {3505, 3530, 3560, 3570, 3575, 3580, 3583, 3585, 3586, 3589, 3594};
+    public static final int[] LOENNINGER = {3502, 3503, 3504, 3510, 3530, 3531, 3556, 3578, 3591, 3597, 359};
+    public static final int[] PERSONALE = {3505, 3560, 3570, 3575, 3580, 3583, 3585, 3586, 3589, 3594};
     public static final int[] VARIABEL = {3601, 3608};
     public static final int[] LOKALE = {3701, 3709, 3717, 3729, 3730, 3735, 3737, 3738, 3797};
     public static final int[] SALGSFREMMENDE = {4001, 4003, 4006, 4007, 4008, 4020, 4030, 4040, 4042, 4050, 4055, 4066, 4090};
@@ -39,7 +43,10 @@ public class EconomicsAPI {
     public static final Range<Integer> ADMINISTRATION_ACCOUNTS = Range.between(5200, 5299);
 
     @Autowired
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private ExpenseDetailsRepository expenseDetailsRepository;
 
     public List<Collection> getInvoices(int[] accounts, String date) {
         MappingJackson2HttpMessageConverter jsonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
@@ -74,6 +81,9 @@ public class EconomicsAPI {
             );
 
             EconomicsInvoice economicsInvoice = response.getBody();
+            economicsInvoice.getCollection().forEach(collection -> {
+                expenseDetailsRepository.save(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
+            });
             collectionResultList.addAll(economicsInvoice.getCollection());
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);
