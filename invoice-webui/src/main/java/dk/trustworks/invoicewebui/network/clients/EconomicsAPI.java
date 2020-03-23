@@ -124,6 +124,7 @@ public class EconomicsAPI {
             );
 
             EconomicsInvoice economicsInvoice = response.getBody();
+            expenseDetailsRepository.deleteAll();
 
             economicsInvoice.getCollection().forEach(collection -> {
                 expenseDetailsRepository.save(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
