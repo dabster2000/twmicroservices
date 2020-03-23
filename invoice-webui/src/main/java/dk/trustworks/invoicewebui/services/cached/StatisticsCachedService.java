@@ -252,8 +252,8 @@ public class StatisticsCachedService {
         LocalDate startDate = LocalDate.of(2014, 7, 1);
         do {
             LocalDate finalStartDate = startDate;
-            int consultantNetSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
-            int staffNetSalaries = userService.getMonthSalaries(finalStartDate, ConsultantType.STAFF.toString());
+            int consultantNetSalaries = userService.calcMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
+            int staffNetSalaries = userService.calcMonthSalaries(finalStartDate, ConsultantType.STAFF.toString());
             final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
             final double expenseSalaries = expenseList.stream()
                     .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))

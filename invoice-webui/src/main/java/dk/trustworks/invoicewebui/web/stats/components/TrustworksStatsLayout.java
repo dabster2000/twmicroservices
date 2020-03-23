@@ -132,7 +132,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     private ResponsiveRow companyContentRow;
     private ResponsiveRow consultantsContentRow;
-    private ResponsiveRow empty1ContentRow;
+    private ResponsiveRow historyContentRow;
     private ResponsiveRow empty2ContentRow;
     private ResponsiveRow empty3ContentRow;
     private ResponsiveRow empty4ContentRow;
@@ -148,8 +148,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
         companyContentRow = responsiveLayout.addRow();
         consultantsContentRow = responsiveLayout.addRow();
         consultantsContentRow.setVisible(false);
-        empty1ContentRow = responsiveLayout.addRow();
-        empty1ContentRow.setVisible(false);
+        historyContentRow = responsiveLayout.addRow();
+        historyContentRow.setVisible(false);
         empty2ContentRow = responsiveLayout.addRow();
         empty2ContentRow.setVisible(false);
         empty3ContentRow = responsiveLayout.addRow();
@@ -180,15 +180,14 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getUserAllocationBox()));
 
         final Button btnCompany = new MButton(MaterialIcons.BUSINESS, "trustworks", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top")
-                .withEnabled(false);
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
 
         final Button btnTeam = new MButton(MaterialIcons.FACE, "team", event -> {
         }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
 
         // Stats that show yearly progress
-        final Button btnEmpty1 = new MButton(MaterialIcons.HISTORY,"History", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
+        final Button btnHistory = new MButton(MaterialIcons.HISTORY,"History", event -> {
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
 
         // Stats that show customer distributions
         final Button btnEmpty2 = new MButton(MaterialIcons.PEOPLE,"Customers", event -> {
@@ -202,22 +201,23 @@ public class TrustworksStatsLayout extends VerticalLayout {
         final Button btnEmpty4 = new MButton( "", event -> {
         }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
 
-        btnCompany.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, companyContentRow));
-        btnTeam.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, consultantsContentRow));
-        btnEmpty1.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, empty1ContentRow));
-        btnEmpty2.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, empty2ContentRow));
-        btnEmpty3.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, empty3ContentRow));
-        btnEmpty4.addClickListener(event -> setNewButtonPressState(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, empty4ContentRow));
+        btnCompany.addClickListener(event -> setNewButtonPressState(btnCompany, btnHistory, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, companyContentRow));
+        btnTeam.addClickListener(event -> setNewButtonPressState(btnCompany, btnHistory, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, consultantsContentRow));
+        btnHistory.addClickListener(event -> setNewButtonPressState(btnCompany, btnHistory, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, historyContentRow));
+        btnEmpty2.addClickListener(event -> setNewButtonPressState(btnCompany, btnHistory, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, empty2ContentRow));
+        btnEmpty3.addClickListener(event -> setNewButtonPressState(btnCompany, btnHistory, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, empty3ContentRow));
+        btnEmpty4.addClickListener(event -> setNewButtonPressState(btnCompany, btnHistory, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam, event, empty4ContentRow));
 
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnCompany);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnTeam);
-        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty1);
+        buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnHistory);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty2);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty3);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnEmpty4);
 
         addCompanyCharts();
         addConsultantCharts();
+        addHistoryCharts();
     }
 
     public void addCompanyCharts() {
@@ -380,6 +380,30 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(talentPassionCard);
 
+    }
+
+    public void addHistoryCharts() {
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        consultantsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
+        ResponsiveRow searchRow = responsiveLayout.addRow();
+        final ResponsiveRow chartRow = responsiveLayout.addRow();
+
+        createHistoryCharts(chartRow);
+    }
+
+    private void createHistoryCharts(ResponsiveRow chartRow) {
+        Box averageConsultantRevenueByYearCard = new Box();
+        averageConsultantRevenueByYearCard.getContent().addComponent(averageConsultantRevenueByYearChart.createRevenuePerConsultantChart());
+
+        Box expensesPerEmployee = new Box();
+        expensesPerEmployee.getContent().addComponent(expensesSalariesRevenuePerMonthChart.createExpensesPerMonthChart());
+
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(averageConsultantRevenueByYearCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(expensesPerEmployee);
     }
 
     public void old() {
@@ -784,18 +808,18 @@ excelFileDownloader.extend(downloadAsExcel);
         notification.setDelayMsec(1000);
     }
 
-    private void setNewButtonPressState(Button btnCompany, Button btnEmpty1, Button btnEmpty2, Button btnEmpty3, Button btnEmpty4, Button btnTeam, Button.ClickEvent event, ResponsiveRow contentRow) {
+    private void setNewButtonPressState(Button btnCompany, Button btnHistory, Button btnEmpty2, Button btnEmpty3, Button btnEmpty4, Button btnTeam, Button.ClickEvent event, ResponsiveRow contentRow) {
         hideAllDynamicRows();
-        enableAllButtons(btnCompany, btnEmpty1, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam);
+        enableAllButtons(btnCompany, btnHistory, btnEmpty2, btnEmpty3, btnEmpty4, btnTeam);
         event.getButton().setEnabled(false);
         contentRow.setVisible(true);
     }
 
-    private void enableAllButtons(Button btnCompany, Button btnEmpty1, Button btnEmpty2, Button btnEmpty3, Button btnEmpty4, Button btnTeam) {
+    private void enableAllButtons(Button btnCompany, Button btnHistory, Button btnEmpty2, Button btnEmpty3, Button btnEmpty4, Button btnTeam) {
         btnCompany.setEnabled(true);
         btnTeam.setEnabled(true);
         btnEmpty2.setEnabled(false);
-        btnEmpty1.setEnabled(false);
+        btnHistory.setEnabled(false);
         btnEmpty3.setEnabled(false);
         btnEmpty4.setEnabled(false);
     }
@@ -803,7 +827,7 @@ excelFileDownloader.extend(downloadAsExcel);
     private void hideAllDynamicRows() {
         companyContentRow.setVisible(false);
         consultantsContentRow.setVisible(false);
-        empty1ContentRow.setVisible(false);
+        historyContentRow.setVisible(false);
         empty2ContentRow.setVisible(false);
         empty3ContentRow.setVisible(false);
         empty4ContentRow.setVisible(false);

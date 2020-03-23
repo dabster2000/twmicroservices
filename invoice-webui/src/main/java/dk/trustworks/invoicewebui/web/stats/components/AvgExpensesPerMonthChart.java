@@ -118,8 +118,8 @@ public class AvgExpensesPerMonthChart {
 
             List<ExpenseDocument> allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
 
-            double consultantNetSalaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
-            double staffNetSalaries = userService.getMonthSalaries(currentDate, ConsultantType.STAFF.toString());
+            double consultantNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
+            double staffNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.STAFF.toString());
 
             double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSalaries).sum());
 

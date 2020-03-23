@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -54,6 +55,9 @@ public class AverageConsultantRevenueByYearChart {
         chart.getConfiguration().setTooltip(tooltip);
 
         DataSeries revenueSeries = new DataSeries("Revenue");
+        PlotOptionsAreaspline poc7 = new PlotOptionsAreaspline();
+        poc7.setColor(new SolidColor("#123375"));
+        revenueSeries.setPlotOptions(poc7);
 
         LocalDate currentDate = LocalDate.of(2014, 7, 1);
 
@@ -66,8 +70,8 @@ public class AverageConsultantRevenueByYearChart {
             int countMonthsWithExpenses = 0;
 
             for (int m = 0; m < 12; m++) {
-                double expenses = statisticsService.calcAllUserExpensesByMonth(periodStart);
-                if(expenses<=0.0) continue;
+                if(periodStart.plusMonths(m).isAfter(LocalDate.now().withDayOfMonth(1))) break;
+                double expenses = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(m));
                 double revenue = statisticsService.getMonthRevenue(periodStart.plusMonths(m));
                 long countUsers = statisticsService.countActiveConsultantCountByMonth(periodStart.plusMonths(m));
                 sum += (revenue - expenses) / countUsers;

@@ -79,7 +79,7 @@ public class ExpenseTable {
             expenseItemList.get("3_SHARED_EXP").getExpenses()[i] = sharedExpenses;
             expenseItemList.get("3_SHARED_SAL").getExpenses()[i] = staffSalaries;
             //long salaries = Math.round((statisticsService.getAllExpensesByMonth(currentDate) - sharedExpenses - staffSalaries));
-            int salaries = userService.getMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
+            int salaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
             expenseItemList.get("3_SALARIES").getExpenses()[i] = salaries;
             double sum = sharedExpenses + staffSalaries + salaries;
             expenseItemList.get("4_SUM").getExpenses()[i] = sum;

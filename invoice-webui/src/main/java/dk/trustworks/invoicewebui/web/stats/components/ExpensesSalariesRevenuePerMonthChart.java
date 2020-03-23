@@ -2,10 +2,13 @@ package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +16,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
 
 /**
  * Created by hans on 20/09/2017.
@@ -24,9 +29,12 @@ public class ExpensesSalariesRevenuePerMonthChart {
 
     private final StatisticsService statisticsService;
 
+    private final UserService userService;
+
     @Autowired
-    public ExpensesSalariesRevenuePerMonthChart(StatisticsService statisticsService) {
+    public ExpensesSalariesRevenuePerMonthChart(StatisticsService statisticsService, UserService userService) {
         this.statisticsService = statisticsService;
+        this.userService = userService;
     }
 
     public Chart createExpensesPerMonthChart() {
@@ -51,8 +59,19 @@ public class ExpensesSalariesRevenuePerMonthChart {
         chart.getConfiguration().setTooltip(tooltip);
 
         DataSeries revenueSeries = new DataSeries("Revenue");
+        PlotOptionsAreaspline poc3 = new PlotOptionsAreaspline();
+        poc3.setColor(new SolidColor("#123375"));
+        revenueSeries.setPlotOptions(poc3);
+
         DataSeries expensesSeries = new DataSeries("Expenses");
+        PlotOptionsAreaspline poc2 = new PlotOptionsAreaspline();
+        poc2.setColor(new SolidColor("#FD5F5B"));
+        expensesSeries.setPlotOptions(poc2);
+
         DataSeries salariesSeries = new DataSeries("Salaries");
+        PlotOptionsAreaspline poc1 = new PlotOptionsAreaspline();
+        poc1.setColor(new SolidColor("#54D69E"));
+        salariesSeries.setPlotOptions(poc1);
 
         double expensesSum = 0.0;
         double salariesSum = 0.0;
@@ -66,9 +85,13 @@ public class ExpensesSalariesRevenuePerMonthChart {
 
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            int consultantCount = (int) statisticsService.countActiveConsultantCountByMonth(currentDate);
-            double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);
-            double consultantSalariesByMonth = NumberUtils.round(((statisticsService.calcAllUserExpensesByMonth(currentDate) / consultantCount) - sharedExpensesAndStaffSalariesByMonth) , 0);
+            double consultantCount = statisticsService.countActiveConsultantCountByMonth(currentDate);
+
+            double consultantSalariesByMonth = NumberUtils.round((userService.calcMonthSalaries(currentDate, CONSULTANT.toString()) / consultantCount), 0);
+            double sharedExpensesAndStaffSalariesByMonth =  NumberUtils.round((statisticsService.calcAllExpensesByMonth(currentDate) / consultantCount) - consultantSalariesByMonth, 0);
+
+            //double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);
+            //double consultantSalariesByMonth = NumberUtils.round(((statisticsService.calcAllUserExpensesByMonth(currentDate) / consultantCount) - sharedExpensesAndStaffSalariesByMonth) , 0);
             double revenue = NumberUtils.round(revenuePerMonth.get(currentDate) / consultantCount, 0);
 
             if(revenue == 0.0 || sharedExpensesAndStaffSalariesByMonth == 0.0 || consultantSalariesByMonth == 0.0) {
@@ -99,8 +122,8 @@ public class ExpensesSalariesRevenuePerMonthChart {
         }
 
         chart.getConfiguration().addSeries(revenueSeries);
-        chart.getConfiguration().addSeries(salariesSeries);
         chart.getConfiguration().addSeries(expensesSeries);
+        chart.getConfiguration().addSeries(salariesSeries);
 
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);

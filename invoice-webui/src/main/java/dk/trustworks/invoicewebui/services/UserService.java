@@ -116,7 +116,7 @@ public class UserService implements InitializingBean {
         return user.getStatuses().stream().filter(value -> value.getStatusdate().isBefore(date)).max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(ConsultantType.STAFF, StatusType.TERMINATED, date, 0));
     }
 
-    public int getMonthSalaries(LocalDate date, String... consultantTypes) {
+    public int calcMonthSalaries(LocalDate date, String... consultantTypes) {
         String[] statusList = {ACTIVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
                 .stream().mapToInt(value ->
