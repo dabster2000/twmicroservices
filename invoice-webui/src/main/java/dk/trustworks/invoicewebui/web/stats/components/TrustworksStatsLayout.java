@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.label.MLabel;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -366,6 +367,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthEmployeeAvgCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(new MLabel("vvv NOT VALIDATED vvv").withFullWidth().withStyleName("LARGE CENTER"));
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(averageConsultantRevenueByYearCard);
