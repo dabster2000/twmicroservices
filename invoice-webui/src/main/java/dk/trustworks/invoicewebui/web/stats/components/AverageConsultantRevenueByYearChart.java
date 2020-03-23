@@ -72,6 +72,7 @@ public class AverageConsultantRevenueByYearChart {
             for (int m = 0; m < 12; m++) {
                 if(periodStart.plusMonths(m).isAfter(LocalDate.now().withDayOfMonth(1))) break;
                 double expenses = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(m));
+                if(expenses <= 0.0) continue;
                 double revenue = statisticsService.getMonthRevenue(periodStart.plusMonths(m));
                 long countUsers = statisticsService.countActiveConsultantCountByMonth(periodStart.plusMonths(m));
                 sum += (revenue - expenses) / countUsers;
