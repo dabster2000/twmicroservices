@@ -129,9 +129,6 @@ public class EconomicsAPI {
             EconomicsInvoice economicsInvoice = response.getBody();
 
 
-            economicsInvoice.getCollection().forEach(collection -> {
-                expenseDetails.add(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
-            });
 
             for (Collection collection : economicsInvoice.getCollection()) {
                 int accountNumber = collection.getAccount().getAccountNumber();
@@ -141,6 +138,7 @@ public class EconomicsAPI {
                 collectionResultMap.keySet().forEach(integerRange -> {
                     if(integerRange.contains(collection.getAccount().getAccountNumber())) collectionResultMap.get(integerRange).add(collection);
                 });
+                expenseDetails.add(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).withDayOfMonth(1), collection.getText()));
             }
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);

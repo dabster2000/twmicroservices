@@ -19,16 +19,14 @@ import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.model.stats.ExpenseItem;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.vaadin.ui.Notification.*;
 
@@ -86,49 +84,49 @@ public class ExpensesPerMonthChart {
         ListSeries consultantSalarySeries = new ListSeries("Consultant salaries");
         consultantSalarySeries.setId(UUID.randomUUID().toString());
         consultantSalarySeries.setPlotOptions(poc4);
-        listSeriesRangeMap.put(consultantSalarySeries.getId(), EconomicsAPI.LOENNINGER_ACCOUNTS);
+        listSeriesRangeMap.put(consultantSalarySeries.getName(), EconomicsAPI.LOENNINGER_ACCOUNTS);
 
         ListSeries staffSalarySeries = new ListSeries("Staff salaries");
         staffSalarySeries.setId(UUID.randomUUID().toString());
         PlotOptionsColumn poc3 = new PlotOptionsColumn();
         poc3.setColor(new SolidColor("#98E6C4"));
         staffSalarySeries.setPlotOptions(poc3);
-        listSeriesRangeMap.put(staffSalarySeries.getId(), EconomicsAPI.LOENNINGER_ACCOUNTS);
+        listSeriesRangeMap.put(staffSalarySeries.getName(), EconomicsAPI.LOENNINGER_ACCOUNTS);
 
         ListSeries personaleExpensesSeries = new ListSeries("Consultant expenses");
         personaleExpensesSeries.setId(UUID.randomUUID().toString());
         PlotOptionsColumn poc2 = new PlotOptionsColumn();
         poc2.setColor(new SolidColor("#CFD6E3"));
         personaleExpensesSeries.setPlotOptions(poc2);
-        listSeriesRangeMap.put(personaleExpensesSeries.getId(), EconomicsAPI.PERSONALE_ACCOUNTS);
+        listSeriesRangeMap.put(personaleExpensesSeries.getName(), EconomicsAPI.PERSONALE_ACCOUNTS);
 
         PlotOptionsColumn poc5 = new PlotOptionsColumn();
         poc5.setColor(new SolidColor("#A0ADC7"));
         ListSeries lokaleExensesSeries = new ListSeries("Office expenses");
         lokaleExensesSeries.setId(UUID.randomUUID().toString());
         lokaleExensesSeries.setPlotOptions(poc5);
-        listSeriesRangeMap.put(lokaleExensesSeries.getId(), EconomicsAPI.LOKALE_ACCOUNTS);
+        listSeriesRangeMap.put(lokaleExensesSeries.getName(), EconomicsAPI.LOKALE_ACCOUNTS);
 
         PlotOptionsColumn poc6 = new PlotOptionsColumn();
         poc6.setColor(new SolidColor("#7084AC"));
         ListSeries salgExensesSeries = new ListSeries("Sales expenses");
         salgExensesSeries.setId(UUID.randomUUID().toString());
         salgExensesSeries.setPlotOptions(poc6);
-        listSeriesRangeMap.put(salgExensesSeries.getId(), EconomicsAPI.SALG_ACCOUNTS);
+        listSeriesRangeMap.put(salgExensesSeries.getName(), EconomicsAPI.SALG_ACCOUNTS);
 
         PlotOptionsColumn poc7 = new PlotOptionsColumn();
         poc7.setColor(new SolidColor("#415B90"));
         ListSeries productionExensesSeries = new ListSeries("Production expenses");
         productionExensesSeries.setId(UUID.randomUUID().toString());
         productionExensesSeries.setPlotOptions(poc7);
-        listSeriesRangeMap.put(productionExensesSeries.getId(), EconomicsAPI.PRODUKTION_ACCOUNTS);
+        listSeriesRangeMap.put(productionExensesSeries.getName(), EconomicsAPI.PRODUKTION_ACCOUNTS);
 
         PlotOptionsColumn poc8 = new PlotOptionsColumn();
         poc8.setColor(new SolidColor("#123375"));
         ListSeries administrationExensesSeries = new ListSeries("Administration expenses");
         administrationExensesSeries.setId(UUID.randomUUID().toString());
         administrationExensesSeries.setPlotOptions(poc8);
-        listSeriesRangeMap.put(administrationExensesSeries.getId(), EconomicsAPI.ADMINISTRATION_ACCOUNTS);
+        listSeriesRangeMap.put(administrationExensesSeries.getName(), EconomicsAPI.ADMINISTRATION_ACCOUNTS);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
@@ -162,14 +160,11 @@ public class ExpensesPerMonthChart {
         }
 
         chart.addPointClickListener(event -> {
-            //show("Click", "pointIndex = "+event.getPointIndex()+", series = "+event.getSeries().getId(), Type.HUMANIZED_MESSAGE);
+            show("Click", "pointIndex = "+event.getPointIndex()+", series = "+event.getSeries().getName(), Type.HUMANIZED_MESSAGE);
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());
-            Range<Integer> range = listSeriesRangeMap.get(event.getSeries().getId());
-            int[] accountNumbers = new int[range.getMaximum()-range.getMinimum()+1];
-            for (int i = range.getMinimum(); i <= range.getMaximum(); i++) {
-                accountNumbers[i-range.getMinimum()] = i;
-            }
-            Grid<ExpenseDetails> expenseDetailGrid = createExpenseDetailGrid(currentDate, accountNumbers);
+            Range<Integer> range = listSeriesRangeMap.get(event.getSeries().getName());
+
+            Grid<ExpenseDetails> expenseDetailGrid = createExpenseDetailGrid(currentDate, range);
             UI.getCurrent().addWindow(new Window("Expense Details for " + event.getCategory(), expenseDetailGrid));
         });
 
@@ -186,8 +181,16 @@ public class ExpensesPerMonthChart {
         return chart;
     }
 
-    public Grid<ExpenseDetails> createExpenseDetailGrid(LocalDate month, int... accountNumber) {
+    public Grid<ExpenseDetails> createExpenseDetailGrid(LocalDate month, Range<Integer> range) {
+        System.out.println("ExpensesPerMonthChart.createExpenseDetailGrid");
+        System.out.println("month = " + month + ", range = " + range);
 
+        int[] accountNumber = new int[range.getMaximum()-range.getMinimum()+1];
+        for (int i = range.getMinimum(); i <= range.getMaximum(); i++) {
+            accountNumber[i-range.getMinimum()] = i;
+        }
+        //if(range.equals(EconomicsAPI.LOENNINGER_ACCOUNTS)) accountNumber = EconomicsAPI.LOENNINGER;
+        System.out.println("accountNumber = " + ArrayUtils.toString(accountNumber)  );
         List<ExpenseDetails> expenseDetailsList = expenseDetailsRepository.findByExpensedateAndAccountnumberInOrderByAmountDesc(month, accountNumber);
 
         Grid<ExpenseDetails> treeGrid = new Grid<>();
