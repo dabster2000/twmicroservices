@@ -265,7 +265,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
 
         Box expensesPerMonthCard = new Box();
-        expensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createUserExpensePerMonthChart(localDateStart, localDateEnd));
+        expensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
         Box cumulativeRevenuePerMonthCard = new Box();
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));

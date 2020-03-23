@@ -15,6 +15,6 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "expensedetails", path="expensedetails")
 public interface ExpenseDetailsRepository extends CrudRepository<ExpenseDetails, String> {
 
-    List<ExpenseDetails> findByExpensedateAndAccountnumber(@Param("expensedate") LocalDate expensedate, @Param("accountnumber") int accountnumber);
+    List<ExpenseDetails> findByExpensedateAndAccountnumberInOrderByAmountDesc(@Param("expensedate") LocalDate expensedate, @Param("accountnumber") int... accountnumber);
 
 }
