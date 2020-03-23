@@ -177,20 +177,19 @@ public class ExpensesPerMonthChart {
 
     public Grid<ExpenseDetails> createExpenseDetailGrid(LocalDate month, int... accountNumber) {
 
-        Map<String, ExpenseItem> expenseItemList = new HashMap<>();
-
         List<ExpenseDetails> expenseDetailsList = expenseDetailsRepository.findByExpensedateAndAccountnumberInOrderByAmountDesc(month, accountNumber);
 
         Grid<ExpenseDetails> treeGrid = new Grid<>();
         treeGrid.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        treeGrid.setItems(expenseDetailsList);
+
 
         treeGrid.addColumn(ExpenseDetails::getEntrynumber).setCaption("Entry number").setId("entrynumber-column");
         treeGrid.addColumn(ExpenseDetails::getAccountnumber).setCaption("Account Number").setId("accountnumber-column");
         treeGrid.addColumn(ExpenseDetails::getExpensedate).setCaption("Date").setId("date-column");
         treeGrid.addColumn(ExpenseDetails::getText).setCaption("Text").setId("text-column");
         treeGrid.addColumn(ExpenseDetails::getAmount).setCaption("Amount").setId("amount-column");
-        treeGrid.setFrozenColumnCount(1);
+
+        treeGrid.setItems(expenseDetailsList);
 
         return treeGrid;
     }

@@ -81,9 +81,12 @@ public class EconomicsAPI {
             );
 
             EconomicsInvoice economicsInvoice = response.getBody();
+            /*
             economicsInvoice.getCollection().forEach(collection -> {
                 expenseDetailsRepository.save(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
             });
+
+             */
             collectionResultList.addAll(economicsInvoice.getCollection());
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);
@@ -121,6 +124,11 @@ public class EconomicsAPI {
             );
 
             EconomicsInvoice economicsInvoice = response.getBody();
+
+            economicsInvoice.getCollection().forEach(collection -> {
+                expenseDetailsRepository.save(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
+            });
+
             for (Collection collection : economicsInvoice.getCollection()) {
                 int accountNumber = collection.getAccount().getAccountNumber();
                 if(Arrays.binarySearch(PERSONALE, accountNumber) > -1) {
