@@ -115,6 +115,9 @@ public class EconomicsAPI {
 
         int page = 0;
         String url = "https://restapi.e-conomic.com/accounting-years/" + date + "/entries?pagesize=1000&skippages="+page;
+
+        List<ExpenseDetails> expenseDetails = new ArrayList<>();
+
         do {
             ResponseEntity<EconomicsInvoice> response = restTemplate.exchange(
                     url,
@@ -124,10 +127,10 @@ public class EconomicsAPI {
             );
 
             EconomicsInvoice economicsInvoice = response.getBody();
-            expenseDetailsRepository.deleteAll();
+
 
             economicsInvoice.getCollection().forEach(collection -> {
-                expenseDetailsRepository.save(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
+                expenseDetails.add(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
             });
 
             for (Collection collection : economicsInvoice.getCollection()) {
@@ -141,6 +144,8 @@ public class EconomicsAPI {
             }
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);
+
+        expenseDetailsRepository.save(expenseDetails);
 
         return collectionResultMap;
     }

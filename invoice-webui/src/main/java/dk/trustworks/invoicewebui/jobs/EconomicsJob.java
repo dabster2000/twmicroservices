@@ -6,6 +6,7 @@ import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.network.clients.EconomicsAPI;
 import dk.trustworks.invoicewebui.network.clients.model.economics.Collection;
+import dk.trustworks.invoicewebui.repositories.ExpenseDetailsRepository;
 import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import org.apache.commons.lang3.Range;
@@ -36,6 +37,9 @@ public class EconomicsJob {
     @Autowired
     private ExpenseRepository expenseRepository;
 
+    @Autowired
+    private ExpenseDetailsRepository expenseDetailsRepository;
+
     private String[] periods = {"2016_6_2017", "2017_6_2018", "2018_6_2019", "2019_6_2020"};
 
     @PostConstruct
@@ -47,6 +51,9 @@ public class EconomicsJob {
     @Scheduled(cron = "0 0 22 * * ?")
     public void synchronizeAllExpenseAccounts() {
         LocalDate runThrough = LocalDate.of(2016, 1, 1);
+
+        // CLEAN UP EXPENSES AND EXPENSE DETAILS
+        expenseDetailsRepository.deleteAll();
         do {
             expenseRepository.deleteByPeriod(runThrough);
             runThrough = runThrough.plusMonths(1);
