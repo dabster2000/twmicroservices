@@ -339,10 +339,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
         Box avgExpensesPerMonthCard = new Box();
         avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
-        /*
         Box averageConsultantRevenueByYearCard = new Box();
         averageConsultantRevenueByYearCard.getContent().addComponent(averageConsultantRevenueByYearChart.createRevenuePerConsultantChart());
-        */
 
         Box yourTrustworksForecastCard = new Box();
         yourTrustworksForecastCard.getContent().addComponent(yourTrustworksForecastChart.createChart(localDateStart, localDateEnd));
@@ -350,6 +348,11 @@ public class TrustworksStatsLayout extends VerticalLayout {
         Box revenuePerMonthEmployeeAvgCard = new Box();
         revenuePerMonthEmployeeAvgCard.getContent().addComponent(revenuePerMonthEmployeeAvgChart.createRevenuePerMonthChart(localDateStart, localDateEnd.withDayOfMonth(1).minusMonths(1)));
 
+        Box expensesPerEmployee = new Box();
+        expensesPerEmployee.getContent().addComponent(expensesSalariesRevenuePerMonthChart.createExpensesPerMonthChart());
+
+        Box talentPassionCard = new Box();
+        talentPassionCard.getContent().addComponent(talentPassionResultBox.create());
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
@@ -363,6 +366,16 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthEmployeeAvgCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(averageConsultantRevenueByYearCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(expensesPerEmployee);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(talentPassionCard);
+
     }
 
     public void old() {
@@ -570,13 +583,13 @@ public class TrustworksStatsLayout extends VerticalLayout {
         consultantsBudgetRealizationCard.getContent().addComponent(consultantsBudgetRealizationChart.createConsultantsBudgetRealizationChart());
         notification.setDescription("9 out of 10 charts created!");
         System.out.println("timeMillis 9 = " + (System.currentTimeMillis() - timeMillis));
-
+/*
         Card talentPassionCard = new Card();
         talentPassionCard.getLblTitle().setValue("Talent & Passion");
         talentPassionCard.getContent().addComponent(talentPassionResultBox.create());
         notification.setDescription("9 out of 10 charts created!");
         System.out.println("timeMillis 9 = " + (System.currentTimeMillis() - timeMillis));
-
+*/
         Card expensesPerEmployee = new Card();
         expensesPerEmployee.getLblTitle().setValue("Average Historical Economic Overview per Employee");
         expensesPerEmployee.getContent().addComponent(expensesSalariesRevenuePerMonthChart.createExpensesPerMonthChart());
@@ -680,10 +693,12 @@ excelFileDownloader.extend(downloadAsExcel);
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(averageConsultantRevenueByYearCard);
 
-         */
+
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(talentPassionCard);
+
+         */
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(averageConsultantRevenueCard);

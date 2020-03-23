@@ -128,8 +128,6 @@ public class EconomicsAPI {
 
             EconomicsInvoice economicsInvoice = response.getBody();
 
-
-
             for (Collection collection : economicsInvoice.getCollection()) {
                 int accountNumber = collection.getAccount().getAccountNumber();
                 if(Arrays.binarySearch(PERSONALE, accountNumber) > -1) {
