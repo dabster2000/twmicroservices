@@ -385,7 +385,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
     public void addHistoryCharts() {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         consultantsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
-        ResponsiveRow searchRow = responsiveLayout.addRow();
+
         final ResponsiveRow chartRow = responsiveLayout.addRow();
 
         createHistoryCharts(chartRow);
@@ -399,7 +399,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         expensesPerEmployee.getContent().addComponent(expensesSalariesRevenuePerMonthChart.createExpensesPerMonthChart());
 
         chartRow.addColumn()
-                .withDisplayRules(12, 12, 6, 6)
+                .withDisplayRules(12, 12, 12, 12)
                 .withComponent(averageConsultantRevenueByYearCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
