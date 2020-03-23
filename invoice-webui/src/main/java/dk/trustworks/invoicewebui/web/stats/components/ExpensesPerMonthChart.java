@@ -7,6 +7,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ExpenseDetails;
@@ -27,6 +28,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import static com.vaadin.ui.Notification.*;
 
 /**
  * Created by hans on 20/09/2017.
@@ -80,16 +84,19 @@ public class ExpensesPerMonthChart {
         PlotOptionsColumn poc4 = new PlotOptionsColumn();
         poc4.setColor(new SolidColor("#54D69E"));
         ListSeries consultantSalarySeries = new ListSeries("Consultant salaries");
+        consultantSalarySeries.setId(UUID.randomUUID().toString());
         consultantSalarySeries.setPlotOptions(poc4);
         listSeriesRangeMap.put(consultantSalarySeries.getId(), EconomicsAPI.LOENNINGER_ACCOUNTS);
 
         ListSeries staffSalarySeries = new ListSeries("Staff salaries");
+        staffSalarySeries.setId(UUID.randomUUID().toString());
         PlotOptionsColumn poc3 = new PlotOptionsColumn();
         poc3.setColor(new SolidColor("#98E6C4"));
         staffSalarySeries.setPlotOptions(poc3);
         listSeriesRangeMap.put(staffSalarySeries.getId(), EconomicsAPI.LOENNINGER_ACCOUNTS);
 
         ListSeries personaleExpensesSeries = new ListSeries("Consultant expenses");
+        personaleExpensesSeries.setId(UUID.randomUUID().toString());
         PlotOptionsColumn poc2 = new PlotOptionsColumn();
         poc2.setColor(new SolidColor("#CFD6E3"));
         personaleExpensesSeries.setPlotOptions(poc2);
@@ -98,24 +105,28 @@ public class ExpensesPerMonthChart {
         PlotOptionsColumn poc5 = new PlotOptionsColumn();
         poc5.setColor(new SolidColor("#A0ADC7"));
         ListSeries lokaleExensesSeries = new ListSeries("Office expenses");
+        lokaleExensesSeries.setId(UUID.randomUUID().toString());
         lokaleExensesSeries.setPlotOptions(poc5);
         listSeriesRangeMap.put(lokaleExensesSeries.getId(), EconomicsAPI.LOKALE_ACCOUNTS);
 
         PlotOptionsColumn poc6 = new PlotOptionsColumn();
         poc6.setColor(new SolidColor("#7084AC"));
         ListSeries salgExensesSeries = new ListSeries("Sales expenses");
+        salgExensesSeries.setId(UUID.randomUUID().toString());
         salgExensesSeries.setPlotOptions(poc6);
         listSeriesRangeMap.put(salgExensesSeries.getId(), EconomicsAPI.SALG_ACCOUNTS);
 
         PlotOptionsColumn poc7 = new PlotOptionsColumn();
         poc7.setColor(new SolidColor("#415B90"));
         ListSeries productionExensesSeries = new ListSeries("Production expenses");
+        productionExensesSeries.setId(UUID.randomUUID().toString());
         productionExensesSeries.setPlotOptions(poc7);
         listSeriesRangeMap.put(productionExensesSeries.getId(), EconomicsAPI.PRODUKTION_ACCOUNTS);
 
         PlotOptionsColumn poc8 = new PlotOptionsColumn();
         poc8.setColor(new SolidColor("#123375"));
         ListSeries administrationExensesSeries = new ListSeries("Administration expenses");
+        administrationExensesSeries.setId(UUID.randomUUID().toString());
         administrationExensesSeries.setPlotOptions(poc8);
         listSeriesRangeMap.put(administrationExensesSeries.getId(), EconomicsAPI.ADMINISTRATION_ACCOUNTS);
 
@@ -151,7 +162,7 @@ public class ExpensesPerMonthChart {
         }
 
         chart.addPointClickListener(event -> {
-            //Notification.show("Click", "category = "+category+", pointIndex = "+pointIndex+", series = "+series.getName(), Notification.Type.HUMANIZED_MESSAGE);
+            //show("Click", "pointIndex = "+event.getPointIndex()+", series = "+event.getSeries().getId(), Type.HUMANIZED_MESSAGE);
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());
             Range<Integer> range = listSeriesRangeMap.get(event.getSeries().getId());
             int[] accountNumbers = new int[range.getMaximum()-range.getMinimum()+1];
