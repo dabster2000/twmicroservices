@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -69,6 +70,9 @@ public class RevenuePerConsultantChart {
         chart.getConfiguration().setTooltip(tooltip);
 
         DataSeries revenueSeries = new DataSeries("Revenue");
+        PlotOptionsAreaspline poc3 = new PlotOptionsAreaspline();
+        poc3.setColor(new SolidColor("#123375"));
+        revenueSeries.setPlotOptions(poc3);
 
         Map<LocalDate, Double> resultMap = statisticsService.calculateConsultantRevenue(user, periodStart, periodEnd, 3);
         for (LocalDate currentDate : resultMap.keySet().stream().sorted().collect(Collectors.toList())) {

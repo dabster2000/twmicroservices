@@ -15,10 +15,7 @@ import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.InvoiceService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.dashboard.cards.DashboardBoxCreator;
@@ -32,13 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.label.MLabel;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
 
 
 /**
@@ -116,6 +114,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     @Autowired
     private WorkRepository workRepository;
+
+    @Autowired
+    private PhotoService photoService;
 
     @Autowired
     private StatisticsService statisticsService;
@@ -396,6 +397,42 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(utilizationPerYearCard);
     }
+
+
+    public void addIndividualCharts() {
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        consultantsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
+        ResponsiveRow searchRow = responsiveLayout.addRow();
+        final ResponsiveRow chartRow = responsiveLayout.addRow();
+
+        AtomicReference<Image> selectedEmployeeImage = null;
+
+        for (User employee : userService.findCurrentlyEmployedUsers(CONSULTANT, STAFF, STUDENT)) {
+            Image memberImage = photoService.getRoundMemberImage(employee, false, 50, Unit.PERCENTAGE);
+            memberImage.addClickListener(event -> {
+                if(selectedEmployeeImage.get() != null) {
+                    selectedEmployeeImage.get().removeStyleName("img-circle-gold");
+                    selectedEmployeeImage.get().addStyleName("img-circle");
+                }
+                selectedEmployeeImage.set(memberImage);
+                selectedEmployeeImage.get().removeStyleName("img-circle");
+                selectedEmployeeImage.get().addStyleName("img-circle-gold");
+
+                createIndividualCharts(chartRow, employee);
+            });
+            searchRow.addColumn().withDisplayRules(3, 2, 1, 1).withComponent(memberImage);
+        }
+    }
+
+    private void createIndividualCharts(ResponsiveRow chartRow, User employee) {
+        Box revenuePerEmployee = new Box();
+        revenuePerEmployee.getContent().addComponent(revenuePerConsultantChart.createRevenuePerConsultantChart(employee));
+
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(revenuePerEmployee);
+    }
+
 
     public void old() {
         // *** OLD ***
