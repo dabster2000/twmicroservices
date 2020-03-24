@@ -427,6 +427,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createIndividualCharts(ResponsiveRow chartRow, User employee) {
+        System.out.println("TrustworksStatsLayout.createIndividualCharts");
+        System.out.println("chartRow = " + chartRow + ", employee = " + employee);
         Box revenuePerEmployee = new Box();
         revenuePerEmployee.getContent().addComponent(revenuePerConsultantChart.createRevenuePerConsultantChart(employee));
 

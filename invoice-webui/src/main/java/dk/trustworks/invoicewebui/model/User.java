@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.text.WordUtils;
 
 import java.time.LocalDate;
@@ -186,6 +187,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", slackusername='" + slackusername + '\'' +
                 ", birthday=" + birthday +
+                ", statusses=" + ArrayUtils.toString(getStatuses().stream().map(UserStatus::toString).toArray()) +
                 '}';
     }
 

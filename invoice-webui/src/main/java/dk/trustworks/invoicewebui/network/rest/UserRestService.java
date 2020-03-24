@@ -55,6 +55,7 @@ public class UserRestService {
     @Cacheable("users")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, String... consultantTypes) {
         String url = userServiceUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes);
+        System.out.println("url = " + url);
         return Arrays.asList(restTemplate.getForObject(url, User[].class));
     }
 
