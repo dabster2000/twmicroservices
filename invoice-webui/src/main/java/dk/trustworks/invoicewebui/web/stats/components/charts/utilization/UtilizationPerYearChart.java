@@ -45,7 +45,7 @@ public class UtilizationPerYearChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        chart.setCaption(null);
+        chart.setCaption("Actual Utilization");
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
         chart.getConfiguration().getChart().setAnimation(true);
@@ -53,7 +53,7 @@ public class UtilizationPerYearChart {
         chart.getConfiguration().getxAxis().setTickWidth(0);
         chart.getConfiguration().getyAxis().setTitle("%");
         chart.getConfiguration().getyAxes().getAxis(0).setMax(100);
-        chart.getConfiguration().getLegend().setEnabled(true    );
+        chart.getConfiguration().getLegend().setEnabled(false);
 
         Tooltip tooltip = new Tooltip();
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y, 0) +' %'");

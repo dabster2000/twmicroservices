@@ -15,6 +15,7 @@ import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -48,13 +49,14 @@ public class RevenuePerConsultantChart {
     }
 
     public Chart createRevenuePerConsultantChart(User user) {
-        System.out.println("RevenuePerPerConsultantChart.createRevenuePerConsultantChart");
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
         LocalDate periodStart = user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE, LocalDate.now(), 0)).getStatusdate();//LocalDate.of(2017, 07, 01);
-        System.out.println("createRevenuePerConsultantChart periodStart = " + periodStart);
+        System.out.println("user.getStatuses().stream().forEach(userStatus -> userStatus.list() = " + ArrayUtils.toString(user.getStatuses().stream().map(UserStatus::toString).toArray()));
+        System.out.println("periodStart = " + periodStart);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1);
+        System.out.println("periodEnd = " + periodEnd);
 
         chart.setCaption("Gross profit for "+user.getUsername());
         chart.getConfiguration().setTitle("");
