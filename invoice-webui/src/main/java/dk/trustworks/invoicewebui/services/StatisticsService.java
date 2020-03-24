@@ -305,9 +305,9 @@ public class StatisticsService extends StatisticsCachedService {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             if(userService.isActive(user, currentDate, ConsultantType.CONSULTANT)) {
-                System.out.println("currentDate = " + currentDate);
+                //System.out.println("currentDate = " + currentDate);
                 double consultantCount = userService.findWorkingUsersByDate(currentDate, ConsultantType.CONSULTANT).size();
-                System.out.println("consultantCount = " + consultantCount);
+                //System.out.println("consultantCount = " + consultantCount);
                 double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
 
                 if (expense == 0) {
@@ -317,23 +317,23 @@ public class StatisticsService extends StatisticsCachedService {
                 }
 
                 double revenue = getConsultantRevenueByMonth(user, currentDate);
-                System.out.println("revenue = " + revenue);
+                //System.out.println("revenue = " + revenue);
                 //double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
                 double userSalary = userService.getUserSalary(user, currentDate);
-                System.out.println("userSalary = " + userSalary);
+                //System.out.println("userSalary = " + userSalary);
                 double consultantSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
-                System.out.println("consultantSalaries = " + consultantSalaries);
+                //System.out.println("consultantSalaries = " + consultantSalaries);
                 double partOfTotalSalary = userSalary / consultantSalaries;
-                System.out.println("partOfTotalSalary = " + partOfTotalSalary);
+                //System.out.println("partOfTotalSalary = " + partOfTotalSalary);
                 double consultantSalariesSum = getAllExpensesByMonth(currentDate).stream().mapToDouble(ExpenseDocument::geteSalaries).sum();
-                System.out.println("consultantSalariesSum = " + consultantSalariesSum);
+                //System.out.println("consultantSalariesSum = " + consultantSalariesSum);
                 double grossUserSalary = consultantSalariesSum * partOfTotalSalary;
-                System.out.println("grossUserSalary = " + grossUserSalary);
+                //System.out.println("grossUserSalary = " + grossUserSalary);
                 double allExpensesSum = calcAllExpensesByMonth(currentDate);
-                System.out.println("allExpensesSum = " + allExpensesSum);
+                //System.out.println("allExpensesSum = " + allExpensesSum);
 
-                revenueSum += revenue - grossUserSalary - (allExpensesSum / consultantCount);
-                System.out.println("allExpensesSum = " + allExpensesSum);
+                revenueSum += revenue - grossUserSalary - ((allExpensesSum - consultantSalaries) / consultantCount);
+                //System.out.println("revenueSum = " + revenueSum);
 
                 //double expenseSalaries = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum();
                 //double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
