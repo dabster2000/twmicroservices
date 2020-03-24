@@ -116,7 +116,8 @@ public class StatisticsService extends StatisticsCachedService {
             if(invoicedAmountByMonth > 0.0) {
                 result.put(currentDate, invoicedAmountByMonth);
             } else {
-                result.put(currentDate, getMonthRevenue(currentDate));
+                result.put(currentDate, 0.0);
+                //result.put(currentDate, getMonthRevenue(currentDate));
             }
         }
         return result;
