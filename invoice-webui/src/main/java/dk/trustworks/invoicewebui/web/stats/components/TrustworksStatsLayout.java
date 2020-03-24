@@ -402,14 +402,14 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     public void addIndividualCharts() {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        consultantsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
+        individualsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
         ResponsiveRow searchRow = responsiveLayout.addRow();
         final ResponsiveRow chartRow = responsiveLayout.addRow();
 
-        AtomicReference<Image> selectedEmployeeImage = null;
+        AtomicReference<Image> selectedEmployeeImage = new AtomicReference<>(null);
 
         for (User employee : userService.findCurrentlyEmployedUsers(CONSULTANT, STAFF, STUDENT)) {
-            Image memberImage = photoService.getRoundMemberImage(employee, false, 50, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(employee, false, 60, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 chartRow.removeAllComponents();
                 if(selectedEmployeeImage.get() != null) {
