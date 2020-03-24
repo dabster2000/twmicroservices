@@ -5,6 +5,7 @@ import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.addon.charts.model.PlotOptionsAreaspline;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.dto.UserProjectBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
@@ -313,14 +314,21 @@ public class StatisticsService extends StatisticsCachedService {
                     continue;
                 }
 
-
-                double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
+                double revenue = getConsultantRevenueByMonth(user, currentDate);
+                //double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
                 int userSalary = userService.getUserSalary(user, currentDate);
                 int consultantSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
-                double expenseSalaries = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum();
-                double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
+                int partOfTotalSalary = userSalary / consultantSalaries;
+                double consultantSalariesSum = getAllExpensesByMonth(currentDate).stream().mapToDouble(ExpenseDocument::geteSalaries).sum();
+                double grossUserSalary = consultantSalariesSum * partOfTotalSalary;
+                double allExpensesSum = calcAllExpensesByMonth(currentDate);
 
-                revenueSum += (revenue - userSalary - expense - staffSalaries);
+                revenueSum += revenue - grossUserSalary - (allExpensesSum / consultantCount);
+
+                //double expenseSalaries = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum();
+                //double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
+
+                //revenueSum += (revenue - userSalary - expense - staffSalaries);
             }
 
             if(count == interval) {
