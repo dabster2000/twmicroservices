@@ -100,7 +100,7 @@ public class CumulativeRevenuePerMonthChart {
             }
 
             registeredRevenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
-            if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
+            if(currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
 
             cumulativeBudgetPerMonth += statisticsService.getMonthBudget(periodStart.plusMonths(i).withDayOfMonth(1));

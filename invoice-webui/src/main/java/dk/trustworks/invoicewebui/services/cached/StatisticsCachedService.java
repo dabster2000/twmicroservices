@@ -330,7 +330,7 @@ public class StatisticsCachedService {
             expenseDocumentList.add(expenseDocument);
 
             startDate = startDate.plusMonths(1);
-        } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1)));
+        } while (startDate.isBefore(LocalDate.now().plusMonths(1).withDayOfMonth(1)));
 
         return expenseDocumentList;
     }

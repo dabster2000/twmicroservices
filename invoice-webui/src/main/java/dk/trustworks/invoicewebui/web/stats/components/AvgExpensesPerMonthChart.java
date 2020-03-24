@@ -37,21 +37,8 @@ public class AvgExpensesPerMonthChart {
     }
 
     public Chart createExpensePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
-        //LocalDate periodStart = LocalDate.of(2016, 7, 1);
-        //LocalDate periodEnd = LocalDate.now().withDayOfMonth(1).minusMonths(1);
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
-
-        /*
-        chart.setCaption("Average Expenses");
-        chart.getConfiguration().setTitle("");
-        chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
-        chart.getConfiguration().getChart().setAnimation(true);
-        chart.getConfiguration().getxAxis().getLabels().setEnabled(true);
-        chart.getConfiguration().getxAxis().setTickWidth(0);
-        chart.getConfiguration().getyAxis().setTitle("");
-        chart.getConfiguration().getLegend().setEnabled(false);
-         */
 
         chart.setCaption("Categorized Average Expenses");
         chart.getConfiguration().setTitle("");

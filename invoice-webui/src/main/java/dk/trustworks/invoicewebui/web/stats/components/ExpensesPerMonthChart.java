@@ -128,8 +128,6 @@ public class ExpensesPerMonthChart {
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
-
-
         String[] monthNames = new String[months];
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);

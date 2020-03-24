@@ -80,7 +80,7 @@ public class RevenuePerMonthEmployeeAvgChart {
 
                 double expense = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 //double expense = expenseRepository.findByPeriod(periodStart.plusMonths(i).withDayOfMonth(1)).stream().mapToDouble(Expense::getAmount).sum();
-                if(expense>0.0) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), ((amountPerItem.getValue() - expense) / consultants)));
+                if(periodStart.plusMonths(i).isBefore(LocalDate.now().withDayOfMonth(1))) earningsSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), ((amountPerItem.getValue() - expense) / consultants)));
 
                 if(periodStart.plusMonths(i).isBefore(LocalDate.now().withDayOfMonth(1))) {
                     avg += (amountPerItem.getValue() / consultants);
