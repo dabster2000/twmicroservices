@@ -191,15 +191,15 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         // Stats that show customer distributions
         final Button btnCustomers = new MButton(MaterialIcons.CONTACTS,"Customers", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
 
         // Stats for administration, like salary, vacation, illness
         final Button btnAdministration = new MButton(MaterialIcons.INBOX, "Administration", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
 
         // Stats for individuals
         final Button btnIndividuals = new MButton( MaterialIcons.FACE, "Individuals", event -> {
-        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
+        }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
 
         btnCompany.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, companyContentRow));
         btnTeam.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, consultantsContentRow));
