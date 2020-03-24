@@ -383,12 +383,18 @@ public class TrustworksStatsLayout extends VerticalLayout {
         Box expensesPerEmployee = new Box();
         expensesPerEmployee.getContent().addComponent(expensesSalariesRevenuePerMonthChart.createExpensesPerMonthChart());
 
+        Box utilizationPerYearCard = new Box();
+        utilizationPerYearCard.getContent().addComponent(utilizationPerYearChart.createChart());
+
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
+                .withComponent(expensesPerEmployee);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 6, 6)
                 .withComponent(averageConsultantRevenueByYearCard);
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
-                .withComponent(expensesPerEmployee);
+                .withComponent(utilizationPerYearCard);
     }
 
     public void old() {
@@ -649,6 +655,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         notification.setDescription("14 out of 14 charts created!");
         System.out.println("timeMillis 14 = " + (System.currentTimeMillis() - timeMillis));
 
+        /*
         Card utilizationPerYearCard = new Card();
         utilizationPerYearCard.getLblTitle().setValue("Average Utilization per Year per Employee");
         utilizationPerYearCard.getContent().addComponent(utilizationPerYearChart.createChart());
@@ -787,9 +794,12 @@ excelFileDownloader.extend(downloadAsExcel);
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(avgExpensesPerYearCard);
 
+        /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(utilizationPerYearCard);
+
+         */
 
         notification.setDelayMsec(1000);
     }
