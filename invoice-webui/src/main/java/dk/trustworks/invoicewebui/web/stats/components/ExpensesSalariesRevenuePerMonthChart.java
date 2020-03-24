@@ -122,8 +122,8 @@ public class ExpensesSalariesRevenuePerMonthChart {
         }
 
         chart.getConfiguration().addSeries(revenueSeries);
-        chart.getConfiguration().addSeries(expensesSeries);
         chart.getConfiguration().addSeries(salariesSeries);
+        chart.getConfiguration().addSeries(expensesSeries);
 
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
