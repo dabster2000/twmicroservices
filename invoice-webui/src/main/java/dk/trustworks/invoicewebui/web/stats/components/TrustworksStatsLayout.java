@@ -219,6 +219,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         addCompanyCharts();
         addConsultantCharts();
         addHistoryCharts();
+        addIndividualCharts();
     }
 
     public void addCompanyCharts() {
@@ -410,6 +411,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         for (User employee : userService.findCurrentlyEmployedUsers(CONSULTANT, STAFF, STUDENT)) {
             Image memberImage = photoService.getRoundMemberImage(employee, false, 50, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
+                chartRow.removeAllComponents();
                 if(selectedEmployeeImage.get() != null) {
                     selectedEmployeeImage.get().removeStyleName("img-circle-gold");
                     selectedEmployeeImage.get().addStyleName("img-circle");
