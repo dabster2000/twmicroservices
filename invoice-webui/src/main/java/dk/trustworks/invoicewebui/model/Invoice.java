@@ -57,7 +57,6 @@ public class Invoice {
     public InvoiceStatus status;
     @Lob @JsonIgnore public byte[] pdf;
 
-
     @JsonIgnore @Transient private double sumNoTax;
     @JsonIgnore @Transient private double sumWithTax;
 
@@ -69,6 +68,7 @@ public class Invoice {
     public Invoice(InvoiceType type, String contractuuid, String projectuuid, String projectname, double discount, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
         this();
         this.type = type;
+        this.bookingdate = LocalDate.of(1900,1,1);
         if(type.equals(InvoiceType.CREDIT_NOTE)) invoiceref = invoicenumber;
         this.contractuuid = contractuuid;
         this.discount = discount;
