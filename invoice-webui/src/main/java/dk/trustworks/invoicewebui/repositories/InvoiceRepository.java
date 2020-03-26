@@ -41,11 +41,11 @@ public interface InvoiceRepository extends CrudRepository<Invoice, String> {
             "LIMIT 1", nativeQuery = true)
     Invoice findByLatestInvoiceByProjectuuid(@Param("projectuuid") String projectuuid);
 
-    @Query(value = "select * from invoices i where ( " +
-            "(i.invoicedate >= :searchdate and i.invoicedate <= :searchdate) " +
-            " or (i.bookingdate >= :searchdate and i.bookingdate <= :searchdate) " +
+    @Query(value = "SELECT * FROM invoices i WHERE ( " +
+            "(i.invoicedate >= :searchdate AND i.invoicedate <= :searchdate) " +
+            " OR (i.bookingdate >= :searchdate AND i.bookingdate <= :searchdate) " +
             ") " +
-            "and i.status IN :statuses; ")
+            "AND i.status IN :statuses ", nativeQuery = true)
     List<Invoice> findByInvoicedateOrBookingdateAndStatuses(@Param("searchdate") LocalDate searchdate, @Param("statuses") InvoiceStatus... statuses);
 
     @Query(value = "SELECT MAX(i.invoicenumber) FROM invoices i", nativeQuery = true)
