@@ -11,13 +11,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import dk.trustworks.invoicewebui.model.ExpenseDetails;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -77,11 +74,16 @@ public class RevenuePerMonthChart {
             if(!event.getSeries().getName().equals("Invoiced Revenue")) return;
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());
 
-            List<Invoice> invoiceList = invoiceService.findByInvoicedateAndBookingdateAndStatuses(currentDate, InvoiceStatus.CREATED.toString(), InvoiceStatus.CREDIT_NOTE.toString()).stream().filter(invoice -> {
-                if (invoice.bookingdate.withDayOfMonth(1).equals(currentDate.withDayOfMonth(1))) return true;
-                else return invoice.bookingdate.isEqual(LocalDate.of(1900, 1, 1)) && invoice.invoicedate.withDayOfMonth(1).equals(currentDate.withDayOfMonth(1));
+            List<Invoice> invoiceList = invoiceService.findByInvoicedateAndBookingdate(currentDate);
+            System.out.println("before invoiceList.size() = " + invoiceList.size());
+            invoiceList = invoiceList.stream().filter(invoice -> invoice.getStatus().equals(InvoiceStatus.CREATED) || invoice.getStatus().equals(InvoiceStatus.CREDIT_NOTE)).filter(invoice -> {
+                System.out.println("currentDate = " + currentDate);
+                System.out.println("invoice.invoicedate = " + invoice.invoicedate);
+                System.out.println("invoice.bookingdate = " + invoice.bookingdate);
+                if (invoice.bookingdate.withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1))) return true;
+                else return invoice.bookingdate.isEqual(LocalDate.of(1900, 1, 1)) && invoice.invoicedate.withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1));
             }).collect(Collectors.toList());
-            System.out.println("invoiceList.size() = " + invoiceList.size());
+            System.out.println("after invoiceList.size() = " + invoiceList.size());
             if(invoiceList.size()>0)
                 System.out.println("invoiceList.get(0).getInvoiceitems().size() = " + invoiceList.get(0).getInvoiceitems().size());
 

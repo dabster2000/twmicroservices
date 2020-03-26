@@ -41,12 +41,16 @@ public interface InvoiceRepository extends CrudRepository<Invoice, String> {
             "LIMIT 1", nativeQuery = true)
     Invoice findByLatestInvoiceByProjectuuid(@Param("projectuuid") String projectuuid);
 
-    @Query(value = "SELECT uuid, invoicenumber, clientname, projectname, status, type, invoicedate FROM invoices i WHERE ( " +
-            "(i.invoicedate >= :searchdate AND i.invoicedate <= :searchdate) " +
-            " OR (i.bookingdate >= :searchdate AND i.bookingdate <= :searchdate) " +
-            ") " +
-            "AND i.status IN :statuses ", nativeQuery = true)
-    List<Invoice> findByInvoicedateOrBookingdateAndStatuses(@Param("searchdate") LocalDate searchdate, @Param("statuses") String... statuses);
+    @Query(value = "SELECT uuid, invoicenumber, clientname, projectname, status, type, invoicedate FROM invoices i WHERE " +
+            "i.invoicedate >= :periodStart AND i.invoicedate <= :periodEnd " +
+            " AND i.bookingdate = '1900-01-01' " +
+            "AND i.status IN ('CREATED', 'CREDIT_NOTE');", nativeQuery = true)
+    List<Invoice> findByInvoicedate(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
+
+    @Query(value = "SELECT uuid, invoicenumber, clientname, projectname, status, type, invoicedate FROM invoices i WHERE " +
+            "i.bookingdate >= :periodStart AND i.bookingdate <= :periodEnd " +
+            "AND i.status IN ('CREATED', 'CREDIT_NOTE');", nativeQuery = true)
+    List<Invoice> findByBookingdate(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
     @Query(value = "SELECT MAX(i.invoicenumber) FROM invoices i", nativeQuery = true)
     Integer getMaxInvoiceNumber();

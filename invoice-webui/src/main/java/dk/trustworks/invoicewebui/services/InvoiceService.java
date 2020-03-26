@@ -117,7 +117,11 @@ public class InvoiceService {
         entityManager.refresh(invoice);
     }
 
-    public List<Invoice> findByInvoicedateAndBookingdateAndStatuses(LocalDate invoicedate, String... invoiceStatuses) {
-        return invoiceRepository.findByInvoicedateOrBookingdateAndStatuses(invoicedate, invoiceStatuses);
+    public List<Invoice> findByInvoicedateAndBookingdate(LocalDate invoicedate) {
+        List<Invoice> invoiceList = invoiceRepository.findByInvoicedate(invoicedate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                invoicedate.plusMonths(1).withDayOfMonth(1).minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        invoiceList.addAll(invoiceRepository.findByBookingdate(invoicedate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                invoicedate.plusMonths(1).withDayOfMonth(1).minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+        return invoiceList;
     }
 }
