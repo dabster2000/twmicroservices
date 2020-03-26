@@ -69,7 +69,7 @@ public class DashboardBoxCreator {
 
             double revenueByMonth = statisticsService.getInvoicedOrRegisteredRevenueByMonth(currentDate);
             cumulativeRevenuePerMonth += revenueByMonth;
-            double expense = statisticsService.calcAllUserExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+            double expense = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
             cumulativeExpensePerMonth += expense;
 
             regression.addData(i+1, cumulativeRevenuePerMonth-cumulativeExpensePerMonth);
