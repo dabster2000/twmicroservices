@@ -21,6 +21,8 @@ public class ChartUtils {
         plotOptionsArea.setColor(new SolidColor(color));
         dataSeries.setPlotOptions(plotOptionsArea);
 
+
+
         for (LocalDate localDate : map.keySet().stream().sorted(LocalDate::compareTo).collect(Collectors.toList())) {
             dataSeries.add(new DataSeriesItem(localDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), map.get(localDate)));
         }

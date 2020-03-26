@@ -156,7 +156,6 @@ public class ExpensesPerMonthChart {
         }
 
         chart.addPointClickListener(event -> {
-            show("Click", "pointIndex = "+event.getPointIndex()+", series = "+event.getSeries().getName(), Type.HUMANIZED_MESSAGE);
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());
             Range<Integer> range = listSeriesRangeMap.get(event.getSeries().getName());
 

@@ -116,4 +116,8 @@ public class InvoiceService {
     public void refresh(Invoice invoice) {
         entityManager.refresh(invoice);
     }
+
+    public List<Invoice> findByInvoicedateAndBookingdateAndStatuses(LocalDate invoicedate, InvoiceStatus... invoiceStatuses) {
+        return invoiceRepository.findByInvoicedateOrBookingdateAndStatuses(invoicedate, invoiceStatuses);
+    }
 }

@@ -36,8 +36,6 @@ public class StatisticsService extends StatisticsCachedService {
 
     private final static Logger log = LoggerFactory.getLogger(StatisticsService.class.getName());
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-
     private final ContractService contractService;
 
     private final BudgetNewRepository budgetNewRepository;
@@ -49,9 +47,8 @@ public class StatisticsService extends StatisticsCachedService {
     private final UserService userService;
 
     @Autowired
-    public StatisticsService(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, ExpenseRepository expenseRepository, WorkService workService, InvoiceService invoiceService, UserService userService) {
+    public StatisticsService(ContractService contractService, BudgetNewRepository budgetNewRepository, ExpenseRepository expenseRepository, WorkService workService, InvoiceService invoiceService, UserService userService) {
         super(contractService, expenseRepository, workService, userService, invoiceService);
-        this.graphKeyValueRepository = graphKeyValueRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.expenseRepository = expenseRepository;
@@ -118,7 +115,6 @@ public class StatisticsService extends StatisticsCachedService {
                 result.put(currentDate, invoicedAmountByMonth);
             } else {
                 result.put(currentDate, 0.0);
-                //result.put(currentDate, getMonthRevenue(currentDate));
             }
         }
         return result;

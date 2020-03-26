@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -40,10 +41,18 @@ public interface InvoiceRepository extends CrudRepository<Invoice, String> {
             "LIMIT 1", nativeQuery = true)
     Invoice findByLatestInvoiceByProjectuuid(@Param("projectuuid") String projectuuid);
 
+    @Query(value = "select * from invoices i where ( " +
+            "(i.invoicedate >= :searchdate and i.invoicedate <= :searchdate) " +
+            " or (i.bookingdate >= :searchdate and i.bookingdate <= :searchdate) " +
+            ") " +
+            "and i.status IN :statuses; ")
+    List<Invoice> findByInvoicedateOrBookingdateAndStatuses(LocalDate date, InvoiceStatus... statuses);
+
     @Query(value = "SELECT MAX(i.invoicenumber) FROM invoices i", nativeQuery = true)
     Integer getMaxInvoiceNumber();
 
     List<Invoice> findAll();
+
 
 }
 
