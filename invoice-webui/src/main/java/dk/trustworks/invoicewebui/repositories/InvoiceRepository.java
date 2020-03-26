@@ -46,7 +46,7 @@ public interface InvoiceRepository extends CrudRepository<Invoice, String> {
             " or (i.bookingdate >= :searchdate and i.bookingdate <= :searchdate) " +
             ") " +
             "and i.status IN :statuses; ")
-    List<Invoice> findByInvoicedateOrBookingdateAndStatuses(LocalDate date, InvoiceStatus... statuses);
+    List<Invoice> findByInvoicedateOrBookingdateAndStatuses(@Param("searchdate") LocalDate searchdate, @Param("statuses") InvoiceStatus... statuses);
 
     @Query(value = "SELECT MAX(i.invoicenumber) FROM invoices i", nativeQuery = true)
     Integer getMaxInvoiceNumber();
