@@ -77,14 +77,16 @@ public class RevenuePerMonthChart {
             if(!event.getSeries().getName().equals("Invoiced Revenue")) return;
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());
 
-            List<Invoice> invoiceList = invoiceService.findByInvoicedateAndBookingdateAndStatuses(currentDate, InvoiceStatus.CREATED, InvoiceStatus.CREDIT_NOTE).stream().filter(invoice -> {
+            List<Invoice> invoiceList = invoiceService.findByInvoicedateAndBookingdateAndStatuses(currentDate, InvoiceStatus.CREATED.toString(), InvoiceStatus.CREDIT_NOTE.toString()).stream().filter(invoice -> {
                 if (invoice.bookingdate.withDayOfMonth(1).equals(currentDate.withDayOfMonth(1))) return true;
-                else
-                    return invoice.bookingdate.isEqual(LocalDate.of(1900, 1, 1)) && invoice.invoicedate.withDayOfMonth(1).equals(currentDate.withDayOfMonth(1));
+                else return invoice.bookingdate.isEqual(LocalDate.of(1900, 1, 1)) && invoice.invoicedate.withDayOfMonth(1).equals(currentDate.withDayOfMonth(1));
             }).collect(Collectors.toList());
+            System.out.println("invoiceList.size() = " + invoiceList.size());
+            if(invoiceList.size()>0)
+                System.out.println("invoiceList.get(0).getInvoiceitems().size() = " + invoiceList.get(0).getInvoiceitems().size());
 
-            Grid<Invoice> expenseDetailGrid = createExpenseDetailGrid(invoiceList);
-            UI.getCurrent().addWindow(new Window("Invoice details for " + event.getCategory(), expenseDetailGrid));
+            Grid<Invoice> invoiceDetailGrid = createExpenseDetailGrid(invoiceList);
+            UI.getCurrent().addWindow(new Window("Invoice details for " + event.getCategory(), invoiceDetailGrid));
         });
 
         Credits c = new Credits("");
@@ -96,10 +98,10 @@ public class RevenuePerMonthChart {
 
         Grid<Invoice> treeGrid = new Grid<>();
         treeGrid.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        treeGrid.addColumn(Invoice::getClientname).setCaption("Client").setId("client-column");
-        treeGrid.addColumn(Invoice::getProjectname).setCaption("Project").setId("project-column");
         treeGrid.addColumn(Invoice::getInvoicenumber).setCaption("#").setId("invoicenumber-column");
         treeGrid.addColumn(Invoice::getInvoicedate).setCaption("Date").setId("date-column");
+        treeGrid.addColumn(Invoice::getClientname).setCaption("Client").setId("client-column");
+        treeGrid.addColumn(Invoice::getProjectname).setCaption("Project").setId("project-column");
         treeGrid.addColumn(Invoice::getType).setCaption("Type").setId("type-column");
         treeGrid.addColumn(Invoice::getSumNoTax).setCaption("Amount").setId("sum-column");
         treeGrid.sort("client-column", SortDirection.ASCENDING);
