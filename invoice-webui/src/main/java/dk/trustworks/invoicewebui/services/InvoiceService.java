@@ -122,6 +122,7 @@ public class InvoiceService {
                 invoicedate.plusMonths(1).withDayOfMonth(1).minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         invoiceList.addAll(invoiceRepository.findByBookingdate(invoicedate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 invoicedate.plusMonths(1).withDayOfMonth(1).minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+        invoiceList.forEach(invoice -> invoice.addToSumNoTax(invoice.getInvoiceitems().stream().mapToDouble(value -> value.getHours() * value.getRate()).sum()));
         return invoiceList;
     }
 }
