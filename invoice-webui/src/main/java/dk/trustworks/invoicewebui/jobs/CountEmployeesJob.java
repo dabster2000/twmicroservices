@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import weka.classifiers.evaluation.NumericPrediction;
 import weka.classifiers.functions.GaussianProcesses;
+import weka.classifiers.functions.SMOreg;
 import weka.classifiers.timeseries.WekaForecaster;
 import weka.core.Instances;
 import weka.filters.supervised.attribute.TSLagMaker;
@@ -170,7 +171,7 @@ public class CountEmployeesJob {
 
         // default underlying classifier is SMOreg (SVM) - we'll use
         // gaussian processes for regression instead
-        forecaster.setBaseForecaster(new GaussianProcesses());
+        forecaster.setBaseForecaster(new SMOreg());
 
         forecaster.getTSLagMaker().setTimeStampField("timestamp"); // date time stamp
         forecaster.getTSLagMaker().setPeriodicity(TSLagMaker.Periodicity.MONTHLY);
@@ -212,7 +213,7 @@ public class CountEmployeesJob {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
-            System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
+            //System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
             Double amount = (predForTarget.predicted() < 0.0) ? 0.0 : predForTarget.predicted();
             dailyForecast.add(amount);
             incomeForcastRepository.save(new IncomeForecast(i, amount, "INCOME"));

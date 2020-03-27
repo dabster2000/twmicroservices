@@ -127,8 +127,8 @@ public class ExpensesPerMonthChart {
         listSeriesRangeMap.put(administrationExensesSeries.getName(), EconomicsAPI.ADMINISTRATION_ACCOUNTS);
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
-
         String[] monthNames = new String[months];
+
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
@@ -177,15 +177,11 @@ public class ExpensesPerMonthChart {
     }
 
     public Grid<ExpenseDetails> createExpenseDetailGrid(LocalDate month, Range<Integer> range) {
-        System.out.println("ExpensesPerMonthChart.createExpenseDetailGrid");
-        System.out.println("month = " + month + ", range = " + range);
-
         int[] accountNumber = new int[range.getMaximum()-range.getMinimum()+1];
         for (int i = range.getMinimum(); i <= range.getMaximum(); i++) {
             accountNumber[i-range.getMinimum()] = i;
         }
         //if(range.equals(EconomicsAPI.LOENNINGER_ACCOUNTS)) accountNumber = EconomicsAPI.LOENNINGER;
-        System.out.println("accountNumber = " + ArrayUtils.toString(accountNumber)  );
         List<ExpenseDetails> expenseDetailsList = expenseDetailsRepository.findByExpensedateAndAccountnumberInOrderByAmountDesc(month, accountNumber);
 
         Grid<ExpenseDetails> treeGrid = new Grid<>();

@@ -6,12 +6,16 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
+import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 /**
  * Created by hans on 20/09/2017.
@@ -24,8 +28,13 @@ public class CumulativePredictiveRevenuePerMonthChart {
     @Autowired
     private CountEmployeesJob countEmployeesJob;
 
+    @Autowired
+    private StatisticsService statisticsService;
+
     public Chart createCumulativePredictiveRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
         System.out.println("CumulativePredictiveRevenuePerMonthChart.createCumulativePredictiveRevenuePerMonthChart");
+        System.out.println("periodStart = " + periodStart + ", periodEnd = " + periodEnd);
+
         Chart chart = new Chart();
         chart.setSizeFull();
 
@@ -39,29 +48,66 @@ public class CumulativePredictiveRevenuePerMonthChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         List<Double> dailyForecast = countEmployeesJob.getDailyForecast();
-        int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(periodEnd, periodEnd));
-        String[] categories = new String[monthsInPeriod];
+        int months = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).minusMonths(1));
+        System.out.println("Registered months = " + months);
+        if(months>12) months = 12;
+        System.out.println("Adjusted months = " + months);
+        String[] monthNames = new String[12];
+
         DataSeries revenueSeries = new DataSeries("Revenue");
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#123375"));
         revenueSeries.setPlotOptions(plotOptionsArea);
 
-        int month = periodStart.getMonthValue();
-        double monthSum = 0.0;
-        int i = 0;
-        categories[i++] = periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+        //int month = periodStart.getMonthValue();
+        //double monthSum = 0.0;
+
+        //String[] monthNames = new String[months];//categories[i++] = periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+
+        int historicalMonthsCount = 0;
+
+        System.out.println("Known dates: RUNNING");
+
+        for (int i = 0; i < months; i++) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+            monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), statisticsService.getMonthRevenue(currentDate)));
+            historicalMonthsCount++;
+            System.out.println("currentDate = " + monthNames[i]);
+            System.out.println("historicalMonthsCount = " + historicalMonthsCount);
+            System.out.println("statisticsService.getMonthRevenue(currentDate) = " + statisticsService.getMonthRevenue(currentDate));
+        }
+
+        System.out.println("Known dates: DONE");
+
+        System.out.println("historicalMonthsCount = " + historicalMonthsCount);
+
+        System.out.println("Forecast dates: RUNNING");
+
+        for (int i = historicalMonthsCount; i < 12; i++) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), NumberUtils.round(dailyForecast.get(i-historicalMonthsCount),0)));
+            monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+            System.out.println("currentDate = " + monthNames[i]);
+            System.out.println("statisticsService.getMonthRevenue(currentDate) = " + statisticsService.getMonthRevenue(currentDate));
+        }
+
+        System.out.println("Forecast dates: DONE");
+/*
         for (Double amount : dailyForecast) {
             if(periodStart.getMonthValue() != month) {
                 revenueSeries.add(new DataSeriesItem(periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(monthSum)));
-                categories[i++] = periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+                monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
                 monthSum = 0.0;
                 month = periodStart.getMonthValue();
             }
             monthSum += amount;
             periodStart = periodStart.plusMonths(1);
         }
+        */
 
-        chart.getConfiguration().getxAxis().setCategories(categories);
+
+        chart.getConfiguration().getxAxis().setCategories(monthNames);
         chart.getConfiguration().addSeries(revenueSeries);
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);

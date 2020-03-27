@@ -75,17 +75,10 @@ public class RevenuePerMonthChart {
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());
 
             List<Invoice> invoiceList = invoiceService.findByInvoicedateAndBookingdate(currentDate);
-            System.out.println("before invoiceList.size() = " + invoiceList.size());
             invoiceList = invoiceList.stream().filter(invoice -> invoice.getStatus().equals(InvoiceStatus.CREATED) || invoice.getStatus().equals(InvoiceStatus.CREDIT_NOTE)).filter(invoice -> {
-                System.out.println("currentDate = " + currentDate);
-                System.out.println("invoice.invoicedate = " + invoice.invoicedate);
-                System.out.println("invoice.bookingdate = " + invoice.bookingdate);
                 if (invoice.bookingdate.withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1))) return true;
                 else return invoice.bookingdate.isEqual(LocalDate.of(1900, 1, 1)) && invoice.invoicedate.withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1));
             }).collect(Collectors.toList());
-            System.out.println("after invoiceList.size() = " + invoiceList.size());
-            if(invoiceList.size()>0)
-                System.out.println("invoiceList.get(0).getInvoiceitems().size() = " + invoiceList.get(0).getInvoiceitems().size());
 
             Grid<Invoice> invoiceDetailGrid = createExpenseDetailGrid(invoiceList);
             UI.getCurrent().addWindow(new Window("Invoice details for " + event.getCategory(), invoiceDetailGrid));
