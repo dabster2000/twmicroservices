@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -10,8 +11,7 @@ public class IncomeForecast {
 
     @Id
     private String uuid;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
+    private LocalDate created;
     private int sort;
     private double amount;
     private String itemtype;
@@ -19,7 +19,7 @@ public class IncomeForecast {
 
     public IncomeForecast(int sort, double amount, String itemtype) {
         this.uuid = UUID.randomUUID().toString();
-        this.created = new Date();
+        this.created = LocalDate.now();
         this.sort = sort;
         this.amount = amount;
         this.itemtype = itemtype;
@@ -29,11 +29,11 @@ public class IncomeForecast {
         return uuid;
     }
 
-    public Date getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDate created) {
         this.created = created;
     }
 

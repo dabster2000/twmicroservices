@@ -6,6 +6,8 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
+import dk.trustworks.invoicewebui.model.IncomeForecast;
+import dk.trustworks.invoicewebui.repositories.IncomeForcastRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class CumulativePredictiveRevenuePerMonthChart {
     @Autowired
     private StatisticsService statisticsService;
 
+    @Autowired
+    IncomeForcastRepository incomeForcastRepository;
+
     public Chart createCumulativePredictiveRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
         System.out.println("CumulativePredictiveRevenuePerMonthChart.createCumulativePredictiveRevenuePerMonthChart");
         System.out.println("periodStart = " + periodStart + ", periodEnd = " + periodEnd);
@@ -48,7 +53,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         List<Double> dailyForecast = countEmployeesJob.getDailyForecast();
-        int months = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).minusMonths(1));
+        int months = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1));
         System.out.println("Registered months = " + months);
         if(months>12) months = 12;
         System.out.println("Adjusted months = " + months);
@@ -65,6 +70,8 @@ public class CumulativePredictiveRevenuePerMonthChart {
         //String[] monthNames = new String[months];//categories[i++] = periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
 
         int historicalMonthsCount = 0;
+
+        List<IncomeForecast> incomeForecastList = incomeForcastRepository.findByCreatedAndItemtypeOrderBySortAsc(LocalDate.now().minusDays(1), "INCOME");
 
         System.out.println("Known dates: RUNNING");
 
@@ -86,7 +93,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
 
         for (int i = historicalMonthsCount; i < 12; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), NumberUtils.round(dailyForecast.get(i-historicalMonthsCount),0)));
+            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), NumberUtils.round(incomeForecastList.get(i-historicalMonthsCount),0)));
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
             System.out.println("currentDate = " + monthNames[i]);
             System.out.println("statisticsService.getMonthRevenue(currentDate) = " + statisticsService.getMonthRevenue(currentDate));
@@ -105,7 +112,6 @@ public class CumulativePredictiveRevenuePerMonthChart {
             periodStart = periodStart.plusMonths(1);
         }
         */
-
 
         chart.getConfiguration().getxAxis().setCategories(monthNames);
         chart.getConfiguration().addSeries(revenueSeries);

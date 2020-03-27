@@ -10,13 +10,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @RepositoryRestResource(collectionResourceRel = "incomeforecast", path="incomeforecast")
 public interface IncomeForcastRepository extends CrudRepository<IncomeForecast, String> {
 
-    List<IncomeForecast> findByCreatedAndItemtypeOrderBySortAsc(@Param("created") Date created, @Param("itemtype") String itemtype);
+    List<IncomeForecast> findByCreatedAndItemtypeOrderBySortAsc(@Param("created") LocalDate created, @Param("itemtype") String itemtype);
 
     @Transactional
     void deleteByCreatedAndItemtype(@Param("created") Date created, @Param("itemtype") String itemtype);
