@@ -93,7 +93,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
 
         for (int i = historicalMonthsCount; i < 12; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), NumberUtils.round(incomeForecastList.get(i-historicalMonthsCount),0)));
+            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), NumberUtils.round(incomeForecastList.get(i-historicalMonthsCount).getAmount(),0)));
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
             System.out.println("currentDate = " + monthNames[i]);
             System.out.println("statisticsService.getMonthRevenue(currentDate) = " + statisticsService.getMonthRevenue(currentDate));
