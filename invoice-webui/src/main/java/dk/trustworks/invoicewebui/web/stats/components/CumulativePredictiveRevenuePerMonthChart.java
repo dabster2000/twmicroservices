@@ -1,10 +1,8 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Credits;
-import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
@@ -26,7 +24,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
     @Autowired
     private CountEmployeesJob countEmployeesJob;
 
-    public Chart createCumulativePredictiveRevenuePerMonthChart() {
+    public Chart createCumulativePredictiveRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
         System.out.println("CumulativePredictiveRevenuePerMonthChart.createCumulativePredictiveRevenuePerMonthChart");
         Chart chart = new Chart();
         chart.setSizeFull();
@@ -41,28 +39,26 @@ public class CumulativePredictiveRevenuePerMonthChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         List<Double> dailyForecast = countEmployeesJob.getDailyForecast();
-        LocalDate localDate = countEmployeesJob.getStartDate();
-        //Period period = Period.between(countEmployeesJob.getStartDate(), LocalDate.now());
-        int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(localDate, LocalDate.now()))+(dailyForecast.size());
-        System.out.println("countEmployeesJob.getStartDate() = " + countEmployeesJob.getStartDate());
-        System.out.println("period = " + monthsInPeriod);
+        int monthsInPeriod = Math.toIntExact(ChronoUnit.MONTHS.between(periodEnd, periodEnd));
         String[] categories = new String[monthsInPeriod];
         DataSeries revenueSeries = new DataSeries("Revenue");
+        PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
+        plotOptionsArea.setColor(new SolidColor("#123375"));
+        revenueSeries.setPlotOptions(plotOptionsArea);
 
-        int month = localDate.getMonthValue();
+        int month = periodStart.getMonthValue();
         double monthSum = 0.0;
         int i = 0;
-        categories[i++] = localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+        categories[i++] = periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         for (Double amount : dailyForecast) {
-            if(localDate.getMonthValue() != month) {
-                revenueSeries.add(new DataSeriesItem(localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(monthSum)));
-                System.out.println("localDate.format(DateTimeFormatter.ofPattern(\"MMM-yyyy\")) = " + localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")));
-                categories[i++] = localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
+            if(periodStart.getMonthValue() != month) {
+                revenueSeries.add(new DataSeriesItem(periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(monthSum)));
+                categories[i++] = periodStart.minusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
                 monthSum = 0.0;
-                month = localDate.getMonthValue();
+                month = periodStart.getMonthValue();
             }
             monthSum += amount;
-            localDate = localDate.plusMonths(1);
+            periodStart = periodStart.plusMonths(1);
         }
 
         chart.getConfiguration().getxAxis().setCategories(categories);

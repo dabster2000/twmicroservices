@@ -53,10 +53,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private AvgExpensesPerMonthChart avgExpensesPerMonthChart;
 
     @Autowired
-    private AllRevenuePerMonthChart allRevenuePerMonthChart;
+    private CumulativeRevenuePerMonthChart cumulativeRevenuePerMonthChart;
 
     @Autowired
-    private CumulativeRevenuePerMonthChart cumulativeRevenuePerMonthChart;
+    private CumulativePredictiveRevenuePerMonthChart cumulativePredictiveRevenuePerMonthChart;
 
     @Autowired
     private TopGrossingConsultantsChart topGrossingConsultantsChart;
@@ -276,9 +276,13 @@ public class TrustworksStatsLayout extends VerticalLayout {
         Box utilizationPerMonthCard = new Box();
         utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
 
+        Box forecastRevenuePerMonthCard = new Box();
+        forecastRevenuePerMonthCard.getContent().addComponent(cumulativePredictiveRevenuePerMonthChart.createCumulativePredictiveRevenuePerMonthChart(localDateStart, localDateEnd));
+
+        /*
         Box expenseTableCard = new Box();
         expenseTableCard.getContent().addComponents(expenseTable.createRevenuePerConsultantChart());
-
+*/
 
         // Weighted Average Margin Per Month
 
@@ -295,8 +299,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(utilizationPerMonthCard);
         chartRow.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
-                .withComponent(expenseTableCard);
+                .withDisplayRules(12, 12, 6, 6)
+                .withComponent(forecastRevenuePerMonthCard);
     }
 
     public void addConsultantCharts() {

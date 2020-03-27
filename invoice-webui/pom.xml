@@ -497,11 +497,13 @@
             <artifactId>timeseriesForecasting</artifactId>
             <version>1.1.25</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>${nd4j.backend}</artifactId>
             <version>${nd4j.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.neuroph</groupId>
             <artifactId>neuroph-core</artifactId>
@@ -517,6 +519,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
         <!--
         <dependency>
             <groupId>org.nd4j</groupId>

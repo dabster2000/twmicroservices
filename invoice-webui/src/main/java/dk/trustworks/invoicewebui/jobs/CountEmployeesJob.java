@@ -152,7 +152,7 @@ public class CountEmployeesJob {
         }
 
         //System.out.println("sb = " + sb);
-        System.out.println(sb.toString());
+        //System.out.println(sb.toString());
         //System.out.println("localDate = " + localDate);
         //System.out.println("dailyForecast.size() = " + dailyForecast.size());
 
@@ -249,16 +249,13 @@ public class CountEmployeesJob {
             for (User user : getUsersByLocalDate(localDate)) {
                 if(user.getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).get().getAllocation()>0) {
                     consultants++;
-                    System.out.print("" + user.getLastname() + " | ");
                 }
             }
-            System.out.println();
             sb.append(patternizer(dateString)).append(",").append(consultants).append("\n");
             dailyPeopleForecast.add(consultants);
             localDate = localDate.plusMonths(1);
         }
 
-        System.out.println(sb.toString());
 
         Instances data = new Instances(new BufferedReader(new StringReader(sb.toString())));
         if (data.classIndex() == -1)  data.setClassIndex(data.numAttributes() - 1);
@@ -297,11 +294,9 @@ public class CountEmployeesJob {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
-            //System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
-            Integer amount = new Long((predForTarget.predicted() < 0.0) ? 0 : Math.round(predForTarget.predicted())).intValue();
+            int amount = new Long((predForTarget.predicted() < 0.0) ? 0 : Math.round(predForTarget.predicted())).intValue();
             dailyPeopleForecast.add(amount);
             incomeForcastRepository.save(new IncomeForecast(i, amount, "PEOPLE"));
-            System.out.println("amount = " + amount);
         }
 
         log.debug("dailyForecast.size() = " + dailyForecast.size());
@@ -344,7 +339,11 @@ public class CountEmployeesJob {
         return dailyPeopleForecast;
     }
 
+
+
     public LocalDate getStartDate() {
         return startDate;
     }
+
+
 }
