@@ -8,6 +8,7 @@ import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -132,7 +133,7 @@ public class StatisticsCachedService {
                     }
                 }
                 startDate = startDate.plusMonths(1);
-            } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
+            } while (startDate.isBefore(DateUtils.getCurrentFiscalStartDate().plusYears(2))); //LocalDate.now().withDayOfMonth(1).plusYears(1)
         }
 
         // Adjust for availability
@@ -157,7 +158,7 @@ public class StatisticsCachedService {
                 }
 
                 startDate = startDate.plusMonths(1);
-            } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
+            } while (startDate.isBefore(DateUtils.getCurrentFiscalStartDate().plusYears(2)));
         }
 
         return budgetDocumentList;
@@ -193,7 +194,7 @@ public class StatisticsCachedService {
                     workDocumentList.add(workDocument);
                 }
                 startDate = startDate.plusMonths(1);
-            } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
+            } while (startDate.isBefore(DateUtils.getCurrentFiscalStartDate().plusYears(2)));
         }
         return workDocumentList;
     }
@@ -241,7 +242,7 @@ public class StatisticsCachedService {
                 availabilityDocumentList.add(new AvailabilityDocument(user, finalStartDate, capacity, vacation, sickness, userStatus.getType(), userStatus.getStatus()));
 
                 startDate = startDate.plusMonths(1);
-            } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).plusYears(1)));
+            } while (startDate.isBefore(DateUtils.getCurrentFiscalStartDate().plusYears(2)));
         }
         return availabilityDocumentList;
     }
