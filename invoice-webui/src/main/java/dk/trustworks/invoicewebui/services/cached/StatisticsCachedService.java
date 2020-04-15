@@ -90,12 +90,14 @@ public class StatisticsCachedService {
         cachedUserExpenseData = new ArrayList<>();
         cachedIncomeData = new ArrayList<>();
         cachedInvoiceData = new ArrayList<>();
+        cachedExpenseData = new ArrayList<>();
 
         cachedBudgetData = createBudgetData();
         cachedAvailabilityData = createAvailabilityData();
         cachedUserExpenseData = createUserExpenseData();
         cachedIncomeData = createIncomeData();
         cachedInvoiceData = createInvoiceData();
+        cachedExpenseData = createExpenseData();
     }
 
     private List<BudgetDocument> createBudgetData() {
