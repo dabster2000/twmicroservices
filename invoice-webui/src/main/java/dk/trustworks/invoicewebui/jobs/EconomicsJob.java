@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -60,7 +61,12 @@ public class EconomicsJob {
         } while (runThrough.isBefore(LocalDate.now()));
 
         for (String period : periods) {
-            Map<Range<Integer>, List<Collection>> allEntries = economicsAPI.getAllEntries(period);
+            Map<Range<Integer>, List<Collection>> allEntries;
+            try {
+                allEntries = economicsAPI.getAllEntries(period);
+            } catch (RestClientException e) {
+                continue;
+            }
 
             List<Invoice> invoiceList = invoiceService.findAll();
 
