@@ -7,6 +7,7 @@ import dk.trustworks.invoicewebui.network.clients.model.economics.EconomicsInvoi
 import dk.trustworks.invoicewebui.repositories.ExpenseDetailsRepository;
 import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -49,6 +50,12 @@ public class EconomicsAPI {
     @Autowired
     private ExpenseDetailsRepository expenseDetailsRepository;
 
+    @Value("${XAppSecretToken}")
+    private String xAppSecretToken;
+
+    @Value("${xAgreementGrantToken}")
+    private String xAgreementGrantToken;
+
     public List<Collection> getInvoices(int[] accounts, String date) {
         MappingJackson2HttpMessageConverter jsonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
         jsonHttpMessageConverter.getObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -66,8 +73,8 @@ public class EconomicsAPI {
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Content-Type", "application/json");
-        requestHeaders.add("X-AppSecretToken", "GCCmf2TIXfrY3D9jEiqss8gUPa59rvBFbYAEjF1h7zQ1");
-        requestHeaders.add("X-AgreementGrantToken", "B03oSVDidmk53uOIdMV9ptnI2hlVQykGdTvmisrtFq01");
+        requestHeaders.add("X-AppSecretToken", xAppSecretToken);
+        requestHeaders.add("X-AgreementGrantToken", xAgreementGrantToken);
 
         HttpEntity request = new HttpEntity(requestHeaders);
 
@@ -109,8 +116,8 @@ public class EconomicsAPI {
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Content-Type", "application/json");
-        requestHeaders.add("X-AppSecretToken", "GCCmf2TIXfrY3D9jEiqss8gUPa59rvBFbYAEjF1h7zQ1");
-        requestHeaders.add("X-AgreementGrantToken", "B03oSVDidmk53uOIdMV9ptnI2hlVQykGdTvmisrtFq01");
+        requestHeaders.add("X-AppSecretToken", xAppSecretToken);
+        requestHeaders.add("X-AgreementGrantToken", xAgreementGrantToken);
 
         HttpEntity request = new HttpEntity(requestHeaders);
 

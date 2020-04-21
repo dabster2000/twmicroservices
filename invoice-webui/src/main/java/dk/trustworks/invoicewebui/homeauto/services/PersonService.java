@@ -45,12 +45,13 @@ public class PersonService {
     }
 
     @RequestMapping("/birthday")
-    public java.util.List<List> BirthdayList() {
-        java.util.List<List> list = new Root().getList();
+    public Root BirthdayList() {
+        Root root = new Root();
+        java.util.List<List> list = root.getList();
         for (User currentlyEmployedUser : userService.findCurrentlyEmployedUsers()) {
             list.add(new List(currentlyEmployedUser.getFirstname() + " "+ currentlyEmployedUser.getLastname(), currentlyEmployedUser.getBirthday().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
         }
-        return list;
+        return root;
     }
 
     @RequestMapping("/personleft")

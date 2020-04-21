@@ -96,6 +96,9 @@ dropboxToken: ${DROPBOXTOKEN:xx}
 
 apiAiToken: ${APIAITOKEN:xx}
 
+XAppSecretToken: ${XAPPSECRETTOKEN:xx}
+XAgreementGrantToken: ${XAGREEMENTGRANTTOKEN:xx}
+
 intra:
   email:
     onine: ${EMAILONLINE:true}
