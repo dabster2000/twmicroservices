@@ -53,7 +53,7 @@ public class EconomicsAPI {
     @Value("${XAppSecretToken}")
     private String xAppSecretToken;
 
-    @Value("${xAgreementGrantToken}")
+    @Value("${XAgreementGrantToken}")
     private String xAgreementGrantToken;
 
     public List<Collection> getInvoices(int[] accounts, String date) {
