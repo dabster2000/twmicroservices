@@ -117,13 +117,15 @@ public class EconomicsAPI {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Content-Type", "application/json");
         requestHeaders.add("X-AppSecretToken", xAppSecretToken);
+        System.out.println("xAppSecretToken = " + xAppSecretToken);
         requestHeaders.add("X-AgreementGrantToken", xAgreementGrantToken);
+        System.out.println("xAgreementGrantToken = " + xAgreementGrantToken);
 
         HttpEntity request = new HttpEntity(requestHeaders);
 
         int page = 0;
         String url = "https://restapi.e-conomic.com/accounting-years/" + date + "/entries?pagesize=1000&skippages="+page;
-
+        System.out.println("EconomicsAPI.getAllEntries");
         List<ExpenseDetails> expenseDetails = new ArrayList<>();
 
         do {
@@ -133,7 +135,6 @@ public class EconomicsAPI {
                     request,
                     EconomicsInvoice.class
             );
-
 
             EconomicsInvoice economicsInvoice = response.getBody();
 

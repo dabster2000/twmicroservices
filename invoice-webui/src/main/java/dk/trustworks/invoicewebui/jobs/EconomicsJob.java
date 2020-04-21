@@ -65,6 +65,7 @@ public class EconomicsJob {
             try {
                 allEntries = economicsAPI.getAllEntries(period);
             } catch (RestClientException e) {
+                e.printStackTrace();
                 continue;
             }
 
