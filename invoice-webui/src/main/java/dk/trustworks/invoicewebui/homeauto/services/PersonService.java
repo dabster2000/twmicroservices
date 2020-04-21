@@ -1,19 +1,26 @@
 package dk.trustworks.invoicewebui.homeauto.services;
 
+import dk.trustworks.invoicewebui.homeauto.model.List;
 import dk.trustworks.invoicewebui.homeauto.model.Person;
 import dk.trustworks.invoicewebui.homeauto.model.Room;
-import org.springframework.web.bind.annotation.PostMapping;
+import dk.trustworks.invoicewebui.homeauto.model.Root;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 public class PersonService {
+
+    @Autowired UserService userService;
 
     private final Map<String, Person> personMap;
     private final Map<String, Room> roomMap;
@@ -35,6 +42,15 @@ public class PersonService {
         if(!personMap.containsKey(name)) personMap.put(name, new Person(name));
         if(!roomMap.containsKey(room)) roomMap.put(room, new Room(room));
         personMap.get(name).addToRoom(roomMap.get(room));
+    }
+
+    @RequestMapping("/birthday")
+    public java.util.List<List> BirthdayList() {
+        java.util.List<List> list = new Root().getList();
+        for (User currentlyEmployedUser : userService.findCurrentlyEmployedUsers()) {
+            list.add(new List(currentlyEmployedUser.getFirstname() + " "+ currentlyEmployedUser.getLastname(), currentlyEmployedUser.getBirthday().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+        }
+        return list;
     }
 
     @RequestMapping("/personleft")
