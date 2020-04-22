@@ -9,7 +9,6 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.network.rest.KnowledgeRoleRestService;
@@ -27,6 +26,7 @@ import dk.trustworks.invoicewebui.web.employee.components.cards.EmployeeContactI
 import dk.trustworks.invoicewebui.web.employee.components.cards.KeyPurposeHeadlinesCardController;
 import dk.trustworks.invoicewebui.web.employee.components.charts.AmbitionSpiderChart;
 import dk.trustworks.invoicewebui.web.employee.components.charts.BillableConsultantHoursPerMonthChart;
+import dk.trustworks.invoicewebui.web.employee.components.charts.VacationPerYearChart;
 import dk.trustworks.invoicewebui.web.employee.components.parts.*;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.DocumentTab;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.ItBudgetTab;
@@ -86,6 +86,8 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart;
 
+    private final VacationPerYearChart vacationPerYearChart;
+
     private final ItBudgetTab itBudgetTab;
 
     private final DocumentTab documentTab;
@@ -106,7 +108,7 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, MicroCourseStudentRepository microCourseStudentRepository, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, MicroCourseStudentRepository microCourseStudentRepository, VacationPerYearChart vacationPerYearChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
         this.consultantRepository = consultantRepository;
@@ -125,6 +127,7 @@ public class EmployeeLayout extends VerticalLayout {
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
         this.knowledgeRoleRestService = knowledgeRoleRestService;
         this.microCourseStudentRepository = microCourseStudentRepository;
+        this.vacationPerYearChart = vacationPerYearChart;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
         this.employeeContactInfoCardController = employeeContactInfoCardController;
@@ -196,6 +199,7 @@ public class EmployeeLayout extends VerticalLayout {
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
+        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(vacationPerYearChart.createExpensePerMonthChart(user)));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthReport);
 
         for (Note note : notesRepository.findByUseruuidOrderByNotedateDesc(user.getUuid())) {
