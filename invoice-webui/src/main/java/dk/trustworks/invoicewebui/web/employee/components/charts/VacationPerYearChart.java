@@ -46,6 +46,9 @@ public class VacationPerYearChart {
     private VacationAPI vacationAPI;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private WorkService workService;
 
     public Chart createExpensePerMonthChart(User user) {
@@ -88,7 +91,7 @@ public class VacationPerYearChart {
         poc3.setColor(new SolidColor("#98E6C4"));
         hoursLeftSeries.setPlotOptions(poc3);
 
-        List<VacationPeriod> vacationPeriods = vacationAPI.getVacationPeriods(user, workService.findVacationByUser(user));
+        List<VacationPeriod> vacationPeriods = vacationAPI.getVacationPeriods(userService.findByUsername("emilie.duedahl"), workService.findVacationByUser(userService.findByUsername("emilie.duedahl")));
 
         String[] monthNames = vacationPeriods.stream().map(VacationPeriod::getFrom).sorted().toArray(String[]::new);
 
