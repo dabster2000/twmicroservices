@@ -229,7 +229,7 @@ public class   DashboardView extends VerticalLayout implements View {
         // *** RIGHT COLUMN ***
         rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
         rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
-        //rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(cateringCard);
+        // rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(cateringCard);
         rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(vacationCard);
 
 

@@ -208,7 +208,7 @@ public class DashboardBoxCreator {
         }
          */
 
-        double percentBillableHours = Math.round((hoursSumAvg / lastHoursSumAvg) * 100) - 100;
+        double percentBillableHours = Math.abs(Math.round((hoursSumAvg / lastHoursSumAvg) * 100) - 100);
         String hoursMoreOrLess = "more";
         if(percentBillableHours < 0) hoursMoreOrLess = "less";
 
@@ -239,7 +239,7 @@ public class DashboardBoxCreator {
         String numberOfConsultantsMoreOrLess = "more";
         if(numberOfConsultantsPerProject < numberOfConsultantsPerProjectOld) numberOfConsultantsMoreOrLess = "less";
 
-        double percentNumberOfConsultantsPerProject = Math.round((numberOfConsultantsPerProject / numberOfConsultantsPerProjectOld) * 100) - 100;
+        double percentNumberOfConsultantsPerProject = Math.abs(Math.round((numberOfConsultantsPerProject / numberOfConsultantsPerProjectOld) * 100) - 100);
 
         /*
         TopCardDesign consultantsCard4 = new TopCardDesign();
