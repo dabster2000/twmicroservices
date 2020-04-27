@@ -11,6 +11,8 @@ import com.vaadin.component.VaadinClipboardImpl;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -30,6 +32,7 @@ import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -37,6 +40,9 @@ import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.time.*;
 import java.time.temporal.*;
 import java.util.*;
@@ -171,8 +177,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             usedBudgetChartCard.getLblTitle().setValue("Used Budget");
             usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
 
-            usedBudgetChartCard.getHlTitleBar().addComponent(
-                    new MButton("export", event -> {
+            MButton mButton = new MButton("export"/*, event -> {
                         StringBuilder result = new StringBuilder("consultant;project;task;date;hours");
                         for (Work work : contractService.getWorkOnContractByUser(contract)) {
                             result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(work.getWorkduration()).append("\n");
@@ -186,15 +191,29 @@ public class ContractDetailLayout extends ResponsiveLayout {
                                 Notification.show( "Copy has been failed!.", Notification.Type.ERROR_MESSAGE);
                             }
                         });
-                    })
-                            .withStyleName("flat", "borderless")
-                            .withFullHeight()
-            );
+                    }*/)
+                    .withStyleName("flat", "borderless")
+                    .withFullHeight();
+            StreamResource myResource = createResource(contract);
+            FileDownloader fileDownloader = new FileDownloader(myResource);
+            fileDownloader.extend(mButton);
+
+            usedBudgetChartCard.getHlTitleBar().addComponent(mButton);
             if(contract.getProjects().size()>0 && contract.getContractConsultants().size()>0) createUsedBudgetChartCard(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(usedBudgetChartCard);
         }
+    }
+
+    private StreamResource createResource(Contract contract) {
+        return new StreamResource((StreamResource.StreamSource) () -> {
+            StringBuilder result = new StringBuilder("consultant;project;task;date;hours");
+            for (Work work : contractService.getWorkOnContractByUser(contract)) {
+                result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(work.getWorkduration()).append("\n");
+            }
+            return IOUtils.toInputStream(result.toString());
+        }, "data.csv");
     }
 
     private void createSubContractCard(Contract contract, int width) {

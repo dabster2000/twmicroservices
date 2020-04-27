@@ -145,7 +145,7 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         board.setSizeFull();
         board.setScrollable(true);
-        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyWorkingUsers().size() - 1))));
+        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).size() - 1))));
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto((Math.random()<0.5)?"images/cards/knowledge/lifecycle.png":"images/cards/knowledge/pejlemaerker.png");
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
