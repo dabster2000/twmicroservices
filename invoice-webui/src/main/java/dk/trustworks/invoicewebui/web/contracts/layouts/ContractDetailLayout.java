@@ -140,6 +140,16 @@ public class ContractDetailLayout extends ResponsiveLayout {
             burnrateChartCard = new Card();
             burnrateChartCard.getLblTitle().setValue("Burn Rate");
             burnrateChartCard.getContent().setHeight(350, Unit.PIXELS);
+
+            MButton mButton = new MButton("export")
+                    .withStyleName("flat", "borderless")
+                    .withFullHeight();
+            StreamResource myResource = createResource(contract);
+            FileDownloader fileDownloader = new FileDownloader(myResource);
+            fileDownloader.extend(mButton);
+
+            burnrateChartCard.getHlTitleBar().addComponent(mButton);
+
             if(contract.getProjects().size()>0 && contract.getContractConsultants().size()>0) createBurnrateChart(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
