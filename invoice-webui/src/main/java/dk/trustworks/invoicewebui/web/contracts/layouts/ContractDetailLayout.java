@@ -177,21 +177,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             usedBudgetChartCard.getLblTitle().setValue("Used Budget");
             usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
 
-            MButton mButton = new MButton("export"/*, event -> {
-                        StringBuilder result = new StringBuilder("consultant;project;task;date;hours");
-                        for (Work work : contractService.getWorkOnContractByUser(contract)) {
-                            result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(work.getWorkduration()).append("\n");
-                        }
-
-                        VaadinClipboard vaadinClipboard = VaadinClipboardImpl.GetInstance();
-                        vaadinClipboard.copyToClipboard(result.toString(), copySuccess -> {
-                            if(copySuccess) {
-                                Notification.show( "Work CSV data has been copied to clipboard.");
-                            } else {
-                                Notification.show( "Copy has been failed!.", Notification.Type.ERROR_MESSAGE);
-                            }
-                        });
-                    }*/)
+            MButton mButton = new MButton("export")
                     .withStyleName("flat", "borderless")
                     .withFullHeight();
             StreamResource myResource = createResource(contract);
@@ -208,7 +194,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private StreamResource createResource(Contract contract) {
         return new StreamResource((StreamResource.StreamSource) () -> {
-            StringBuilder result = new StringBuilder("consultant;project;task;date;hours");
+            StringBuilder result = new StringBuilder("consultant;project;task;date;hours\n");
             for (Work work : contractService.getWorkOnContractByUser(contract)) {
                 result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(work.getWorkduration()).append("\n");
             }
