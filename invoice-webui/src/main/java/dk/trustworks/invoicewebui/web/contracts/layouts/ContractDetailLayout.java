@@ -6,6 +6,8 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.model.style.Style;
+import com.vaadin.component.VaadinClipboard;
+import com.vaadin.component.VaadinClipboardImpl;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
@@ -168,6 +170,26 @@ public class ContractDetailLayout extends ResponsiveLayout {
             usedBudgetChartCard = new Card();
             usedBudgetChartCard.getLblTitle().setValue("Used Budget");
             usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
+
+            usedBudgetChartCard.getHlTitleBar().addComponent(
+                    new MButton("export", event -> {
+                        StringBuilder result = new StringBuilder("consultant;project;task;date;hours");
+                        for (Work work : contractService.getWorkOnContractByUser(contract)) {
+                            result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(work.getWorkduration()).append("\n");
+                        }
+
+                        VaadinClipboard vaadinClipboard = VaadinClipboardImpl.GetInstance();
+                        vaadinClipboard.copyToClipboard(result.toString(), copySuccess -> {
+                            if(copySuccess) {
+                                Notification.show( "Work CSV data has been copied to clipboard.");
+                            } else {
+                                Notification.show( "Copy has been failed!.", Notification.Type.ERROR_MESSAGE);
+                            }
+                        });
+                    })
+                            .withStyleName("flat", "borderless")
+                            .withFullHeight()
+            );
             if(contract.getProjects().size()>0 && contract.getContractConsultants().size()>0) createUsedBudgetChartCard(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
