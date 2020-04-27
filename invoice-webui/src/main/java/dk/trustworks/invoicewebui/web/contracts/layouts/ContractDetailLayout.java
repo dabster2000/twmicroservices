@@ -29,10 +29,12 @@ import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -43,6 +45,7 @@ import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.text.NumberFormat;
 import java.time.*;
 import java.time.temporal.*;
 import java.util.*;
@@ -206,7 +209,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         return new StreamResource((StreamResource.StreamSource) () -> {
             StringBuilder result = new StringBuilder("consultant;project;task;date;hours\n");
             for (Work work : contractService.getWorkOnContractByUser(contract)) {
-                result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(work.getWorkduration()).append("\n");
+                result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(NumberFormat.getInstance(new Locale("da", "DK")).format(work.getWorkduration())).append("\n");
             }
             return IOUtils.toInputStream(result.toString());
         }, "data.csv");
