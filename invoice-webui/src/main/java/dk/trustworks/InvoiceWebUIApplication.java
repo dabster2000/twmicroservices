@@ -2,6 +2,7 @@ package dk.trustworks;
 
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.vaadin.spring.annotation.EnableVaadin;
+import com.vaadin.ui.JavaScript;
 import dk.trustworks.invoicewebui.events.WorkNotificationConsumer;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
@@ -97,6 +98,14 @@ public class InvoiceWebUIApplication {
         //statisticsService.run();
         //System.exit(0);
 
+        // I am reloading css to overwrite previous cache
+        JavaScript.getCurrent().execute(
+                "var randomNum = Math.random();" +
+                        "var link = document.createElement('link');" +
+                        "link.href = './VAADIN/themes/invoice/styles.css?'+randomNum;" +
+                        "link.type = 'text/css';" + "link.rel = 'stylesheet';" +
+                        "link.media = 'screen,print';" +
+                        "document.getElementsByTagName('head')[0].appendChild( link );");
 
         log.info("InitDemoApplication initialization logic ...");
         //test();
