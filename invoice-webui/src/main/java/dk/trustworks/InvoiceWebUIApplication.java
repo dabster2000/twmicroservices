@@ -99,6 +99,7 @@ public class InvoiceWebUIApplication {
         //System.exit(0);
 
         // I am reloading css to overwrite previous cache
+        /*
         JavaScript.getCurrent().execute(
                 "var randomNum = Math.random();" +
                         "var link = document.createElement('link');" +
@@ -106,7 +107,7 @@ public class InvoiceWebUIApplication {
                         "link.type = 'text/css';" + "link.rel = 'stylesheet';" +
                         "link.media = 'screen,print';" +
                         "document.getElementsByTagName('head')[0].appendChild( link );");
-
+*/
         log.info("InitDemoApplication initialization logic ...");
         //test();
         eventBus.on($("notificationConsumer"), workNotificationConsumer);
