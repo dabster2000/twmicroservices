@@ -3,7 +3,6 @@ package dk.trustworks.invoicewebui.homeauto.services;
 import dk.trustworks.invoicewebui.homeauto.model.List;
 import dk.trustworks.invoicewebui.homeauto.model.Person;
 import dk.trustworks.invoicewebui.homeauto.model.Room;
-import dk.trustworks.invoicewebui.homeauto.model.Root;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,13 +45,13 @@ public class PersonService {
     }
 
     @RequestMapping("/birthday")
-    public Root BirthdayList() {
-        Root root = new Root();
-        java.util.List<List> list = root.getList();
+    public java.util.List<List> BirthdayList() {
+        //Root root = new Root();
+        java.util.List<List> list = new ArrayList<>();// root.getList();
         for (User currentlyEmployedUser : userService.findCurrentlyEmployedUsers()) {
             list.add(new List(currentlyEmployedUser.getFirstname() + " "+ currentlyEmployedUser.getLastname(), currentlyEmployedUser.getBirthday().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
         }
-        return root;
+        return list;
     }
 
     @RequestMapping("/personleft")
