@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.services.ContractService.getContractsByDate;
@@ -220,6 +218,11 @@ public class StatisticsCachedService {
     private List<AvailabilityDocument> createAvailabilityData() {
         List<AvailabilityDocument> availabilityDocumentList = new ArrayList<>();
 
+        Map<String, Capacity> capacityMap = new HashMap<>();
+        for (Capacity capacity : userService.calculateCapacityByPeriod(LocalDate.of(2014, 7, 1), DateUtils.getCurrentFiscalStartDate().plusYears(2))) {
+            capacityMap.put(capacity.getUseruuid()+":"+stringIt(capacity.getMonth()), capacity);
+            System.out.println(capacity.getUseruuid()+":"+stringIt(capacity.getMonth()));
+        }
         for (User user : userService.findAll()) {
             List<Work> vacationByUser = workService.findVacationByUser(user);
             List<Work> sicknessByUser = workService.findSicknessByUser(user);
@@ -238,7 +241,9 @@ public class StatisticsCachedService {
                             if(work.getRegistered().getDayOfWeek().getValue() == DayOfWeek.FRIDAY.getValue()) return work.getWorkduration()-2.0;
                             return work.getWorkduration();
                         }).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
-                int capacity = userService.calculateCapacityByMonthByUser(user.getUuid(), stringIt(finalStartDate)); // Ofte 37 timer på en uge
+                //int capacity = userService.calculateCapacityByMonthByUser(user.getUuid(), stringIt(finalStartDate)); // Ofte 37 timer på en uge
+                int capacity = capacityMap.getOrDefault(user.getUuid()+":"+stringIt(finalStartDate), new Capacity(user.getUuid(), finalStartDate, 0)).getTotalAllocation();
+
                 UserStatus userStatus = userService.getUserStatus(user, finalStartDate);
 
                 availabilityDocumentList.add(new AvailabilityDocument(user, finalStartDate, capacity, vacation, sickness, userStatus.getType(), userStatus.getStatus()));
@@ -246,6 +251,7 @@ public class StatisticsCachedService {
                 startDate = startDate.plusMonths(1);
             } while (startDate.isBefore(DateUtils.getCurrentFiscalStartDate().plusYears(2)));
         }
+        System.out.println("------- CAPACITY WRITE DONE --------");
         return availabilityDocumentList;
     }
 

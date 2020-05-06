@@ -6,6 +6,8 @@ import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.dto.Capacity;
+import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -128,6 +131,10 @@ public class UserService implements InitializingBean {
         return userRestService.calculateCapacityByMonthByUser(useruuid, statusdate);
     }
 
+    public List<Capacity> calculateCapacityByPeriod(LocalDate fromDate, LocalDate toDate) {
+        return userRestService.calculateCapacityByPeriod(fromDate, toDate);
+    }
+
     public List<UserStatus> findByUserAndTypeAndStatusOrderByStatusdateAsc(User user, ConsultantType type, StatusType status) {
         return userRestService.findOne(user.getUuid()).getStatuses()
                 .stream()
@@ -193,7 +200,7 @@ public class UserService implements InitializingBean {
         return instance;
     }
 
-    public boolean login(String username, String password) {
+    public LoginToken login(String username, String password) {
         return userRestService.login(username, password);
     }
 

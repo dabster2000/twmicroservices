@@ -8,7 +8,9 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.network.clients.LoginClient;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,12 +26,13 @@ public class LoginImpl extends LoginDesign {
     private static String NAME_COOKIE = "trustworks_login";
 
     @Autowired
-    public LoginImpl(LoginClient loginClient) {
+    public LoginImpl(LoginClient loginClient, UserService userService) {
         System.out.println("LoginImpl.LoginImpl");
 
         getImgTop().setSource(new ThemeResource("images/password-card.jpg"));
         getBtnLogin().addClickListener(clickEvent -> {
-            User user = loginClient.login(getTxtUsername().getValue(), getTxtPassword().getValue());
+            LoginToken loginToken = loginClient.login(getTxtUsername().getValue(), getTxtPassword().getValue());
+            User user = userService.findByUsername(getTxtUsername().getValue());
             if(user == null) {
                 Notification.show("Login failed",
                         "Wrong username or password!",
@@ -42,7 +45,7 @@ public class LoginImpl extends LoginDesign {
                         Notification.Type.WARNING_MESSAGE);
                 return;
             }
-            UserSession userSession = new UserSession(user, user.getRoleList());
+            UserSession userSession = new UserSession(user, loginToken, user.getRoleList());
             VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
             Cookie newCookie = new Cookie(NAME_COOKIE, user.getUuid());
             newCookie.setMaxAge(2592000);

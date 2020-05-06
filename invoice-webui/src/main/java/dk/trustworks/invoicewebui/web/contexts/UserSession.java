@@ -2,6 +2,7 @@ package dk.trustworks.invoicewebui.web.contexts;
 
 
 import dk.trustworks.invoicewebui.model.Role;
+import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.model.User;
 
@@ -14,10 +15,15 @@ import java.util.List;
 public class UserSession {
 
     private User user;
+    private LoginToken loginToken;
     private List<Role> roles;
 
-    public UserSession(User user, List<Role> roles) {
+    public UserSession() {
+    }
+
+    public UserSession(User user, LoginToken loginToken, List<Role> roles) {
         this.user = user;
+        this.loginToken = loginToken;
         this.roles = roles;
     }
 
@@ -37,8 +43,16 @@ public class UserSession {
         this.roles = roles;
     }
 
+    public LoginToken getLoginToken() {
+        return loginToken;
+    }
+
+    public void setLoginToken(LoginToken loginToken) {
+        this.loginToken = loginToken;
+    }
+
     public boolean hasRole(RoleType roleType) {
-        return roles.stream().map(Role::getRole).filter(roleType::equals).findFirst().isPresent();
+        return roles.stream().map(Role::getRole).anyMatch(roleType::equals);
     }
 
     @Override

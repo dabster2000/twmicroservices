@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.network.clients;
 
-import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +15,9 @@ public class LoginClient {
     @Autowired
     private UserService userService;
 
-    public User login(String username, String password) {
+    public LoginToken login(String username, String password) {
         logger.info(String.format("User.login(%s) attempt ", username));
-        User user = userService.findByUsername(username);
-        return userService.login(username, password)?user:null;
+        return userService.login(username, password);
         /*
         if(user.getPassword().trim().equals("")) {
             logger.info("Failed login attempt (no password) by "+user.getUsername());

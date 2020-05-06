@@ -99,7 +99,7 @@ public class Authorizer {
         Cookie cookie = getCookieByName(NAME_COOKIE);
         if (cookie != null) {
             User user = userService.findByUUID(cookie.getValue());
-            UserSession userSession = new UserSession(user, user.getRoleList());
+            UserSession userSession = new UserSession(user, null, user.getRoleList());
             VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
             return true;
         }
