@@ -85,9 +85,7 @@ public class UserRestService {
     @Cacheable("users")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, String... consultantTypes) {
         String url = userServiceUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes);
-        System.out.println("url = " + url);
         ResponseEntity<User[]> result = secureCall(url, GET, User[].class);
-        System.out.println("result.getBody().length = " + result.getBody().length);
         return Arrays.asList(result.getBody());
     }
 
@@ -99,13 +97,8 @@ public class UserRestService {
     }
 
     public List<Capacity> calculateCapacityByPeriod(LocalDate fromDate, LocalDate toDate) {
-        System.out.println("UserRestService.calculateCapacityByPeriod");
-        System.out.println("fromDate = " + fromDate + ", toDate = " + toDate);
         String url = userServiceUrl+"/users/command/calculateCapacityByPeriod?fromdate="+ stringIt(fromDate) +"&todate="+ stringIt(toDate);
-        System.out.println("url = " + url);
-        //ResponseEntity<Capacity[]> result = secureCall(url, GET, Capacity[].class);
         ResponseEntity<String> responseEntity = secureCall(url, GET, String.class);
-        System.out.println("responseEntity.getBody() = " + responseEntity.getBody());
         ObjectMapper mapper = new ObjectMapper();
         Capacity[] result = new Capacity[0];
         try {
@@ -113,10 +106,6 @@ public class UserRestService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for (Capacity capacity : result) {
-            System.out.println("capacity = " + capacity);
-        }
-
         return Arrays.asList(result); //restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
     }
 
