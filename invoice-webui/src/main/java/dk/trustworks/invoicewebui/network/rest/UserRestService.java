@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.network.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -83,11 +85,13 @@ public class UserRestService {
     @Cacheable("users")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, String... consultantTypes) {
         String url = userServiceUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes);
+        System.out.println("url = " + url);
         ResponseEntity<User[]> result = secureCall(url, GET, User[].class);
+        System.out.println("result.getBody().length = " + result.getBody().length);
         return Arrays.asList(result.getBody());
     }
 
-    //@Cacheable("users")
+    @Cacheable("users")
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
         String url = userServiceUrl+"/users/command/calculateCapacityByMonthByUser?useruuid="+useruuid+"&statusdate="+statusdate;
         ResponseEntity<IntegerJsonResponse> result = secureCall(url, GET, IntegerJsonResponse.class);
@@ -95,9 +99,25 @@ public class UserRestService {
     }
 
     public List<Capacity> calculateCapacityByPeriod(LocalDate fromDate, LocalDate toDate) {
+        System.out.println("UserRestService.calculateCapacityByPeriod");
+        System.out.println("fromDate = " + fromDate + ", toDate = " + toDate);
         String url = userServiceUrl+"/users/command/calculateCapacityByPeriod?fromdate="+ stringIt(fromDate) +"&todate="+ stringIt(toDate);
-        ResponseEntity<Capacity[]> result = secureCall(url, GET, Capacity[].class);
-        return Arrays.asList(result.getBody()); //restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
+        System.out.println("url = " + url);
+        //ResponseEntity<Capacity[]> result = secureCall(url, GET, Capacity[].class);
+        ResponseEntity<String> responseEntity = secureCall(url, GET, String.class);
+        System.out.println("responseEntity.getBody() = " + responseEntity.getBody());
+        ObjectMapper mapper = new ObjectMapper();
+        Capacity[] result = new Capacity[0];
+        try {
+            result = mapper.readValue(responseEntity.getBody(), Capacity[].class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (Capacity capacity : result) {
+            System.out.println("capacity = " + capacity);
+        }
+
+        return Arrays.asList(result); //restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
     }
 
     @CacheEvict(value = "users", allEntries = true)

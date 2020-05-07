@@ -56,7 +56,7 @@ public class Capacity {
         return "Capacity{" +
                 "useruuid='" + useruuid + '\'' +
                 ", month=" + month +
-                ", capacity=" + totalAllocation +
+                ", totalAllocation=" + totalAllocation +
                 '}';
     }
 }

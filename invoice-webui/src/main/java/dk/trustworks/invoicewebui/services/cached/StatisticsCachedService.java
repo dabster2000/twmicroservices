@@ -217,12 +217,14 @@ public class StatisticsCachedService {
 
     private List<AvailabilityDocument> createAvailabilityData() {
         List<AvailabilityDocument> availabilityDocumentList = new ArrayList<>();
-
+        System.out.println("---- SAVE ----");
         Map<String, Capacity> capacityMap = new HashMap<>();
         for (Capacity capacity : userService.calculateCapacityByPeriod(LocalDate.of(2014, 7, 1), DateUtils.getCurrentFiscalStartDate().plusYears(2))) {
-            capacityMap.put(capacity.getUseruuid()+":"+stringIt(capacity.getMonth()), capacity);
-            System.out.println(capacity.getUseruuid()+":"+stringIt(capacity.getMonth()));
+            capacityMap.put(capacity.getUseruuid()+":"+stringIt(capacity.getMonth().withDayOfMonth(1)), capacity);
+            System.out.println(capacity.getUseruuid()+":"+stringIt(capacity.getMonth().withDayOfMonth(1)));
+            System.out.println("capacity = " + capacity);
         }
+        System.out.println("---- LOAD ----");
         for (User user : userService.findAll()) {
             List<Work> vacationByUser = workService.findVacationByUser(user);
             List<Work> sicknessByUser = workService.findSicknessByUser(user);
@@ -242,8 +244,10 @@ public class StatisticsCachedService {
                             return work.getWorkduration();
                         }).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
                 //int capacity = userService.calculateCapacityByMonthByUser(user.getUuid(), stringIt(finalStartDate)); // Ofte 37 timer på en uge
-                int capacity = capacityMap.getOrDefault(user.getUuid()+":"+stringIt(finalStartDate), new Capacity(user.getUuid(), finalStartDate, 0)).getTotalAllocation();
-
+                int capacity = capacityMap.getOrDefault(user.getUuid()+":"+stringIt(finalStartDate.withDayOfMonth(1)), new Capacity(user.getUuid(), finalStartDate, 0)).getTotalAllocation();
+                System.out.println("user.getUuid() = " + user.getUuid() + ":" + stringIt(finalStartDate.withDayOfMonth(1)));
+                System.out.println("capacity = " + capacity);
+                System.out.println("capacityMap.containsKey() = " + capacityMap.get(user.getUuid()+":"+stringIt(finalStartDate.withDayOfMonth(1))));
                 UserStatus userStatus = userService.getUserStatus(user, finalStartDate);
 
                 availabilityDocumentList.add(new AvailabilityDocument(user, finalStartDate, capacity, vacation, sickness, userStatus.getType(), userStatus.getStatus()));
