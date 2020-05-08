@@ -91,6 +91,7 @@ public class EconomicsJob {
     }
 
     //@Scheduled(cron = "0 0 23 * * ?")
+    /*
     public void synchronizeInvoiceBookingDates() {
         List<Invoice> invoiceList = invoiceService.findAll();
 
@@ -99,6 +100,8 @@ public class EconomicsJob {
         }
     }
 
+     */
+/*
     private void fetchAccountYear(List<Invoice> invoiceList, String accountPeriod) {
         economicsAPI.getInvoices(EconomicsAPI.OMSAETNING, accountPeriod)
                 .forEach(collection -> invoiceList.stream().filter(invoice -> invoice.invoicenumber == collection.getInvoiceNumber())
@@ -109,7 +112,10 @@ public class EconomicsJob {
                         }));
     }
 
+ */
+
     //@Scheduled(cron = "0 0 22 * * ?")
+    /*
     public void synchronizeExpenses() {
 
         LocalDate runThrough = LocalDate.of(2016, 1, 1);
@@ -128,6 +134,8 @@ public class EconomicsJob {
         }
     }
 
+     */
+/*
     private Map<LocalDate, Expense> getExpenseMap(ExcelExpenseType excelType, int[] type, String year) {
         Map<LocalDate, Expense> map = new HashMap<>();
         economicsAPI.getInvoices(type, year).forEach(collection -> {
@@ -137,6 +145,8 @@ public class EconomicsJob {
         });
         return map;
     }
+
+ */
 
     private Map<LocalDate, Expense> getExpenseMap(ExcelExpenseType excelType, List<Collection> collectionList) {
         Map<LocalDate, Expense> map = new HashMap<>();

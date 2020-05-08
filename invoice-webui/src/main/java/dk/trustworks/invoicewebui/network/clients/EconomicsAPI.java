@@ -55,7 +55,7 @@ public class EconomicsAPI {
 
     @Value("${XAgreementGrantToken}")
     private String xAgreementGrantToken;
-
+/*
     public List<Collection> getInvoices(int[] accounts, String date) {
         MappingJackson2HttpMessageConverter jsonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
         jsonHttpMessageConverter.getObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -68,6 +68,8 @@ public class EconomicsAPI {
         return collectionList;
     }
 
+ */
+/*
     private List<Collection> getCollections(String date, int account) {
         List<Collection> collectionResultList = new ArrayList<>();
 
@@ -89,18 +91,15 @@ public class EconomicsAPI {
             );
 
             EconomicsInvoice economicsInvoice = response.getBody();
-            /*
-            economicsInvoice.getCollection().forEach(collection -> {
-                expenseDetailsRepository.save(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), collection.getText()));
-            });
 
-             */
             collectionResultList.addAll(economicsInvoice.getCollection());
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);
 
         return collectionResultList;
     }
+
+ */
 
     public Map<Range<Integer>, List<Collection>> getAllEntries(String date) {
         Map<Range<Integer>, List<Collection>> collectionResultMap = new HashMap<>();

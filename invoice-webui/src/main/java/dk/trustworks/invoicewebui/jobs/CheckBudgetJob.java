@@ -6,12 +6,14 @@ import allbegray.slack.type.Field;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.Capacity;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,8 @@ import java.time.format.TextStyle;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 
 @Component
@@ -190,10 +194,15 @@ public class CheckBudgetJob {
     public int[] capacitypermonthbyuser(String userUUID, LocalDate periodStart, LocalDate periodEnd) {
         int[] capacities = new int[3];
 
+        Map<String, Capacity> capacityMap = new HashMap<>();
+        for (Capacity capacity : userService.calculateCapacityByPeriod(periodStart, periodEnd)) {
+            capacityMap.put(capacity.getUseruuid()+":"+stringIt(capacity.getMonth().withDayOfMonth(1)), capacity);
+        }
+
         LocalDate currentDate = periodStart;
         int i = 0;
         while(currentDate.isBefore(periodEnd)) {
-            int capacityByMonth = userService.calculateCapacityByMonthByUser(userUUID, currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            int capacityByMonth = capacityMap.getOrDefault(userUUID+":"+stringIt(currentDate.withDayOfMonth(1)), new Capacity(userUUID, currentDate, 0)).getTotalAllocation();
             log.info("capacityByMonth for "+ currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) +" is " + capacityByMonth);
             capacities[i++] = capacityByMonth;
             currentDate = currentDate.plusMonths(1);
