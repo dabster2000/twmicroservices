@@ -6,12 +6,9 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -30,18 +27,12 @@ public class HoursPerConsultantChart {
 
     private final StatisticsService statisticsService;
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-
     private final UserService userService;
 
-    private final ExpenseRepository expenseRepository;
-
     @Autowired
-    public HoursPerConsultantChart(StatisticsService statisticsService, GraphKeyValueRepository graphKeyValueRepository, UserService userService, ExpenseRepository expenseRepository, CountEmployeesJob countEmployeesJob) {
+    public HoursPerConsultantChart(StatisticsService statisticsService, UserService userService) {
         this.statisticsService = statisticsService;
-        this.graphKeyValueRepository = graphKeyValueRepository;
         this.userService = userService;
-        this.expenseRepository = expenseRepository;
     }
 
     public Chart createHoursPerConsultantChart(LocalDate month) {

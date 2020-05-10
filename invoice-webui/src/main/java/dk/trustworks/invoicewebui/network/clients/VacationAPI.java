@@ -1,19 +1,12 @@
 package dk.trustworks.invoicewebui.network.clients;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
-import dk.trustworks.invoicewebui.model.ExpenseDetails;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.network.clients.model.InvoiceDTO;
-import dk.trustworks.invoicewebui.network.clients.model.economics.Collection;
-import dk.trustworks.invoicewebui.network.clients.model.economics.EconomicsInvoice;
 import dk.trustworks.invoicewebui.network.clients.model.vacation.VacationDate;
 import dk.trustworks.invoicewebui.network.clients.model.vacation.VacationPeriod;
 import dk.trustworks.invoicewebui.network.clients.model.vacation.VacationRequest;
-import dk.trustworks.invoicewebui.repositories.ExpenseDetailsRepository;
-import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,9 +15,10 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class VacationAPI {

@@ -8,7 +8,7 @@ import dk.trustworks.invoicewebui.model.Expense;
 import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
+import dk.trustworks.invoicewebui.services.ExpenseService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -32,13 +32,13 @@ public class ExpenseTable {
 
     private final UserService userService;
 
-    private final ExpenseRepository expenseRepository;
+    private final ExpenseService expenseService;
 
     @Autowired
-    public ExpenseTable(StatisticsService statisticsService, UserService userService, ExpenseRepository expenseRepository) {
+    public ExpenseTable(StatisticsService statisticsService, UserService userService, ExpenseService expenseService) {
         this.statisticsService = statisticsService;
         this.userService = userService;
-        this.expenseRepository = expenseRepository;
+        this.expenseService = expenseService;
     }
 
     public Grid<ExpenseItem> createRevenuePerConsultantChart() {
@@ -59,7 +59,7 @@ public class ExpenseTable {
 
         for (int j = 0; j < months; j++) {
             double sum = 0.0;
-            for (Expense expense : expenseRepository.findByPeriod(currentDate.plusMonths(j))) {
+            for (Expense expense : expenseService.findByMonth(currentDate.plusMonths(j))) {
                 expenseItemList.get(expense.getExpensetype().name()).getExpenses()[j] = expense.getAmount();
                 sum += expense.getAmount();
             }

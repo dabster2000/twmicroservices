@@ -7,7 +7,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -35,7 +34,7 @@ public class RevenuePerMonthEmployeeAvgChart {
     private final StatisticsService statisticsService;
 
     @Autowired
-    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, UserService userService, StatisticsService statisticsService) {
+    public RevenuePerMonthEmployeeAvgChart(GraphKeyValueRepository graphKeyValueRepository, UserService userService, StatisticsService statisticsService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.userService = userService;
         this.statisticsService = statisticsService;

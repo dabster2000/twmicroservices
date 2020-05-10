@@ -1,22 +1,14 @@
 package dk.trustworks.invoicewebui.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "expense_details")
 public class ExpenseDetails {
-
-    @Id
-    @GeneratedValue
-    private int id;
 
     private int entrynumber;
 
     private int accountnumber;
+
+    private int invoicenumber;
 
     private double amount;
 
@@ -27,17 +19,13 @@ public class ExpenseDetails {
     public ExpenseDetails() {
     }
 
-    public ExpenseDetails(int entrynumber, int accountnumber, double amount, LocalDate expensedate, String text) {
-        this.id = id;
+    public ExpenseDetails(int entrynumber, int accountnumber, int invoicenumber, double amount, LocalDate expensedate, String text) {
+        this.invoicenumber = invoicenumber;
         this.entrynumber = entrynumber;
         this.accountnumber = accountnumber;
         this.amount = amount;
         this.expensedate = expensedate;
         this.text = text;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public int getEntrynumber() {
@@ -54,6 +42,14 @@ public class ExpenseDetails {
 
     public void setAccountnumber(int accountnumber) {
         this.accountnumber = accountnumber;
+    }
+
+    public int getInvoicenumber() {
+        return invoicenumber;
+    }
+
+    public void setInvoicenumber(int invoicenumber) {
+        this.invoicenumber = invoicenumber;
     }
 
     public double getAmount() {
@@ -83,7 +79,6 @@ public class ExpenseDetails {
     @Override
     public String toString() {
         return "ExpenseDetailed{" +
-                "id=" + id +
                 ", entrynumber=" + entrynumber +
                 ", accountnumber=" + accountnumber +
                 ", amount=" + amount +

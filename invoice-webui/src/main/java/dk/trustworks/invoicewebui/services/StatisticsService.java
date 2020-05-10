@@ -13,8 +13,6 @@ import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.cached.StatisticsCachedService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.slf4j.Logger;
@@ -40,20 +38,20 @@ public class StatisticsService extends StatisticsCachedService {
 
     private final BudgetNewRepository budgetNewRepository;
 
-    private final ExpenseRepository expenseRepository;
-
     private final WorkService workService;
 
     private final UserService userService;
 
+    private final ExpenseService expenseService;
+
     @Autowired
-    public StatisticsService(ContractService contractService, BudgetNewRepository budgetNewRepository, ExpenseRepository expenseRepository, WorkService workService, InvoiceService invoiceService, UserService userService) {
-        super(contractService, expenseRepository, workService, userService, invoiceService);
+    public StatisticsService(ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, InvoiceService invoiceService, UserService userService, ExpenseService expenseService) {
+        super(contractService, workService, userService, invoiceService, expenseService);
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;
-        this.expenseRepository = expenseRepository;
         this.workService = workService;
         this.userService = userService;
+        this.expenseService = expenseService;
     }
 
     public double getMonthRevenue(LocalDate month) {
@@ -297,14 +295,13 @@ public class StatisticsService extends StatisticsCachedService {
         double revenueSum = 0.0;
         int count = 1;
         Map<LocalDate, Double> resultMap = new HashMap<>();
+        List<Expense> expenseList = expenseService.findByAccountAndPeriod(ExcelExpenseType.LØNNINGER, periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             if(userService.isActive(user, currentDate, ConsultantType.CONSULTANT)) {
-                //System.out.println("currentDate = " + currentDate);
                 double consultantCount = userService.findWorkingUsersByDate(currentDate, ConsultantType.CONSULTANT).size();
-                //System.out.println("consultantCount = " + consultantCount);
-                double expense = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> !expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum() / consultantCount;
+                double expense = expenseList.stream().filter(e -> e.getPeriod().withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1))).mapToDouble(Expense::getAmount).sum() / consultantCount;
 
                 if (expense == 0) {
                     count = 1;
@@ -313,28 +310,14 @@ public class StatisticsService extends StatisticsCachedService {
                 }
 
                 double revenue = getConsultantRevenueByMonth(user, currentDate);
-                //System.out.println("revenue = " + revenue);
-                //double revenue = graphKeyValueRepository.findConsultantRevenueByPeriod(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), currentDate.withDayOfMonth(currentDate.getMonth().length(currentDate.isLeapYear())).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().filter(graphKeyValue -> graphKeyValue.getUuid().equals(user.getUuid())).mapToDouble(GraphKeyValue::getValue).sum();
                 double userSalary = userService.getUserSalary(user, currentDate);
-                //System.out.println("userSalary = " + userSalary);
                 double consultantSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
-                //System.out.println("consultantSalaries = " + consultantSalaries);
                 double partOfTotalSalary = userSalary / consultantSalaries;
-                //System.out.println("partOfTotalSalary = " + partOfTotalSalary);
                 double consultantSalariesSum = getAllExpensesByMonth(currentDate).stream().mapToDouble(ExpenseDocument::geteSalaries).sum();
-                //System.out.println("consultantSalariesSum = " + consultantSalariesSum);
                 double grossUserSalary = consultantSalariesSum * partOfTotalSalary;
-                //System.out.println("grossUserSalary = " + grossUserSalary);
                 double allExpensesSum = calcAllExpensesByMonth(currentDate);
-                //System.out.println("allExpensesSum = " + allExpensesSum);
 
                 revenueSum += revenue - grossUserSalary - ((allExpensesSum - consultantSalaries) / consultantCount);
-                //System.out.println("revenueSum = " + revenueSum);
-
-                //double expenseSalaries = expenseRepository.findByPeriod(currentDate.withDayOfMonth(1)).stream().filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER)).mapToDouble(Expense::getAmount).sum();
-                //double staffSalaries = (expenseSalaries - consultantSalaries) / consultantCount;
-
-                //revenueSum += (revenue - userSalary - expense - staffSalaries);
             }
 
             if(count == interval) {

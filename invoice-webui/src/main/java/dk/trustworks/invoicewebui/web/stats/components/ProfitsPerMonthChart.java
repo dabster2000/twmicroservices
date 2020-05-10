@@ -5,11 +5,13 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.BudgetNew;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
@@ -42,7 +44,7 @@ public class ProfitsPerMonthChart {
     private final StatisticsService statisticsService;
 
     @Autowired
-    public ProfitsPerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ExpenseRepository expenseRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, StatisticsService statisticsService) {
+    public ProfitsPerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, StatisticsService statisticsService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
         this.contractService = contractService;
         this.budgetNewRepository = budgetNewRepository;

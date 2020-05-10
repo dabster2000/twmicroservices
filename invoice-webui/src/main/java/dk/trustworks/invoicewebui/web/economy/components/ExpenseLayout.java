@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.economy.components;
 
-import com.google.common.collect.Table;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -8,16 +7,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.Expense;
-import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
 import dk.trustworks.invoicewebui.utils.EconomicExcelUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import server.droporchoose.UploadComponent;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 
@@ -29,14 +22,11 @@ public class ExpenseLayout extends VerticalLayout {
 
     private final EconomicExcelUtility economicExcelUtility;
 
-    private final ExpenseRepository expenseRepository;
-
     private DateField date;
 
     @Autowired
-    public ExpenseLayout(EconomicExcelUtility economicExcelUtility, ExpenseRepository expenseRepository, GlobalPhotoUploader globalPhotoUploader, NotificationManager notificationManager) {
+    public ExpenseLayout(EconomicExcelUtility economicExcelUtility, GlobalPhotoUploader globalPhotoUploader, NotificationManager notificationManager) {
         this.economicExcelUtility = economicExcelUtility;
-        this.expenseRepository = expenseRepository;
 
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
 
@@ -49,7 +39,7 @@ public class ExpenseLayout extends VerticalLayout {
         date.setResolution(DateResolution.MONTH);
         date.setValue(LocalDate.now());
         card.getContent().addComponent(date);
-
+/*
         UploadComponent uploadComponent = new UploadComponent(this::uploadReceived);
         uploadComponent.setStartedCallback(this::uploadStarted);
         uploadComponent.setProgressCallback(this::uploadProgress);
@@ -57,9 +47,9 @@ public class ExpenseLayout extends VerticalLayout {
         uploadComponent.setWidth(100, Unit.PERCENTAGE);
         uploadComponent.setHeight(200, Unit.PIXELS);
         uploadComponent.setCaption("File upload");
-
-        card.getLblTitle().setValue("Upload excel");
-        card.getContent().addComponent(uploadComponent);
+*/
+        //card.getLblTitle().setValue("Upload excel");
+        //card.getContent().addComponent(uploadComponent);
 
         responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(card);
         responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 6 ,6).withComponent(globalPhotoUploader.init());
@@ -72,7 +62,7 @@ public class ExpenseLayout extends VerticalLayout {
 
         return this;
     }
-
+/*
     private void uploadReceived(String fileName, Path file) {
         Notification.show("New expense report added: " + fileName, HUMANIZED_MESSAGE);
         try {
@@ -85,7 +75,7 @@ public class ExpenseLayout extends VerticalLayout {
             uploadFailed(fileName, file);
         }
     }
-
+*/
     private void uploadStarted(String fileName) {
         Notification.show("Upload started: " + fileName, HUMANIZED_MESSAGE);
     }

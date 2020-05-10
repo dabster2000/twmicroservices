@@ -5,11 +5,8 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -34,7 +31,7 @@ public class AverageConsultantRevenueChart {
     private final UserService userService;
 
     @Autowired
-    public AverageConsultantRevenueChart(StatisticsService statisticsService, GraphKeyValueRepository graphKeyValueRepository, UserService userService, ExpenseRepository expenseRepository, CountEmployeesJob countEmployeesJob) {
+    public AverageConsultantRevenueChart(StatisticsService statisticsService, UserService userService) {
         this.statisticsService = statisticsService;
         this.userService = userService;
     }

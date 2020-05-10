@@ -13,20 +13,20 @@ import dk.trustworks.invoicewebui.model.ExpenseDetails;
 import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.network.clients.EconomicsAPI;
-import dk.trustworks.invoicewebui.repositories.ExpenseDetailsRepository;
+import dk.trustworks.invoicewebui.services.ExpenseService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-
-import static com.vaadin.ui.Notification.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by hans on 20/09/2017.
@@ -40,13 +40,13 @@ public class ExpensesPerMonthChart {
 
     private final UserService userService;
 
-    private final ExpenseDetailsRepository expenseDetailsRepository;
+    private final ExpenseService expenseService;
 
     @Autowired
-    public ExpensesPerMonthChart(StatisticsService statisticsService, UserService userService, ExpenseDetailsRepository expenseDetailsRepository) {
+    public ExpensesPerMonthChart(StatisticsService statisticsService, UserService userService, ExpenseService expenseService) {
         this.statisticsService = statisticsService;
         this.userService = userService;
-        this.expenseDetailsRepository = expenseDetailsRepository;
+        this.expenseService = expenseService;
     }
 
     public Chart createExpensePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -181,8 +181,8 @@ public class ExpensesPerMonthChart {
         for (int i = range.getMinimum(); i <= range.getMaximum(); i++) {
             accountNumber[i-range.getMinimum()] = i;
         }
-        //if(range.equals(EconomicsAPI.LOENNINGER_ACCOUNTS)) accountNumber = EconomicsAPI.LOENNINGER;
-        List<ExpenseDetails> expenseDetailsList = expenseDetailsRepository.findByExpensedateAndAccountnumberInOrderByAmountDesc(month, accountNumber);
+
+        List<ExpenseDetails> expenseDetailsList = expenseService.findByExpensedateAndAccountnumberInOrderByAmountDesc(month, accountNumber);
 
         Grid<ExpenseDetails> treeGrid = new Grid<>();
         treeGrid.setWidth(100, Sizeable.Unit.PERCENTAGE);

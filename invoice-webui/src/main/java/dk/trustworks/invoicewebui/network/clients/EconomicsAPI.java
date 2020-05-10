@@ -1,26 +1,10 @@
 package dk.trustworks.invoicewebui.network.clients;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-import dk.trustworks.invoicewebui.model.ExpenseDetails;
-import dk.trustworks.invoicewebui.network.clients.model.economics.Collection;
-import dk.trustworks.invoicewebui.network.clients.model.economics.EconomicsInvoice;
-import dk.trustworks.invoicewebui.repositories.ExpenseDetailsRepository;
 import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.lang.reflect.Array;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
 @Service
 public class EconomicsAPI {
@@ -46,9 +30,6 @@ public class EconomicsAPI {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
-    private ExpenseDetailsRepository expenseDetailsRepository;
 
     @Value("${XAppSecretToken}")
     private String xAppSecretToken;
@@ -100,7 +81,7 @@ public class EconomicsAPI {
     }
 
  */
-
+/*
     public Map<Range<Integer>, List<Collection>> getAllEntries(String date) {
         Map<Range<Integer>, List<Collection>> collectionResultMap = new HashMap<>();
         collectionResultMap.put(OMSAETNING_ACCOUNTS, new ArrayList<>());
@@ -145,7 +126,7 @@ public class EconomicsAPI {
                 collectionResultMap.keySet().forEach(integerRange -> {
                     if(integerRange.contains(collection.getAccount().getAccountNumber())) collectionResultMap.get(integerRange).add(collection);
                 });
-                expenseDetails.add(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).withDayOfMonth(1), collection.getText()));
+                expenseDetails.add(new ExpenseDetails(collection.getEntryNumber(), collection.getAccount().getAccountNumber(), invoicenumber, collection.getAmount(), LocalDate.parse(collection.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).withDayOfMonth(1), collection.getText()));
             }
             url = economicsInvoice.getPagination().getNextPage();
         } while (url != null);
@@ -154,4 +135,6 @@ public class EconomicsAPI {
 
         return collectionResultMap;
     }
+
+ */
 }

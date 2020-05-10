@@ -3,11 +3,7 @@ package dk.trustworks.invoicewebui.services.cached;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.*;
 import dk.trustworks.invoicewebui.model.enums.*;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.InvoiceService;
-import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +23,17 @@ public class StatisticsCachedService {
     private final static Logger log = LoggerFactory.getLogger(StatisticsCachedService.class.getName());
 
     private final ContractService contractService;
-    private final ExpenseRepository expenseRepository;
     private final WorkService workService;
     private final UserService userService;
     private final InvoiceService invoiceService;
+    private final ExpenseService expenseService;
 
-    public StatisticsCachedService(ContractService contractService, ExpenseRepository expenseRepository, WorkService workService, UserService userService, InvoiceService invoiceService) {
+    public StatisticsCachedService(ContractService contractService, WorkService workService, UserService userService, InvoiceService invoiceService, ExpenseService expenseService) {
         this.contractService = contractService;
-        this.expenseRepository = expenseRepository;
         this.workService = workService;
         this.userService = userService;
         this.invoiceService = invoiceService;
+        this.expenseService = expenseService;
     }
 
     private List<BudgetDocument> cachedBudgetData = new ArrayList<>();
@@ -259,7 +255,7 @@ public class StatisticsCachedService {
             LocalDate finalStartDate = startDate;
             int consultantNetSalaries = userService.calcMonthSalaries(finalStartDate, ConsultantType.CONSULTANT.toString());
             int staffNetSalaries = userService.calcMonthSalaries(finalStartDate, ConsultantType.STAFF.toString());
-            final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
+            final List<Expense> expenseList = expenseService.findByMonth(finalStartDate.withDayOfMonth(1));
             final double expenseSalaries = expenseList.stream()
                     .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
                     .mapToDouble(Expense::getAmount)
@@ -305,7 +301,7 @@ public class StatisticsCachedService {
         LocalDate startDate = LocalDate.of(2014, 7, 1);
         do {
             LocalDate finalStartDate = startDate;
-            final List<Expense> expenseList = expenseRepository.findByPeriod(finalStartDate.withDayOfMonth(1));
+            final List<Expense> expenseList = expenseService.findByMonth(finalStartDate.withDayOfMonth(1));
             final double expenseSalaries = expenseList.stream()
                     .filter(expense1 -> expense1.getExpensetype().equals(ExcelExpenseType.LØNNINGER))
                     .mapToDouble(Expense::getAmount)

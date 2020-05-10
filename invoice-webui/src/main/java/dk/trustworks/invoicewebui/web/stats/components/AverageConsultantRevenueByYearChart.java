@@ -6,11 +6,7 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
-import dk.trustworks.invoicewebui.repositories.ExpenseRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -29,12 +25,9 @@ public class AverageConsultantRevenueByYearChart {
 
     private final StatisticsService statisticsService;
 
-    private final UserService userService;
-
     @Autowired
-    public AverageConsultantRevenueByYearChart(StatisticsService statisticsService, GraphKeyValueRepository graphKeyValueRepository, UserService userService, ExpenseRepository expenseRepository, CountEmployeesJob countEmployeesJob) {
+    public AverageConsultantRevenueByYearChart(StatisticsService statisticsService) {
         this.statisticsService = statisticsService;
-        this.userService = userService;
     }
 
     public Chart createRevenuePerConsultantChart() {
