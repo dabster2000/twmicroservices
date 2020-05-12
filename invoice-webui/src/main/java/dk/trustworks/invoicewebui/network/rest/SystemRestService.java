@@ -49,8 +49,7 @@ public class SystemRestService {
             HttpEntity entity = new HttpEntity(createHeaders(getSystemToken().getToken()));
             return restTemplate.exchange(url, method, entity, c);
         } catch (RestClientException e) {
-            //systemToken = login(userserviceUsername, userservicePassword);
-            login(userserviceUsername, userservicePassword);
+            systemToken = login(userserviceUsername, userservicePassword);
             HttpEntity entity = new HttpEntity(createHeaders(getSystemToken().getToken()));
             return restTemplate.exchange(url, method, entity, c);
         }
@@ -61,8 +60,7 @@ public class SystemRestService {
             HttpEntity entity = new HttpEntity(payload, createHeaders(getSystemToken().getToken()));
             return restTemplate.exchange(url, method, entity, c);
         } catch (RestClientException e) {
-            //systemToken = login(userserviceUsername, userservicePassword);
-            login(userserviceUsername, userservicePassword);
+            systemToken = login(userserviceUsername, userservicePassword);
             HttpEntity entity = new HttpEntity(payload, createHeaders(getSystemToken().getToken()));
             return restTemplate.exchange(url, method, entity, c);
         }
