@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.repositories;
 
-import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.PhotoGlobal;
 import dk.trustworks.invoicewebui.model.enums.PhotoGlobalType;
 import org.springframework.data.repository.CrudRepository;

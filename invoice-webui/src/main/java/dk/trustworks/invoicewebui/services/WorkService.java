@@ -14,6 +14,7 @@ import reactor.bus.EventBus;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
@@ -81,6 +82,10 @@ public class WorkService {
         return workRepository.findByTasks(strings);
     }
 
+    public List<Work> findByTask(Task task) {
+        return workRepository.findByTask(task.getUuid());
+    }
+
     //@Cacheable("work")
     public List<Work> findByUserAndTasks(String userUUID, List<Task> tasks) {
         String[] strings = tasks.stream().map(Task::getUuid).toArray(String[]::new);
@@ -98,7 +103,7 @@ public class WorkService {
     }
 
     //@Cacheable("work")
-    public List<Work> findByProjectsAndUsersAndDateRange(List<String> projects, List<String> users, LocalDate fromDate, LocalDate toDate) {
+    public List<Work> findByProjectsAndUsersAndDateRange(Set<String> projects, List<String> users, LocalDate fromDate, LocalDate toDate) {
         return workRepository.findByProjectsAndUsersAndDateRange(projects, users, stringIt(fromDate), stringIt(toDate));
     }
 
@@ -140,7 +145,7 @@ public class WorkService {
     public Work saveWork(Work work) {
         System.out.println("WorkService.saveWork");
         System.out.println("work = [" + work + "]");
-        Work existingWork = workRepository.findByRegisteredAndUseruuidAndTask(work.getRegistered(), work.getUseruuid(), work.getTask());
+        Work existingWork = workRepository.findByRegisteredAndUseruuidAndTaskuuid(work.getRegistered(), work.getUseruuid(), work.getTask().getUuid());
         if(existingWork!=null) {
             existingWork.setWorkduration(work.getWorkduration());
             work = existingWork;

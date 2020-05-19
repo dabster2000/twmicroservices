@@ -13,15 +13,11 @@ import com.vaadin.server.Setter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.functions.TokenEventListener;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.ProjectService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ConsultantRowDesign;
@@ -57,11 +53,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final ContractService contractService;
 
+    private final TaskService taskService;
+
     private final ProjectService projectService;
 
-    private final TaskRepository taskRepository;
+    private final ClientService clientService;
 
-    private final ClientRepository clientRepository;
+    private final WorkService workService;
 
     private final BudgetNewRepository budgetNewRepository;
 
@@ -72,8 +70,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     private final NewsRepository newsRepository;
 
     private final AmbitionRepository ambitionRepository;
-
-    private final TaskOfferingRepository taskOfferingRepository;
 
     private ResponsiveLayout responsiveLayout;
 
@@ -89,18 +85,18 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserService userService, ProjectService projectService, TaskRepository taskRepository, ClientRepository clientRepository, ClientdataRepository clientdataRepository, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository, TaskOfferingRepository taskOfferingRepository) {
+    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository) {
         this.userService = userService;
         this.projectService = projectService;
-        this.taskRepository = taskRepository;
-        this.clientRepository = clientRepository;
+        this.clientService = clientService;
+        this.taskService = taskService;
+        this.workService = workService;
         this.budgetNewRepository = budgetNewRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.newsRepository = newsRepository;
         this.contractService = contractService;
         this.ambitionRepository = ambitionRepository;
-        this.taskOfferingRepository = taskOfferingRepository;
 
         getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Create Project");
@@ -110,9 +106,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             NewProjectDesign newProject = new NewProjectDesign();
             window.setContent(newProject);
             UI.getCurrent().addWindow(window);
-            newProject.getCbClients().setItems(clientRepository.findByActiveTrueOrderByName());
+            newProject.getCbClients().setItems(clientService.findByActiveTrue());
             newProject.getCbClients().addValueChangeListener(event1 -> {
-                List<Clientdata> clientdataList = clientdataRepository.findByClient(event1.getValue());
+                List<Clientdata> clientdataList = clientdataService.findByClient(event1.getValue());
                 newProject.getCbClientdatas().setVisible(true);
                 newProject.getCbClientdatas().setItems(clientdataList);
                 newProject.getCbClientdatas().setItemCaptionGenerator(item -> item.getStreetnamenumber() + ", "
@@ -150,7 +146,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         getSelProject().setItems(projects);
 
-        getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
+        getSelClient().setItems(clientService.findByActiveTrue());
         getSelClient().setItemCaptionGenerator(Client::getName);
 
         return this;
@@ -184,7 +180,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
         ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(), photoResource, projectService, newsRepository, userService);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
-            projectDetailCard.save();
+            projectDetailCard.update();
             updateTreeGrid(currentProject);
         });
         projectDetailCard.getBtnDelete().addClickListener(event -> {
@@ -220,7 +216,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(consultantsCard);
 
-        if(currentProject.getContracts().size()>0) {
+        if(contractService.getContractsByProject(currentProject).size()>0) {//currentProject.getContracts().size()>0) {
             Card contractCard = new Card();
             contractCard.getLblTitle().setValue("Contract Periods");
             contractLayout = new MVerticalLayout().withWidth(100, PERCENTAGE);
@@ -248,10 +244,10 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             taskRow.getVlTextTokenField().setVisible(false);
             taskRow.getSubRow().setVisible(false);
 
-            if(task.getWorkList().size()>0 || task.getType()==TaskType.SO)  taskRow.getBtnDelete().setVisible(false);
+            if(workService.findByTask(task).size()>0 || task.getType()==TaskType.SO)  taskRow.getBtnDelete().setVisible(false);
             taskRow.getBtnDelete().setIcon(MaterialIcons.DELETE);
             taskRow.getBtnDelete().addClickListener(event -> {
-                taskRepository.delete(task.getUuid());
+                taskService.delete(task.getUuid());
                 currentProject.getTasks().remove(task);
                 reloadGrid(Optional.ofNullable(projectService.findOne(currentProject.getUuid())));
             });
@@ -260,9 +256,10 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 if(taskRow.getSubRow().isVisible()) {
                     taskRow.getSubRow().setVisible(false);
                 } else {
-                    Task updatedTask = taskRepository.findOne(task.getUuid());
+                    Task updatedTask = taskService.findOne(task.getUuid());
                     List<Ambition> ambitionList = ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue();
                     List<Ambition> selectedAmbitions = new ArrayList<>();
+                    /*
                     for (TaskOffering taskOffering : updatedTask.getTaskOfferings()) {
                         ambitionList.stream().filter(ambition -> ambition.getName().equals(taskOffering.getName())).findFirst().ifPresent(selectedAmbitions::add);
                     }
@@ -294,6 +291,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     //tokenField.addTokens(selectedAmbitions.stream().map(ambition -> new com.fo0.advancedtokenfield.model.Token(ambition.getName())).collect(Collectors.toList()));
                     taskRow.getHlChart().addComponent(tokenList);
 
+                     */
+
                     taskRow.getHlChart().addComponent(createTopGrossingConsultantsChart(task));
                     taskRow.getSubRow().setVisible(true);
                 }
@@ -317,12 +316,14 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 System.out.println("target.equals(newTaskRow) = " + target.equals(newTaskRow));
                 if(!target.equals(newTaskRow.getTxtName())) return;
                 saveNewTask(newTaskRow, currentProject);
-                reloadGrid(Optional.of(projectService.save(currentProject)));
+                projectService.update(currentProject);
+                reloadGrid(Optional.of(currentProject));
             }
         });
         newTaskRow.getBtnDelete().addClickListener(event -> {
             saveNewTask(newTaskRow, currentProject);
-            reloadGrid(Optional.of(projectService.save(currentProject)));
+            projectService.update(currentProject);
+            reloadGrid(Optional.of(currentProject));
         });
         tasksLayout.add(newTaskRow);
     }
@@ -348,12 +349,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private void saveNewTask(TaskRowDesign newTaskRow, Project currentProject) {
         final Task task = new Task(newTaskRow.getTxtName().getValue(), currentProject);
-        Task savedTask = taskRepository.save(task);
-        Set<TaskOffering> taskOfferings = newTaskRow.getTokenField().getTokens().stream().map(token -> new TaskOffering(savedTask, token)).collect(Collectors.toSet());
-        savedTask.addOfferings(taskOfferings);
-        taskOfferingRepository.save(taskOfferings);
-        taskRepository.save(savedTask);
-        currentProject.getTasks().add(savedTask);
+        taskService.save(task);
+        //currentProject.getTasks().add(savedTask);
     }
 
     private Chart createTopGrossingConsultantsChart(Task task) {
@@ -386,7 +383,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
         Map<User, Double> userWork = new HashMap<>();
-        List<Work> workList = task.getWorkList();
+        List<Work> workList = workService.findByTask(task);// task.getWorkList();
 
         for (Work work : workList) {
             userWork.putIfAbsent(work.getUser(), 0.0);
@@ -560,7 +557,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 LocalDate budgetDate = startDate;
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
                     if(budget!=null) budgetSum += budget.getBudget();
                     budgetDate = budgetDate.plusMonths(1);
                 }
@@ -603,7 +600,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 int month = 0;
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject);
+                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
 
                     if(budget != null) {
                         budgetRow.setMonth(month, (budget.getBudget() / contractConsultant.getRate())+"");
@@ -666,11 +663,11 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 }
                 if(budgetString==null) budgetString = "0.0";
                 System.out.println("budgetString = " + budgetString);
-                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProject(
+                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
                         budgetRow.getContractConsultant(),
-                        currentProject);
+                        currentProject.getUuid());
                 System.out.println("budget = " + budget);
                 //if(budget.getProject()==null) budget.setProject(currentProject);
                 budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));

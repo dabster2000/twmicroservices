@@ -6,8 +6,6 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.model.style.Style;
-import com.vaadin.component.VaadinClipboard;
-import com.vaadin.component.VaadinClipboardImpl;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
@@ -25,16 +23,13 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
-import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -42,9 +37,6 @@ import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
 import java.text.NumberFormat;
 import java.time.*;
 import java.time.temporal.*;
@@ -67,8 +59,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ChartCacheJob chartCache;
 
-    private final MarginService marginService;
-
     private ResponsiveRow contractRow;
 
     private VerticalLayout consultantsLayout;
@@ -84,14 +74,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ClientdataRepository clientdataRepository, ChartCacheJob chartCache, MarginService marginService) {
+    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ChartCacheJob chartCache) {
         this.userService = userService;
         this.contractService = contractService;
         this.projectService = projectService;
         this.consultantRepository = consultantRepository;
         this.photoService = photoService;
         this.chartCache = chartCache;
-        this.marginService = marginService;
     }
 
     @PostConstruct
@@ -131,7 +120,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                             .withStyleName("flat", "borderless")
                             .withFullHeight()
             );
-            if(contract.getProjects().size()>0 && contract.getContractConsultants().size()>0) createBurndownChart(contract);
+            if(contract.getContractProjects().size()>0 && contract.getContractConsultants().size()>0) createBurndownChart(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(burndownChartCard);
@@ -153,7 +142,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
             burnrateChartCard.getHlTitleBar().addComponent(mButton);
 
-            if(contract.getProjects().size()>0 && contract.getContractConsultants().size()>0) createBurnrateChart(contract);
+            if(contract.getContractProjects().size()>0 && contract.getContractConsultants().size()>0) createBurnrateChart(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(burnrateChartCard);
@@ -198,7 +187,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             fileDownloader.extend(mButton);
 
             usedBudgetChartCard.getHlTitleBar().addComponent(mButton);
-            if(contract.getProjects().size()>0 && contract.getContractConsultants().size()>0) createUsedBudgetChartCard(contract);
+            if(contract.getContractProjects().size()>0 && contract.getContractConsultants().size()>0) createUsedBudgetChartCard(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(usedBudgetChartCard);
@@ -261,9 +250,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractRow.addColumn().withDisplayRules(12, 12, width, width).withComponent(navigationBar);
     }
 
-    private void createContactInformation(Contract Contract) {
+    private void createContactInformation(Contract contract) {
         contactInformationLayout.removeAllComponents();
-        Clientdata currentClientdata = Contract.getClientdata();
+        Clientdata currentClientdata = contract.getClientdata();
         if(currentClientdata != null) {
             ContactInformationRowDesign contactInformationRow = new ContactInformationRowDesign();
             contactInformationRow.getLblName().setValue(currentClientdata.getClientname());
@@ -274,10 +263,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
             contactInformationRow.getLblPostalCode().setValue(currentClientdata.getPostalcode()+"");
             contactInformationRow.getLblCity().setValue(currentClientdata.getCity());
             contactInformationRow.getLblOther().setValue(currentClientdata.getOtheraddressinfo());
-            contactInformationRow.getBtnChange().addClickListener(event1 -> createContactInformationSelector(Contract));
+            contactInformationRow.getBtnChange().addClickListener(event1 -> createContactInformationSelector(contract));
             contactInformationLayout.add(contactInformationRow);
         } else {
-            contactInformationLayout.add(new MButton(MaterialIcons.ADD, event -> createContactInformationSelector(Contract)).withStyleName("friendly").withWidth(100, Unit.PERCENTAGE));
+            contactInformationLayout.add(new MButton(MaterialIcons.ADD, event -> createContactInformationSelector(contract)).withStyleName("friendly").withWidth(100, Unit.PERCENTAGE));
         }
     }
 
@@ -552,17 +541,18 @@ public class ContractDetailLayout extends ResponsiveLayout {
         chart.drawChart(conf);
     }
 
-    private void createProjectList(Contract Contract) {
+    private void createProjectList(Contract contract) {
         projectsLayout.removeAllComponents();
 
-        for (Project project : Contract.getProjects()) {
+        for (ContractProject contractProject : contract.getContractProjects()) {
+            Project project = projectService.findOne(contractProject.getProjectuuid());
             ProjectRowDesign projectRowDesign = new ProjectRowDesign();
             projectRowDesign.getLblName().setValue(project.getName());
             projectRowDesign.getBtnIcon().setIcon(MaterialIcons.DATE_RANGE);
             projectRowDesign.getBtnDelete().setIcon(MaterialIcons.DELETE);
             projectRowDesign.getBtnDelete().addClickListener(event -> {
                 try {
-                    removeProject(Contract, project);
+                    removeProject(contract, project);
                 } catch (ContractValidationException e) {
                     Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                 }
@@ -570,7 +560,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             projectsLayout.addComponent(projectRowDesign);
         }
 
-        createProposedProjects(Contract);
+        createProposedProjects(contract);
 
         projectsLayout.addComponent(new MButton(
                 VaadinIcons.PLUS,
@@ -584,13 +574,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     ComboBox<Project> projectComboBox = new ComboBox<>();
                     projectComboBox.setWidth(250, Unit.PIXELS);
                     projectComboBox.setPopupWidth("");
-                    projectComboBox.setItems(projectService.findByClientOrderByNameAsc(Contract.getClient()));
+                    projectComboBox.setItems(projectService.findByClientOrderByNameAsc(contract.getClient()));
                     projectComboBox.setItemCaptionGenerator(Project::getName);
                     subContent.addComponent(projectComboBox);
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> projectComboBox.getOptionalValue().ifPresent(project -> {
                     //Project project = projectComboBox.getSelectedItem().get();
-                    createProject(Contract, project);
+                    createProject(contract, project);
                     subWindow.close();
                     }));
                     subContent.addComponent(addButton);
@@ -606,13 +596,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
         );
     }
 
-    private void createProposedProjects(Contract Contract) {
-        List<Project> deltaProjects = new ArrayList<>(Contract.getClient().getProjects());
+    private void createProposedProjects(Contract contract) {
+        List<Project> deltaProjects = new ArrayList<>(contract.getClient().getProjects());
         Map<String, Project> projectsWithUserWorkButNoContract = new HashMap<>();
-        for (User user : Contract.getContractConsultants().stream().map(ContractConsultant::getUser).collect(Collectors.toList())) {
+        for (User user : contract.getContractConsultants().stream().map(ContractConsultant::getUser).collect(Collectors.toList())) {
             for (Project project : contractService.getProjectsWithUserWorkButNoContract(deltaProjects, user)) {
                 // is project already on contract
-                if(Contract.getProjects().stream().anyMatch(p -> p.getUuid().equals(project.getUuid()))) {
+                if(contract.getProjectUuids().stream().anyMatch(p -> p.equals(project.getUuid()))) {
                     System.out.println("Project already exists. Trying to find work...");
                     LocalDatePeriod period = contractService.getUsersFirstAndLastWorkOnProject(project, user);
                     if(period.getFrom().isBefore(proposedPeriod.getFrom())) proposedPeriod.setFrom(period.getFrom().minusMonths(1));
@@ -625,16 +615,16 @@ public class ContractDetailLayout extends ResponsiveLayout {
         if(projectsWithUserWorkButNoContract.size() > 0) {
             projectsLayout.addComponent(new MLabel("Proposed projects"));
             for (Project project : projectsWithUserWorkButNoContract.values()) {
-                createProposedProjectRow(Contract, project);
+                createProposedProjectRow(contract, project);
             }
 
         }
 
-        Set<Project> projectsNotUnderContract = contractService.getClientProjectsNotUnderContract(Contract.getClient());
+        Set<Project> projectsNotUnderContract = contractService.getClientProjectsNotUnderContract(contract.getClient());
         if(projectsNotUnderContract.size() > 0) {
             projectsLayout.addComponent(new MLabel("Projects with no contract"));
             for (Project project : projectsNotUnderContract) {
-                createProposedProjectRow(Contract, project);
+                createProposedProjectRow(contract, project);
             }
         }
     }
@@ -723,12 +713,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
         );
     }
 
-    private void createProposedConsultants(Contract Contract, ResponsiveRow responsiveRow) {
+    private void createProposedConsultants(Contract contract, ResponsiveRow responsiveRow) {
         HashMap<String, User> proposedUsers = new HashMap<>();
-        for (Project project : Contract.getProjects()) {
+        for (Project project : contract.getProjects()) {
             Set<User> employees = contractService.getEmployeesWorkingOnProjectWithNoContract(project);
             for (User employee : employees) {
-                if(Contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(employee.getUuid())))
+                if(contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(employee.getUuid())))
                     proposedUsers.put(employee.getUuid(), employee);
             }
         }
@@ -738,12 +728,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     .withDisplayRules(12, 12, 12, 12)
                     .withComponent(new MLabel("Proposed consultants:"));
             for (User user : proposedUsers.values()) {
-                createConsultantRow(Contract, responsiveRow, user);
+                createConsultantRow(contract, responsiveRow, user);
             }
-        } else if(Contract.getProjects().size() == 0) {
-            for (Project project : Contract.getClient().getProjects()) {
+        } else if(contract.getProjects().size() == 0) {
+            for (Project project : contract.getClient().getProjects()) {
                 for (User user : contractService.getEmployeesWorkingOnProjectWithNoContract(project)) {
-                    if(Contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(user.getUuid())))
+                    if(contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(user.getUuid())))
                     proposedUsers.put(user.getUuid(), user);
                 }
             }
@@ -752,7 +742,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                         .withDisplayRules(12, 12, 12, 12)
                         .withComponent(new MLabel("Proposed consultants:"));
                 for (User user : proposedUsers.values()) {
-                    createConsultantRow(Contract, responsiveRow, user);
+                    createConsultantRow(contract, responsiveRow, user);
                 }
             }
         }

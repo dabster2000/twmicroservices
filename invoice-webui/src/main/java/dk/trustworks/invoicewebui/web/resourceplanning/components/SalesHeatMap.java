@@ -13,8 +13,10 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
-import dk.trustworks.invoicewebui.services.*;
+import dk.trustworks.invoicewebui.services.ClientService;
+import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ import java.util.stream.Collectors;
 @SpringUI
 public class SalesHeatMap {
 
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
     private final PhotoService photoService;
 
@@ -48,8 +50,8 @@ public class SalesHeatMap {
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(ClientRepository clientRepository, PhotoService photoService, StatisticsService statisticsService, UserService userService1) {
-        this.clientRepository = clientRepository;
+    public SalesHeatMap(ClientService clientService, PhotoService photoService, StatisticsService statisticsService, UserService userService1) {
+        this.clientService = clientService;
         this.photoService = photoService;
         this.statisticsService = statisticsService;
         this.userService = userService1;
@@ -156,7 +158,7 @@ public class SalesHeatMap {
             }
 
             for (String s : assignmentsMap.keySet()) {
-                grid.addComponent(new MLabel(clientRepository.findOne(s).getName()).withStyleName("bold"));
+                grid.addComponent(new MLabel(clientService.findOne(s).getName()).withStyleName("bold"));
                 for (double v : assignmentsMap.get(s)) {
                     grid.addComponent(new MLabel(NumberConverter.convertDoubleToInt(v)+""));
                 }

@@ -1,12 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
-import javax.persistence.*;
-import java.util.List;
 import java.util.UUID;
 
-@Entity
 public class Clientdata {
-    @Id
     private String uuid;
     private String city;
     private String clientname;
@@ -16,12 +12,7 @@ public class Clientdata {
     private String otheraddressinfo;
     private Long postalcode;
     private String streetnamenumber;
-    @ManyToOne()
-    @JoinColumn(name="clientuuid")
-    private Client client;
-
-    @OneToMany(mappedBy = "clientdata", fetch = FetchType.LAZY)
-    private List<Project> project;
+    private String clientuuid;
 
     public Clientdata() {
     }
@@ -36,7 +27,7 @@ public class Clientdata {
         this.otheraddressinfo = otheraddressinfo;
         this.postalcode = postalcode;
         this.streetnamenumber = streetnamenumber;
-        this.client = client;
+        this.clientuuid = client.getUuid();
     }
 
     public String getUuid() {
@@ -111,20 +102,12 @@ public class Clientdata {
         this.streetnamenumber = streetnamenumber;
     }
 
-    public Client getClient() {
-        return client;
+    public String getClientuuid() {
+        return clientuuid;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public List<Project> getProject() {
-        return project;
-    }
-
-    public void setProject(List<Project> project) {
-        this.project = project;
+    public void setClientuuid(String clientuuid) {
+        this.clientuuid = clientuuid;
     }
 
     @Override
@@ -138,7 +121,6 @@ public class Clientdata {
                 ", otheraddressinfo='" + otheraddressinfo + '\'' +
                 ", postalcode=" + postalcode +
                 ", streetnamenumber='" + streetnamenumber + '\'' +
-                ", client=" + client +
                 '}';
     }
 }

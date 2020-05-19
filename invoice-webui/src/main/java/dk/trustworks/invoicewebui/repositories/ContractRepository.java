@@ -21,7 +21,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "contracts", path = "contracts")
 public interface ContractRepository extends CrudRepository<Contract, String> {
 
-    @Cacheable("rate")
+    //@Cacheable("rate")
     @Query(value = "select cc.rate as price from usermanager.contracts c" +
             "    right join contract_project pc ON  pc.contractuuid = c.uuid" +
             "    right join project p ON p.uuid = pc.projectuuid" +
@@ -30,7 +30,7 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
             "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid and c.status in :statusList ", nativeQuery = true)
     Double findConsultantRateByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid, @Param("statusList") String... statusList);
 
-    @Cacheable("contract")
+    //@Cacheable("contract")
     @Query(value = "select c.* from usermanager.contracts c" +
             "    right join contract_project pc ON  pc.contractuuid = c.uuid" +
             "    right join project p ON p.uuid = pc.projectuuid" +
@@ -42,7 +42,7 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
     List<Contract> findByActiveFromBeforeAndActiveToAfterAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
     List<Contract> findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
 
-    List<Contract> findByClient(@Param("client") Client client);
+    List<Contract> findByClientuuid(@Param("clientuuid") String clientuuid);
 
     @Query(value = "select c.* from usermanager.contracts c " +
             "right join usermanager.contract_consultants cc on c.uuid = cc.contractuuid " +
@@ -54,4 +54,23 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Contract entity);
+
+    @Query(value = "select c.uuid, " +
+            "       c.contracttype, " +
+            "       c.clientuuid, " +
+            "       c.created, " +
+            "       c.activefrom, " +
+            "       c.activeto, " +
+            "       c.amount, " +
+            "       c.parentuuid, " +
+            "       c.status, " +
+            "       c.note, " +
+            "       c.clientdatauuid, " +
+            "       c.name, " +
+            "       c.refid " +
+            "from usermanager.contracts c " +
+            "    left join usermanager.contract_project cp on cp.contractuuid = c.uuid " +
+            "    right join usermanager.project p on p.uuid = cp.projectuuid " +
+            "where p.uuid like :projectuuid ", nativeQuery = true)
+    List<Contract> findByProjectuuid(@Param("projectuuid") String projectuuid);
 }

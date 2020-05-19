@@ -9,11 +9,10 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.Capacity;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +37,7 @@ public class CheckBudgetJob {
 
     private final UserService userService;
 
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
     private final WorkService workService;
 
@@ -48,9 +47,9 @@ public class CheckBudgetJob {
     private String motherSlackToken;
 
     @Autowired
-    public CheckBudgetJob(UserService userService, ClientRepository clientRepository, WorkService workService, StatisticsService statisticsService) {
+    public CheckBudgetJob(UserService userService, ClientService clientService, WorkService workService, StatisticsService statisticsService) {
         this.userService = userService;
-        this.clientRepository = clientRepository;
+        this.clientService = clientService;
         this.workService = workService;
         this.statisticsService = statisticsService;
     }
@@ -105,7 +104,7 @@ public class CheckBudgetJob {
                 log.info("*** creating attachments ***");
                 if(!(Arrays.stream(userBooking.getAmountItemsPerProjects()).sum()>0)) continue;
                 Attachment attachment = new Attachment();
-                attachment.setTitle(clientRepository.findOne(userBooking.getUuid()).getName());
+                attachment.setTitle(clientService.findOne(userBooking.getUuid()).getName());
                 attachment.setText(userBooking.getUsername());
                 //if(task.getProject().getOwner()!=null) attachment.setFooter("Project lead: "+task.getProject().getOwner().getUsername());
                 attachment.setColor("#fbb14d");

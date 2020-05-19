@@ -289,7 +289,6 @@ public class StatisticsService extends StatisticsCachedService {
         return userBookings;
     }
 
-    @Cacheable("calculateConsultantRevenue")
     public Map<LocalDate, Double> calculateConsultantRevenue(User user, LocalDate periodStart, LocalDate periodEnd, int interval) {
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         double revenueSum = 0.0;

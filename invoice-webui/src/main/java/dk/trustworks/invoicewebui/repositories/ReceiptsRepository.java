@@ -16,7 +16,7 @@ import java.util.List;
 public interface ReceiptsRepository extends CrudRepository<Receipt, Integer> {
 
     List<Receipt> findByUseruuidAndReceiptdateIsBetween(String user, LocalDate fromDate, LocalDate toDate);
-    List<Receipt> findByProjectAndReceiptdateIsBetween(Project project, LocalDate fromDate, LocalDate toDate);
+    List<Receipt> findByProjectuuidAndReceiptdateIsBetween(String projectuuid, LocalDate fromDate, LocalDate toDate);
     List<Receipt> findByReceiptdateIsBetween(LocalDate fromDate, LocalDate toDate);
 
 }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 439 439" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+<svg width="100%" height="100%" viewBox="0 0 439 439" version="1.1" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
+     style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
     <g transform="matrix(5.55556,0,0,5.55556,-1314.99,0)">
         <g>
             <path d="M242.344,7.568C240.859,7.511 239.525,7.458 238.392,7.413C239.377,7.257 240.698,7.064 242.344,6.855L242.344,7.568ZM311.049,7.398L311.049,6.823C312.069,6.993 312.894,7.15 313.548,7.281C312.846,7.314 312.005,7.353 311.049,7.398Z" style="fill:url(#_Radial1);"/>

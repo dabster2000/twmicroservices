@@ -2,7 +2,6 @@ package dk.trustworks.invoicewebui.web.employee.components.parts;
 
 import dk.trustworks.invoicewebui.model.Note;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 

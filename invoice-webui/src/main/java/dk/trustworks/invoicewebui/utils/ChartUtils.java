@@ -3,7 +3,6 @@ package dk.trustworks.invoicewebui.utils;
 
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
-import com.vaadin.addon.charts.model.PlotOptionsArea;
 import com.vaadin.addon.charts.model.PlotOptionsAreaspline;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import lombok.experimental.UtilityClass;

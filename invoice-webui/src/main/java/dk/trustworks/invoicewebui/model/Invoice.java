@@ -7,11 +7,12 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.model.enums.InvoiceType;
-import jdk.nashorn.internal.objects.annotations.Property;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by hans on 08/07/2017.

@@ -6,9 +6,9 @@ import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.repositories.ProjectRepository;
-import dk.trustworks.invoicewebui.repositories.TaskRepository;
+import dk.trustworks.invoicewebui.network.rest.ProjectRestService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,76 +17,93 @@ import java.util.List;
 
 @Service
 @Transactional
-public class ProjectService {
+public class ProjectService implements InitializingBean {
 
-    private final ProjectRepository projectRepository;
-    private final TaskRepository taskRepository;
+    private static ProjectService instance;
+
+    private final ProjectRestService projectRestService;
+    private final TaskService taskService;
     private final UserService userService;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, UserService userService) {
-        this.projectRepository = projectRepository;
-        this.taskRepository = taskRepository;
+    public ProjectService(ProjectRestService projectRestService, TaskService taskService, UserService userService) {
+        this.projectRestService = projectRestService;
+        this.taskService = taskService;
         this.userService = userService;
     }
 
     public List<Project> findAllByOrderByNameAsc() {
-        return projectRepository.findAllByOrderByNameAsc();
+        return projectRestService.findAll();
     }
 
     public List<Project> findAllByActiveTrueOrderByNameAsc() {
-        return projectRepository.findAllByActiveTrueOrderByNameAsc();
+        return projectRestService.findByActiveTrue();
     }
 
     public List<Project> findByClientAndActiveTrueOrderByNameAsc(Client client) {
-        return projectRepository.findByClientAndActiveTrueOrderByNameAsc(client);
+        return projectRestService.findByClientAndActiveTrue(client);
     }
 
     public List<Project> findByClientOrderByNameAsc(Client client) {
-        return projectRepository.findByClientOrderByNameAsc(client);
+        return projectRestService.findByClient(client);
     }
 
     public List<Project> findByClientdata(Clientdata clientdata) {
-        return projectRepository.findByClientdata(clientdata);
+        return projectRestService.findByClientdata(clientdata);
     }
 
     public void delete(String id) {
-        projectRepository.delete(id);
+        projectRestService.delete(id);
     }
 
     public void delete(Project entity) {
-        projectRepository.delete(entity);
+        projectRestService.delete(entity);
     }
 
     @Transactional
     public Project save(Project project) {
-        project = projectRepository.save(project);
         project.setOwner(userService.findByUUID(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser().getUuid()));
+        project = projectRestService.save(project);
         return createDefaultTask(project);
+    }
+
+    public void update(Project project) {
+        projectRestService.update(project);
     }
 
     @Transactional
     public void saveAll(List<Project> projects) {
-        projectRepository.save(projects);
+        projectRestService.save(projects);
     }
 
     public List<Project> findByLocked(boolean isLocked) {
-        return projectRepository.findByLocked(isLocked);
+        return projectRestService.findByLocked(isLocked);
     }
 
     public Project findOne(String projectUUID) {
-        return createDefaultTask(projectRepository.findOne(projectUUID));
+        return createDefaultTask(projectRestService.findOne(projectUUID));
     }
 
     private Project createDefaultTask(Project project) {
         boolean hasSOTypeTask = false;
-        for (Task task : project.getTasks()) {
-            if(task.getType().equals(TaskType.SO)) hasSOTypeTask = true;
+        for (Task task : taskService.findByProject(project.getUuid())) {
+            if (task.getType().equals(TaskType.SO)) {
+                hasSOTypeTask = true;
+                break;
+            }
         }
         if(!hasSOTypeTask) {
-            Task task = taskRepository.save(new Task("Ikke fakturerbar", project, TaskType.SO));
-            project.getTasks().add(task);
+            taskService.save(new Task("Ikke fakturerbar", project, TaskType.SO));
         }
         return project;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        instance = this;
+    }
+
+    public static ProjectService get() {
+        return instance;
     }
 }

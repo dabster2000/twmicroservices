@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.TaskService;
 import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
@@ -12,13 +13,12 @@ import java.time.LocalDate;
 public class Work {
 
     @Id
+    @GeneratedValue
     private int id;
     private LocalDate registered;
     private double workduration;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taskuuid")
-    private Task task;
+    private String taskuuid;
 
     private String useruuid;
 
@@ -31,14 +31,14 @@ public class Work {
         this.registered = registered;
         this.workduration = workduration;
         this.useruuid = user.getUuid();
-        this.task = task;
+        this.taskuuid = task.getUuid();
     }
 
     public Work(LocalDate registered, double workduration, User user, Task task, User workas) {
         this.registered = registered;
         this.workduration = workduration;
         this.useruuid = user.getUuid();
-        this.task = task;
+        this.taskuuid = task.getUuid();
         this.workas = workas.getUuid();
     }
 
@@ -67,11 +67,11 @@ public class Work {
     }
 
     public Task getTask() {
-        return task;
+        return TaskService.get().findOne(taskuuid);
     }
 
     public void setTask(Task task) {
-        this.task = task;
+        this.taskuuid = task.getUuid();
     }
 
     public String getUseruuid() {
@@ -102,12 +102,12 @@ public class Work {
     @Override
     public String toString() {
         return "Work{" +
-                "id='" + id + '\'' +
+                "id=" + id +
+                ", registered=" + registered +
                 ", workduration=" + workduration +
-                ", task=" + task.getUuid() +
-                ", user=" + getUseruuid() +
-                ", workas=" + (workas!=null) +
-                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+"]" +
+                ", taskuuid='" + taskuuid + '\'' +
+                ", useruuid='" + useruuid + '\'' +
+                ", workas='" + workas + '\'' +
                 '}';
     }
 }

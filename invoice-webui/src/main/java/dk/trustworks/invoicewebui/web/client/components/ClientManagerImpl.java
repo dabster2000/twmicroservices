@@ -8,27 +8,28 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
-import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.services.ClientdataService;
+import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 12/08/2017.
@@ -37,9 +38,9 @@ import java.util.UUID;
 @SpringUI
 public class ClientManagerImpl extends ClientManagerDesign {
 
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
-    private final ClientdataRepository clientdataRepository;
+    private final ClientdataService clientdataService;
 
     private final PhotoRepository photoRepository;
 
@@ -52,9 +53,9 @@ public class ClientManagerImpl extends ClientManagerDesign {
     ResponsiveLayout responsiveLayout;
 
     @Autowired
-    public ClientManagerImpl(ClientRepository clientRepository, ClientdataRepository clientdataRepository, PhotoRepository photoRepository, ProjectService projectService, ChartCacheJob chartCache, MainTemplate mainTemplate, UserService userService) {
-        this.clientRepository = clientRepository;
-        this.clientdataRepository = clientdataRepository;
+    public ClientManagerImpl(ClientService clientService, ClientdataService clientdataService, PhotoRepository photoRepository, ProjectService projectService, ChartCacheJob chartCache, UserService userService) {
+        this.clientService = clientService;
+        this.clientdataService = clientdataService;
         this.photoRepository = photoRepository;
         this.projectService = projectService;
         this.chartCache = chartCache;
@@ -77,13 +78,13 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
         ResponsiveRow clientRow = responsiveLayout.addRow();
 
-        Iterable<Client> clients = clientRepository.findAllByOrderByActiveDescNameAsc();
+        Iterable<Client> clients = clientService.findAll().stream().sorted(Comparator.comparing(Client::isActive).reversed()).collect(Collectors.toList());
         for (Client client : clients) {
             ClientCardImpl clientCard = new ClientCardImpl(client, photoRepository.findByRelateduuid(client.getUuid()));
             clientCard.getBtnEdit().addClickListener(event -> createClientDetailsView(client));
             clientCard.getBtnDelete().addClickListener(event -> {
                 client.setActive(!client.isActive());
-                clientRepository.save(client);
+                clientService.save(client);
                 if(client.isActive()) {
                     clientCard.getBtnDelete().setCaption("DEACTIVATE");
                     clientCard.getBtnDelete().setStyleName("danger");
@@ -98,7 +99,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
         AddClientCardDesign addClientCardDesign = new AddClientCardDesign();
         addClientCardDesign.getBtnAddClient().addClickListener(event -> {
-            Client client = clientRepository.save(new Client("", "New Client"));
+            Client client = clientService.save(new Client("", "New Client"));
             createClientDetailsView(client);
         });
         responsiveLayout.addRow().addColumn().withDisplayRules(12, 12, 12, 12).withComponent(addClientCardDesign);
@@ -147,7 +148,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
             clientDataRow
                     .addColumn()
                     .withDisplayRules(12, 8, 6, 4)
-                    .withComponent(new ClientDataImpl(clientdataRepository, clientdata, projectService));
+                    .withComponent(new ClientDataImpl(clientdataService, clientdata, projectService));
             clientDataRow
                     .addColumn()
                     .withDisplayRules(0, 2, 3, 0)
@@ -213,9 +214,9 @@ public class ClientManagerImpl extends ClientManagerDesign {
         if(client.getUuid() == null || client.getUuid().equals("")) {
             client.setUuid(UUID.randomUUID().toString());
             client.setCreated(Timestamp.from(Instant.now()));
-            clientRepository.save(client);
+            clientService.save(client);
         } else {
-            clientRepository.save(client);
+            clientService.save(client);
         }
     }
 
@@ -250,12 +251,12 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
         btnAddContactInformation.addClickListener(event -> {
             Clientdata newClientdata = new Clientdata("", "", "", "", "", "", 0L, "", client);
-            ClientDataImpl clientData = new ClientDataImpl(clientdataRepository, newClientdata, projectService);
+            ClientDataImpl clientData = new ClientDataImpl(clientdataService, newClientdata, projectService);
             clientData.getBtnDelete().setVisible(false);
             clientData.getCssHider().setVisible(true);
             clientData.getBtnEdit().setVisible(false);
             clientData.getBtnSave().addClickListener(event1 -> {
-                client.addClientdata(newClientdata);
+                //client.addClientdata(newClientdata);
                 createClientDetailsView(client);
                 window3.close();
             });

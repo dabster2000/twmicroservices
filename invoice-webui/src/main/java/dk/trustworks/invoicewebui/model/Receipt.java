@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
@@ -23,9 +24,7 @@ public class Receipt {
 
     private String useruuid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectuuid")
-    private Project project;
+    private String projectuuid;
 
     private String description;
 
@@ -37,7 +36,7 @@ public class Receipt {
     public Receipt(LocalDate receiptdate, User user, Project project, String description, float amount) {
         this.receiptdate = receiptdate;
         this.useruuid = user.getUuid();
-        this.project = project;
+        this.projectuuid = project.getUuid();
         this.description = description;
         this.amount = amount;
     }
@@ -66,12 +65,21 @@ public class Receipt {
         this.useruuid = user.getUuid();
     }
 
+    public String getProjectuuid() {
+        return projectuuid;
+    }
+
+    public void setProjectuuid(String projectuuid) {
+        this.projectuuid = projectuuid;
+    }
+
     public Project getProject() {
-        return project;
+        if(projectuuid == null) return null;
+        return ProjectService.get().findOne(projectuuid);
     }
 
     public void setProject(Project project) {
-        this.project = project;
+        this.projectuuid = project.getUuid();
     }
 
     public String getDescription() {
@@ -95,8 +103,8 @@ public class Receipt {
         return "Receipt{" +
                 "id=" + id +
                 ", receiptdate=" + receiptdate +
-                ", user=" + useruuid +
-                ", project=" + project.getName() +
+                ", useruuid='" + useruuid + '\'' +
+                ", projectuuid='" + projectuuid + '\'' +
                 ", description='" + description + '\'' +
                 ", amount=" + amount +
                 '}';

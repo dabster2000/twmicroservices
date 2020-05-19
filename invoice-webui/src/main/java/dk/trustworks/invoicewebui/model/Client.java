@@ -1,35 +1,22 @@
 package dk.trustworks.invoicewebui.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import dk.trustworks.invoicewebui.services.ClientdataService;
+import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-@Entity
 public class Client {
-    @Id
     private String uuid;
     private boolean active;
     private String contactname;
-    @Temporal(TemporalType.TIMESTAMP)
     private Date created;
     private String name;
     private String crmid;
 
     private String accountmanager;
-
-    private Double latitude;
-    private Double longitude;
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-    private List<Clientdata> clientdata;
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-    private List<Project> projects;
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-    private List<Contract> contracts;
 
     public Client() {
     }
@@ -40,12 +27,7 @@ public class Client {
         this.contactname = contactname;
         this.created = new Date();
         this.name = name;
-        this.latitude = 0.0;
-        this.longitude = 0.0;
         this.crmid = "";
-        this.clientdata = null;
-        this.projects = new ArrayList<>();
-        this.clientdata = new ArrayList<>();
     }
 
     public String getUuid() {
@@ -80,32 +62,9 @@ public class Client {
         this.name = name;
     }
 
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
+    @JsonIgnore
     public List<Clientdata> getClientdata() {
-        return clientdata;
-    }
-
-    public void setClientdata(List<Clientdata> clientdata) {
-        this.clientdata = clientdata;
-    }
-
-    public void addClientdata(Clientdata clientdata) {
-        this.getClientdata().add(clientdata);
+        return ClientdataService.get().findByClient(this);
     }
 
     public boolean isActive() {
@@ -116,26 +75,17 @@ public class Client {
         this.active = active;
     }
 
+    @JsonIgnore
     public List<Project> getProjects() {
-        return projects;
+        return ProjectService.get().findByClientOrderByNameAsc(this);
     }
 
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
-    }
-
-    public List<Contract> getContracts() {
-        return contracts;
-    }
-
-    private void setContracts(List<Contract> contracts) {
-        this.contracts = contracts;
-    }
-
+    @JsonIgnore
     public User getAccount_manager() {
         return UserService.get().findByUUID(accountmanager);
     }
 
+    @JsonIgnore
     public void setAccount_manager(User accountmanager) {
         this.accountmanager = accountmanager.getUuid();
     }
@@ -157,8 +107,6 @@ public class Client {
                 ", created=" + created +
                 ", name='" + name + '\'' +
                 ", accountmanager=" + accountmanager +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
                 '}';
     }
 
@@ -176,7 +124,8 @@ public class Client {
         return uuid.hashCode();
     }
 
-    public void setAccountmanager(String accountmanager) {
-        this.accountmanager = accountmanager;
+    @JsonIgnore
+    public List<Contract> getContracts() {
+        return ContractService.get().findByClient(this);
     }
 }

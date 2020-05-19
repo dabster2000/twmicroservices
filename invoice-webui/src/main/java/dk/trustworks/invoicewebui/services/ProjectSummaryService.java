@@ -203,7 +203,7 @@ public class ProjectSummaryService {
 
             Project project = projectService.findOne(projectSummary.getProjectuuid());
 
-            List < Receipt > receiptList = receiptsRepository.findByProjectAndReceiptdateIsBetween(project, periodFrom, periodTo);
+            List < Receipt > receiptList = receiptsRepository.findByProjectuuidAndReceiptdateIsBetween(project.getUuid(), periodFrom, periodTo);
             logger.info("receiptList.size() = " + receiptList.size());
 
             for (Receipt receipt : receiptList) {

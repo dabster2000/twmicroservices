@@ -21,7 +21,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
 import dk.trustworks.invoicewebui.repositories.WeekRepository;
@@ -67,7 +66,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final UserService userService;
 
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
     private final WeekRepository weekRepository;
 
@@ -100,10 +99,10 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientRepository clientRepository, WeekRepository weekRepository, WorkService workService, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository, StatisticsService statisticsService) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WeekRepository weekRepository, WorkService workService, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository, StatisticsService statisticsService) {
         this.projectService = projectService;
         this.userService = userService;
-        this.clientRepository = clientRepository;
+        this.clientService = clientService;
         this.weekRepository = weekRepository;
         this.workService = workService;
         this.photoRepository = photoRepository;
@@ -310,8 +309,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private List<Client> getClients(List<Contract> activeConsultantContracts) {
         List<Client> clientList = activeConsultantContracts.stream().map(Contract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
-        System.out.println("clientList.size() = " + clientList.size());
-        clientList.add(clientRepository.findOne("40c93307-1dfa-405a-8211-37cbda75318b"));
+        clientList.add(clientService.findOne("40c93307-1dfa-405a-8211-37cbda75318b"));
         return clientList;
     }
 

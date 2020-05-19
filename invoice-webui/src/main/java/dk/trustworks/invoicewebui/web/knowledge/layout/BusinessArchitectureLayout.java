@@ -1,11 +1,8 @@
 package dk.trustworks.invoicewebui.web.knowledge.layout;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gs.collections.api.tuple.Twin;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.Registration;
@@ -17,9 +14,9 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.functions.TokenEventListener;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.KnowArchiColumnRepository;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -27,25 +24,18 @@ import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import dk.trustworks.invoicewebui.web.knowledge.components.ArchitectureCell;
 import dk.trustworks.invoicewebui.web.knowledge.components.SideBannerDesign;
-import dk.trustworks.invoicewebui.web.knowledge.model.DocumentMetadata;
 import dk.trustworks.invoicewebui.web.model.FileItem;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import dk.trustworks.invoicewebui.web.project.components.TokenListImpl;
-import org.apache.commons.io.FilenameUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.label.MLabel;
-import org.vaadin.viritin.layouts.MCssLayout;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,7 +62,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
     private UserService userService;
 
     @Autowired
-    private ClientRepository clientService;
+    private ClientService clientService;
 
     @Autowired
     private ProjectService projectService;
@@ -370,7 +360,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                             }
                         });
 
-                        ComboBox<Client> clientComboBox = new ComboBox<>("Client: ", clientService.findByOrderByName());
+                        ComboBox<Client> clientComboBox = new ComboBox<>("Client: ", clientService.findAll());
                         clientComboBox.setItemCaptionGenerator(Client::getName);
                         ComboBox<Project> projectComboBox = new ComboBox<>("Project: ");
                         if(cardFile.getCustomeruuid()!=null) {

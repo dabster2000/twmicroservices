@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
 
 
 /**

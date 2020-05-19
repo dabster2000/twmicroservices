@@ -73,10 +73,10 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
         getSelRelationManager().setItemCaptionGenerator(User::getUsername);
     }
 
-    public void save() {
+    public void update() {
         try {
             projectBinder.writeBean(project);
-            projectService.save(project);
+            projectService.update(project);
             //newsRepository.deleteAll();
         } catch (ValidationException e) {
             e.printStackTrace();

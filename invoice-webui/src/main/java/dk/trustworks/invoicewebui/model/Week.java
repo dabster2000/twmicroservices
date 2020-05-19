@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.google.common.base.Objects;
+import dk.trustworks.invoicewebui.services.TaskService;
 import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
@@ -13,9 +14,8 @@ import javax.persistence.*;
 public class Week {
 
     @Id private String uuid;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taskuuid")
-    private Task task;
+
+    private String taskuuid;
 
     private String useruuid;
 
@@ -33,7 +33,7 @@ public class Week {
         this.weeknumber = weeknumber;
         this.year = year;
         this.useruuid = user.getUuid();
-        this.task = task;
+        this.taskuuid = task.getUuid();
     }
 
     public Week(String uuid, int weeknumber, int year, User user, Task task, User workas) {
@@ -41,7 +41,7 @@ public class Week {
         this.weeknumber = weeknumber;
         this.year = year;
         this.useruuid = user.getUuid();
-        this.task = task;
+        this.taskuuid = task.getUuid();
         this.workas = (workas!=null)?workas.getUuid():null;
     }
 
@@ -77,12 +77,20 @@ public class Week {
         this.sorting = sorting;
     }
 
+    public String getTaskuuid() {
+        return taskuuid;
+    }
+
+    public void setTaskuuid(String taskuuid) {
+        this.taskuuid = taskuuid;
+    }
+
     public Task getTask() {
-        return task;
+        return TaskService.get().findOne(taskuuid);
     }
 
     public void setTask(Task task) {
-        this.task = task;
+        this.taskuuid = task.getUuid();
     }
 
     public User getUser() {
@@ -122,7 +130,7 @@ public class Week {
     public String toString() {
         return "Week{" +
                 "uuid='" + uuid + '\'' +
-                ", task=" + task +
+                ", taskuuid=" + taskuuid +
                 ", useruuid='" + UserService.get().findByUUID(useruuid).getUsername() + '\'' +
                 ", weeknumber=" + weeknumber +
                 ", year=" + year +

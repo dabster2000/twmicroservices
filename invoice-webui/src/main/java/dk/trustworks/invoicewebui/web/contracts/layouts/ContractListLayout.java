@@ -6,13 +6,13 @@ import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
+import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -48,7 +48,7 @@ import static java.util.Comparator.comparing;
 public class ContractListLayout extends VerticalLayout {
 
 
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
     private final ContractService contractService;
 
@@ -68,8 +68,8 @@ public class ContractListLayout extends VerticalLayout {
     LocalDate endDate;
 
     @Autowired
-    public ContractListLayout(ClientRepository clientRepository, ContractService contractService, ContractSearchImpl contractSearch, ContractDetailLayout contractDetailLayout, PhotoService photoService) {
-        this.clientRepository = clientRepository;
+    public ContractListLayout(ClientService clientService, ContractService contractService, ContractSearchImpl contractSearch, ContractDetailLayout contractDetailLayout, PhotoService photoService) {
+        this.clientService = clientService;
         this.contractService = contractService;
         this.contractSearch = contractSearch;
         this.contractDetailLayout = contractDetailLayout;
@@ -116,9 +116,9 @@ public class ContractListLayout extends VerticalLayout {
 
         withInactiveClientsSwitch.addValueChangeListener(event -> {
             if(event.getValue()) {
-                contractSearch.getSelClient().setItems(clientRepository.findByOrderByName());
+                contractSearch.getSelClient().setItems(clientService.findAll());
             } else {
-                contractSearch.getSelClient().setItems(clientRepository.findByActiveTrueOrderByName());
+                contractSearch.getSelClient().setItems(clientService.findByActiveTrue());
             }
         });
     }
@@ -150,7 +150,7 @@ public class ContractListLayout extends VerticalLayout {
         gantt.setMovableStepsBetweenRows(true);
         gantt.setShowCurrentTime(true);
 
-        List<Client> clients = clientRepository.findByActiveTrueOrderByName();
+        List<Client> clients = clientService.findByActiveTrue();
         //List<Contract> contracts = client.getContracts();
         //List<Project> projects = client.getProjects();
 
@@ -420,7 +420,7 @@ public class ContractListLayout extends VerticalLayout {
     }
 
     private Client createContractView(Client client) {
-        for (Contract contract : clientRepository.findOne(client.getUuid()).getContracts().stream().sorted(comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
+        for (Contract contract : clientService.findOne(client.getUuid()).getContracts().stream().sorted(comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
             ContractDesign contractDesign = new ContractDesign();
 
             if(contract.getName()==null || contract.getName().equals("")) {
@@ -477,7 +477,7 @@ public class ContractListLayout extends VerticalLayout {
             contractDesign.getBtnDelete().addClickListener(event1 -> ConfirmDialog.show(UI.getCurrent(), "Really delete contract?", dialog -> {
                 if(dialog.isConfirmed()) {
                     contractService.deleteContract(contract);
-                    reloadContractView(clientRepository.findOne(client.getUuid()));
+                    reloadContractView(clientService.findOne(client.getUuid()));
                 }
             }));
 

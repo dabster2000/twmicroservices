@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.TaskService;
 import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.*;
@@ -19,9 +20,7 @@ public class WorkWithRate {
     private double workduration;
     private double rate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taskuuid")
-    private Task task;
+    private String taskuuid;
 
     private String useruuid;
 
@@ -78,12 +77,20 @@ public class WorkWithRate {
         this.rate = rate;
     }
 
+    public String getTaskuuid() {
+        return taskuuid;
+    }
+
+    public void setTaskuuid(String taskuuid) {
+        this.taskuuid = taskuuid;
+    }
+
     public Task getTask() {
-        return task;
+        return TaskService.get().findOne(taskuuid);
     }
 
     public void setTask(Task task) {
-        this.task = task;
+        this.taskuuid = task.getUuid();
     }
 
     public String getUseruuid() {
@@ -104,14 +111,16 @@ public class WorkWithRate {
 
     @Override
     public String toString() {
-        return "Work{" +
-                "id='" + id + '\'' +
-                ", date=" + getDate() +
+        return "WorkWithRate{" +
+                "id=" + id +
+                ", day=" + day +
+                ", month=" + month +
+                ", year=" + year +
                 ", workduration=" + workduration +
-                ", task=" + task.getUuid() +
-                ", user=" + useruuid +
-                ", workas=" + (workas!=null) +
-                ", ["+task.getName()+", "+task.getProject().getName()+", "+task.getProject().getClient().getName()+", "+useruuid+"]" +
+                ", rate=" + rate +
+                ", taskuuid='" + taskuuid + '\'' +
+                ", useruuid='" + useruuid + '\'' +
+                ", workas='" + workas + '\'' +
                 '}';
     }
 }

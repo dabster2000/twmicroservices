@@ -35,20 +35,12 @@ public class UserRestService {
 
     private final Map<String, User> userCache = new HashMap<>();
 
-    //private LoginToken systemToken;
-
     @Autowired
     public UserRestService(SystemRestService systemRestService, RestTemplate restTemplate) {
         this.systemRestService = systemRestService;
         this.restTemplate = restTemplate;
     }
 
-    //@PostConstruct
-    //private void construct() {
-        //systemToken = login(userserviceUsername, userservicePassword);
-    //}
-
-    //@Cacheable("usersbyusername")
     public User findByUsername(String username) {
         String url = userServiceUrl+"/users/search/findByUsername?username="+username;
         return (User) systemRestService.secureCall(url, GET, User.class).getBody(); //restTemplate.getForObject(url, User.class, createHeaders(systemToken.getToken()));

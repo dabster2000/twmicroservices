@@ -14,12 +14,7 @@ import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.network.clients.SlackAPI;
-import dk.trustworks.invoicewebui.network.dto.MarginResult;
 import dk.trustworks.invoicewebui.repositories.AmbitionCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
@@ -28,16 +23,13 @@ import dk.trustworks.invoicewebui.services.MarginService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
-import dk.trustworks.invoicewebui.web.stats.components.ConsultantsBudgetRealizationChart;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
 import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
 import dk.trustworks.invoicewebui.web.vtv.model.MarginRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
@@ -156,7 +148,7 @@ public class SalesLayout extends VerticalLayout {
         this.addComponent(responsiveLayout);
         return this;
     }
-
+    /*
     private Chart createOfferingChart(int year) {
         List<Work> workList = workRepository.findBillableWorkByPeriod(
                 LocalDate.of(year, 1, 1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -174,6 +166,7 @@ public class SalesLayout extends VerticalLayout {
 
         Map<String, Double> hoursByOfferingsMap = new HashMap<>();
         Map<String, Double> hoursByOfferingCategoryMap = new HashMap<>();
+
 
         for (Work work : workList) {
             List<TaskOffering> taskOfferingList = work.getTask().getTaskOfferings();
@@ -242,6 +235,8 @@ public class SalesLayout extends VerticalLayout {
 
         return chart;
     }
+
+     */
 
     private static SolidColor color(int colorIndex) {
         SolidColor c = (SolidColor) colors[colorIndex];

@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.network.rest;
 
-import dk.trustworks.invoicewebui.network.dto.IntegerJsonResponse;
 import dk.trustworks.invoicewebui.network.dto.MarginResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

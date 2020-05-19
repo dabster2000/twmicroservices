@@ -2,7 +2,10 @@ package dk.trustworks.invoicewebui.model;
 
 import dk.trustworks.invoicewebui.services.UserService;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "certifications")

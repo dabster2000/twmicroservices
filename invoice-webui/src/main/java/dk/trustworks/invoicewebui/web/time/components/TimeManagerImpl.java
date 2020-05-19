@@ -7,12 +7,8 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.WeekRepository;
-import dk.trustworks.invoicewebui.services.ProjectService;
-import dk.trustworks.invoicewebui.services.TimeService;
-import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
@@ -38,7 +34,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
     private static final Logger log = LoggerFactory.getLogger(TimeManagerImpl.class);
 
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
 
     @Autowired
     private ProjectService projectService;
@@ -102,7 +98,7 @@ public class TimeManagerImpl extends TimeManagerDesign {
             window.setHeight(500.0f, Unit.PIXELS);
             window.setModal(true);
 
-            List<Client> clientResources = clientRepository.findByActiveTrue();
+            List<Client> clientResources = clientService.findByActiveTrue();
             ComboBox<Client> clientComboBox = new ComboBox<>();
             clientComboBox.setItemCaptionGenerator(Client::getName);
             clientComboBox.setWidth("100%");

@@ -1,7 +1,10 @@
 package dk.trustworks.invoicewebui.jobs;
 
 import com.google.common.hash.Hashing;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.News;
+import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
@@ -38,8 +41,8 @@ public class ProjectManagerJob {
         this.projectService = projectService;
     }
 
+    /*
     @Transactional
-    //@Scheduled(cron = "0 30 23 * * MON-FRI")
     @Scheduled(fixedRate = 12000)
     public void reportCurrentTime() {
         LocalDate dateThreeMonthsAgo = LocalDate.now().minusMonths(3);
@@ -67,6 +70,8 @@ public class ProjectManagerJob {
             }
         }
     }
+
+     */
 
     @Transactional
     @Scheduled(fixedRate = 100000)

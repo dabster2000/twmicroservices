@@ -14,10 +14,10 @@ import dk.trustworks.invoicewebui.model.ProjectDescription;
 import dk.trustworks.invoicewebui.model.ProjectDescriptionUser;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectDescriptionRepository;
 import dk.trustworks.invoicewebui.repositories.ProjectDescriptionUserRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.projectdescriptions.components.ProjectDescriptionDesign;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class ProjectDescriptionLayout extends VerticalLayout {
 
     private final UserService userService;
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
     private final PhotoService photoService;
     private final ProjectDescriptionRepository projectDescriptionRepository;
     private final ProjectDescriptionUserRepository projectDescriptionUserRepository;
@@ -52,9 +52,9 @@ public class ProjectDescriptionLayout extends VerticalLayout {
     private final Map<User, List<ResponsiveColumn>> userList = new HashMap<>();
 
     @Autowired
-    public ProjectDescriptionLayout(UserService userService, ClientRepository clientRepository, PhotoService photoService, ProjectDescriptionRepository projectDescriptionRepository, ProjectDescriptionUserRepository projectDescriptionUserRepository) {
+    public ProjectDescriptionLayout(UserService userService, ClientService clientService, PhotoService photoService, ProjectDescriptionRepository projectDescriptionRepository, ProjectDescriptionUserRepository projectDescriptionUserRepository) {
         this.userService = userService;
-        this.clientRepository = clientRepository;
+        this.clientService = clientService;
         this.projectDescriptionRepository = projectDescriptionRepository;
         this.photoService = photoService;
         this.projectDescriptionUserRepository = projectDescriptionUserRepository;
@@ -212,7 +212,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
 
         ProjectDescriptionFormDesign formDesign = new ProjectDescriptionFormDesign();
         formDesign.getCbClient().setItemCaptionGenerator(Client::getName);
-        formDesign.getCbClient().setItems(clientRepository.findByOrderByName());
+        formDesign.getCbClient().setItems(clientService.findAll());
 
         projectDescription.ifPresent(projectDescription1 -> {
             List<ProjectDescriptionUser> desctiptionUsers = projectDescriptionUserRepository.findByProjectDescription(projectDescription1);
@@ -221,8 +221,6 @@ public class ProjectDescriptionLayout extends VerticalLayout {
                 userDesc.setValue(desctiptionUser.getDescription());
                 userStorieMap.put(desctiptionUser.getUser(), userDesc);
             }
-
-            //formDesign.getCbClient().setVisible(false);
             formDesign.getCbClient().setSelectedItem(projectDescription1.getClient());
             formDesign.getTxtName().setValue(projectDescription1.getName());
             formDesign.getTxtDescription().setValue(projectDescription1.getDescription());

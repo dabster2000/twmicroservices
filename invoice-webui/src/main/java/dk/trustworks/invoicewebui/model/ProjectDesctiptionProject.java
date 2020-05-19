@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.ProjectService;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,20 +12,13 @@ public class ProjectDesctiptionProject {
     @GeneratedValue
     private int id;
 
-    @ManyToOne()
-    @JoinColumn(name="projectuuid")
-    private Project project;
+    private String projectuuid;
 
     @ManyToOne()
     @JoinColumn(name="projectdescid")
     private ProjectDescription projectDescription;
 
     public ProjectDesctiptionProject() {
-    }
-
-    public ProjectDesctiptionProject(Project project, ProjectDescription projectDescription) {
-        this.project = project;
-        this.projectDescription = projectDescription;
     }
 
     public int getId() {
@@ -34,12 +29,20 @@ public class ProjectDesctiptionProject {
         this.id = id;
     }
 
+    public String getProjectuuid() {
+        return projectuuid;
+    }
+
+    public void setProjectuuid(String projectuuid) {
+        this.projectuuid = projectuuid;
+    }
+
     public Project getProject() {
-        return project;
+        return ProjectService.get().findOne(projectuuid);
     }
 
     public void setProject(Project project) {
-        this.project = project;
+        this.projectuuid = project.getUuid();
     }
 
     public ProjectDescription getProjectDescription() {
@@ -52,9 +55,9 @@ public class ProjectDesctiptionProject {
 
     @Override
     public String toString() {
-        return "ProjectDesctiptionProjects{" +
+        return "ProjectDesctiptionProject{" +
                 "id=" + id +
-                ", project=" + project +
+                ", projectuuid='" + projectuuid + '\'' +
                 ", projectDescription=" + projectDescription +
                 '}';
     }

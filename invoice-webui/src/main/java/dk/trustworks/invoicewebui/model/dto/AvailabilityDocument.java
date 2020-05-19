@@ -9,9 +9,6 @@ import dk.trustworks.invoicewebui.utils.DateUtils;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
-import static dk.trustworks.invoicewebui.TrustworksConfiguration.getDayOffHours;
-import static dk.trustworks.invoicewebui.TrustworksConfiguration.getWeekOffHours;
-
 public class AvailabilityDocument {
     private final LocalDate month;
     private final User user;

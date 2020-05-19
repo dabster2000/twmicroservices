@@ -7,7 +7,7 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.repositories.ClientdataRepository;
+import dk.trustworks.invoicewebui.services.ClientdataService;
 import dk.trustworks.invoicewebui.services.ProjectService;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class ClientDataImpl extends ClientDataDesign {
 
     private Binder<Clientdata> clientDataBinder;
 
-    public ClientDataImpl(ClientdataRepository clientdataRepository, Clientdata clientdata, ProjectService projectService) {
+    public ClientDataImpl(ClientdataService clientdataService, Clientdata clientdata, ProjectService projectService) {
         clientDataBinder = new Binder<>();
         clientDataBinder.forField(getTxtCity()).bind(Clientdata::getCity, Clientdata::setCity);
         clientDataBinder.forField(getTxtContactName()).bind(Clientdata::getContactperson, Clientdata::setContactperson);
@@ -45,13 +45,13 @@ public class ClientDataImpl extends ClientDataDesign {
                 clientDataBinder.writeBean(clientdata);
                 if(clientdata.getUuid()!=null && !clientdata.getUuid().trim().equals("")) {
                     System.out.println("Update data");
-                    clientdataRepository.save(clientdata);
+                    clientdataService.save(clientdata);
 
                     getCssHider().setVisible(false);
                     getBtnEdit().setVisible(true);
                 } else {
                     System.out.println("Create data");
-                    clientdataRepository.save(clientdata);
+                    clientdataService.save(clientdata);
                     //clientManager.createClientDetailsView(clientdata.getClient());
                 }
             } catch (ValidationException e) {
@@ -71,7 +71,7 @@ public class ClientDataImpl extends ClientDataDesign {
                 sample.show(Page.getCurrent());
             } else {
 
-            clientdataRepository.delete(clientdata.getUuid());
+            clientdataService.delete(clientdata.getUuid());
             clientdata.setClientname("DELETED");
             clientdata.setContactperson("");
             clientdata.setCity("");

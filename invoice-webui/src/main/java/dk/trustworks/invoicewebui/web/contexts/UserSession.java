@@ -2,9 +2,9 @@ package dk.trustworks.invoicewebui.web.contexts;
 
 
 import dk.trustworks.invoicewebui.model.Role;
+import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.model.User;
 
 import java.util.List;
 

@@ -1,17 +1,10 @@
 package dk.trustworks;
 
-import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.vaadin.spring.annotation.EnableVaadin;
-import com.vaadin.ui.JavaScript;
 import dk.trustworks.invoicewebui.events.WorkNotificationConsumer;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
-import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
-import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +23,6 @@ import reactor.Environment;
 import reactor.bus.EventBus;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;

@@ -12,6 +12,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by hans on 23/06/2017.
@@ -19,7 +20,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "work", path = "work")
 public interface WorkRepository extends CrudRepository<Work, String> {
 
-    Work findByRegisteredAndUseruuidAndTask(LocalDate registered, String useruuid, Task task);
+    Work findByRegisteredAndUseruuidAndTaskuuid(LocalDate registered, String useruuid, String taskuuid);
 
     @Query(value = "select w.*, cc.rate from " +
             "work as w " +
@@ -170,6 +171,9 @@ public interface WorkRepository extends CrudRepository<Work, String> {
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid", nativeQuery = true)
     List<Work> findByTasks(@Param("taskuuid") List<String> taskuuid);
 
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid like :taskuuid", nativeQuery = true)
+    List<Work> findByTask(@Param("taskuuid") String taskuuid);
+
     @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
     List<Work> findByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
 
@@ -187,7 +191,7 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and  w.registered >= :fromdate AND w.registered < :todate " +
             "and t.projectuuid in :projectuuids " +
             "and w.workduration > 0.0", nativeQuery = true)
-    List<Work> findByProjectsAndUsersAndDateRange(@Param("projectuuids") List<String> projectuuids, @Param("useruuids") List<String> useruuids, @Param("fromdate") String fromdate, @Param("todate") String todate);
+    List<Work> findByProjectsAndUsersAndDateRange(@Param("projectuuids") Set<String> projectuuids, @Param("useruuids") List<String> useruuids, @Param("fromdate") String fromdate, @Param("todate") String todate);
 
     @Query(value = "SELECT w.* from work w " +
             "LEFT JOIN task t ON w.taskuuid = t.uuid " +

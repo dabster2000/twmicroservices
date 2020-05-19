@@ -39,7 +39,6 @@ import dk.trustworks.invoicewebui.web.dashboard.components.ReleaseNotesPopupDesi
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import dk.trustworks.invoicewebui.web.profile.components.KnowledgeChart;
-import dk.trustworks.invoicewebui.web.stats.components.Card;
 import dk.trustworks.invoicewebui.web.stats.components.RevenuePerMonthChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

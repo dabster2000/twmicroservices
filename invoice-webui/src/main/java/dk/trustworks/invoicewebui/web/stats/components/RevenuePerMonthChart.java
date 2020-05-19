@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.vaadin.ui.Notification.show;
 import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
 
 /**

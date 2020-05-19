@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import dk.trustworks.invoicewebui.services.ProjectService;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -16,9 +18,7 @@ public class BudgetNew {
     @JoinColumn(name = "consultantuuid")
     private ContractConsultant contractConsultant;
 
-    @ManyToOne()
-    @JoinColumn(name = "projectuuid")
-    private Project project;
+    private String projectuuid;
 
     public BudgetNew() {
         uuid = UUID.randomUUID().toString();
@@ -30,7 +30,7 @@ public class BudgetNew {
         this.year = year;
         this.budget = budget;
         this.contractConsultant = contractConsultant;
-        this.project = project;
+        this.projectuuid = project.getUuid();
     }
 
     public String getUuid() {
@@ -74,11 +74,11 @@ public class BudgetNew {
     }
 
     public Project getProject() {
-        return project;
+        return ProjectService.get().findOne(projectuuid);
     }
 
     public void setProject(Project project) {
-        this.project = project;
+        this.projectuuid = project.getUuid();
     }
 
     @Override

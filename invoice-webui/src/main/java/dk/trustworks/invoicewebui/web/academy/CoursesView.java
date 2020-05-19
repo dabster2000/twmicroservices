@@ -9,7 +9,6 @@ import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.academy.layout.CoursesLayout;
-import dk.trustworks.invoicewebui.web.knowledge.components.KnowledgeCanvas;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.slf4j.Logger;

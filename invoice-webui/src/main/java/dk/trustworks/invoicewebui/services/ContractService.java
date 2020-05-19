@@ -4,11 +4,11 @@ import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.repositories.ClientRepository;
 import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,7 +23,9 @@ import java.util.stream.Collectors;
 import static dk.trustworks.invoicewebui.utils.DateUtils.isBetween;
 
 @Service
-public class ContractService {
+public class ContractService implements InitializingBean {
+
+    private static ContractService instance;
 
     private final ProjectService projectService;
 
@@ -31,16 +33,16 @@ public class ContractService {
 
     private final ContractConsultantRepository consultantRepository;
 
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
     private final WorkService workService;
 
     @Autowired
-    public ContractService(ProjectService projectService, ContractRepository contractRepository, ContractConsultantRepository consultantRepository, ClientRepository clientRepository, WorkService workService) {
+    public ContractService(ProjectService projectService, ContractRepository contractRepository, ContractConsultantRepository consultantRepository, ClientService clientService, WorkService workService) {
         this.projectService = projectService;
         this.contractRepository = contractRepository;
         this.consultantRepository = consultantRepository;
-        this.clientRepository = clientRepository;
+        this.clientService = clientService;
         this.workService = workService;
     }
 
@@ -51,13 +53,13 @@ public class ContractService {
         Contract savedContract = contractRepository.save(contract);
         Client client = savedContract.getClient();
         client.setActive(true);
-        clientRepository.save(client);
+        clientService.save(client);
         return contract;
     }
 
     private boolean isValidContract(Contract contract) {
         boolean isValid = true;
-        for (Contract contractTest : contractRepository.findByClient(contract.getClient())) {
+        for (Contract contractTest : contractRepository.findByClientuuid(contract.getClient().getUuid())) {
             boolean isOverlapped = false;
             if(contract.getUuid().equals(contractTest.getUuid())) continue;
             if((contract.getActiveFrom().isBefore(contractTest.getActiveTo()) || contract.getActiveFrom().isEqual(contractTest.getActiveTo())) &&
@@ -66,9 +68,9 @@ public class ContractService {
             }
 
             boolean hasProject = false;
-            for (Project project : contract.getProjects()) {
-                for (Project contractTestProject : contractTest.getProjects()) {
-                    if(project.getUuid().equals(contractTestProject.getUuid())) {
+            for (ContractProject contractProject : contract.getContractProjects()) {
+                for (ContractProject contractTestProject : contractTest.getContractProjects()) {
+                    if(contractProject.getProjectuuid().equals(contractTestProject.getProjectuuid())) {
                         hasProject = true;
                         break;
                     }
@@ -104,6 +106,7 @@ public class ContractService {
         return contractRepository.findOne(contract.getUuid());
     }
 
+    /*
     @Transactional
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract addProjects(Contract Contract, Set<Project> projects) throws ContractValidationException {
@@ -126,20 +129,21 @@ public class ContractService {
         contractRepository.save(Contract);
         return Contract;
     }
+     */
 
     @Transactional
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract addProject(Contract contract, Project project) throws ContractValidationException {
         contract.addProject(project);
         if(!isValidContract(contract)) {
-            contract.getProjects().remove(project);
+            contract.removeProject(project); //.getProjects().remove(project);
             throw new ContractValidationException("Contract not valid");
         }
 
         // execute
         contract = contractRepository.findOne(contract.getUuid());
         project = projectService.findOne(project.getUuid());
-        project.addContract(contract);
+        //project.addContract(contract);
         //project = projectRepository.create(project);
         contract.addProject(project);
         contractRepository.save(contract);
@@ -189,7 +193,7 @@ public class ContractService {
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract removeProject(Contract contract, Project project) throws ContractValidationException {
         contract = contractRepository.findOne(contract.getUuid());
-        contract.getProjects().remove(project);
+        contract.removeProject(project);
         return updateContract(contract);
     }
 
@@ -227,8 +231,10 @@ public class ContractService {
 
     public Set<Project> getClientProjectsNotUnderContract(Client client) {
         Set<Project> projects = new HashSet<>();
+        List<Contract> contracts = contractRepository.findByClientuuid(client.getUuid());
+        List<String> projectUuids = contracts.stream().flatMap(contract -> contract.getContractProjects().stream().map(ContractProject::getProjectuuid)).collect(Collectors.toList());
         for (Project project : client.getProjects()) {
-            if(project.getContracts().size()==0) projects.add(project);
+            if(!projectUuids.contains(project.getUuid())) projects.add(project);
         }
         return projects;
     }
@@ -259,12 +265,12 @@ public class ContractService {
         )).orElse(null);
     }
 
-    public List<Work> getWorkOnContractByUser(Contract Contract) {
+    public List<Work> getWorkOnContractByUser(Contract contract) {
         return workService.findByProjectsAndUsersAndDateRange(
-                Contract.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
-                Contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
-                Contract.getActiveFrom(),
-                Contract.getActiveTo());
+                contract.getProjectUuids(), //.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
+                contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
+                contract.getActiveFrom(),
+                contract.getActiveTo());
     }
 
     public List<Contract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
@@ -332,5 +338,22 @@ public class ContractService {
                                         contract.getStatus().equals(ContractStatus.BUDGET)
                         ) && contract.findByUser(user)!=null)
                 .collect(Collectors.toList());
+    }
+
+    public List<Contract> getContractsByProject(Project project) {
+        return contractRepository.findByProjectuuid(project.getUuid());
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        instance = this;
+    }
+
+    public static ContractService get() {
+        return instance;
+    }
+
+    public List<Contract> findByClient(Client client) {
+        return contractRepository.findByClientuuid(client.getUuid());
     }
 }

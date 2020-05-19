@@ -2,11 +2,11 @@ package dk.trustworks.invoicewebui.web.photoupload.components;
 
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import org.vaadin.liveimageeditor.LiveImageEditor;
