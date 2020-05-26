@@ -53,6 +53,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ProjectService projectService;
 
+    private final ClientdataService clientdataService;
+
     private final ContractConsultantRepository consultantRepository;
 
     private final PhotoService photoService;
@@ -74,10 +76,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ContractConsultantRepository consultantRepository, PhotoService photoService, ChartCacheJob chartCache) {
+    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ClientdataService clientdataService, ContractConsultantRepository consultantRepository, PhotoService photoService, ChartCacheJob chartCache) {
         this.userService = userService;
         this.contractService = contractService;
         this.projectService = projectService;
+        this.clientdataService = clientdataService;
         this.consultantRepository = consultantRepository;
         this.photoService = photoService;
         this.chartCache = chartCache;
@@ -93,16 +96,34 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractRow.removeAllComponents();
         proposedPeriod = new LocalDatePeriod(contract.getActiveFrom(), contract.getActiveTo());
 
+        System.out.println("time start...");
+        long timer = System.currentTimeMillis();
         createNavigationBarCard(navigationBar, 12);
+        System.out.println("createNavigationBarCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         createUsedBudgetCard(contract, 6);
+        System.out.println("createUsedBudgetCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         createBurndownCard(contract, 6);
+        System.out.println("createBurndownCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         createBurnrateCard(contract, 12);
+        System.out.println("createBurnrateCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         createContractCard(contract, 4);
+        System.out.println("createContractCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         createProjectsCard(contract, 4);
+        System.out.println("createProjectsCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         createContactInformationCard(contract, 4);
+        System.out.println("createContactInformationCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         createConsultantsCard(contract, 12);
+        System.out.println("createConsultantsCard " + (timer - System.currentTimeMillis()));
+        timer = System.currentTimeMillis();
         updateProposedPeriod(contract);
-
+        System.out.println("createConsultantsCard " + (timer - System.currentTimeMillis()));
         return this;
     }
 
@@ -287,7 +308,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             contactInformationRow.getLblCity().setValue(clientdata.getCity());
             contactInformationRow.getLblOther().setValue(clientdata.getOtheraddressinfo());
             contactInformationRow.getBtnAdd().addClickListener(event1 -> {
-                contract.setClientdata(clientdata);
+                contract.setClientdatauuid(clientdata.getUuid());
                 Contract newContract = null;
                 try {
                     newContract = contractService.updateContract(contract);
@@ -559,8 +580,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             });
             projectsLayout.addComponent(projectRowDesign);
         }
-
-        createProposedProjects(contract);
+        // TODO: REINTRODUCE
+        //createProposedProjects(contract);
 
         projectsLayout.addComponent(new MButton(
                 VaadinIcons.PLUS,
@@ -574,7 +595,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     ComboBox<Project> projectComboBox = new ComboBox<>();
                     projectComboBox.setWidth(250, Unit.PIXELS);
                     projectComboBox.setPopupWidth("");
-                    projectComboBox.setItems(projectService.findByClientOrderByNameAsc(contract.getClient()));
+                    projectComboBox.setItems(projectService.findByClientuuidOrderByNameAsc(contract.getClientuuid()));
                     projectComboBox.setItemCaptionGenerator(Project::getName);
                     subContent.addComponent(projectComboBox);
                     Button addButton = new Button("Add");
@@ -597,8 +618,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createProposedProjects(Contract contract) {
-        List<Project> deltaProjects = new ArrayList<>(contract.getClient().getProjects());
+        List<Project> deltaProjects = projectService.findByClientuuidOrderByNameAsc(contract.getClientuuid());
         Map<String, Project> projectsWithUserWorkButNoContract = new HashMap<>();
+
         for (User user : contract.getContractConsultants().stream().map(ContractConsultant::getUser).collect(Collectors.toList())) {
             for (Project project : contractService.getProjectsWithUserWorkButNoContract(deltaProjects, user)) {
                 // is project already on contract

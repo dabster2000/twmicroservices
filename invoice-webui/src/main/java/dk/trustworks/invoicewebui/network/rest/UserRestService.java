@@ -46,6 +46,7 @@ public class UserRestService {
         return (User) systemRestService.secureCall(url, GET, User.class).getBody(); //restTemplate.getForObject(url, User.class, createHeaders(systemToken.getToken()));
     }
 
+    @Cacheable("users")
     public User findOne(String uuid) {
         if(userCache.containsKey(uuid)) return userCache.get(uuid);
         String url = userServiceUrl + "/users/" + uuid;

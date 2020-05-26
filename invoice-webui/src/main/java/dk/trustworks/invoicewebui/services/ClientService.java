@@ -34,8 +34,11 @@ public class ClientService implements InitializingBean {
     }
 
     public Client save(Client client) {
-        // TODO: SAVE
         return clientRestService.save(client);
+    }
+
+    public void update(Client client) {
+        clientRestService.update(client);
     }
 
     @Override

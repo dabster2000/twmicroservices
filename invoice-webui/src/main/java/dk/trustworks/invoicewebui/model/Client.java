@@ -77,7 +77,7 @@ public class Client {
 
     @JsonIgnore
     public List<Project> getProjects() {
-        return ProjectService.get().findByClientOrderByNameAsc(this);
+        return ProjectService.get().findByClientuuidOrderByNameAsc(this.getUuid());
     }
 
     @JsonIgnore
@@ -126,6 +126,6 @@ public class Client {
 
     @JsonIgnore
     public List<Contract> getContracts() {
-        return ContractService.get().findByClient(this);
+        return ContractService.get().findByClientuuid(this.getUuid());
     }
 }

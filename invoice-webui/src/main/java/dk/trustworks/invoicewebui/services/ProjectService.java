@@ -4,8 +4,6 @@ import com.vaadin.server.VaadinSession;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
-import dk.trustworks.invoicewebui.model.Task;
-import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.network.rest.ProjectRestService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,8 +42,8 @@ public class ProjectService implements InitializingBean {
         return projectRestService.findByClientAndActiveTrue(client);
     }
 
-    public List<Project> findByClientOrderByNameAsc(Client client) {
-        return projectRestService.findByClient(client);
+    public List<Project> findByClientuuidOrderByNameAsc(String clientuuid) {
+        return projectRestService.findByClientuuid(clientuuid);
     }
 
     public List<Project> findByClientdata(Clientdata clientdata) {
@@ -64,7 +62,7 @@ public class ProjectService implements InitializingBean {
     public Project save(Project project) {
         project.setOwner(userService.findByUUID(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser().getUuid()));
         project = projectRestService.save(project);
-        return createDefaultTask(project);
+        return project;
     }
 
     public void update(Project project) {
@@ -81,9 +79,9 @@ public class ProjectService implements InitializingBean {
     }
 
     public Project findOne(String projectUUID) {
-        return createDefaultTask(projectRestService.findOne(projectUUID));
+        return projectRestService.findOne(projectUUID);
     }
-
+/*
     private Project createDefaultTask(Project project) {
         boolean hasSOTypeTask = false;
         for (Task task : taskService.findByProject(project.getUuid())) {
@@ -97,6 +95,8 @@ public class ProjectService implements InitializingBean {
         }
         return project;
     }
+
+ */
 
     @Override
     public void afterPropertiesSet() {

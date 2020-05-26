@@ -84,7 +84,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
             clientCard.getBtnEdit().addClickListener(event -> createClientDetailsView(client));
             clientCard.getBtnDelete().addClickListener(event -> {
                 client.setActive(!client.isActive());
-                clientService.save(client);
+                clientService.update(client);
                 if(client.isActive()) {
                     clientCard.getBtnDelete().setCaption("DEACTIVATE");
                     clientCard.getBtnDelete().setStyleName("danger");
@@ -211,13 +211,13 @@ public class ClientManagerImpl extends ClientManagerDesign {
     }
 
     private void saveClient(Client client) {
-        if(client.getUuid() == null || client.getUuid().equals("")) {
-            client.setUuid(UUID.randomUUID().toString());
-            client.setCreated(Timestamp.from(Instant.now()));
-            clientService.save(client);
-        } else {
-            clientService.save(client);
-        }
+        //if(client.getUuid() == null || client.getUuid().equals("")) {
+        //    client.setUuid(UUID.randomUUID().toString());
+        //    client.setCreated(Timestamp.from(Instant.now()));
+        //    clientService.update(client);
+        //} else {
+            clientService.update(client);
+        //}
     }
 
     private Image createCompanyLogo(Client client) {

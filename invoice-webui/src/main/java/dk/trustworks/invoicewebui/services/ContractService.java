@@ -53,7 +53,7 @@ public class ContractService implements InitializingBean {
         Contract savedContract = contractRepository.save(contract);
         Client client = savedContract.getClient();
         client.setActive(true);
-        clientService.save(client);
+        clientService.update(client);
         return contract;
     }
 
@@ -353,7 +353,7 @@ public class ContractService implements InitializingBean {
         return instance;
     }
 
-    public List<Contract> findByClient(Client client) {
-        return contractRepository.findByClientuuid(client.getUuid());
+    public List<Contract> findByClientuuid(String clientuuid) {
+        return contractRepository.findByClientuuid(clientuuid);
     }
 }

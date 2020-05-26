@@ -59,9 +59,9 @@ public class FaqBoard extends VerticalLayout {
 
         Accordion accFaq = searchDesign.getAccFaq();
 
-        row.addColumn().withDisplayRules(12, 12, 8, 8)
-                .withOffset(ResponsiveLayout.DisplaySize.MD, 2)
-                .withOffset(ResponsiveLayout.DisplaySize.LG, 2)
+        row.addColumn().withDisplayRules(12, 12, 12, 12)
+                //.withOffset(ResponsiveLayout.DisplaySize.MD, 2)
+                //.withOffset(ResponsiveLayout.DisplaySize.LG, 2)
                 .withComponent(searchDesign);
 
         for (Faq faq : faqRepository.findByOrderByFaqgroupAscTitleAsc()) {

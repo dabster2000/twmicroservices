@@ -4,6 +4,7 @@ import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.network.rest.TaskRestService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class TaskService implements InitializingBean {
     public List<Task> findByProject(String projectuuid) {
         return taskRestService.findByProject(projectuuid);
     }
+
 
     public void delete(String id) {
         taskRestService.delete(id);

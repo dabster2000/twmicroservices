@@ -56,8 +56,9 @@ public class ProjectRestService {
         return Arrays.asList(result.getBody());
     }
 
-    public List<Project> findByClient(Client client) {
-        String url = crmServiceUrl + "/clients/" + client.getUuid() + "/projects";
+    @Cacheable("projects")
+    public List<Project> findByClientuuid(String clientuuid) {
+        String url = crmServiceUrl + "/clients/" + clientuuid + "/projects";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }

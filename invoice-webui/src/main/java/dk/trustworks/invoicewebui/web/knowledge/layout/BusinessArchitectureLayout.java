@@ -366,13 +366,13 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                         if(cardFile.getCustomeruuid()!=null) {
                             Client client = clientService.findOne(cardFile.getCustomeruuid());
                             clientComboBox.setSelectedItem(client);
-                            projectComboBox.setItems(projectService.findByClientOrderByNameAsc(client));
+                            projectComboBox.setItems(projectService.findByClientuuidOrderByNameAsc(client.getUuid()));
                         }
                         projectComboBox.setItemCaptionGenerator(Project::getName);
                         if(cardFile.getProjectuuid()!=null) projectComboBox.setSelectedItem(projectService.findOne(cardFile.getProjectuuid()));
                         clientComboBox.addValueChangeListener(valueChangeEvent -> {
                             projectComboBox.clear();
-                            projectComboBox.setItems(projectService.findByClientOrderByNameAsc(valueChangeEvent.getValue()));
+                            projectComboBox.setItems(projectService.findByClientuuidOrderByNameAsc(valueChangeEvent.getValue().getUuid()));
                         });
 
                         Window window = new Window();
