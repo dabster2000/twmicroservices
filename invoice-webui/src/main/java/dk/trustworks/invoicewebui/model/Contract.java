@@ -281,7 +281,7 @@ public class Contract {
     }
 
     public Clientdata getClientdata() {
-        return ClientdataService.get().findOne(clientuuid);
+        return ClientdataService.get().findOne(clientdatauuid);
     }
 
     public void setClientdata(Clientdata clientdata) {
