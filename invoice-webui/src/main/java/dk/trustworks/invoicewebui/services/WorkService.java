@@ -62,6 +62,10 @@ public class WorkService {
         return workRepository.findByUserAndTasks(user.getUuid(), "02bf71c5-f588-46cf-9695-5864020eb1c4");
     }
 
+    public List<Work> findMaternityLeaveByUser(User user) {
+        return workRepository.findByUserAndTasks(user.getUuid(), "da2f89fc-9aef-4029-8ac2-7486be60e9b9");
+    }
+
     public double countVacationByUser(User user) {
         return workRepository.countByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
     }
@@ -158,4 +162,6 @@ public class WorkService {
     public List<Work> findBillableWorkByUser(String uuid) {
         return workRepository.findBillableWorkByUser(uuid);
     }
+
+
 }

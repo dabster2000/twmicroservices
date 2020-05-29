@@ -219,6 +219,7 @@ public class StatisticsCachedService {
         }
         for (User user : userService.findAll()) {
             List<Work> vacationByUser = workService.findVacationByUser(user);
+            List<Work> maternityLeaveByUser = workService.findMaternityLeaveByUser(user);
             List<Work> sicknessByUser = workService.findSicknessByUser(user);
             LocalDate startDate = LocalDate.of(2014, 7, 1);
             do {
@@ -235,11 +236,17 @@ public class StatisticsCachedService {
                             if(work.getRegistered().getDayOfWeek().getValue() == DayOfWeek.FRIDAY.getValue()) return work.getWorkduration()-2.0;
                             return work.getWorkduration();
                         }).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
+                double maternityLeave = maternityLeaveByUser.stream()
+                        .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(finalStartDate))
+                        .mapToDouble(work -> {
+                            if(work.getRegistered().getDayOfWeek().getValue() == DayOfWeek.FRIDAY.getValue()) return work.getWorkduration()-2.0;
+                            return work.getWorkduration();
+                        }).sum(); // Her regnes med 7,4 timer per dag, med en sum over hele måneden.
                 //int capacity = userService.calculateCapacityByMonthByUser(user.getUuid(), stringIt(finalStartDate)); // Ofte 37 timer på en uge
                 int capacity = capacityMap.getOrDefault(user.getUuid()+":"+stringIt(finalStartDate.withDayOfMonth(1)), new Capacity(user.getUuid(), finalStartDate, 0)).getTotalAllocation();
                 UserStatus userStatus = userService.getUserStatus(user, finalStartDate);
 
-                availabilityDocumentList.add(new AvailabilityDocument(user, finalStartDate, capacity, vacation, sickness, userStatus.getType(), userStatus.getStatus()));
+                availabilityDocumentList.add(new AvailabilityDocument(user, finalStartDate, capacity, vacation, sickness, maternityLeave, userStatus.getType(), userStatus.getStatus()));
 
                 startDate = startDate.plusMonths(1);
             } while (startDate.isBefore(DateUtils.getCurrentFiscalStartDate().plusYears(2)));

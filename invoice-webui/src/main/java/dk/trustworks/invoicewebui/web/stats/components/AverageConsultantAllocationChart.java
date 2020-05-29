@@ -80,7 +80,7 @@ public class AverageConsultantAllocationChart {
                 if(availability==null) {
                     //startDate = startDate.plusMonths(1);
                     //continue;
-                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
+                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
                 double monthAllocation = 0.0;
                 if(billableWorkHours>0.0 && availability.getNetAvailableHours()>0.0) {

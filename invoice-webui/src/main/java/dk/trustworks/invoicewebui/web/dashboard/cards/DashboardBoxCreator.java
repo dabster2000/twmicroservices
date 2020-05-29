@@ -115,7 +115,7 @@ public class DashboardBoxCreator {
                 double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
                 AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
                 if (availability == null) {
-                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
+                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
                 double monthAllocation = 0.0;
                 if (billableWorkHours > 0.0 && availability.getNetAvailableHours() > 0.0) {

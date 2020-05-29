@@ -15,12 +15,14 @@ public class AvailabilityDocument {
     private final double availableHours;
     private final double vacation;
     private final double sickdays;
+    private final double maternityLeave;
     private final double weeks;
     private final double weekdaysInPeriod;
     private final ConsultantType consultantType;
     private final StatusType statusType;
 
-    public AvailabilityDocument(User user, LocalDate month, double workWeek, double vacation, double sickdays, ConsultantType consultantType, StatusType statusType) {
+    public AvailabilityDocument(User user, LocalDate month, double workWeek, double vacation, double sickdays, double maternityLeave, ConsultantType consultantType, StatusType statusType) {
+        this.maternityLeave = maternityLeave;
         this.consultantType = consultantType;
         this.statusType = statusType;
         this.user = user;
@@ -61,7 +63,7 @@ public class AvailabilityDocument {
      * @return availability uden ferie, sygdom og fredage
      */
     public double getNetAvailableHours() {
-        return Math.max((availableHours * weeks) - adjustForOffHours() - getNetVacation() - getNetSickdays(), 0.0); // F.eks. 2019-12-01: ((37 - 2) * 3,6) - (7,4 * 2 - 0.4) - (0 * 1)) = 111,2
+        return Math.max((availableHours * weeks) - adjustForOffHours() - getNetVacation() - getNetSickdays() - getNetMaternityLeave(), 0.0); // F.eks. 2019-12-01: ((37 - 2) * 3,6) - (7,4 * 2 - 0.4) - (0 * 1)) = 111,2
     }
 
     public double getGrossVacation() {
@@ -78,6 +80,10 @@ public class AvailabilityDocument {
 
     public double getNetSickdays() {
         return sickdays;
+    }
+
+    public double getNetMaternityLeave() {
+        return maternityLeave;
     }
 
     private double adjustForOffHours() {

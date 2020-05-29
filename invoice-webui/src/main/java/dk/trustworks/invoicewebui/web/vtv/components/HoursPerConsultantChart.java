@@ -57,6 +57,7 @@ public class HoursPerConsultantChart {
         Number[] budgetHours = new Number[users.size()];
         Number[] vacationHours = new Number[users.size()];
         Number[] sickHours = new Number[users.size()];
+        Number[] maternityLeaveHours = new Number[users.size()];
 
         int i = 0;
         for (User user : users) {
@@ -72,6 +73,7 @@ public class HoursPerConsultantChart {
 
             double vacationHoursByMonth = availability.getNetVacation();  // 44
             double sickHoursByMonth = availability.getNetSickdays(); // 15
+            double maternityLeaveHoursByMonth = availability.getNetMaternityLeave();
 
             if(availableHoursByMonth < 0) {
                 budgetHoursByMonth += availableHoursByMonth; // 58 + (-14) = 44
@@ -84,6 +86,7 @@ public class HoursPerConsultantChart {
             availableHours[i] = NumberUtils.round(availableHoursByMonth, 0);
             vacationHours[i] = NumberUtils.round(vacationHoursByMonth, 0);
             sickHours[i] = NumberUtils.round(sickHoursByMonth, 0);
+            maternityLeaveHours[i] = NumberUtils.round(maternityLeaveHoursByMonth, 0);
 
             categories[i++] = user.getUsername();
         }
@@ -111,6 +114,12 @@ public class HoursPerConsultantChart {
         poc5.setColor(new SolidColor("#FFD864"));
         vacationHoursSeries.setPlotOptions(poc5);
         chart.getConfiguration().addSeries(vacationHoursSeries);
+
+        ListSeries maternityLeaveHoursSeries = new ListSeries("maternity leave hours", maternityLeaveHours);
+        PlotOptionsColumn poc6 = new PlotOptionsColumn();
+        poc6.setColor(new SolidColor("#FFE7A2"));
+        vacationHoursSeries.setPlotOptions(poc6);
+        chart.getConfiguration().addSeries(maternityLeaveHoursSeries);
 
         ListSeries availableHoursSeries = new ListSeries("available hours", availableHours);
         PlotOptionsColumn poc1 = new PlotOptionsColumn();
