@@ -34,9 +34,7 @@ public class VimeoAPI {
             Response response = mapper.readValue(vimeoResponse.getJson().toString(), Response.class);
             if(response.getData()==null) return "";
             createdTime = response.getData().get(0).getCreatedTime();
-            System.out.println("createdTime = " + createdTime); //2020-01-21T21:44:10+00:00
             videoAge = LocalDate.parse(createdTime, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-            System.out.println("videoAge = " + videoAge);
             return "https://player.vimeo.com"+response.getData().get(0).getUri().replace("videos", "video");
         } catch (IOException e) {
             e.printStackTrace();
