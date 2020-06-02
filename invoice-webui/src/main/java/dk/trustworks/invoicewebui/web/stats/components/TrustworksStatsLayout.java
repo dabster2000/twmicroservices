@@ -8,6 +8,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
@@ -126,6 +127,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
     @Autowired
     private InvoiceService invoiceService;
+
+    @Autowired
+    private DashboardPreloader dashboardPreloader;
 
     private ResponsiveRow baseContentRow;
 
@@ -428,6 +432,19 @@ public class TrustworksStatsLayout extends VerticalLayout {
             });
             searchRow.addColumn().withDisplayRules(3, 2, 1, 1).withComponent(memberImage);
         }
+    }
+
+    public void addAdminPage() {
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        individualsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
+        ResponsiveRow searchRow = responsiveLayout.addRow();
+        final ResponsiveRow chartRow = responsiveLayout.addRow();
+
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 3, 3)
+                .withComponent(new MButton(
+                        "Reload Video Status",
+                        clickEvent -> dashboardPreloader.loadTrustworksStatus()));
     }
 
     private void createIndividualCharts(ResponsiveRow chartRow, User employee) {
