@@ -23,6 +23,8 @@ import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -76,7 +78,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
     private Component createCourseQueueBox(String type, String caption) {
         Box box = new Box();
-        Tree<String> tree = new Tree<>(caption);
+        Tree<String> tree = new Tree<>();
         TreeData<String> data = new TreeData<>();
         int number = 1;
         for (CkoCourse ckoCourse : microCourseRepository.findByActiveTrue()) {
@@ -87,7 +89,12 @@ public class CkoAdministrationLayout extends VerticalLayout {
         }
 
         tree.setDataProvider(new TreeDataProvider<>(data));
-        box.getContent().addComponent(tree);
+        box.getContent().addComponent(
+                new MVerticalLayout(
+                        new MLabel(caption).withStyleName("dark-grey-font"),
+                        tree
+                )
+        );
         return box;
     }
 
@@ -102,7 +109,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
         Configuration conf = chart.getConfiguration();
 
-        conf.setTitle("Knowledge Budget");
+        conf.setTitle("");
 
         ListSeries expenseSeries = new ListSeries("used");
         PlotOptionsColumn poc1 = new PlotOptionsColumn();
@@ -171,7 +178,12 @@ public class CkoAdministrationLayout extends VerticalLayout {
         conf.addSeries(expenseSeries);
         conf.addSeries(availableSeries);
         chart.drawChart(conf);
-        box.getContent().addComponent(chart);
+        box.getContent().addComponent(
+                new MVerticalLayout(
+                        new MLabel("Knowledge Budget per Year").withStyleName("dark-grey-font"),
+                        chart
+                )
+        );
         return box;
     }
 
@@ -187,7 +199,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
         Configuration conf = chart.getConfiguration();
 
-        conf.setTitle("Knowledge Budget per Consultant "+LocalDate.now().getYear());
+        conf.setTitle("");
 
         ListSeries expenseSeries = new ListSeries("used");
         PlotOptionsColumn poc1 = new PlotOptionsColumn();
@@ -256,7 +268,12 @@ public class CkoAdministrationLayout extends VerticalLayout {
         conf.addSeries(expenseSeries);
         conf.addSeries(availableSeries);
         chart.drawChart(conf);
-        box.getContent().addComponent(chart);
+        box.getContent().addComponent(
+                new MVerticalLayout(
+                        new MLabel("Knowledge Budget per Consultant "+LocalDate.now().getYear()).withStyleName("dark-grey-font"),
+                        chart
+                )
+        );
         return box;
     }
 }
