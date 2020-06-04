@@ -57,10 +57,19 @@ public class CkoAdministrationLayout extends VerticalLayout {
         Component graduatedBox = createCourseQueueBox("GRADUATED", "Trustworks Academy - Graduated");
 
         ResponsiveRow row = mainLayout.addRow();
-        row.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(enlistedBox);
-        row.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(graduatedBox);
-        row.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(getTotalYearlyBudgetChart());
-        row.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(getBudgetPerConsultantChart());
+
+        ResponsiveLayout responsiveColumn1Layout = new ResponsiveLayout();
+        ResponsiveLayout responsiveColumn2Layout = new ResponsiveLayout();
+        row.addColumn().withDisplayRules(12,12,7,7).withComponent(responsiveColumn1Layout);
+        row.addColumn().withDisplayRules(12,12,5,5).withComponent(responsiveColumn2Layout);
+
+        ResponsiveRow leftRow = responsiveColumn1Layout.addRow();
+        ResponsiveRow rightRow = responsiveColumn2Layout.addRow();
+
+        leftRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(enlistedBox);
+        leftRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(graduatedBox);
+        rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(getTotalYearlyBudgetChart());
+        rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(getBudgetPerConsultantChart());
 
         return this;
     }
@@ -169,8 +178,9 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
     private Component getBudgetPerConsultantChart() {
         Box box = new Box();
-        Chart chart = new Chart(ChartType.COLUMN);
+        Chart chart = new Chart(ChartType.BAR);
         chart.setWidth(100, Unit.PERCENTAGE);
+
 
         Tooltip tooltip = new Tooltip();
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
@@ -198,40 +208,13 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
         XAxis x = new XAxis();
         x.setTitle("year");
-/*
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
-            int maxBudgetFullYear = 24000;
-            int maxBudgetFirstYear = maxBudgetFullYear;
-            Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
-            if (!firstStatus.isPresent()) continue;
-
-
-            if (expensesPerConsultant.keySet().size() == 0) {
-                x.addCategory(LocalDate.now().getYear() + "");
-                expenseSeries.addData(0);
-                availableSeries.addData(maxBudgetFirstYear);
-            } else {
-                for (String year : expenses.keySet()) {
-                    x.addCategory(year);
-                    expenseSeries.addData(expenses.get(year));
-                    if (Integer.parseInt(year) == firstStatus.get().getStatusdate().getYear())
-                        availableSeries.addData(maxBudgetFirstYear - expenses.get(year));
-                    else
-                        availableSeries.addData(maxBudgetFullYear - expenses.get(year));
-                }
-            }
-        }
-
- */
-
 
         SortedMap<String, Integer> budgetsPerConsultant = new TreeMap<>();
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
             Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
             if (!firstStatus.isPresent()) continue;
 
-            int maxBudgetFullYear = 24000;
-            int maxBudgetFirstYear = maxBudgetFullYear;
+            int maxBudgetFirstYear = 24000;
 
             if (DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) < 12)
                 maxBudgetFirstYear = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) * 2000;
@@ -243,7 +226,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
             expenseSeries.addData(expensesPerConsultant.getOrDefault(user.getUsername(), 0));
         }
 
-
+        chart.setHeight(budgetsPerConsultant.size() * 23 + 250, Unit.PIXELS);
 
         conf.addxAxis(x);
 
@@ -263,6 +246,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
         legend.setY(70);
         legend.setFloating(true);
         legend.setShadow(true);
+        legend.setReversed(true);
 
         PlotOptionsColumn plot = new PlotOptionsColumn();
         plot.setStacking(Stacking.NORMAL);
