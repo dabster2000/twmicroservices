@@ -207,7 +207,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
         }
 
         XAxis x = new XAxis();
-        x.setTitle("year");
+        //x.setTitle("year");
 
         SortedMap<String, Integer> budgetsPerConsultant = new TreeMap<>();
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
