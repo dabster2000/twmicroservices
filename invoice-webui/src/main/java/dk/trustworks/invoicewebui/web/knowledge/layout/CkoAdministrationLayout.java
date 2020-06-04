@@ -123,7 +123,6 @@ public class CkoAdministrationLayout extends VerticalLayout {
         }
 
         XAxis x = new XAxis();
-        x.setTitle("year");
 
         LocalDate startYear = LocalDate.of(2014,1,1);
         LocalDate endYear = LocalDate.of(LocalDate.now().getYear(), 12, 31);
