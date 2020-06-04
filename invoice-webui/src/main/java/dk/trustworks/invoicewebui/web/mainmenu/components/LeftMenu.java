@@ -20,6 +20,7 @@ import dk.trustworks.invoicewebui.web.faq.FaqView;
 import dk.trustworks.invoicewebui.web.invoice.views.InvoiceListView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.knowledge.BusinessArchitectureView;
+import dk.trustworks.invoicewebui.web.knowledge.CkoAdminView;
 import dk.trustworks.invoicewebui.web.knowledge.KnowledgeView;
 import dk.trustworks.invoicewebui.web.profile.ProfileView;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
@@ -116,28 +117,28 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(KnowledgeView.VIEW_NAME, keynotes);
         MenuItemContainer projectdescriptions = new MenuItemContainer(order++).createItem(ProjectDescriptionView.MENU_NAME, false, ProjectDescriptionView.VIEW_ICON, ProjectDescriptionView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(ProjectDescriptionView.VIEW_NAME, projectdescriptions);
+        MenuItemContainer ckoadmin = new MenuItemContainer(order++).createItem(CkoAdminView.MENU_NAME, false, CkoAdminView.VIEW_ICON, CkoAdminView.VIEW_NAME, false, RoleType.ADMIN);
+        menuItems.put(CkoAdminView.VIEW_NAME, ckoadmin);
 
         MenuItemContainer academy = new MenuItemContainer(order++).createItem("Trustworks Academy ---", true, null, null, false, RoleType.USER);
         menuItems.put("academy", academy);
-        MenuItemContainer courses = new MenuItemContainer(order++).createItem(CoursesView.MENU_NAME, false, CoursesView.VIEW_ICON, CoursesView.VIEW_NAME, false, RoleType.USER);
-        menuItems.put(CoursesView.VIEW_NAME, courses);
         MenuItemContainer basicskills = new MenuItemContainer(order++).createItem(BasicSkillsView.MENU_NAME, false, BasicSkillsView.VIEW_ICON, BasicSkillsView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(BasicSkillsView.VIEW_NAME, basicskills);
+        MenuItemContainer courses = new MenuItemContainer(order++).createItem(CoursesView.MENU_NAME, false, CoursesView.VIEW_ICON, CoursesView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(CoursesView.VIEW_NAME, courses);
 
 
-        MenuItemContainer invoice = new MenuItemContainer(order++).createItem("Invoice ---", true, null, null, false, RoleType.ACCOUNTING);
-        menuItems.put("Invoice", invoice);
+        MenuItemContainer invoice = new MenuItemContainer(order++).createItem("Economy ---", true, null, null, false, RoleType.ACCOUNTING);
+        menuItems.put("Economy", invoice);
         MenuItemContainer newInvoice = new MenuItemContainer(order++).createItem(NewInvoiceView.MENU_NAME, false, NewInvoiceView.VIEW_ICON, NewInvoiceView.VIEW_NAME, false, RoleType.ACCOUNTING);
         menuItems.put(NewInvoiceView.VIEW_NAME, newInvoice);
         //MenuItemContainer drafts = new MenuItemContainer(order++).createItem(DraftListView.MENU_NAME, false, DraftListView.VIEW_ICON, DraftListView.VIEW_NAME, false, RoleType.ACCOUNTING);
         //menuItems.put(DraftListView.VIEW_NAME, drafts);
-        MenuItemContainer invoices = new MenuItemContainer(order++).createItem(InvoiceListView.MENU_NAME, false, InvoiceListView.VIEW_ICON, InvoiceListView.VIEW_NAME, false, RoleType.ACCOUNTING);
-        menuItems.put(InvoiceListView.VIEW_NAME, invoices);
+        //MenuItemContainer invoices = new MenuItemContainer(order++).createItem(InvoiceListView.MENU_NAME, false, InvoiceListView.VIEW_ICON, InvoiceListView.VIEW_NAME, false, RoleType.ACCOUNTING);
+        //menuItems.put(InvoiceListView.VIEW_NAME, invoices);
 
-        MenuItemContainer economy = new MenuItemContainer(order++).createItem("Economy ---", true, null, null, false, RoleType.ADMIN);
-        menuItems.put("Economy", economy);
-        MenuItemContainer expenses = new MenuItemContainer(order++).createItem(ExpenseView.MENU_NAME, false, ExpenseView.VIEW_ICON, ExpenseView.VIEW_NAME, false, RoleType.ADMIN);
-        menuItems.put(ExpenseView.VIEW_NAME, expenses);
+        //MenuItemContainer economy = new MenuItemContainer(order++).createItem("Economy ---", true, null, null, false, RoleType.ADMIN);
+        //menuItems.put("Economy", economy);
 
         MenuItemContainer questions = new MenuItemContainer(order++).createItem("Questions ---", true, null, null, false, RoleType.USER);
         menuItems.put("Questions", questions);
@@ -151,12 +152,10 @@ public class LeftMenu extends ResponsiveRow {
         MenuItemContainer sales = new MenuItemContainer(order++).createItem(SalesView.MENU_NAME, false, SalesView.VIEW_ICON, SalesView.VIEW_NAME, false, RoleType.VTV);
         menuItems.put(SalesView.VIEW_NAME, sales);
 
-        MenuItemContainer stats = new MenuItemContainer(order++).createItem("Statistics ---", true, null, null, false, RoleType.ADMIN);
-        menuItems.put("Stats", stats);
-        MenuItemContainer projectStatistics = new MenuItemContainer(order++).createItem(StatsManagerView.MENU_NAME, false, StatsManagerView.VIEW_ICON, StatsManagerView.VIEW_NAME, false, RoleType.ADMIN);
-        menuItems.put(StatsManagerView.VIEW_NAME, projectStatistics);
-        MenuItemContainer trustworksStatistics = new MenuItemContainer(order++).createItem(TrustworksStatsView.MENU_NAME, false, TrustworksStatsView.VIEW_ICON, TrustworksStatsView.VIEW_NAME, false, RoleType.ADMIN);
-        menuItems.put(TrustworksStatsView.VIEW_NAME, trustworksStatistics);
+        //MenuItemContainer stats = new MenuItemContainer(order++).createItem("Statistics ---", true, null, null, false, RoleType.ADMIN);
+        //menuItems.put("Stats", stats);
+        //MenuItemContainer projectStatistics = new MenuItemContainer(order++).createItem(StatsManagerView.MENU_NAME, false, StatsManagerView.VIEW_ICON, StatsManagerView.VIEW_NAME, false, RoleType.ADMIN);
+        //menuItems.put(StatsManagerView.VIEW_NAME, projectStatistics);
 
         MenuItemContainer employeeinfo = new MenuItemContainer(order++).createItem("Consultant ---", true, null, null, false, RoleType.USER);
         menuItems.put("employeeinfo", employeeinfo);
@@ -168,10 +167,14 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(ResourcePlanningView.VIEW_NAME, availabilityplanning);
 
 
-        MenuItemContainer admin = new MenuItemContainer(order++).createItem("Administration ---", true, null, null, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
+        MenuItemContainer admin = new MenuItemContainer(order++).createItem("Management ---", true, null, null, false, RoleType.ADMIN, RoleType.EDITOR, RoleType.PARTNER);
         menuItems.put("admin", admin);
         MenuItemContainer employeeManager = new MenuItemContainer(order++).createItem(UserManagerView.MENU_NAME, false, UserManagerView.VIEW_ICON, UserManagerView.VIEW_NAME, false, RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO);
         menuItems.put(UserManagerView.VIEW_NAME, employeeManager);
+        MenuItemContainer trustworksStatistics = new MenuItemContainer(order++).createItem(TrustworksStatsView.MENU_NAME, false, TrustworksStatsView.VIEW_ICON, TrustworksStatsView.VIEW_NAME, false, RoleType.ADMIN);
+        menuItems.put(TrustworksStatsView.VIEW_NAME, trustworksStatistics);
+        MenuItemContainer expenses = new MenuItemContainer(order++).createItem(ExpenseView.MENU_NAME, false, ExpenseView.VIEW_ICON, ExpenseView.VIEW_NAME, false, RoleType.ADMIN);
+        menuItems.put(ExpenseView.VIEW_NAME, expenses);
 
         /*
         MenuItemContainer fun = new MenuItemContainer(order++).createItem("Fun ---", true, null, null, false, RoleType.USER);

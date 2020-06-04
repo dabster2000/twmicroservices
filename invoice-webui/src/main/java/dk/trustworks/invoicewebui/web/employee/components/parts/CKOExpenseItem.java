@@ -32,6 +32,7 @@ public class CKOExpenseItem extends VerticalLayout {
     private CssLayout vlButtonLayout;
     private Button btnEdit;
     private Button btnDelete;
+    private VerticalLayout vlStatus;
 
     public CKOExpenseItem() {
         Design.read(this);
@@ -71,6 +72,10 @@ public class CKOExpenseItem extends VerticalLayout {
 
     public Label getLblAmount() {
         return lblAmount;
+    }
+
+    public VerticalLayout getVLStatus() {
+        return vlStatus;
     }
 
     public Button getBtnMore() {

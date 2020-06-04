@@ -45,6 +45,8 @@ public class CKOExpense {
     @Enumerated(EnumType.STRING)
     private CKOExpensePurpose purpose;
 
+    private double rating;
+
     public CKOExpense() {
     }
 
@@ -62,6 +64,7 @@ public class CKOExpense {
         this.type = type;
         this.status = status;
         this.purpose = purpose;
+        this.rating = 0;
     }
 
     public int getId() {
@@ -150,6 +153,14 @@ public class CKOExpense {
 
     public void setPurpose(CKOExpensePurpose purpose) {
         this.purpose = purpose;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     @Override

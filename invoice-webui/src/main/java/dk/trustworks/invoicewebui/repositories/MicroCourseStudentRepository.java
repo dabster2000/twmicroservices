@@ -16,4 +16,5 @@ import java.util.List;
 public interface MicroCourseStudentRepository extends CrudRepository<CkoCourseStudent, Integer> {
     List<CkoCourseStudent> findByUseruuid(@Param("student") String user);
     CkoCourseStudent findByCkoCourseAndUseruuid(@Param("ckocourse") CkoCourse ckoCourse, @Param("student") String user);
+    CkoCourseStudent findByCkoCourse(@Param("ckocourse") CkoCourse ckoCourse);
 }

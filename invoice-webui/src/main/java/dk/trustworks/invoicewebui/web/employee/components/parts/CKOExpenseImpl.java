@@ -9,6 +9,8 @@ import com.vaadin.data.*;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
@@ -18,6 +20,10 @@ import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import org.vaadin.teemu.ratingstars.RatingStars;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -62,28 +68,10 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
         getChartContainer().addComponent(getChart(user));
 
-        //getExpenseCardContainer().removeAllComponents();
         ResponsiveLayout expenseBoard = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         getExpenseCardContainer().addComponent(expenseBoard);
 
         refreshExpenseCards(user, expenseBoard);
-
-        /*
-        getGridCKOExpenses().addSelectionListener(event -> {
-            if(event.getAllSelectedItems().size() > 1) {
-                //getHlAddBar().setVisible(false);
-                getBtnDelete().setVisible(true);
-                getBtnEditItem().setVisible(false);
-            } else if (event.getAllSelectedItems().size() == 1) {
-                getBtnDelete().setVisible(true);
-                getBtnEditItem().setVisible(true);
-            } else {
-                //getHlAddBar().setVisible(true);
-                getBtnDelete().setVisible(false);
-                getBtnEditItem().setVisible(false);
-            }
-        });
-        */
 
         getBtnEdit().addClickListener(event -> {
             getDataContainer().setVisible(!getDataContainer().isVisible());
@@ -91,23 +79,8 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             getChartContainer().removeAllComponents();
             getChartContainer().addComponent(getChart(user));
         });
-/*
-        getBtnDelete().addClickListener(event -> {
-            //this.ckoExpenseRepository.delete(getGridCKOExpenses().getSelectedItems());
-            //getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUseruuid(user));
-        });
 
-        getBtnEditItem().addClickListener(event -> {
-            getBtnAddSalary().setCaption("UPDATE");
-            getBtnDelete().setVisible(true);
-            getBtnEditItem().setVisible(false);
-            //ckoExpense = getGridCKOExpenses().getSelectedItems().stream().findFirst().get();
-            binder.readBean(ckoExpense);
-            //getGridCKOExpenses().deselectAll();
-        });
-*/
         getBtnAddSalary().addClickListener(event -> {
-            //this.ckoExpenseRepository.create(new CKOExpense(getDfDate().getValue(), user, getTxtDescription().getValue(), Integer.parseInt(getTxtPrice().getValue()), getTxtComments().getValue(), NumberConverter.parseDouble(getTxtDays().getValue()), CKOExpenseType.valueOf(getCbType().getValue()), CKOExpenseStatus.valueOf(getCbStatus().getValue()), CKOExpensePurpose.valueOf(getCbPurpose().getValue())));
             try {
                 binder.writeBean(ckoExpense);
                 ckoExpenseRepository.save(ckoExpense);
@@ -116,14 +89,10 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
-            //getGridCKOExpenses().setItems(this.ckoExpenseRepository.findCKOExpenseByUseruuid(user));
             refreshExpenseCards(user, expenseBoard);
         });
 
-        //getGridCKOExpenses().sort("eventdate", SortDirection.ASCENDING);
-
         this.setVisible(true);
-        //getGridCKOExpenses().setItems(ckoExpenseRepository.findCKOExpenseByUseruuid(user));
     }
 
     private void refreshExpenseCards(User user, ResponsiveLayout expenseBoard) {
@@ -137,7 +106,42 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             expenseItem.getLblDays().setValue(expense.getDays()+"");
             expenseItem.getLblDescription().setValue(expense.getDescription());
             expenseItem.getLblAmount().setValue(expense.getPrice()+"");
+
             expenseItem.getLblStatus().setValue(expense.getStatus().getCaption());
+            expenseItem.getLblStatus().setVisible(false);
+
+            MButton button = new MButton(expense.getStatus().getCaption()).withStyleName("friendly");
+
+            RatingStars ratingStars = new RatingStars();
+            ratingStars.setMaxValue(5);
+            ratingStars.setValue(expense.getRating());
+            ratingStars.addValueChangeListener(event -> {
+                expense.setRating(event.getValue());
+                ckoExpenseRepository.save(expense);
+                binder.readBean(ckoExpense = new CKOExpense(user));
+                getBtnAddSalary().setCaption("CREATE");
+                button.setCaption(expense.getStatus().getCaption());
+            });
+            ratingStars.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+
+            button.addClickListener(event -> {
+                if (expense.getStatus().equals(CKOExpenseStatus.WISHLIST))
+                    expense.setStatus(CKOExpenseStatus.BOOKED);
+                else if (expense.getStatus().equals(CKOExpenseStatus.BOOKED))
+                    expense.setStatus(CKOExpenseStatus.COMPLETED);
+                else if (expense.getStatus().equals(CKOExpenseStatus.COMPLETED))
+                    expense.setStatus(CKOExpenseStatus.WISHLIST);
+                ckoExpenseRepository.save(expense);
+                ratingStars.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                binder.readBean(ckoExpense = new CKOExpense(user));
+                getBtnAddSalary().setCaption("CREATE");
+                button.setCaption(expense.getStatus().getCaption());
+            });
+
+            expenseItem.getVLStatus().addComponents(
+                    new MHorizontalLayout(button).alignAll(Alignment.MIDDLE_CENTER),
+                    new MHorizontalLayout(new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),ratingStars).alignAll(Alignment.MIDDLE_CENTER));
+            expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
             expenseItem.getLblPurpose().setValue(expense.getPurpose().getCaption());
             expenseItem.getVlExtra().setVisible(false);
             expenseItem.getLblComments().setValue(expense.getComment());
@@ -146,6 +150,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 ckoExpense = expense;
                 binder.readBean(ckoExpense);
             });
+
             expenseItem.getBtnDelete().addClickListener(event -> {
                 ckoExpenseRepository.delete(expense);
                 refreshExpenseCards(user, expenseBoard);

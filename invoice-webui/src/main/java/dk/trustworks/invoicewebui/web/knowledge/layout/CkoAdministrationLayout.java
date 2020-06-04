@@ -1,37 +1,49 @@
 package dk.trustworks.invoicewebui.web.knowledge.layout;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
+import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
+import com.vaadin.data.TreeData;
+import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.CKOExpense;
-import dk.trustworks.invoicewebui.model.GraphKeyValue;
-import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
-import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
+import dk.trustworks.invoicewebui.repositories.MicroCourseStudentRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.web.common.Box;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @SpringComponent
 @SpringUI
 public class CkoAdministrationLayout extends VerticalLayout {
 
     @Autowired
-    private PhotoService photoService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
     private CKOExpenseRepository ckoExpenseRepository;
+
+    @Autowired
+    private MicroCourseRepository microCourseRepository;
+
+    @Autowired
+    private MicroCourseStudentRepository microCourseStudentRepository;
+
+    @Autowired UserService userService;
 
     private ResponsiveLayout mainLayout;
 
@@ -39,275 +51,229 @@ public class CkoAdministrationLayout extends VerticalLayout {
         this.removeAllComponents();
 
         mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        this.addComponent(mainLayout);
+
+        Component enlistedBox = createCourseQueueBox("ENLISTED", "Trustworks Academy - Course Queue");
+        Component graduatedBox = createCourseQueueBox("GRADUATED", "Trustworks Academy - Graduated");
+
+        ResponsiveRow row = mainLayout.addRow();
+        row.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(enlistedBox);
+        row.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(graduatedBox);
+        row.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(getTotalYearlyBudgetChart());
+        row.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(getBudgetPerConsultantChart());
 
         return this;
     }
 
-    public Chart createTopGrossingConsultantsChart(LocalDate periodStart, LocalDate periodEnd) {
-        Chart chart = new Chart();
-        chart.setSizeFull();
-
-        chart.setCaption("Top Grossing Consultants Fiscal Year 07/"+(periodStart.getYear())+" - 06/"+periodEnd.getYear());
-        chart.getConfiguration().setTitle("");
-        chart.getConfiguration().getChart().setType(ChartType.COLUMN);
-        chart.getConfiguration().getChart().setAnimation(true);
-        chart.getConfiguration().getxAxis().getLabels().setEnabled(true);
-        chart.getConfiguration().getxAxis().setTickWidth(0);
-        chart.getConfiguration().getyAxis().setTitle("");
-        chart.getConfiguration().getLegend().setEnabled(false);
-
-        List<GraphKeyValue> amountPerItemList = new ArrayList<>();//graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-
-        List<User> employedUsers = userService.findCurrentlyEmployedUsers();
-
-        for (User employedUser : employedUsers) {
-            List<CKOExpense> ckoExpenses = ckoExpenseRepository.findCKOExpenseByUseruuid(employedUser.getUuid()).stream().filter(ckoExpense -> DateUtils.isBetween(ckoExpense.getEventdate(), periodStart, periodEnd)).collect(Collectors.toList());
-
+    private Component createCourseQueueBox(String type, String caption) {
+        Box box = new Box();
+        Tree<String> tree = new Tree<>(caption);
+        TreeData<String> data = new TreeData<>();
+        int number = 1;
+        for (CkoCourse ckoCourse : microCourseRepository.findByActiveTrue()) {
+            data.addItem(null, ckoCourse.getName());
+            int finalNumber = number;
+            ckoCourse.getStudents().stream().filter(ckoCourseStudent -> ckoCourseStudent.getStatus().equals(type)).sorted(Comparator.comparing(CkoCourseStudent::getApplication)).forEach(ckoCourseStudent -> data.addItem(ckoCourse.getName(), (finalNumber +") "+ ckoCourseStudent.getMember().getUsername()+" ("+ DateUtils.stringIt(ckoCourseStudent.getApplication())+")")));
+            number++;
         }
 
-        //final Chart chart = new Chart(ChartType.COLUMN);
-        chart.setId("chart");
+        tree.setDataProvider(new TreeDataProvider<>(data));
+        box.getContent().addComponent(tree);
+        return box;
+    }
 
-        final Configuration conf = chart.getConfiguration();
+    private Component getTotalYearlyBudgetChart() {
+        Box box = new Box();
+        Chart chart = new Chart(ChartType.COLUMN);
+        chart.setWidth(100, Unit.PERCENTAGE);
 
-        conf.setTitle("Global happiness index");
-        conf.setSubTitle("Source: www.happyplanetindex.org");
-        conf.getLegend().setEnabled(false);
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
+        chart.getConfiguration().setTooltip(tooltip);
+
+        Configuration conf = chart.getConfiguration();
+
+        conf.setTitle("Knowledge Budget");
+
+        ListSeries expenseSeries = new ListSeries("used");
+        PlotOptionsColumn poc1 = new PlotOptionsColumn();
+        poc1.setColor(new SolidColor("#FD5F5B"));
+        expenseSeries.setPlotOptions(poc1);
+
+        ListSeries availableSeries = new ListSeries("available");
+        PlotOptionsColumn poc2 = new PlotOptionsColumn();
+        poc2.setColor(new SolidColor("#54D69E"));
+        availableSeries.setPlotOptions(poc2);
+
+        SortedMap<String, Integer> expensesPerYear = new TreeMap<>();
+        for (CKOExpense ckoExpense : ckoExpenseRepository.findAll()) {
+            if(ckoExpense.getStatus()!=null && ckoExpense.getStatus().equals(CKOExpenseStatus.WISHLIST)) continue;
+            expensesPerYear.putIfAbsent(ckoExpense.getEventdate().getYear()+"", 0);
+            Integer integer = expensesPerYear.get(ckoExpense.getEventdate().getYear() + "");
+            expensesPerYear.replace(ckoExpense.getEventdate().getYear()+"", (integer+ckoExpense.getPrice()));
+        }
 
         XAxis x = new XAxis();
-        x.setType(AxisType.CATEGORY);
+        x.setTitle("year");
+
+        LocalDate startYear = LocalDate.of(2014,1,1);
+        LocalDate endYear = LocalDate.of(LocalDate.now().getYear(), 12, 31);
+
+        SortedMap<String, Integer> budgetsPerYear = new TreeMap<>();
+        for (int year = startYear.getYear(); year <= endYear.getYear(); year++) {
+            String yearAsString = year + "";
+            int budgetPerYear = 0;
+            for (int month = 1; month <= 12; month++) {
+                int numberOfEmployedConsultants = userService.findEmployedUsersByDate(LocalDate.of(year, month, 1), ConsultantType.CONSULTANT).size();
+                budgetPerYear += numberOfEmployedConsultants * 2000;
+            }
+            budgetsPerYear.put(yearAsString, budgetPerYear);
+
+            x.addCategory(yearAsString);
+            availableSeries.addData(budgetsPerYear.getOrDefault(yearAsString, 0) - expensesPerYear.getOrDefault(yearAsString, 0));
+            expenseSeries.addData(expensesPerYear.getOrDefault(yearAsString, 0));
+        }
+
         conf.addxAxis(x);
 
         YAxis y = new YAxis();
-        y.setTitle("Total percent market share");
+        y.setMin(0);
+        y.setTitle("Amount (kr)");
+        StackLabels sLabels = new StackLabels(true);
+        y.setStackLabels(sLabels);
         conf.addyAxis(y);
 
-        PlotOptionsColumn column = new PlotOptionsColumn();
-        column.setCursor(Cursor.POINTER);
-        column.setDataLabels(new DataLabels(true));
+        Legend legend = new Legend();
+        legend.setLayout(LayoutDirection.VERTICAL);
+        legend.setBackgroundColor(new SolidColor("#FFFFFF"));
+        legend.setAlign(HorizontalAlign.LEFT);
+        legend.setVerticalAlign(VerticalAlign.TOP);
+        legend.setX(100);
+        legend.setY(70);
+        legend.setFloating(true);
+        legend.setShadow(true);
+        //conf.setLegend(legend);
 
-        conf.setPlotOptions(column);
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setStacking(Stacking.NORMAL);
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
+        conf.setPlotOptions(plot);
 
-        DataSeries regionsSeries = new DataSeries();
-        regionsSeries.setName("Regions");
-        PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
-        plotOptionsColumn.setColorByPoint(true);
-        regionsSeries.setPlotOptions(plotOptionsColumn);
+        conf.addSeries(expenseSeries);
+        conf.addSeries(availableSeries);
+        chart.drawChart(conf);
+        box.getContent().addComponent(chart);
+        return box;
+    }
 
-        DataSeriesItem regionItem = new DataSeriesItem(
-                "Latin America and Carribean", 60);
-        DataSeries countriesSeries = new DataSeries("Countries");
-        countriesSeries.setId("Latin America and Carribean Countries");
+    private Component getBudgetPerConsultantChart() {
+        Box box = new Box();
+        Chart chart = new Chart(ChartType.COLUMN);
+        chart.setWidth(100, Unit.PERCENTAGE);
 
-        DataSeriesItem countryItem = new DataSeriesItem("Costa Rica", 64);
-        DataSeries detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Costa Rica");
-        String[] categories = new String[] { "Life Expectancy",
-                "Well-being (0-10)", "Footprint (gha/capita)" };
-        Number[] ys = new Number[] { 79.3, 7.3, 2.5 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
+        chart.getConfiguration().setTooltip(tooltip);
 
-        countryItem = new DataSeriesItem("Colombia", 59.8);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Colombia");
-        ys = new Number[] { 73.7, 6.4, 1.8 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+        Configuration conf = chart.getConfiguration();
 
-        countryItem = new DataSeriesItem("Belize", 59.3);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Belize");
-        ys = new Number[] { 76.1, 6.5, 2.1 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+        conf.setTitle("Knowledge Budget per Consultant "+LocalDate.now().getYear());
 
-        countryItem = new DataSeriesItem("El Salvador", 58.9);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details El Salvador");
-        ys = new Number[] { 72.2, 6.7, 2.0 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+        ListSeries expenseSeries = new ListSeries("used");
+        PlotOptionsColumn poc1 = new PlotOptionsColumn();
+        poc1.setColor(new SolidColor("#A3D3D2"));
+        expenseSeries.setPlotOptions(poc1);
 
-        regionsSeries.addItemWithDrilldown(regionItem, countriesSeries);
+        ListSeries availableSeries = new ListSeries("available");
+        PlotOptionsColumn poc2 = new PlotOptionsColumn();
+        poc2.setColor(new SolidColor("#B6DCDA"));
+        availableSeries.setPlotOptions(poc2);
 
-        regionItem = new DataSeriesItem("Western Nations", 50);
+        SortedMap<String, Integer> expensesPerConsultant = new TreeMap<>();
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+            int totalExpenses = ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid()).stream().filter(ckoExpense -> ckoExpense.getEventdate().getYear() == LocalDate.now().getYear()).mapToInt(CKOExpense::getPrice).sum();
+            expensesPerConsultant.put(user.getUsername(), totalExpenses);
+        }
 
-        countriesSeries = new DataSeries("Countries");
-        countriesSeries.setId("Western Nations Countries");
+        XAxis x = new XAxis();
+        x.setTitle("year");
+/*
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+            int maxBudgetFullYear = 24000;
+            int maxBudgetFirstYear = maxBudgetFullYear;
+            Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
+            if (!firstStatus.isPresent()) continue;
 
-        countryItem = new DataSeriesItem("New Zealand", 51.6);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details New Zealand");
-        ys = new Number[] { 80.7, 7.2, 4.3 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
 
-        countryItem = new DataSeriesItem("Norway", 51.4);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Norway");
-        ys = new Number[] { 81.1, 7.6, 4.8 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+            if (expensesPerConsultant.keySet().size() == 0) {
+                x.addCategory(LocalDate.now().getYear() + "");
+                expenseSeries.addData(0);
+                availableSeries.addData(maxBudgetFirstYear);
+            } else {
+                for (String year : expenses.keySet()) {
+                    x.addCategory(year);
+                    expenseSeries.addData(expenses.get(year));
+                    if (Integer.parseInt(year) == firstStatus.get().getStatusdate().getYear())
+                        availableSeries.addData(maxBudgetFirstYear - expenses.get(year));
+                    else
+                        availableSeries.addData(maxBudgetFullYear - expenses.get(year));
+                }
+            }
+        }
 
-        countryItem = new DataSeriesItem("Switzerland", 50.3);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Switzerland");
-        ys = new Number[] { 82.3, 7.5, 5.0 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+ */
 
-        countryItem = new DataSeriesItem("United Kingdom", 47.9);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details United Kingdom");
-        ys = new Number[] { 80.2, 7.0, 4.7 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
 
-        regionsSeries.addItemWithDrilldown(regionItem, countriesSeries);
+        SortedMap<String, Integer> budgetsPerConsultant = new TreeMap<>();
+        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+            Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
+            if (!firstStatus.isPresent()) continue;
 
-        regionItem = new DataSeriesItem("Middle East and North Africa", 53);
+            int maxBudgetFullYear = 24000;
+            int maxBudgetFirstYear = maxBudgetFullYear;
 
-        countriesSeries = new DataSeries("Countries");
-        countriesSeries.setId("Middle East and North Africa Countries");
+            if (DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) < 12)
+                maxBudgetFirstYear = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) * 2000;
 
-        countryItem = new DataSeriesItem("Israel", 55.2);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Israel");
-        ys = new Number[] { 81.6, 7.4, 4.0 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+            budgetsPerConsultant.put(user.getUsername(), maxBudgetFirstYear);
 
-        countryItem = new DataSeriesItem("Algeria", 52.2);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Algeria");
-        ys = new Number[] { 73.1, 5.2, 1.6 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+            x.addCategory(user.getUsername());
+            availableSeries.addData(budgetsPerConsultant.getOrDefault(user.getUsername(), 0) - expensesPerConsultant.getOrDefault(user.getUsername(), 0));
+            expenseSeries.addData(expensesPerConsultant.getOrDefault(user.getUsername(), 0));
+        }
 
-        countryItem = new DataSeriesItem("Jordan", 51.7);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Jordan");
-        ys = new Number[] { 73.4, 5.7, 2.1 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
 
-        countryItem = new DataSeriesItem("Palestine", 51.2);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Palestine");
-        ys = new Number[] { 72.8, 4.8, 1.4 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
 
-        regionsSeries.addItemWithDrilldown(regionItem, countriesSeries);
+        conf.addxAxis(x);
 
-        regionItem = new DataSeriesItem("Sub-Saharan Africa", 42);
+        YAxis y = new YAxis();
+        y.setMin(0);
+        y.setTitle("Amount (kr)");
+        StackLabels sLabels = new StackLabels(false);
+        y.setStackLabels(sLabels);
+        conf.addyAxis(y);
 
-        countriesSeries = new DataSeries("Countries");
-        countriesSeries.setId("Sub-Saharan Africa Countries");
+        Legend legend = new Legend();
+        legend.setLayout(LayoutDirection.VERTICAL);
+        legend.setBackgroundColor(new SolidColor("#FFFFFF"));
+        legend.setAlign(HorizontalAlign.LEFT);
+        legend.setVerticalAlign(VerticalAlign.TOP);
+        legend.setX(100);
+        legend.setY(70);
+        legend.setFloating(true);
+        legend.setShadow(true);
 
-        countryItem = new DataSeriesItem("Madagascar", 51.6);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Madagascar");
-        ys = new Number[] { 66.7, 4.6, 1.2 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setStacking(Stacking.NORMAL);
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
+        conf.setPlotOptions(plot);
 
-        countryItem = new DataSeriesItem("Malawi", 42.5);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Malawi");
-        ys = new Number[] { 54.2, 5.1, 0.8 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("Ghana", 40.3);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Ghana");
-        ys = new Number[] { 64.2, 4.6, 1.7 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("Ethiopia", 39.2);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Ethiopia");
-        ys = new Number[] { 59.3, 4.4, 1.1 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        regionsSeries.addItemWithDrilldown(regionItem, countriesSeries);
-
-        regionItem = new DataSeriesItem("South Asia", 53);
-
-        countriesSeries = new DataSeries("Countries");
-        countriesSeries.setId("South Asia Countries");
-
-        countryItem = new DataSeriesItem("Bangladesh", 56.3);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Bangladesh");
-        ys = new Number[] { 68.9, 5.0, 0.7 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("Pakistan", 54.1);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Pakistan");
-        ys = new Number[] { 65.4, 5.3, 0.8 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("India", 50.9);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details India");
-        ys = new Number[] { 65.4, 5.0, 0.9 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("Sri Lanka", 51.2);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Sri Lanka");
-        ys = new Number[] { 74.9, 4.2, 1.2 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        regionsSeries.addItemWithDrilldown(regionItem, countriesSeries);
-
-        regionItem = new DataSeriesItem("East Asia", 55);
-
-        countriesSeries = new DataSeries("Countries");
-        countriesSeries.setId("East Asia Countries");
-
-        countryItem = new DataSeriesItem("Vietnam", 60.4);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Vietnam");
-        ys = new Number[] { 75.2, 5.8, 1.4 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("Indonesia", 55.5);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Indonesia");
-        ys = new Number[] { 69.4, 5.5, 1.1 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("Thailand", 53.5);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Thailand");
-        ys = new Number[] { 74.1, 6.2, 2.4 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        countryItem = new DataSeriesItem("Philippines", 52.4);
-        detailsSeries = new DataSeries("Details");
-        detailsSeries.setId("Details Philippines");
-        ys = new Number[] { 68.7, 4.9, 1.0 };
-        detailsSeries.setData(categories, ys);
-        countriesSeries.addItemWithDrilldown(countryItem, detailsSeries);
-
-        regionsSeries.addItemWithDrilldown(regionItem, countriesSeries);
-
-        conf.addSeries(regionsSeries);
-
-        return chart;
+        conf.addSeries(expenseSeries);
+        conf.addSeries(availableSeries);
+        chart.drawChart(conf);
+        box.getContent().addComponent(chart);
+        return box;
     }
 }

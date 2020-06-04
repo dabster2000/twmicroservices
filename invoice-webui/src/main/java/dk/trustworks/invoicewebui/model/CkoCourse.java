@@ -8,8 +8,11 @@ import dk.trustworks.invoicewebui.services.UserService;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,10 +31,14 @@ public class CkoCourse {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate created;
 
+    @OneToMany(mappedBy = "ckoCourse")
+    private List<CkoCourseStudent> students;
+
     public CkoCourse() {
         this.uuid = UUID.randomUUID().toString();
         this.created = LocalDate.now();
         this.active = true;
+        this.students = new ArrayList<>();
     }
 
     public CkoCourse(String type) {
@@ -85,6 +92,14 @@ public class CkoCourse {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public List<CkoCourseStudent> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<CkoCourseStudent> students) {
+        this.students = students;
     }
 
     @Override

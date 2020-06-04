@@ -222,18 +222,6 @@ public class EmployeeLayout extends VerticalLayout {
         skillRoles.add("Project Manager");
         skillRoles.add("Tender Consultant");
         skillRoles.add("UX");
-        //ComboBox<String> select_role = new ComboBox<>("Select role", skillRoles);
-        //select_role.setSizeFull();
-        //select_role.setEmptySelectionAllowed(false);
-        System.out.println("BEFORE");
-        //KnowledgeRole knowledgeRole = knowledgeRoleRestService.findByUsername(user.getUuid());
-        //System.out.println("knowledgeRole = " + knowledgeRole);
-        //select_role.setValue(knowledgeRole.getName().name());
-        System.out.println("AFTER");
-        //select_role.addValueChangeListener(event -> {
-            // TODO: Save role
-        //});
-        //skillRoleRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(select_role);
         skillRoleRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new MLabel("<p>Udfyld kompetenceområderne nedenfor, så dine kollegaer kan se hvad du kan og salgsteamet kan se hvilke erfaringer de kan trække på.</p>" +
                 "<p>Hvis du har lyst, kan du samtidig udfylde status for dine kompetence, hvor du angiver hvilke områder du ønsker at forbedre dig inden for, så har du en hurtig oversigt til dine KPC-samtaler og COOPS kan nemt se, hvor du passer perfekt til din næste kundeaftale.</p>").withContentMode(ContentMode.HTML).withFullWidth());
 

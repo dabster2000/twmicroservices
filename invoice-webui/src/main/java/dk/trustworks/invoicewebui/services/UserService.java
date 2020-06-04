@@ -68,7 +68,7 @@ public class UserService implements InitializingBean {
                 statusList,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
-
+/*
     public List<User> findCurrentlyWorkingUsers() {
         String[] statusList = {ACTIVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(
@@ -76,6 +76,8 @@ public class UserService implements InitializingBean {
                 statusList,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
+
+ */
 
     public List<User> findEmployedUsersByDate(LocalDate date, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
