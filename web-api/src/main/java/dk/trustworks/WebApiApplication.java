@@ -5,9 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
@@ -26,10 +23,7 @@ import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 /**
  * Created by hans on 06/07/2017.
  */
-@EnableCircuitBreaker
 @SpringBootApplication
-@EnableDiscoveryClient
-@EnableFeignClients
 @EnableCaching
 @EnableAsync
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)

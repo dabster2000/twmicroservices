@@ -182,12 +182,12 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
         ListSeries expenseSeries = new ListSeries("used");
         PlotOptionsColumn poc1 = new PlotOptionsColumn();
-        poc1.setColor(new SolidColor("#A3D3D2"));
+        poc1.setColor(new SolidColor("#DBEEEC"));
         expenseSeries.setPlotOptions(poc1);
 
         ListSeries availableSeries = new ListSeries("available");
         PlotOptionsColumn poc2 = new PlotOptionsColumn();
-        poc2.setColor(new SolidColor("#B6DCDA"));
+        poc2.setColor(new SolidColor("#A3D3D2"));
         availableSeries.setPlotOptions(poc2);
 
         SortedMap<String, Integer> expensesPerConsultant = new TreeMap<>();
