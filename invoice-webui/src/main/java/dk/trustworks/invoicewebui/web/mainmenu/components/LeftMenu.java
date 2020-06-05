@@ -117,7 +117,7 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(KnowledgeView.VIEW_NAME, keynotes);
         MenuItemContainer projectdescriptions = new MenuItemContainer(order++).createItem(ProjectDescriptionView.MENU_NAME, false, ProjectDescriptionView.VIEW_ICON, ProjectDescriptionView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(ProjectDescriptionView.VIEW_NAME, projectdescriptions);
-        MenuItemContainer ckoadmin = new MenuItemContainer(order++).createItem(CkoAdminView.MENU_NAME, false, CkoAdminView.VIEW_ICON, CkoAdminView.VIEW_NAME, false, RoleType.ADMIN);
+        MenuItemContainer ckoadmin = new MenuItemContainer(order++).createItem(CkoAdminView.MENU_NAME, false, CkoAdminView.VIEW_ICON, CkoAdminView.VIEW_NAME, false, RoleType.MANAGER);
         menuItems.put(CkoAdminView.VIEW_NAME, ckoadmin);
 
         MenuItemContainer academy = new MenuItemContainer(order++).createItem("Trustworks Academy ---", true, null, null, false, RoleType.USER);
