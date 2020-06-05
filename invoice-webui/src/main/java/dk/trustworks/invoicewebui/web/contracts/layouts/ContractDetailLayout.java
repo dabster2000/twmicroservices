@@ -53,7 +53,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ProjectService projectService;
 
-    private final ClientdataService clientdataService;
+    private final WorkService workService;
 
     private final ContractConsultantRepository consultantRepository;
 
@@ -76,11 +76,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, ClientdataService clientdataService, ContractConsultantRepository consultantRepository, PhotoService photoService, ChartCacheJob chartCache) {
+    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, WorkService workService, ContractConsultantRepository consultantRepository, PhotoService photoService, ChartCacheJob chartCache) {
         this.userService = userService;
         this.contractService = contractService;
         this.projectService = projectService;
-        this.clientdataService = clientdataService;
+        this.workService = workService;
         this.consultantRepository = consultantRepository;
         this.photoService = photoService;
         this.chartCache = chartCache;
@@ -218,7 +218,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private StreamResource createResource(Contract contract) {
         return new StreamResource((StreamResource.StreamSource) () -> {
             StringBuilder result = new StringBuilder("consultant;project;task;date;hours\n");
-            for (Work work : contractService.getWorkOnContractByUser(contract)) {
+            for (Work work : workService.getWorkOnContractByUser(contract)) {
                 result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(NumberFormat.getInstance(new Locale("da", "DK")).format(work.getWorkduration())).append("\n");
             }
             return IOUtils.toInputStream(result.toString());
@@ -508,7 +508,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             unit = "quarters";
             temporalAdjuster = new FirstDayOfQuarter();
         }
-        List<Work> workList = contractService.getWorkOnContractByUser(contract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList());
+        List<Work> workList = workService.getWorkOnContractByUser(contract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList());
         for (Work work : workList) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
             Optional<ContractConsultant> optionalConsultant = contract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();

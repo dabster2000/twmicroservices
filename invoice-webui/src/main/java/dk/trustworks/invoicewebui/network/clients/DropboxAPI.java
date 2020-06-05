@@ -142,7 +142,6 @@ public class DropboxAPI {
     }
 
     public String getSpecificTextFile(String filePath, Charset charset) {
-        System.out.println("DropboxAPI.getSpecificTextFile");
         log.debug("filePath = [" + filePath + "]");
         try {
             DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();

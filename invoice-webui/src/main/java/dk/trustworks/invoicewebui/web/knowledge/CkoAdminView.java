@@ -37,7 +37,7 @@ public class CkoAdminView extends VerticalLayout implements View {
     private CkoAdministrationLayout ckoAdministrationLayout;
 
     public static final String VIEW_NAME = "ckoadminview";
-    public static final String MENU_NAME = "ADMINISTRATION";
+    public static final String MENU_NAME = "CKO ADMINISTRATION";
     public static final String VIEW_BREADCRUMB = "Knowledge Manager Administration";
     public static final FontIcon VIEW_ICON = MaterialIcons.INFO;
 

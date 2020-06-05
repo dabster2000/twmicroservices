@@ -221,7 +221,7 @@ public class DashboardBoxCreator {
         LocalDate endDate = LocalDate.now();
         LocalDate lastStartDate = startDate.minusYears(1);
         LocalDate lastEndDate = endDate.minusYears(1);
-
+/*
         List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.countConsultantsPerProject(startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")), endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         double numberOfConsultants = 0;
         for (GraphKeyValue graphKeyValue : amountPerItemList) {
@@ -241,6 +241,8 @@ public class DashboardBoxCreator {
 
         double percentNumberOfConsultantsPerProject = Math.abs(Math.round((numberOfConsultantsPerProject / numberOfConsultantsPerProjectOld) * 100) - 100);
 
+
+ */
         /*
         TopCardDesign consultantsCard4 = new TopCardDesign();
         consultantsCard4.getImgIcon().setSource(new ThemeResource("images/icons/ic_people_black_48dp_2x.png"));
@@ -249,7 +251,7 @@ public class DashboardBoxCreator {
         consultantsCard4.getLblSubtitle().setValue(percentNumberOfConsultantsPerProject+"% "+numberOfConsultantsMoreOrLess+" than last year");
         consultantsCard4.getCardHolder().addStyleName("dark-grey");
         */
-        return new TopCardContent("images/icons/trustworks_icon_gruppe.svg", "Consultants per Project", percentNumberOfConsultantsPerProject+"% "+numberOfConsultantsMoreOrLess+" than last year", ""+numberOfConsultantsPerProject, "dark-blue");
+        return new TopCardContent("images/icons/trustworks_icon_gruppe.svg", "Consultants per Project", "N/A", "", "dark-blue");
     }
 
 }

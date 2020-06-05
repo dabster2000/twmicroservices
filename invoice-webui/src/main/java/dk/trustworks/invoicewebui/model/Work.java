@@ -70,6 +70,10 @@ public class Work {
         return TaskService.get().findOne(taskuuid);
     }
 
+    public String getTaskuuid() {
+        return taskuuid;
+    }
+
     public void setTask(Task task) {
         this.taskuuid = task.getUuid();
     }

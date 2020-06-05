@@ -58,7 +58,9 @@ public class ConsultantsBudgetRealizationChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.findConsultantBillableHoursByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
+
+        // TODO: FIX IT!!!
+        List<GraphKeyValue> amountPerItemList = new ArrayList<>();//graphKeyValueRepository.findConsultantBillableHoursByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
 
         String[] categories = new String[amountPerItemList.size()+5];
         DataSeries revenueList = new DataSeries("Realization");

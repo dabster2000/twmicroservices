@@ -193,7 +193,6 @@ public class UserService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        System.out.println("UserService.afterPropertiesSet");
         instance = this;
     }
 

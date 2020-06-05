@@ -5,6 +5,7 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
+import dk.trustworks.invoicewebui.repositories.ContractProjectRepository;
 import dk.trustworks.invoicewebui.repositories.ContractRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
@@ -21,6 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.isBetween;
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 @Service
 public class ContractService implements InitializingBean {
@@ -29,7 +31,11 @@ public class ContractService implements InitializingBean {
 
     private final ProjectService projectService;
 
+    private final TaskService taskService;
+
     private final ContractRepository contractRepository;
+
+    private final ContractProjectRepository contractProjectRepository;
 
     private final ContractConsultantRepository consultantRepository;
 
@@ -38,9 +44,11 @@ public class ContractService implements InitializingBean {
     private final WorkService workService;
 
     @Autowired
-    public ContractService(ProjectService projectService, ContractRepository contractRepository, ContractConsultantRepository consultantRepository, ClientService clientService, WorkService workService) {
+    public ContractService(ProjectService projectService, TaskService taskService, ContractRepository contractRepository, ContractProjectRepository contractProjectRepository, ContractConsultantRepository consultantRepository, ClientService clientService, WorkService workService) {
         this.projectService = projectService;
+        this.taskService = taskService;
         this.contractRepository = contractRepository;
+        this.contractProjectRepository = contractProjectRepository;
         this.consultantRepository = consultantRepository;
         this.clientService = clientService;
         this.workService = workService;
@@ -154,25 +162,43 @@ public class ContractService implements InitializingBean {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
         if(work.getWorkasUser()==null) {
-            return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+            Optional<Contract> optionalContract = findContractByWorkAndUseruuid(work, work.getUseruuid());
+            return optionalContract.map(contract -> contract.findByUseruuid(work.getUseruuid()).getRate()).orElse(0.0);
+            //return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         } else {
-            return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkasUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+            Optional<Contract> optionalContract = findContractByWorkAndUseruuid(work, work.getWorkas());
+            return optionalContract.map(contract -> contract.findByUseruuid(work.getWorkas()).getRate()).orElse(0.0);
+            //return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkasUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
         }
+    }
+
+    //@Cacheable(value = "work")
+    public List<Work> findBillableWorkByPeriod(LocalDate fromDate, LocalDate toDate) {
+        return workService.findByPeriod(fromDate, toDate).stream().filter(work -> findConsultantRateByWork(work, ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.CLOSED, ContractStatus.BUDGET) > 0.0).collect(Collectors.toList());
+        //return workRepository.findBillableWorkByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    }
+
+    private Optional<Contract> findContractByWorkAndUseruuid(Work work, String workas) {
+        return getContractsByProject(taskService.findOne(work.getTaskuuid()).getProject()).stream().filter(contract -> isBetween(work.getRegistered(), contract.getActiveFrom(), contract.getActiveTo()) && contract.findByUseruuid(workas) != null).findFirst();
     }
 
     public Contract findContractByWork(Work work, ContractStatus... statusList) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
         if(work.getWorkasUser()==null) {
-            return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
+            return findContractByWorkAndUseruuid(work, work.getUseruuid()).orElse(null);
+            //return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
         } else {
-            return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkasUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
+            return findContractByWorkAndUseruuid(work, work.getWorkas()).orElse(null);
+            //return contractRepository.findContractByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkasUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).collect(Collectors.toList()));
         }
     }
 
     public Double findConsultantRate(int year, int month, int day, User user, Task task, ContractStatus... statusList) {
         if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(task.getType().equals(TaskType.SO)) return 0.0;
-        return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+        Optional<Contract> optionalContract = getContractsByProject(taskService.findOne(task.getUuid()).getProject()).stream().filter(contract -> isBetween(LocalDate.of(year, month, day), contract.getActiveFrom(), contract.getActiveTo()) && contract.findByUseruuid(user.getUuid()) != null).findFirst();
+        return optionalContract.map(contract -> contract.findByUseruuid(user.getUuid()).getRate()).orElse(0.0);
+        //return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
     }
 
     @Cacheable("contract")
@@ -265,20 +291,12 @@ public class ContractService implements InitializingBean {
         )).orElse(null);
     }
 
-    public List<Work> getWorkOnContractByUser(Contract contract) {
-        return workService.findByProjectsAndUsersAndDateRange(
-                contract.getProjectUuids(), //.getProjects().stream().map(Project::getUuid).collect(Collectors.toList()),
-                contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUuid()).collect(Collectors.toList()),
-                contract.getActiveFrom(),
-                contract.getActiveTo());
-    }
-
     public List<Contract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
         return contractRepository.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
     public double findAmountUsedOnContract(Contract contract) {
-        Double result = workService.findAmountUsedByContract(contract.getUuid());
+        Double result = workService.findAmountUsedByContract(contract);
         return result==null?0.0:result;
     }
 
@@ -341,7 +359,7 @@ public class ContractService implements InitializingBean {
     }
 
     public List<Contract> getContractsByProject(Project project) {
-        return contractRepository.findByProjectuuid(project.getUuid());
+        return contractProjectRepository.findByProjectuuid(project.getUuid()).stream().map(ContractProject::getContract).collect(Collectors.toList());
     }
 
     @Override

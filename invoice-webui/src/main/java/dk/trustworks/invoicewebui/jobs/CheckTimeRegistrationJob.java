@@ -113,7 +113,6 @@ public class CheckTimeRegistrationJob {
             Optional<UserBooking> booking = userBookingList.stream().filter(userBooking -> userBooking.getUsername().equals(user.getUsername())).findAny();
             log.info("booking.isPresent(): "+booking.isPresent());
             if(booking.isPresent()) {
-                System.out.println("booking.get().getAmountItemsPerProjects(0) = " + booking.get().getAmountItemsPerProjects(0));
                 if(booking.get().getAmountItemsPerProjects(0)<=0.0) hasWork = true;
             }
             log.info("hasWork = " + hasWork);

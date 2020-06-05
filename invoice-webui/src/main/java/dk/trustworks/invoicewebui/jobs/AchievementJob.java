@@ -60,6 +60,7 @@ public class AchievementJob {
 
     @PostConstruct
     public void init() {
+        //achievementCollector();
     }
 
     @Scheduled(cron = "0 0 23 * * ?")
@@ -82,37 +83,46 @@ public class AchievementJob {
             testAchievement(user, achievementList, AchievementType.VACATION3, isWorthyOfVacationAchievement(user, 3));
             testAchievement(user, achievementList, AchievementType.VACATION4, isWorthyOfVacationAchievement(user, 4));
             testAchievement(user, achievementList, AchievementType.VACATION5, isWorthyOfVacationAchievement(user, 5));
-
+            System.out.println("1");
+/*
             testAchievement(user, achievementList, AchievementType.INTRALOGIN14, isWorthyOfIntraLoginAchievement(user, 14));
             testAchievement(user, achievementList, AchievementType.INTRALOGIN21, isWorthyOfIntraLoginAchievement(user, 21));
             testAchievement(user, achievementList, AchievementType.INTRALOGIN28, isWorthyOfIntraLoginAchievement(user, 28));
-
+*/
             testAchievement(user, achievementList, AchievementType.SPEEDDATES10, isWorthyOfSpeedDateAchievement(user, 10));
             testAchievement(user, achievementList, AchievementType.SPEEDDATES20, isWorthyOfSpeedDateAchievement(user, 20));
             testAchievement(user, achievementList, AchievementType.SPEEDDATES30, isWorthyOfSpeedDateAchievement(user, 30));
+            System.out.println("2");
 
             testAchievement(user, achievementList, AchievementType.WEEKVACATION, isWorthyOfVacationAllWeeksAchievement(user));
             testAchievement(user, achievementList, AchievementType.MONTHVACATION, isWorthyOfVacationAllMonthsAchievement(user));
+            System.out.println("3");
 
             testAchievement(user, achievementList, AchievementType.AMBITIONENTERED, isWorthyOfAmbitionCompleted(user));
+            System.out.println("4");
 
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE1, isWorthyOfCkoExpenseAchievement(user, 1));
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE2, isWorthyOfCkoExpenseAchievement(user, 2));
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE3, isWorthyOfCkoExpenseAchievement(user, 3));
+            System.out.println("5");
 
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY3, isWorthyOfAnniversary(user, 3));
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY5, isWorthyOfAnniversary(user, 5));
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY10, isWorthyOfAnniversary(user, 10));
+            System.out.println("6");
 
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER5, isWorthyOfBudgetBeatersAchievement(user, 5));
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER15, isWorthyOfBudgetBeatersAchievement(user, 15));
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER30, isWorthyOfBudgetBeatersAchievement(user, 30));
+            System.out.println("7");
 
             testAchievement(user, achievementList, AchievementType.BUBBLES3, isWorthyOfBubbleMemberAchievement(user, 3));
             testAchievement(user, achievementList, AchievementType.BUBBLES6, isWorthyOfBubbleMemberAchievement(user, 6));
             testAchievement(user, achievementList, AchievementType.BUBBLES9, isWorthyOfBubbleMemberAchievement(user, 9));
+            System.out.println("8");
 
             testAchievement(user, achievementList, AchievementType.BUBBLELEADER, isWorthyOfBubbleLeaderAchievement(user));
+            System.out.println("9");
         }
     }
 
@@ -185,20 +195,27 @@ public class AchievementJob {
 
     private boolean isWorthyOfBudgetBeatersAchievement(User user, int minMonths) {
         LocalDate employedDate = userService.findEmployedDate(user).orElse(LocalDate.now());
-
+        System.out.println("A");
         int count = 0;
         do {
             double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, employedDate);
+            System.out.println("K");
             double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, employedDate);
+            System.out.println("L");
             if(revenueHoursByMonth>budgetHoursByMonth) count++;
             employedDate = employedDate.plusMonths(1);
+            System.out.println("B"+count);
         } while (employedDate.isBefore(LocalDate.now().withDayOfMonth(1)));
-
+        System.out.println("C");
         return count >= minMonths;
     }
 
     private boolean isWorthyOfAnniversary(User user, int years) {
+        System.out.println("AchievementJob.isWorthyOfAnniversary");
+        System.out.println("user = " + user.getUsername() + ", years = " + years);
         UserStatus status = userService.getStatus(user, false, StatusType.ACTIVE);
+        System.out.println("status = " + status);
+        System.out.println("status.getStatusdate().isBefore(LocalDate.now().minusYears(years)); = " + status.getStatusdate().isBefore(LocalDate.now().minusYears(years)));
         return status.getStatusdate().isBefore(LocalDate.now().minusYears(years));
     }
 
@@ -264,7 +281,7 @@ public class AchievementJob {
 
         return found;
     }
-
+/*
     private boolean isWortyOfWorkWeekAchievement(User user, int minWork) {
         List<Work> workList = workService.findBillableWorkByUser(user.getUuid());
         Map<String, Double> hoursPerWeekMap = getHoursPerWeek(workList);
@@ -273,6 +290,8 @@ public class AchievementJob {
         Double aDouble = hoursPerWeekMap.values().stream().max(Double::compareTo).get();
         return aDouble >= minWork;
     }
+
+ */
 
     private Map<String, Double> getHoursPerWeek(List<Work> workList) {
         Map<String, Double> hoursPerWeekMap = new HashMap<>();

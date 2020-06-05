@@ -87,21 +87,10 @@ public class AvailabilityDocument {
     }
 
     private double adjustForOffHours() {
-        if(user.getUsername().equals("hans.lassen") && month.isEqual(LocalDate.of(2019, 12, 1)))
-            System.out.println("month = " + month);
         int numberOfFridaysInPeriod = DateUtils.countWeekdayOccurances(DayOfWeek.FRIDAY, getMonth(), getMonth().plusMonths(1));
-        if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
-            System.out.println("numberOfFridaysInPeriod = " + numberOfFridaysInPeriod);
-        for (LocalDate localDate : DateUtils.getVacationDayArray(getMonth().getYear())) {
-            if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
-                System.out.println("localDate = " + localDate);
-        }
-
         int numberOfFridayHolidays = DateUtils.getVacationDayArray(getMonth().getYear()).stream()
                 .filter(localDate -> localDate.getMonthValue() == getMonth().getMonthValue())
                 .mapToInt(value -> (value.getDayOfWeek().getValue() != DayOfWeek.FRIDAY.getValue()) ? 0 : 1).sum();
-        if(user.getUsername().equals("hans.lassen") && getMonth().isEqual(LocalDate.of(2019, 12, 1)))
-            System.out.println("numberOfFridayHolidays = " + numberOfFridayHolidays);
         return (numberOfFridaysInPeriod - numberOfFridayHolidays) * TrustworksConfiguration.getWeekOffHours();
     }
 

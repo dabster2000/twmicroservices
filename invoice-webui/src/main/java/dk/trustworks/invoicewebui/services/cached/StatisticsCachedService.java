@@ -183,7 +183,7 @@ public class StatisticsCachedService {
             do {
                 List<Contract> activeContracts = ContractService.getContractsByDate(contracts, user, startDate);
                 for (Contract contract : activeContracts) {
-                    Double hoursRegisteredOnContractByPeriod = workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), startDate, startDate.plusMonths(1).minusDays(1));
+                    Double hoursRegisteredOnContractByPeriod = workService.findHoursRegisteredOnContractByPeriod(contract, user.getUuid(), startDate, startDate.plusMonths(1).minusDays(1));
                     double hours = (hoursRegisteredOnContractByPeriod==null)?0.0:hoursRegisteredOnContractByPeriod;
                     if(contract.findByUser(user)==null) continue;
                     WorkDocument workDocument = new WorkDocument(startDate, contract.getClient(), user, contract, hours, contract.findByUser(user).getRate());

@@ -190,6 +190,11 @@ public class Contract {
         return first.orElse(null);
     }
 
+    public ContractConsultant findByUseruuid(String useruuid) {
+        Optional<ContractConsultant> first = contractConsultants.stream().filter(consultant -> consultant.getUseruuid().equals(useruuid)).findFirst();
+        return first.orElse(null);
+    }
+
     public Set<ContractProject> getContractProjects() {
         return contractProjects;
     }
@@ -214,7 +219,7 @@ public class Contract {
         for (ContractConsultant newContractConsultant : contractConsultants) {
             boolean consultantExists = false;
             for (ContractConsultant contractConsultant : this.contractConsultants) {
-                if(contractConsultant.getUser().getUuid().equals(newContractConsultant.getUser().getUuid())) consultantExists = true;
+                if(contractConsultant.getUser().getUuid().equals(newContractConsultant.getUseruuid())) consultantExists = true;
             }
             if(!consultantExists) this.contractConsultants.add(newContractConsultant);
         }

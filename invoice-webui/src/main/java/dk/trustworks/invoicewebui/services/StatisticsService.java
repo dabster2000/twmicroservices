@@ -203,7 +203,7 @@ public class StatisticsService extends StatisticsCachedService {
                             double booking;
                             if(i < monthsInPast) {
                                 budget = NumberUtils.round((contractConsultant.getHours() * weeks), 2);
-                                Double preBookingObj = workService.findHoursRegisteredOnContractByPeriod(contract.getUuid(), user.getUuid(), getFirstDayOfMonth(currentDate), getLastDayOfMonth(currentDate));
+                                Double preBookingObj = workService.findHoursRegisteredOnContractByPeriod(contract, user.getUuid(), getFirstDayOfMonth(currentDate), getLastDayOfMonth(currentDate));
                                 if(preBookingObj != null) preBooking = preBookingObj;
                                 booking = NumberUtils.round((preBooking / budget) * 100.0, 2);
                             } else {
@@ -240,7 +240,7 @@ public class StatisticsService extends StatisticsCachedService {
 
                     if(i < monthsInPast) {
                         hourBudget = NumberUtils.round(budget.getBudget() / budget.getContractConsultant().getRate(), 2);
-                        preBooking = Optional.ofNullable(workService.findHoursRegisteredOnContractByPeriod(budget.getContractConsultant().getContract().getUuid(), budget.getContractConsultant().getUser().getUuid(), getFirstDayOfMonth(currentDate), getLastDayOfMonth(currentDate))).orElse(0.0);
+                        preBooking = Optional.ofNullable(workService.findHoursRegisteredOnContractByPeriod(budget.getContractConsultant().getContract(), budget.getContractConsultant().getUser().getUuid(), getFirstDayOfMonth(currentDate), getLastDayOfMonth(currentDate))).orElse(0.0);
                         booking = NumberUtils.round((preBooking / hourBudget) * 100.0, 2);
                     } else {
                         if (budget.getContractConsultant().getContract().getStatus().equals(ContractStatus.BUDGET)) {

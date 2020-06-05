@@ -213,7 +213,6 @@ public class CountEmployeesJob {
             List<NumericPrediction> predsAtStep = forecast.get(i);
             NumericPrediction predForTarget = predsAtStep.get(0);
             sum += predForTarget.predicted();
-            System.out.println("predForTarget.predicted() = " + predForTarget.predicted());
             double amount = Math.max(predForTarget.predicted(), 0.0);
             dailyForecast.add(amount);
             incomeForcastRepository.save(new IncomeForecast(i, amount, "INCOME"));

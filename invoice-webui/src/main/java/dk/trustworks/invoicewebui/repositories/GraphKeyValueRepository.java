@@ -16,7 +16,7 @@ import java.util.List;
 
 @RepositoryRestResource(collectionResourceRel = "graphkeyvalues", path="graphkeyvalues")
 public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, String> {
-
+/*
     @Cacheable("findRevenueByMonthByPeriod")
     @Query(value = "select w.id as uuid, DATE_FORMAT(w.registered, '%Y-%m-%d') as description, ROUND(SUM(w.workduration*cc.rate)) value from " +
             "work as w " +
@@ -50,7 +50,8 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "GROUP BY MONTH(w.registered), YEAR(w.registered) " +
             "ORDER BY YEAR(w.registered), MONTH(w.registered) ", nativeQuery = true)
     List<GraphKeyValue> findBillableHoursByMonthByPeriod(@Param("useruuid") String useruuid, @Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
-
+*/
+    /*
     @Cacheable("findConsultantRevenueByPeriod")
     @Query(value = "select u.uuid uuid, concat(u.firstname, ' ', u.lastname) description, ROUND(SUM(w.workduration*cc.rate)) value from " +
             "work as w " +
@@ -66,6 +67,8 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "GROUP BY w.useruuid ORDER BY value DESC;", nativeQuery = true)
     List<GraphKeyValue> findConsultantRevenueByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
+ */
+/*
     @Cacheable("findConsultantRevenueByPeriod")
     @Query(value = "select u.uuid uuid, concat(u.firstname, ' ', u.lastname) description, ROUND(SUM(w.workduration)) value from " +
             "work as w " +
@@ -81,6 +84,8 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "GROUP BY w.useruuid ORDER BY value DESC;", nativeQuery = true)
     List<GraphKeyValue> findConsultantBillableHoursByPeriod(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
 
+ */
+/*
     @Cacheable("countConsultantsPerProject")
     @Query(value = "SELECT p.uuid uuid, p.name description, COUNT(DISTINCT w.useruuid) value FROM usermanager.work w " +
             "LEFT JOIN usermanager.task t ON t.uuid = w.taskuuid " +
@@ -95,7 +100,7 @@ public interface GraphKeyValueRepository extends CrudRepository<GraphKeyValue, S
             "and w.registered >= :periodStart AND w.registered <= :periodEnd " +
             "GROUP BY p.uuid ORDER BY value DESC;", nativeQuery = true)
     List<GraphKeyValue> countConsultantsPerProject(@Param("periodStart") String periodStart, @Param("periodEnd") String periodEnd);
-
+*/
 
     /*
     Antal projekter per konsulent

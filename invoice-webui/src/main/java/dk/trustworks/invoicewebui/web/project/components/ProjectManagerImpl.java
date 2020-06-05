@@ -498,6 +498,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     private void updateTreeGrid(Project currentProject) {
         budgetCard.getContainer().removeAllComponents();
         if(currentProject.getContracts().stream().anyMatch(contract -> contract.getContractType().equals(ContractType.AMOUNT))) {
+            System.out.println("currentProject = " + currentProject);
+            System.out.println("currentProject.getContracts().get(0) = " + currentProject.getContracts().get(0).getUuid());
             grid = createGrid(currentProject);
             ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
             ResponsiveRow row = responsiveLayout.addRow();
@@ -591,6 +593,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         List<BudgetRow> budgetRows = new ArrayList<>();
 
         for (Contract mainContract : currentProject.getContracts()) {
+            System.out.println("mainContract = " + mainContract);
             if(mainContract.getActiveTo().isBefore(startDate)) continue;
             if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) continue;
             for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {

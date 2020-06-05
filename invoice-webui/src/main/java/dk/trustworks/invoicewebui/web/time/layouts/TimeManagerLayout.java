@@ -247,11 +247,17 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 if(onOffSwitch.getValue()){
                     user = userComboBox.getSelectedItem().get();
                 } else {
-                    user = userSession.getUser();
+                    user = dateButtons.getSelActiveUser().getSelectedItem().get();//userSession.getUser();
                 }
                 log.info("Finding user contracts for "+ user.getUsername());
                 List<Contract> newActiveConsultantContracts = getMainContracts(contractService, user);
+                System.out.println("newActiveConsultantContracts:");
+                newActiveConsultantContracts.forEach(System.out::println);
+                System.out.println("contract projects:");
+                newActiveConsultantContracts.stream().flatMap(contract -> contract.getProjects().stream()).distinct().forEach(System.out::println);
                 List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
+                System.out.println("allProjects:");
+                allProjects.forEach(System.out::println);
                 Set<Project> projects;
                 if(event1.getValue().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) {
                     System.out.println("TW");
@@ -259,6 +265,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 } else {
                     System.out.println("OTHER");
                     projects = newActiveConsultantContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
+                    projects.forEach(System.out::println);
                 }
 
                 projectComboBox.clear();
@@ -541,7 +548,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         List<BudgetDocument> consultantBudgetList = statisticsService.getConsultantBudgetDataByMonth(dateButtons.getSelActiveUser().getValue(), month);
 
         for (BudgetDocument budgetDocument : consultantBudgetList) {
-            double workSum = contractService.getWorkOnContractByUser(budgetDocument.getContract()).stream()
+            double workSum = workService.getWorkOnContractByUser(budgetDocument.getContract()).stream()
                     .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)) &&
                             work.getUseruuid().equals(budgetDocument.getUser().getUuid()))
                     .mapToDouble(Work::getWorkduration).sum();

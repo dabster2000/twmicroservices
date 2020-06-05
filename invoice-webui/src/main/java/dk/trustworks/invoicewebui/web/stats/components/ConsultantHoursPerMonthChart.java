@@ -6,8 +6,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,13 +29,13 @@ import java.util.Map;
 public class ConsultantHoursPerMonthChart {
 
 
-    private final WorkService workService;
+    private final ContractService contractService;
 
     private final UserService userRepository;
 
     @Autowired
-    public ConsultantHoursPerMonthChart(WorkService workService, UserService userRepository) {
-        this.workService = workService;
+    public ConsultantHoursPerMonthChart(ContractService contractService, UserService userRepository) {
+        this.contractService = contractService;
         this.userRepository = userRepository;
     }
 
@@ -69,7 +69,7 @@ public class ConsultantHoursPerMonthChart {
 
 
         Map<String, double[]> userMonths = new HashMap<>();
-        List<Work> workList = workService.findBillableWorkByPeriod(periodStart, periodEnd);
+        List<Work> workList = contractService.findBillableWorkByPeriod(periodStart, periodEnd);
 
         for (Work work : workList) {
             if(!userMonths.containsKey(work.getUser().getUuid())) userMonths.put(work.getUser().getUuid(), new double[period+1]);

@@ -12,6 +12,7 @@ import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class ConsultantsPerProjectChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = graphKeyValueRepository.countConsultantsPerProject(periodStart.toString("yyyyMMdd"), periodEnd.toString("yyyyMMdd"));
+        List<GraphKeyValue> amountPerItemList = new ArrayList<>();//graphKeyValueRepository.countConsultantsPerProject(periodStart.toString("yyyyMMdd"), periodEnd.toString("yyyyMMdd"));
         /*
         double sumRevenue = 0.0;
         for (GraphKeyValue amountPerItem : amountPerItemList) {
