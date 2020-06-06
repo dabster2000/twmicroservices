@@ -10,8 +10,11 @@ import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -19,6 +22,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 /**
  * Created by hans on 20/09/2017.
@@ -29,14 +34,16 @@ import java.util.stream.Collectors;
 public class ConsultantsBudgetRealizationChart {
 
     private final GraphKeyValueRepository graphKeyValueRepository;
+    private final StatisticsService statisticsService;
     private final ContractService contractService;
     private final WorkService workService;
     private final BudgetNewRepository budgetNewRepository;
     private final UserService userService;
 
     @Autowired
-    public ConsultantsBudgetRealizationChart(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, WorkService workService, BudgetNewRepository budgetNewRepository, UserService userService) {
+    public ConsultantsBudgetRealizationChart(GraphKeyValueRepository graphKeyValueRepository, StatisticsService statisticsService, ContractService contractService, WorkService workService, BudgetNewRepository budgetNewRepository, UserService userService) {
         this.graphKeyValueRepository = graphKeyValueRepository;
+        this.statisticsService = statisticsService;
         this.contractService = contractService;
         this.workService = workService;
         this.budgetNewRepository = budgetNewRepository;
@@ -59,8 +66,7 @@ public class ConsultantsBudgetRealizationChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
 
-        // TODO: FIX IT!!!
-        List<GraphKeyValue> amountPerItemList = new ArrayList<>();//graphKeyValueRepository.findConsultantBillableHoursByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
+        List<GraphKeyValue> amountPerItemList = statisticsService.findConsultantBillableHoursByPeriod(periodStart, periodEnd).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
 
         String[] categories = new String[amountPerItemList.size()+5];
         DataSeries revenueList = new DataSeries("Realization");

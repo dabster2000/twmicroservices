@@ -24,7 +24,6 @@ public class PhotoService {
     }
 
     public Image getRoundMemberImage(User member, boolean isOwner, int width, Sizeable.Unit unit) {
-        System.out.println("member = " + member);
         Photo photo = photoRepository.findByRelateduuid(member.getUuid());
 
         Image image = new Image();

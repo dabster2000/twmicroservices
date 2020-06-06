@@ -124,7 +124,6 @@ public class WorkService {
 
     //@Cacheable("work")
     public Double findAmountUsedByContract(Contract contract) {
-        List<String> useruuids = contract.getContractConsultants().stream().map(ContractConsultant::getUseruuid).collect(Collectors.toList());
         Set<String> tasks = new TreeSet<>();
         for (Project project : contract.getProjects()) {
             for (Task task : project.getTasks()) {
@@ -150,8 +149,7 @@ public class WorkService {
         if(tasks.size()==0) return 0.0;
         String[] taskArray = new String[tasks.size()];
         tasks.toArray(taskArray);
-        return workRepository.findByPeriodAndUserAndTasks(stringIt(fromdate), stringIt(todate), useruuid, taskArray).stream().mapToDouble(value -> value.getWorkduration()*contract.findByUseruuid(useruuid).getRate()).sum();
-
+        return workRepository.findByPeriodAndUserAndTasks(stringIt(fromdate), stringIt(todate), useruuid, taskArray).stream().mapToDouble(Work::getWorkduration).sum();
     }
 
     /*

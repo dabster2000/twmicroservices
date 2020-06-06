@@ -17,7 +17,7 @@ public class GraphKeyValue {
     public GraphKeyValue() {
     }
 
-    public GraphKeyValue(String uuid, String description, int value) {
+    public GraphKeyValue(String uuid, String description, double value) {
         this.uuid = uuid;
         this.description = description;
         this.value = value;
@@ -47,7 +47,7 @@ public class GraphKeyValue {
         this.value = value;
     }
 
-    public void addValue(int value) {
+    public void addValue(double value) {
         this.value += value;
     }
 

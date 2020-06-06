@@ -5,6 +5,7 @@ import dk.trustworks.invoicewebui.model.dto.*;
 import dk.trustworks.invoicewebui.model.enums.*;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -479,4 +480,15 @@ public class StatisticsCachedService {
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1))).collect(Collectors.toList());
     }
 
+    // u.uuid uuid, concat(u.firstname, ' ', u.lastname) description, ROUND(SUM(w.workduration)
+    public List<GraphKeyValue> findConsultantBillableHoursByPeriod(LocalDate fromDate, LocalDate toDate) {
+        List<Work> workList = workService.findByPeriod(fromDate, toDate);
+        Map<String, GraphKeyValue> result = new HashMap<>();
+        for (Work work : workList) {
+            if(work.getWorkduration() == 0) continue;
+            result.putIfAbsent(work.getUseruuid(), new GraphKeyValue(work.getUseruuid(), userService.findByUUID(work.getUseruuid()).getUsername(), 0.0));
+            result.get(work.getUseruuid()).addValue(work.getWorkduration());
+        }
+        return new ArrayList<>(result.values());
+    }
 }

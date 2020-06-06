@@ -118,6 +118,17 @@ public class StatisticsService extends StatisticsCachedService {
         return result;
     }
 
+    // w.id as uuid, DATE_FORMAT(w.registered, '%Y-%m-%d') as description, ROUND(SUM(w.workduration*cc.rate
+    public List<GraphKeyValue> findRevenueByMonthByPeriod(LocalDate periodStart, LocalDate periodEnd) {
+        Map<LocalDate, Double> revenuePerMonth = calcActualRevenuePerMonth(periodStart, periodEnd);
+        List<GraphKeyValue> result = new ArrayList<>();
+        revenuePerMonth.keySet().stream().sorted(LocalDate::compareTo).forEach(localDate -> {
+            result.add(new GraphKeyValue(UUID.randomUUID().toString(), stringIt(localDate), revenuePerMonth.get(localDate)));
+        });
+
+        return result;
+    }
+
     /**
      * Calculates revenue from registered hours, not actual invoices.
      * @param periodStart

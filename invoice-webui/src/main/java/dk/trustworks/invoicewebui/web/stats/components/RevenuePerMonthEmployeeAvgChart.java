@@ -56,7 +56,7 @@ public class RevenuePerMonthEmployeeAvgChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
         // TODO: FIX IT
-        List<GraphKeyValue> amountPerItemList = new ArrayList<>(); //graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        List<GraphKeyValue> amountPerItemList = statisticsService.findRevenueByMonthByPeriod(periodStart, periodEnd); //graphKeyValueRepository.findRevenueByMonthByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         String[] categories = new String[period];
         DataSeries revenueSeries = new DataSeries("Revenue");
         DataSeries earningsSeries = new DataSeries("Earnings");
