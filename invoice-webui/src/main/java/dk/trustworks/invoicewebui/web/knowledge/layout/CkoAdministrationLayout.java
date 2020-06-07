@@ -225,8 +225,8 @@ public class CkoAdministrationLayout extends VerticalLayout {
             Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
             if (!firstStatus.isPresent()) continue;
 
-            int monthsNotEmployed = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate().withDayOfMonth(1), LocalDate.of(LocalDate.now().getYear(), 1, 1));
-            int maxBudgetFirstYear = 24000 - (monthsNotEmployed * 2000);
+            int monthsNotEmployed = DateUtils.countMonthsBetween(LocalDate.of(LocalDate.now().getYear(), 1, 1), firstStatus.get().getStatusdate().withDayOfMonth(1));
+            int maxBudgetFirstYear = 24000 - (monthsNotEmployed<0?0:(monthsNotEmployed * 2000));
 
             budgetsPerConsultant.put(user.getUsername(), maxBudgetFirstYear);
 
