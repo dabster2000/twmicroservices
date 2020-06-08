@@ -7,6 +7,7 @@ import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class AchievementJob {
 
     @PostConstruct
     public void init() {
-        //achievementCollector();
+        achievementCollector();
     }
 
     @Scheduled(cron = "0 0 23 * * ?")
@@ -106,15 +107,15 @@ public class AchievementJob {
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE3, isWorthyOfCkoExpenseAchievement(user, 3));
             System.out.println("5");
 
-            testAchievement(user, achievementList, AchievementType.ANNIVERSARY3, isWorthyOfAnniversary(user, 3));
-            testAchievement(user, achievementList, AchievementType.ANNIVERSARY5, isWorthyOfAnniversary(user, 5));
-            testAchievement(user, achievementList, AchievementType.ANNIVERSARY10, isWorthyOfAnniversary(user, 10));
-            System.out.println("6");
-
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER5, isWorthyOfBudgetBeatersAchievement(user, 5));
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER15, isWorthyOfBudgetBeatersAchievement(user, 15));
             testAchievement(user, achievementList, AchievementType.BUDGETBEATER30, isWorthyOfBudgetBeatersAchievement(user, 30));
             System.out.println("7");
+
+            testAchievement(user, achievementList, AchievementType.ANNIVERSARY3, isWorthyOfAnniversary(user, 3));
+            testAchievement(user, achievementList, AchievementType.ANNIVERSARY5, isWorthyOfAnniversary(user, 5));
+            testAchievement(user, achievementList, AchievementType.ANNIVERSARY10, isWorthyOfAnniversary(user, 10));
+            System.out.println("6");
 
             testAchievement(user, achievementList, AchievementType.BUBBLES3, isWorthyOfBubbleMemberAchievement(user, 3));
             testAchievement(user, achievementList, AchievementType.BUBBLES6, isWorthyOfBubbleMemberAchievement(user, 6));
@@ -130,7 +131,7 @@ public class AchievementJob {
         if (achievementList.stream().noneMatch(achievement -> (achievement.getAchievement().equals(achievementType)))) {
             if (worthyOfVacationAchievement) {
                 log.info("user = " + user.getUsername() + ", achivement = " + achievementType, user.getUuid());
-                notificationRepository.save(new Notification(user, LocalDate.now(), LocalDate.now().plusMonths(3), "New Achievement", "You've made it: "+achievementType.toString(), achievementType.getDescription(), achievementType.getNumber()+"", NotificationType.ACHIEVEMENT));
+                //notificationRepository.save(new Notification(user, LocalDate.now(), LocalDate.now().plusMonths(3), "New Achievement", "You've made it: "+achievementType.toString(), achievementType.getDescription(), achievementType.getNumber()+"", NotificationType.ACHIEVEMENT));
                 achievementRepository.save(new Achievement(user, LocalDate.now(), achievementType));
             }
         }
@@ -194,19 +195,28 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfBudgetBeatersAchievement(User user, int minMonths) {
+        if(!user.getUsername().equals("henrik.kjems")) return false;
+        if(user.getUsername().equals("henrik.kjems"))
+            System.out.println("AchievementJob.isWorthyOfBudgetBeatersAchievement");
         LocalDate employedDate = userService.findEmployedDate(user).orElse(LocalDate.now());
         System.out.println("A");
         int count = 0;
         do {
+            if(user.getUsername().equals("henrik.kjems"))
+                System.out.println("employedDate = " + DateUtils.stringIt(employedDate));
             double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, employedDate);
-            System.out.println("K");
+            if(user.getUsername().equals("henrik.kjems")) System.out.println("K");
+            if(user.getUsername().equals("henrik.kjems")) System.out.println("budgetHoursByMonth = " + budgetHoursByMonth);
             double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, employedDate);
-            System.out.println("L");
+            if(user.getUsername().equals("henrik.kjems")) System.out.println("L");
+            if(user.getUsername().equals("henrik.kjems")) System.out.println("revenueHoursByMonth = " + revenueHoursByMonth);
             if(revenueHoursByMonth>budgetHoursByMonth) count++;
             employedDate = employedDate.plusMonths(1);
-            System.out.println("B"+count);
+            if(user.getUsername().equals("henrik.kjems")) System.out.println("B"+count);
         } while (employedDate.isBefore(LocalDate.now().withDayOfMonth(1)));
-        System.out.println("C");
+        if(user.getUsername().equals("henrik.kjems")) System.out.println("C");
+        if(user.getUsername().equals("henrik.kjems")) System.out.println("count = " + count);
+        System.out.println("count >= minMonths = " + (count >= minMonths));
         return count >= minMonths;
     }
 

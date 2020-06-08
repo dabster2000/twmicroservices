@@ -18,7 +18,6 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
-import dk.trustworks.invoicewebui.repositories.MicroCourseStudentRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
@@ -42,17 +41,12 @@ public class CkoAdministrationLayout extends VerticalLayout {
     @Autowired
     private MicroCourseRepository microCourseRepository;
 
-    @Autowired
-    private MicroCourseStudentRepository microCourseStudentRepository;
-
     @Autowired UserService userService;
-
-    private ResponsiveLayout mainLayout;
 
     public CkoAdministrationLayout init() {
         this.removeAllComponents();
 
-        mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         this.addComponent(mainLayout);
 
         Component enlistedBox = createCourseQueueBox("ENLISTED", "Trustworks Academy - Course Queue");
@@ -227,6 +221,10 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
             int monthsNotEmployed = DateUtils.countMonthsBetween(LocalDate.of(LocalDate.now().getYear(), 1, 1), firstStatus.get().getStatusdate().withDayOfMonth(1));
             int maxBudgetFirstYear = 24000 - (monthsNotEmployed<0?0:(monthsNotEmployed * 2000));
+            Optional<UserStatus> lastStatus = user.getStatuses().stream().max(Comparator.comparing(UserStatus::getStatusdate)); // last status
+            if(lastStatus.isPresent() && lastStatus.get().getStatus().equals(StatusType.TERMINATED)) {
+                maxBudgetFirstYear = expensesPerConsultant.get(user.getUsername());
+            }
 
             budgetsPerConsultant.put(user.getUsername(), maxBudgetFirstYear);
 
