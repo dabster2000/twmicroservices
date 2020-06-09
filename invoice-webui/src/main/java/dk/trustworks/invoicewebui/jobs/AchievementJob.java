@@ -70,6 +70,8 @@ public class AchievementJob {
         log.debug("AchievementJob.achievementCollector");
 
         for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT)) {
+            System.out.println("Checking achievements: " + LocalDate.now());
+            System.out.println("user = " + user.getUsername());
             if(userService.isExternal(user)) continue;
 
             List<Achievement> achievementList = achievementRepository.findByUseruuid(user.getUuid());
@@ -195,34 +197,25 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfBudgetBeatersAchievement(User user, int minMonths) {
-        if(!user.getUsername().equals("henrik.kjems")) return false;
-        if(user.getUsername().equals("henrik.kjems"))
-            System.out.println("AchievementJob.isWorthyOfBudgetBeatersAchievement");
+        System.out.println("AchievementJob.isWorthyOfBudgetBeatersAchievement");
         LocalDate employedDate = userService.findEmployedDate(user).orElse(LocalDate.now());
-        System.out.println("A");
         int count = 0;
         do {
-            if(user.getUsername().equals("henrik.kjems"))
-                System.out.println("employedDate = " + DateUtils.stringIt(employedDate));
+            System.out.println("employedDate = " + DateUtils.stringIt(employedDate));
             double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, employedDate);
-            if(user.getUsername().equals("henrik.kjems")) System.out.println("K");
-            if(user.getUsername().equals("henrik.kjems")) System.out.println("budgetHoursByMonth = " + budgetHoursByMonth);
+            System.out.println("budgetHoursByMonth = " + budgetHoursByMonth);
             double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, employedDate);
-            if(user.getUsername().equals("henrik.kjems")) System.out.println("L");
-            if(user.getUsername().equals("henrik.kjems")) System.out.println("revenueHoursByMonth = " + revenueHoursByMonth);
+            System.out.println("revenueHoursByMonth = " + revenueHoursByMonth);
             if(revenueHoursByMonth>budgetHoursByMonth) count++;
             employedDate = employedDate.plusMonths(1);
-            if(user.getUsername().equals("henrik.kjems")) System.out.println("B"+count);
         } while (employedDate.isBefore(LocalDate.now().withDayOfMonth(1)));
-        if(user.getUsername().equals("henrik.kjems")) System.out.println("C");
-        if(user.getUsername().equals("henrik.kjems")) System.out.println("count = " + count);
+        System.out.println("count = " + count);
         System.out.println("count >= minMonths = " + (count >= minMonths));
         return count >= minMonths;
     }
 
     private boolean isWorthyOfAnniversary(User user, int years) {
         System.out.println("AchievementJob.isWorthyOfAnniversary");
-        System.out.println("user = " + user.getUsername() + ", years = " + years);
         UserStatus status = userService.getStatus(user, false, StatusType.ACTIVE);
         System.out.println("status = " + status);
         System.out.println("status.getStatusdate().isBefore(LocalDate.now().minusYears(years)); = " + status.getStatusdate().isBefore(LocalDate.now().minusYears(years)));
