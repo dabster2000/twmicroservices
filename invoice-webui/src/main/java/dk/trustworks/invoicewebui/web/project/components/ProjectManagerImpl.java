@@ -16,7 +16,10 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
+import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
+import dk.trustworks.invoicewebui.repositories.NewsRepository;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
@@ -67,13 +70,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final PhotoService photoService;
 
-    private final NewsRepository newsRepository;
-
     private final AmbitionRepository ambitionRepository;
 
     private ResponsiveLayout responsiveLayout;
-
-    //private Project currentProject;
 
     private BudgetCardDesign budgetCard;
 
@@ -85,7 +84,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository) {
+    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, ContractService contractService, AmbitionRepository ambitionRepository) {
         this.userService = userService;
         this.projectService = projectService;
         this.clientService = clientService;
@@ -94,7 +93,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         this.budgetNewRepository = budgetNewRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
-        this.newsRepository = newsRepository;
         this.contractService = contractService;
         this.ambitionRepository = ambitionRepository;
 
@@ -178,7 +176,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         addComponent(responsiveLayout);
 
         Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
-        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(), photoResource, projectService, newsRepository, userService);
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(), photoResource, projectService, userService);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.update();
             updateTreeGrid(currentProject);
