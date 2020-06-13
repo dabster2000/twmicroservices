@@ -1,14 +1,14 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import dk.trustworks.invoicewebui.services.*;
+import dk.trustworks.invoicewebui.services.ClientService;
+import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.TaskService;
+import dk.trustworks.invoicewebui.services.UserService;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 
 public class Project {
@@ -20,14 +20,6 @@ public class Project {
     private String customerreference;
     private String name;
     private boolean locked;
-
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate startdate;
-
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate enddate;
 
     private String clientuuid;
 
@@ -44,8 +36,6 @@ public class Project {
         active = true;
         budget = 0.0;
         created = new Date();
-        startdate = LocalDate.now();
-        enddate = startdate.plusMonths(3);
         customerreference = "";
         this.name = name;
         this.clientuuid = client.getUuid();
@@ -99,22 +89,6 @@ public class Project {
         this.name = name;
     }
 
-    public LocalDate getStartdate() {
-        return startdate;
-    }
-
-    public void setStartdate(LocalDate startdate) {
-        this.startdate = startdate;
-    }
-
-    public LocalDate getEnddate() {
-        return enddate;
-    }
-
-    public void setEnddate(LocalDate enddate) {
-        this.enddate = enddate;
-    }
-
     public boolean isActive() {
         return active;
     }
@@ -160,8 +134,6 @@ public class Project {
                 ", created=" + created +
                 ", customerreference='" + customerreference + '\'' +
                 ", name='" + name + '\'' +
-                ", startdate=" + startdate +
-                ", enddate=" + enddate +
                 '}';
     }
 

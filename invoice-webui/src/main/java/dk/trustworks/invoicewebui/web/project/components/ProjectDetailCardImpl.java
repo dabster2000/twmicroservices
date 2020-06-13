@@ -23,15 +23,13 @@ import java.util.Locale;
 
 public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
 
-    private Project project;
-    private ProjectService projectService;
-    private NewsRepository newsRepository;
-    private Binder<Project> projectBinder;
+    private final Project project;
+    private final ProjectService projectService;
+    private final Binder<Project> projectBinder;
 
-    public ProjectDetailCardImpl(Project project, List<User> users, Photo photo, ProjectService projectService, NewsRepository newsRepository, UserService userService) {
+    public ProjectDetailCardImpl(Project project, List<User> users, Photo photo, ProjectService projectService, UserService userService) {
         this.project = project;
         this.projectService = projectService;
-        this.newsRepository = newsRepository;
 
         if(photo !=null && photo.getPhoto()!=null && photo.getPhoto().length > 0) {
             getLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
@@ -63,8 +61,8 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
         projectBinder.forField(getSelRelationManager()).bind(Project::getOwner, Project::setOwner);
         projectBinder.forField(getChkActive()).bind(Project::getActive, Project::setActive);
         projectBinder.forField(getChkMonthLock()).bind(Project::isLocked, Project::setLocked);
-        projectBinder.forField(getSelStartDate()).bind(Project::getStartdate, Project::setStartdate);
-        projectBinder.forField(getSelEndDate()).bind(Project::getEnddate, Project::setEnddate);
+        //projectBinder.forField(getSelStartDate()).bind(Project::getStartdate, Project::setStartdate);
+        //projectBinder.forField(getSelEndDate()).bind(Project::getEnddate, Project::setEnddate);
         projectBinder.forField(getTxtDescription()).bind(Project::getCustomerreference, Project::setCustomerreference);
 
         projectBinder.readBean(project);

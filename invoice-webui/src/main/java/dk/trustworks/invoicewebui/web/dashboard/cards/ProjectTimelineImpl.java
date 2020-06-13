@@ -54,8 +54,8 @@ public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
 
         XAxis xAxis = new XAxis();
         for (Project project : projects) {
-            if(project.getStartdate().isAfter(endDate)) continue;
-            if(project.getEnddate().isBefore(startDate)) continue;
+            //if(project.getStartdate().isAfter(endDate)) continue;
+            //if(project.getEnddate().isBefore(startDate)) continue;
             xAxis.addCategory(project.getName());
         }
 
@@ -97,6 +97,7 @@ public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
                 clientUUID = project.getClient().getUuid();
                 trustworksColor = TrustworksColor.getNextColor();
             }
+            /*
             if(project.getStartdate().isAfter(endDate)) continue;
             if(project.getEnddate().isBefore(startDate)) continue;
 
@@ -116,11 +117,15 @@ public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
             System.out.println("xStartValue, xEndValue = " + xStartValue + ", "+xEndValue);
             System.out.println("-------------------------------");
 
+
+
             item.setColor(new SolidColor(trustworksColor.getR(), trustworksColor.getG(), trustworksColor.getB()));
             item.setLow(xStartValue);
             item.setHigh(xEndValue);
 
             data.add(item);
+            */
+
         }
         conf.addSeries(data);
 

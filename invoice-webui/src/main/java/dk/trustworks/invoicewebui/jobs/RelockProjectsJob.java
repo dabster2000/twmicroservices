@@ -13,7 +13,7 @@ public class RelockProjectsJob {
 
     @Autowired
     private ProjectService projectService;
-
+/*
     @Scheduled(cron = "0 0 6 * * *")
     private void execute() {
         List<Project> allProjects = projectService.findByLocked(false);
@@ -22,4 +22,6 @@ public class RelockProjectsJob {
         }
         projectService.saveAll(allProjects);
     }
+
+ */
 }

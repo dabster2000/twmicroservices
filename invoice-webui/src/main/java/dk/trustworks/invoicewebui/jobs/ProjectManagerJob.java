@@ -29,18 +29,6 @@ import java.util.stream.Collectors;
 @Component
 public class ProjectManagerJob {
 
-    private static final Logger log = LoggerFactory.getLogger(ProjectManagerJob.class);
-
-    private final NewsRepository newsRepository;
-
-    private final ProjectService projectService;
-
-    @Autowired
-    public ProjectManagerJob(NewsRepository newsRepository, ProjectService projectService) {
-        this.newsRepository = newsRepository;
-        this.projectService = projectService;
-    }
-
     /*
     @Transactional
     @Scheduled(fixedRate = 12000)
@@ -73,8 +61,9 @@ public class ProjectManagerJob {
 
      */
 
-    @Transactional
-    @Scheduled(fixedRate = 100000)
+    //@Transactional
+    //@Scheduled(fixedRate = 100000)
+    /*
     public void reportEndingProjects() {
         List<Project> projects = projectService.findAllByActiveTrueOrderByNameAsc();
         for (Project project : projects) {
@@ -117,4 +106,6 @@ public class ProjectManagerJob {
             }
         }
     }
+
+     */
 }
