@@ -170,7 +170,9 @@ public class   DashboardView extends VerticalLayout implements View {
             i++;
             if(i==2) i=0;
         }
-
+        knowledgeChartCard.instance(
+                new MLabel("")
+                        .withStyleName("h5 bold"));
         knowledgeChartCard.instance(
                 new MLabel("Using this set of skills...")
                         .withStyleName("h5 bold"));
