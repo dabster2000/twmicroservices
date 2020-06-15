@@ -146,21 +146,36 @@ public class   DashboardView extends VerticalLayout implements View {
 
         User randomFocusUser = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).size() - 1));
 
-        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(randomFocusUser));
+        BoxImpl knowledgeChartCard = new BoxImpl();
+        knowledgeChartCard.getContent().setDefaultComponentAlignment(Alignment.TOP_CENTER);
 
-        BoxImpl consultantLocationBox = new BoxImpl();
-        List<Contract> contractList = contractService.findTimeActiveConsultantContracts(randomFocusUser, LocalDate.now());
-        CssLayout cssLayout = new CssLayout();
-        cssLayout.setWidth(100, Unit.PERCENTAGE);
-        for (Contract contract : contractList) {
-            Image image = new Image("", photoService.getRelatedPhoto(contract.getClientuuid()));
-            image.setWidth(50, Unit.PERCENTAGE);
-            cssLayout.addComponent(image);
-        }
-        consultantLocationBox.instance(
+        knowledgeChartCard.instance(photoService.getRoundImage(randomFocusUser.getUuid(), false, 25, Unit.PERCENTAGE));
+
+        knowledgeChartCard.instance(
                 new MLabel(randomFocusUser.getFirstname()+" "+randomFocusUser.getLastname()+" is working at...")
-                        .withStyleName("h5 bold")).instance(cssLayout);
+                        .withStyleName("h5 bold"));
 
+        List<Contract> contractList = contractService.findTimeActiveConsultantContracts(randomFocusUser, LocalDate.now());
+        int i = 0;
+        HorizontalLayout hlayout = null;
+        for (Contract contract : contractList) {
+            if(i==0) {
+                hlayout = new HorizontalLayout();
+                hlayout.setSizeFull();
+                knowledgeChartCard.instance(hlayout);
+            }
+            Image image = new Image("", photoService.getRelatedPhoto(contract.getClientuuid()));
+            image.setWidth(100, Unit.PERCENTAGE);
+            hlayout.addComponent(image);
+            i++;
+            if(i==2) i=0;
+        }
+
+        knowledgeChartCard.instance(
+                new MLabel("Using this set of skills...")
+                        .withStyleName("h5 bold"));
+
+        knowledgeChartCard.instance(knowledgeChart.getChart(randomFocusUser));
 
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto((Math.random()<0.5)?"images/cards/knowledge/lifecycle.png":"images/cards/knowledge/pejlemaerker.png");
@@ -246,12 +261,12 @@ public class   DashboardView extends VerticalLayout implements View {
 
         // *** RIGHT COLUMN ***
         if(Math.random()>0.5) {
-            rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
+            //rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
         } else {
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
-            rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
+            //rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
         }
         // rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(cateringCard);

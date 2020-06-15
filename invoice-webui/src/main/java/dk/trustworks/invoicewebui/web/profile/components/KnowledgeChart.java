@@ -31,7 +31,8 @@ public class KnowledgeChart {
 
         final Configuration conf = chart.getConfiguration();
 
-        conf.setTitle(user.getFirstname()+"'s complete set of skills");
+        //conf.setTitle(user.getFirstname()+"'s complete set of skills");
+        conf.setTitle("");
         conf.setSubTitle("Click the columns to view individual skills. Click again to view categories.");
         conf.getLegend().setEnabled(false);
 
