@@ -61,7 +61,7 @@ public class AchievementJob {
 
     @PostConstruct
     public void init() {
-        achievementCollector();
+        //achievementCollector();
     }
 
     @Scheduled(cron = "0 0 23 * * ?")

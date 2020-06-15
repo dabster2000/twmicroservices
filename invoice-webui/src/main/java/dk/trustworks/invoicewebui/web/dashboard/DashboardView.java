@@ -151,6 +151,7 @@ public class   DashboardView extends VerticalLayout implements View {
         BoxImpl consultantLocationBox = new BoxImpl();
         List<Contract> contractList = contractService.findTimeActiveConsultantContracts(randomFocusUser, LocalDate.now());
         CssLayout cssLayout = new CssLayout();
+        cssLayout.setWidth(100, Unit.PERCENTAGE);
         for (Contract contract : contractList) {
             Image image = new Image("", photoService.getRelatedPhoto(contract.getClientuuid()));
             image.setWidth(50, Unit.PERCENTAGE);
