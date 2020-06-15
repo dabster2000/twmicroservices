@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.dashboard.cards;
 
-import com.google.common.hash.Hashing;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.News;
@@ -23,6 +22,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.google.common.hash.Hashing.sha512;
 
 /**
  * Created by hans on 11/08/2017.
@@ -113,7 +114,7 @@ public class NewsImpl extends NewsDesign implements Box {
                 public News add(News news) {
                     news.setUuid(UUID.randomUUID().toString());
                     news.setNewstype("user");
-                    news.setSha512(Hashing.sha512().hashString(news.getUuid()+UUID.randomUUID().toString(), StandardCharsets.UTF_8).toString());
+                    news.setSha512(sha512().hashString(news.getUuid()+UUID.randomUUID().toString(), StandardCharsets.UTF_8).toString());
                     news.setLink("");
                     return newsRepository.save(news);
                 }

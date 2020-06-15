@@ -10,11 +10,9 @@ import com.vaadin.server.FontIcon;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.BrowserFrame;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
+import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.ReminderHistory;
 import dk.trustworks.invoicewebui.model.User;
@@ -45,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
+import org.vaadin.viritin.label.MLabel;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -144,18 +143,37 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveLayout board = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         board.setSizeFull();
         board.setScrollable(true);
-        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).size() - 1))));
+
+        User randomFocusUser = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).size() - 1));
+
+        BoxImpl knowledgeChartCard = new BoxImpl().instance(knowledgeChart.getChart(randomFocusUser));
+
+        BoxImpl consultantLocationBox = new BoxImpl();
+        List<Contract> contractList = contractService.findTimeActiveConsultantContracts(randomFocusUser, LocalDate.now());
+        CssLayout cssLayout = new CssLayout();
+        for (Contract contract : contractList) {
+            Image image = new Image("", photoService.getRelatedPhoto(contract.getClientuuid()));
+            image.setWidth(50, Unit.PERCENTAGE);
+            cssLayout.addComponent(image);
+        }
+        consultantLocationBox.instance(
+                new MLabel(randomFocusUser.getFirstname()+" "+randomFocusUser.getLastname()+" is working at...")
+                        .withStyleName("h5 bold")).instance(cssLayout);
+
+
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto((Math.random()<0.5)?"images/cards/knowledge/lifecycle.png":"images/cards/knowledge/pejlemaerker.png");
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
-        CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyEmployedUsers(), emailSender,3, 4, "cateringCard");
-        cateringCard.init();
+        //CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyEmployedUsers(), emailSender,3, 4, "cateringCard");
+        //cateringCard.init();
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
-        VacationCard vacationCard = new VacationCard();
+        //VacationCard vacationCard = new VacationCard();
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
+
+
 
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrustworksStatus()));
@@ -227,10 +245,12 @@ public class   DashboardView extends VerticalLayout implements View {
 
         // *** RIGHT COLUMN ***
         if(Math.random()>0.5) {
+            rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
         } else {
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
+            rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
         }
         // rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(cateringCard);
