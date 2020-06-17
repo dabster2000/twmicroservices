@@ -697,7 +697,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     .withDisplayRules(12, 12, 6, 6);
         }
 
-        createProposedConsultants(contract, responsiveLayout.addRow());
+        // TODO: Reintroduce
+        // createProposedConsultants(contract, responsiveLayout.addRow());
 
         consultantsLayout.addComponent(new MButton(
                 VaadinIcons.PLUS,
