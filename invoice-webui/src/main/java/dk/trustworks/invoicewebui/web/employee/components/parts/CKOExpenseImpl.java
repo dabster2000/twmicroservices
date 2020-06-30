@@ -168,7 +168,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 i_passed.setVisible(its_a_certification.getValue() && expense.getStatus().equals(CKOExpenseStatus.COMPLETED));
                 ckoExpenseRepository.save(expense);
             });
-            i_passed.setVisible(false);
+            i_passed.setVisible(expense.getCertified()==1);
             i_passed.addValueChangeListener(event -> {
                 expense.setCertified(i_passed.getValue()?1:0);
                 ckoExpenseRepository.save(expense);
