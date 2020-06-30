@@ -74,6 +74,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         refreshExpenseCards(user, expenseBoard);
 
         getBtnEdit().setCaption("Register your continued education: ");
+        getBtnEdit().setDescription("Gather your wishes for training here, register them when they are booked and evaluate them when you have been away");
         getBtnEdit().addClickListener(event -> {
             getDataContainer().setVisible(!getDataContainer().isVisible());
             getChartContainer().setVisible(!getChartContainer().isVisible());
