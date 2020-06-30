@@ -146,6 +146,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                             new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withListener(event -> {
                                 TextArea textField = new TextArea(expense.getRating_comment());
                                 PopupView popupView = new PopupView("Rating description", new MHorizontalLayout(textField));
+                                expenseItem.getVLStatus().addComponent(popupView);
                                 popupView.addPopupVisibilityListener(event1 -> {
                                     expense.setRating_comment(textField.getValue());
                                     ckoExpenseRepository.save(expense);
