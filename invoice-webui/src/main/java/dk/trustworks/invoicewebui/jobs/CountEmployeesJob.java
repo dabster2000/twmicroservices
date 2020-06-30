@@ -69,7 +69,7 @@ public class CountEmployeesJob {
 
     @PostConstruct
     public void init() {
-        countEmployees();
+        //countEmployees();
         try {
             //forecastIncome();
             //forecastPeople();
@@ -77,8 +77,8 @@ public class CountEmployeesJob {
             e.printStackTrace();
         }
     }
-
-    @Scheduled(cron = "0 0 4 5 1/1 ?")
+    // TODO: Microservice
+    //@Scheduled(cron = "0 0 4 5 1/1 ?")
     public void countEmployees() {
         log.info("CountEmployeesJob.countEmployees");
         usersByLocalDate.clear();
@@ -105,7 +105,8 @@ public class CountEmployeesJob {
 
     // http://wiki.pentaho.com/display/DATAMINING/Time+Series+Analysis+and+Forecasting+with+Weka
     @Transactional
-    @Scheduled(cron = "0 0 23 * * ?")
+    // TODO: Microservice
+    //@Scheduled(cron = "0 0 23 * * ?")
     public void forecastIncome() throws Exception {
         log.info("CountEmployeesJob.forecastIncome");
         LocalDate now = LocalDate.now().minusDays(7);
@@ -223,7 +224,8 @@ public class CountEmployeesJob {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 22 * * ?")
+    // TODO: Microservice
+    //@Scheduled(cron = "0 0 22 * * ?")
     public void forecastPeople() throws Exception {
         log.info("CountEmployeesJob.forecastPeople");
         LocalDate now = LocalDate.now().minusDays(7);

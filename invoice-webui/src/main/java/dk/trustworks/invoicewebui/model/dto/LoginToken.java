@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginToken {
     private String token;
+    private String useruuid;
     private boolean success;
     private String failureReason;
 }

@@ -7,6 +7,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
+import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.network.clients.LoginClient;
@@ -15,6 +16,7 @@ import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.Cookie;
+import java.util.List;
 
 /**
  * Created by hans on 12/08/2017.
@@ -33,19 +35,21 @@ public class LoginImpl extends LoginDesign {
         getBtnLogin().addClickListener(clickEvent -> {
             LoginToken loginToken = loginClient.login(getTxtUsername().getValue(), getTxtPassword().getValue());
             User user = userService.findByUsername(getTxtUsername().getValue());
-            if(user == null) {
+            if(!loginToken.isSuccess()) {
                 Notification.show("Login failed",
                         "Wrong username or password!",
                         Notification.Type.WARNING_MESSAGE);
                 return;
             }
-            if(user.getRoleList().size()==0) {
+            List<Role> userRoles = userService.findUserRoles(loginToken.getUseruuid());
+            if(userRoles.size()==0) {
                 Notification.show("Login failed",
                         "No valid roles!",
                         Notification.Type.WARNING_MESSAGE);
                 return;
             }
-            UserSession userSession = new UserSession(user, loginToken, user.getRoleList());
+
+            UserSession userSession = new UserSession(user, loginToken, userRoles);
             VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
             Cookie newCookie = new Cookie(NAME_COOKIE, user.getUuid());
             newCookie.setMaxAge(2592000);

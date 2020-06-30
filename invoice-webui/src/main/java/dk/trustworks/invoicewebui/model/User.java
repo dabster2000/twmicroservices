@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.text.WordUtils;
 
@@ -29,9 +30,13 @@ public class User {
     private String username;
     private String slackusername;
     private LocalDate birthday;
+    @JsonIgnore
     private List<Salary> salaries;
+    @JsonIgnore
     private List<UserStatus> statuses;
+    @JsonIgnore
     private List<Role> roleList;
+    @JsonIgnore
     private UserContactinfo userContactinfo;
 
     public User() {
@@ -128,7 +133,7 @@ public class User {
     }
 
     public List<UserStatus> getStatuses() {
-        return statuses;
+        return UserService.get().findUserStatusList(this.getUuid());
     }
 
     public void setStatuses(List<UserStatus> statuses) {

@@ -19,6 +19,9 @@ public class SystemRestService {
     @Value("#{environment.USERSERVICE_URL}")
     private String userServiceUrl;
 
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
+
     @Value("#{environment.USERSERVICE_USERNAME}")
     private String userserviceUsername;
 
@@ -40,7 +43,7 @@ public class SystemRestService {
     }
 
     public LoginToken login(String username, String password) {
-        String url = userServiceUrl+"/users/command/login?username="+username+"&password="+password;
+        String url = apiGatewayUrl+"/login?username="+username+"&password="+password;
         return restTemplate.getForObject(url, LoginToken.class);
     }
 

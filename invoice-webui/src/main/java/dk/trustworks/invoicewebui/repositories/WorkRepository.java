@@ -20,7 +20,82 @@ import java.util.Set;
 @RepositoryRestResource(collectionResourceRel = "work", path = "work")
 public interface WorkRepository extends CrudRepository<Work, String> {
 
-    Work findByRegisteredAndUseruuidAndTaskuuid(LocalDate registered, String useruuid, String taskuuid);
+    /**
+     *
+     * @param fromdate including date
+     * @param todate including date
+     * @param useruuid actual user
+     * @return
+     */
+    /*
+    @Query(value = "SELECT * FROM " +
+            "work as k " +
+            "WHERE k.registered >= :fromdate AND k.registered <= :todate AND k.useruuid LIKE :useruuid", nativeQuery = true)
+    List<Work> findByPeriodAndUserUUID(@Param("fromdate") String fromdate,
+                                       @Param("todate") String todate,
+                                       @Param("useruuid") String useruuid);
+
+    @Query(value = "SELECT * FROM " +
+            "work as k " +
+            "WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
+    List<Work> findByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
+
+
+    @Query(value = "select w.* from work w " +
+            "left join task t on w.taskuuid = t.uuid " +
+            "where w.registered >= :fromdate AND w.registered <= :todate and t.projectuuid like :projectuuid", nativeQuery = true)
+    List<Work> findByPeriodAndProject(@Param("fromdate") String fromdate, @Param("todate") String todate, @Param("projectuuid") String projectuuid);
+
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid", nativeQuery = true)
+    List<Work> findByTasks(@Param("taskuuid") List<String> taskuuid);
+
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid like :taskuuid", nativeQuery = true)
+    List<Work> findByTask(@Param("taskuuid") String taskuuid);
+
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
+    List<Work> findByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
+
+    @Query(value = "SELECT COALESCE(SUM(w.workduration),0) as sum FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
+    double countByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
+
+    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w " +
+            "WHERE w.registered >= :fromdate AND w.registered <= :todate AND w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
+    List<Work> findByPeriodAndUserAndTasks(@Param("fromdate") String fromdate, @Param("todate") String todate, @Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
+
+    @Override
+    @CacheEvict("work")
+    <S extends Work> Iterable<S> save(Iterable<S> entities);
+
+    @Override
+    @CacheEvict("work")
+    <S extends Work> S save(S entity);
+
+    @Override @RestResource(exported = false) void delete(String id);
+    @Override @RestResource(exported = false) void delete(Work entity);
+*/
+
+}
+ /*
+    @Query(value = "select '2017-05-17 08:09:35' created, w.id, w.registered as registered, w.taskuuid as taskuuid, w.useruuid as useruuid, workduration as workduration, w.workas as workas from work w " +
+            "left join task t on w.taskuuid = t.uuid " +
+            "left join project p on t.projectuuid = p.uuid " +
+            "where w.useruuid in :useruuids " +
+            "and  w.registered >= :fromdate AND w.registered < :todate " +
+            "and t.projectuuid in :projectuuids " +
+            "and w.workduration > 0.0", nativeQuery = true)
+    List<Work> findByProjectsAndUsersAndDateRange(@Param("projectuuids") Set<String> projectuuids, @Param("useruuids") List<String> useruuids, @Param("fromdate") String fromdate, @Param("todate") String todate);
+
+    @Query(value = "SELECT w.* from work w " +
+            "LEFT JOIN task t ON w.taskuuid = t.uuid " +
+            "LEFT JOIN project p ON t.projectuuid = p.uuid " +
+            "LEFT JOIN client c ON p.clientuuid = c.uuid " +
+            "WHERE w.workduration > 0 AND t.type NOT LIKE 'SO' AND c.active = true " +
+            "ORDER BY c.name;", nativeQuery = true)
+    List<Work> findByActiveClients();
+
+     */
+
+//    Work findByRegisteredAndUseruuidAndTaskuuid(LocalDate registered, String useruuid, String taskuuid);
 /*
     @Query(value = "select w.*, cc.rate from " +
             "work as w " +
@@ -35,26 +110,8 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and w.workduration > 0 and c.status in :statusList ", nativeQuery = true)
     List<WorkWithRate> findWorkWithRateByPeriod(@Param("fromdate") LocalDate fromdate, @Param("todate") LocalDate todate, @Param("statusList") String... statusList);
  */
-    /**
-     *
-     * @param fromdate including date
-     * @param todate including date
-     * @param useruuid actual user
-     * @return
-     */
-    @Query(value = "SELECT * FROM " +
-            "work as k " +
-            "WHERE k.registered >= :fromdate AND k.registered <= :todate AND k.useruuid LIKE :useruuid", nativeQuery = true)
-    List<Work> findByPeriodAndUserUUID(@Param("fromdate") String fromdate,
-                                       @Param("todate") String todate,
-                                       @Param("useruuid") String useruuid);
 
-    @Query(value = "SELECT * FROM " +
-            "work as k " +
-            "WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
-    List<Work> findByPeriod(@Param("fromdate") String fromdate, @Param("todate") String todate);
-
-    /*
+ /*
     @Query(value = "SELECT * FROM " +
             "work as k " +
             "WHERE k.registered >= :fromdate AND k.registered <= :todate", nativeQuery = true)
@@ -164,58 +221,3 @@ public interface WorkRepository extends CrudRepository<Work, String> {
             "and cc.rate > 0.0 ", nativeQuery = true)
     Double findHoursRegisteredOnContractByPeriod(@Param("contractuuid") String contractuuid, @Param("useruuid") String useruuid, @Param("fromdate") String fromdate, @Param("todate") String todate);
      */
-    @Query(value = "select w.* from work w " +
-            "left join task t on w.taskuuid = t.uuid " +
-            "where w.registered >= :fromdate AND w.registered <= :todate and t.projectuuid like :projectuuid", nativeQuery = true)
-    List<Work> findByPeriodAndProject(@Param("fromdate") String fromdate, @Param("todate") String todate, @Param("projectuuid") String projectuuid);
-
-    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid", nativeQuery = true)
-    List<Work> findByTasks(@Param("taskuuid") List<String> taskuuid);
-
-    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid like :taskuuid", nativeQuery = true)
-    List<Work> findByTask(@Param("taskuuid") String taskuuid);
-
-    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
-    List<Work> findByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
-
-    @Query(value = "SELECT COALESCE(SUM(w.workduration),0) as sum FROM work w WHERE w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
-    double countByUserAndTasks(@Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
-
-    @Query(value = "SELECT *, '2017-05-17 08:09:35' created FROM work w " +
-            "WHERE w.registered >= :fromdate AND w.registered <= :todate AND w.taskuuid IN :taskuuid AND useruuid LIKE :useruuid", nativeQuery = true)
-    List<Work> findByPeriodAndUserAndTasks(@Param("fromdate") String fromdate, @Param("todate") String todate, @Param("useruuid") String useruuid, @Param("taskuuid") String... taskuuid);
-
-    /*
-    @Query(value = "select '2017-05-17 08:09:35' created, w.id, w.registered as registered, w.taskuuid as taskuuid, w.useruuid as useruuid, workduration as workduration, w.workas as workas from work w " +
-            "left join task t on w.taskuuid = t.uuid " +
-            "left join project p on t.projectuuid = p.uuid " +
-            "where w.useruuid in :useruuids " +
-            "and  w.registered >= :fromdate AND w.registered < :todate " +
-            "and t.projectuuid in :projectuuids " +
-            "and w.workduration > 0.0", nativeQuery = true)
-    List<Work> findByProjectsAndUsersAndDateRange(@Param("projectuuids") Set<String> projectuuids, @Param("useruuids") List<String> useruuids, @Param("fromdate") String fromdate, @Param("todate") String todate);
-
-    @Query(value = "SELECT w.* from work w " +
-            "LEFT JOIN task t ON w.taskuuid = t.uuid " +
-            "LEFT JOIN project p ON t.projectuuid = p.uuid " +
-            "LEFT JOIN client c ON p.clientuuid = c.uuid " +
-            "WHERE w.workduration > 0 AND t.type NOT LIKE 'SO' AND c.active = true " +
-            "ORDER BY c.name;", nativeQuery = true)
-    List<Work> findByActiveClients();
-
-     */
-
-
-    @Override
-    @CacheEvict("work")
-    <S extends Work> Iterable<S> save(Iterable<S> entities);
-
-    @Override
-    @CacheEvict("work")
-    <S extends Work> S save(S entity);
-
-    @Override @RestResource(exported = false) void delete(String id);
-    @Override @RestResource(exported = false) void delete(Work entity);
-
-
-}

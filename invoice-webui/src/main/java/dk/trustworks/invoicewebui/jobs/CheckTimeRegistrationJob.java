@@ -51,7 +51,9 @@ public class CheckTimeRegistrationJob {
 
     private SlackWebApiClient halWebApiClient;
 
+    // TODO: MOVE TO SERVICE
 
+    /*
     @Scheduled(cron = "0 20 11 * * MON-FRI")
     public void checkDuplicateEntries() {
         //System.out.println("CheckTimeRegistrationJob.checkDuplicateEntries");
@@ -77,6 +79,8 @@ public class CheckTimeRegistrationJob {
             halWebApiClient.postMessage(textMessage3);
         }
     }
+
+
 
     //@Scheduled(cron = "0 0 0 1 1/1 *")
     @Scheduled(cron = "0 30 11 * * MON-FRI")
@@ -171,5 +175,7 @@ public class CheckTimeRegistrationJob {
             }
         }
     }
+
+ */
 
 }

@@ -616,7 +616,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 .withStyleName("huge icon-only friendly")
         );
     }
-
+    // TODO: REINTRODUCE
+    /*
     private void createProposedProjects(Contract contract) {
         List<Project> deltaProjects = projectService.findByClientuuidOrderByNameAsc(contract.getClientuuid());
         Map<String, Project> projectsWithUserWorkButNoContract = new HashMap<>();
@@ -651,6 +652,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
         }
     }
 
+
+
     private void createProposedProjectRow(Contract Contract, Project project) {
             ProjectRowDesign projectRowDesign = new ProjectRowDesign();
             projectRowDesign.getLblName().setValue(project.getName());
@@ -661,6 +664,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             projectRowDesign.getBtnDelete().addClickListener(event -> createProject(Contract, project));
         projectsLayout.addComponent(projectRowDesign);
     }
+
+     */
 
     private void createConsultantList(final Contract contract) {
         consultantsLayout.removeAllComponents();

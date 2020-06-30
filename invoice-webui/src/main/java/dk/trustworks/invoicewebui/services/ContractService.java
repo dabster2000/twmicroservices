@@ -207,14 +207,6 @@ public class ContractService implements InitializingBean {
         //return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeDate, activeDate, statusList);
     }
 
-    public List<Contract> findActiveContractsByPeriod(LocalDate activeFrom, LocalDate activeTo, ContractStatus... statusList) {
-        return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeTo, activeFrom, statusList);
-    }
-
-    private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
-        return start1.isBefore(end2) && start2.isBefore(end1);
-    }
-
     @Transactional
     @CacheEvict(value = {"contract", "rate"}, allEntries = true)
     public Contract removeProject(Contract contract, Project project) throws ContractValidationException {
@@ -234,16 +226,6 @@ public class ContractService implements InitializingBean {
         return errors;
     }
 
-    public Map<String, Work> getWorkErrors(LocalDate errorDate, User user, int months) {
-        Map<String, Work> errors = new HashMap<>();
-        for (Work work : workService.findByPeriodAndUserUUID(errorDate.minusMonths(months), errorDate, user.getUuid())) {
-            if(!(work.getWorkduration()>0)) continue;
-            if(findConsultantRateByWork(work)==null)
-                errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
-        }
-        return errors;
-    }
-
     public Set<User> getEmployeesWorkingOnProjectWithNoContract(Project project) {
         Set<User> users = new HashSet<>();
         if(project.getTasks().size() == 0) return users;
@@ -254,7 +236,8 @@ public class ContractService implements InitializingBean {
         }
         return users;
     }
-
+    // TODO: REINTRODUCE
+    /*
     public Set<Project> getClientProjectsNotUnderContract(Client client) {
         Set<Project> projects = new HashSet<>();
         List<Contract> contracts = contractRepository.findByClientuuid(client.getUuid());
@@ -290,6 +273,8 @@ public class ContractService implements InitializingBean {
                 workMax.get().getRegistered()
         )).orElse(null);
     }
+
+     */
 
     public List<Contract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
         return contractRepository.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));

@@ -74,7 +74,7 @@ public class ProjectManagerJob {
      */
 
     @Transactional
-    @Scheduled(fixedRate = 100000)
+    //@Scheduled(fixedRate = 100000)
     public void reportEndingProjects() {
         List<Project> projects = projectService.findAllByActiveTrueOrderByNameAsc();
         for (Project project : projects) {

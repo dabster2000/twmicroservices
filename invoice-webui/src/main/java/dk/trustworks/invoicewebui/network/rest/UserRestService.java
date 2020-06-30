@@ -7,7 +7,9 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.dto.Capacity;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
+import dk.trustworks.invoicewebui.network.clients.model.economics.Collection;
 import dk.trustworks.invoicewebui.network.dto.IntegerJsonResponse;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,6 +31,9 @@ public class UserRestService {
     @Value("#{environment.USERSERVICE_URL}")
     private String userServiceUrl;
 
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
+
     private final SystemRestService systemRestService;
 
     private final RestTemplate restTemplate;
@@ -42,8 +47,8 @@ public class UserRestService {
     }
 
     public User findByUsername(String username) {
-        String url = userServiceUrl+"/users/search/findByUsername?username="+username;
-        return (User) systemRestService.secureCall(url, GET, User.class).getBody(); //restTemplate.getForObject(url, User.class, createHeaders(systemToken.getToken()));
+        String url = apiGatewayUrl+"/users?username="+username;
+        return ((User[]) systemRestService.secureCall(url, GET, User[].class).getBody())[0]; //restTemplate.getForObject(url, User.class, createHeaders(systemToken.getToken()));
     }
 
     @Cacheable("users")
@@ -109,7 +114,8 @@ public class UserRestService {
     }
 
     public LoginToken login(String username, String password) {
-        String url = userServiceUrl+"/users/command/login?username="+username+"&password="+password;
+        String url = apiGatewayUrl + "/login?username="+username+"&password="+password;
+        //String url = userServiceUrl+"/users/command/login?username="+username+"&password="+password;
         return restTemplate.getForObject(url, LoginToken.class);
     }
 
@@ -122,6 +128,12 @@ public class UserRestService {
         }
     }
 
+    public List<UserStatus> findUserStatusList(String useruuid) {
+        String url = userServiceUrl+"/users/"+useruuid+"/statuses";
+        ResponseEntity<UserStatus[]> result = systemRestService.secureCall(url, GET, UserStatus[].class);
+        return Arrays.asList(result.getBody());
+    }
+
     @CacheEvict(value = "users", allEntries = true)
     public void deleteUserStatuses(User user, Set<UserStatus> userStatuses) {
         userCache.clear();
@@ -129,6 +141,12 @@ public class UserRestService {
             String url = userServiceUrl+"/users/"+user.getUuid()+"/statuses/"+userStatus.getUuid();
             systemRestService.secureCall(url, DELETE, UserStatus.class); //restTemplate.delete(url);
         }
+    }
+
+    public List<Role> findUserRoles(String useruuid) {
+        String url = userServiceUrl+"/users/"+useruuid+"/roles";
+        ResponseEntity<Role[]> result = systemRestService.secureCall(url, GET, Role[].class);
+        return Arrays.asList(result.getBody());
     }
 
     @CacheEvict(value = "users", allEntries = true)

@@ -103,6 +103,10 @@ public class UserService implements InitializingBean {
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new)).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
     }
 
+    public List<Role> findUserRoles(String useruuid) {
+        return userRestService.findUserRoles(useruuid);
+    }
+
     public List<User> countCurrentlyWorkingEmployees() {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(
@@ -171,6 +175,10 @@ public class UserService implements InitializingBean {
         statuses = statuses.stream().filter(userStatus -> userStatus.getStatus().equals(type)).sorted(Comparator.comparing(UserStatus::getStatusdate).reversed()).collect(Collectors.toList());
         if(statuses.size()==0) return new UserStatus(CONSULTANT, StatusType.TERMINATED, LocalDate.of(2014,2, 1), 0);
         return first?statuses.get(0):statuses.get(statuses.size()-1);
+    }
+
+    public List<UserStatus> findUserStatusList(String useruuid) {
+        return userRestService.findUserStatusList(useruuid);
     }
 
     public boolean isEmployed(User user) {

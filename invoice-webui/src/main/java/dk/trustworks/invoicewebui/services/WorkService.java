@@ -1,18 +1,15 @@
 package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.network.rest.WorkRestService;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.bus.Event;
-import reactor.bus.EventBus;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,29 +20,25 @@ import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 @Service
 public class WorkService {
 
-    private final EventBus eventBus;
-
     private final WorkRepository workRepository;
+
+    private final WorkRestService workRestService;
 
     private final TaskService taskService;
 
     private final ClientService clientService;
 
     @Autowired
-    public WorkService(EventBus eventBus, WorkRepository workRepository, TaskService taskService, ClientService clientService) {
-        this.eventBus = eventBus;
+    public WorkService(WorkRepository workRepository, WorkRestService workRestService, TaskService taskService, ClientService clientService) {
         this.workRepository = workRepository;
+        this.workRestService = workRestService;
         this.taskService = taskService;
         this.clientService = clientService;
     }
 
-    public List<Work> findByPeriodAndUserUUID(org.joda.time.LocalDate startOfWeek, org.joda.time.LocalDate endOfWeek, String userUUID) {
-        return findByPeriodAndUserUUID(DateUtils.convertJodaToJavaDate(startOfWeek), DateUtils.convertJodaToJavaDate(endOfWeek), userUUID);
-    }
-
     //@Cacheable("work")
     public List<Work> findByPeriodAndUserUUID(LocalDate fromdate, LocalDate todate, String useruuid) {
-        return workRepository.findByPeriodAndUserUUID(
+        return workRestService.findByPeriodAndUserUUID(
                 fromdate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 todate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 useruuid);
@@ -73,10 +66,6 @@ public class WorkService {
         return workRepository.findByUserAndTasks(user.getUuid(), "da2f89fc-9aef-4029-8ac2-7486be60e9b9");
     }
 
-    public double countVacationByUser(User user) {
-        return workRepository.countByUserAndTasks(user.getUuid(), "f585f46f-19c1-4a3a-9ebd-1a4f21007282");
-    }
-
     //@Cacheable("work")
     public List<Work> findByPeriod(LocalDate fromDate, LocalDate toDate) {
         return workRepository.findByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -89,14 +78,17 @@ public class WorkService {
     }
 
     public List<Work> findByTask(Task task) {
-        return workRepository.findByTask(task.getUuid());
+        return workRestService.findByTask(task.getUuid());
     }
 
     //@Cacheable("work")
+    /*
     public List<Work> findByUserAndTasks(String userUUID, List<Task> tasks) {
         String[] strings = tasks.stream().map(Task::getUuid).toArray(String[]::new);
         return workRepository.findByUserAndTasks(userUUID, strings);
     }
+
+     */
 
     //@Cacheable(value = "work")
     public List<Work> findByYearAndMonth(int year, int month) {
@@ -177,17 +169,20 @@ public class WorkService {
 
     @Transactional
     public Work save(Work work) {
+        return workRestService.save(work);
+        /*
         System.out.println("WorkService.create");
         System.out.println("work = [" + work + "]");
         Work savedWork = workRepository.save(work);
         eventBus.notify("notificationConsumer", Event.wrap(work));
         return savedWork;
+         */
     }
 
     @Transactional
     public Work saveWork(Work work) {
-        System.out.println("WorkService.saveWork");
-        System.out.println("work = [" + work + "]");
+        return workRestService.save(work);
+        /*
         Work existingWork = workRepository.findByRegisteredAndUseruuidAndTaskuuid(work.getRegistered(), work.getUseruuid(), work.getTask().getUuid());
         if(existingWork!=null) {
             existingWork.setWorkduration(work.getWorkduration());
@@ -196,13 +191,6 @@ public class WorkService {
         Work savedWork = workRepository.save(work);
         eventBus.notify("notificationConsumer", Event.wrap(work));
         return savedWork;
+         */
     }
-/*
-    public List<Work> findBillableWorkByUser(String uuid) {
-        return workRepository.findBillableWorkByUser(uuid);
-    }
-
- */
-
-
 }

@@ -256,9 +256,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 if(taskRow.getSubRow().isVisible()) {
                     taskRow.getSubRow().setVisible(false);
                 } else {
-                    Task updatedTask = taskService.findOne(task.getUuid());
-                    List<Ambition> ambitionList = ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue();
-                    List<Ambition> selectedAmbitions = new ArrayList<>();
+                    //Task updatedTask = taskService.findOne(task.getUuid());
+                    //List<Ambition> ambitionList = ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue();
+                    //List<Ambition> selectedAmbitions = new ArrayList<>();
                     /*
                     for (TaskOffering taskOffering : updatedTask.getTaskOfferings()) {
                         ambitionList.stream().filter(ambition -> ambition.getName().equals(taskOffering.getName())).findFirst().ifPresent(selectedAmbitions::add);

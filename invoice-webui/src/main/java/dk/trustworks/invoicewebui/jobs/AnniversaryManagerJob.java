@@ -41,11 +41,12 @@ public class AnniversaryManagerJob {
 
     @PostConstruct
     public void onStartup() {
-        findAnniversaries();
+        //findAnniversaries();
     }
 
     @Transactional
-    @Scheduled(cron = "0 1 1 * * ?")
+    // TODO: Microservice
+    //@Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
         for (User user : userService.findCurrentlyEmployedUsers()) {
             if(userService.isExternal(user)) continue;
