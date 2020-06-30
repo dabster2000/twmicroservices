@@ -9,8 +9,7 @@ import com.vaadin.data.*;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
@@ -20,6 +19,7 @@ import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.teemu.ratingstars.RatingStars;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
@@ -140,7 +140,18 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
             expenseItem.getVLStatus().addComponents(
                     new MHorizontalLayout(button).alignAll(Alignment.MIDDLE_CENTER),
-                    new MHorizontalLayout(new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),ratingStars).alignAll(Alignment.MIDDLE_CENTER));
+                    new MHorizontalLayout(
+                            new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
+                            ratingStars,
+                            new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withListener(event -> {
+                                TextArea textField = new TextArea(expense.getRating_comment());
+                                PopupView popupView = new PopupView("Rating description", new MHorizontalLayout(textField));
+                                popupView.addPopupVisibilityListener(event1 -> {
+                                    expense.setRating_comment(textField.getValue());
+                                    ckoExpenseRepository.save(expense);
+                                });
+                            })
+                    ).alignAll(Alignment.MIDDLE_CENTER));
             expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
             expenseItem.getLblPurpose().setValue(expense.getPurpose().getCaption());
             expenseItem.getVlExtra().setVisible(false);
@@ -162,6 +173,26 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             row.addColumn()
                     .withDisplayRules(12, 12, 4, 4)
                     .withComponent(expenseItem);
+        }
+    }
+
+    private static class PopupTextFieldContent implements PopupView.Content {
+        private final HorizontalLayout layout;
+        private final TextArea textField = new TextArea("Minimized HTML content", "Click to edit");
+
+        private PopupTextFieldContent(String text) {
+            textField.setValue(new String(Base64.getDecoder().decode(text)));
+            layout = new HorizontalLayout(textField);
+        }
+
+        @Override
+        public final Component getPopupComponent() {
+            return layout;
+        }
+
+        @Override
+        public final String getMinimizedValueAsHTML() {
+            return textField.getValue();
         }
     }
 

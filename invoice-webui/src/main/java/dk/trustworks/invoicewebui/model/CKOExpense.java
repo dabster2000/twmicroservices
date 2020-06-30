@@ -47,6 +47,8 @@ public class CKOExpense {
 
     private double rating;
 
+    private String rating_comment;
+
     public CKOExpense() {
     }
 
@@ -163,12 +165,20 @@ public class CKOExpense {
         this.rating = rating;
     }
 
+    public String getRating_comment() {
+        return rating_comment;
+    }
+
+    public void setRating_comment(String rating_comment) {
+        this.rating_comment = rating_comment;
+    }
+
     @Override
     public String toString() {
         return "CKOExpense{" +
                 "id=" + id +
                 ", eventdate=" + eventdate +
-                ", user=" + useruuid +
+                ", useruuid='" + useruuid + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", comment='" + comment + '\'' +
@@ -176,6 +186,8 @@ public class CKOExpense {
                 ", type=" + type +
                 ", status=" + status +
                 ", purpose=" + purpose +
+                ", rating=" + rating +
+                ", rating_comment='" + rating_comment + '\'' +
                 '}';
     }
 }
