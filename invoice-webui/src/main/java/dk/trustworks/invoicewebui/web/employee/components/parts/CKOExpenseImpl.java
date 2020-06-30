@@ -73,6 +73,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
         refreshExpenseCards(user, expenseBoard);
 
+        getBtnEdit().setCaption("Register your continued education: ");
         getBtnEdit().addClickListener(event -> {
             getDataContainer().setVisible(!getDataContainer().isVisible());
             getChartContainer().setVisible(!getChartContainer().isVisible());
@@ -134,7 +135,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                     new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
                     ratingStars,
                     new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withListener(event -> {
-                        popupView.setVisible(true);
+                        popupView.setPopupVisible(true);
                     }),
                     popupView
             ).alignAll(Alignment.MIDDLE_CENTER);
