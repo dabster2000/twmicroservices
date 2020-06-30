@@ -132,14 +132,14 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 ckoExpenseRepository.save(expense);
             });
 
-            HorizontalLayout ratingContent = new MHorizontalLayout(
+            MHorizontalLayout ratingContent = new MHorizontalLayout(
                     new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
                     ratingStars,
                     new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withListener(event -> {
                         popupView.setPopupVisible(true);
                     }),
                     popupView
-            ).alignAll(Alignment.MIDDLE_CENTER);
+            );
             ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
 
             button.addClickListener(event -> {
@@ -154,11 +154,33 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 binder.readBean(ckoExpense = new CKOExpense(user));
                 getBtnAddSalary().setCaption("CREATE");
                 button.setCaption(expense.getStatus().getCaption());
+                expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
             });
 
+            CheckBox its_a_certification = new CheckBox("Its a certification", expense.getCertification() == 1);
+            CheckBox i_passed = new CheckBox("I passed", expense.getCertified() == 1);
+            i_passed.setVisible(false);
+
+            its_a_certification.addValueChangeListener(event -> {
+                expense.setCertification(its_a_certification.getValue()?1:0);
+                i_passed.setVisible(its_a_certification.getValue());
+                ckoExpenseRepository.save(expense);
+            });
+            i_passed.addValueChangeListener(event -> {
+                expense.setCertified(i_passed.getValue()?1:0);
+                ckoExpenseRepository.save(expense);
+            });
+
+            MHorizontalLayout certificateContent = new MHorizontalLayout(
+                    its_a_certification,
+                    i_passed
+            );
+            certificateContent.setVisible(expense.getType().equals(CKOExpenseType.COURSE));
+
             expenseItem.getVLStatus().addComponents(
-                    new MHorizontalLayout(button).alignAll(Alignment.MIDDLE_CENTER),
-                    ratingContent
+                    new MHorizontalLayout(button).withFullWidth().alignAll(Alignment.MIDDLE_CENTER),
+                    ratingContent.alignAll(Alignment.MIDDLE_CENTER),
+                    certificateContent
                     );
             expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
             expenseItem.getLblPurpose().setValue(expense.getPurpose().getCaption());
@@ -179,7 +201,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 expenseItem.getBtnMore().setVisible(false);
             });
             row.addColumn()
-                    .withDisplayRules(12, 12, 4, 4)
+                    .withDisplayRules(12, 12, 6, 4)
                     .withComponent(expenseItem);
         }
     }

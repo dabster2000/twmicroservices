@@ -49,6 +49,9 @@ public class CKOExpense {
 
     private String rating_comment;
 
+    private int certification;
+    private int certified;
+
     public CKOExpense() {
     }
 
@@ -173,6 +176,22 @@ public class CKOExpense {
         this.rating_comment = rating_comment;
     }
 
+    public int getCertification() {
+        return certification;
+    }
+
+    public void setCertification(int certification) {
+        this.certification = certification;
+    }
+
+    public int getCertified() {
+        return certified;
+    }
+
+    public void setCertified(int certified) {
+        this.certified = certified;
+    }
+
     @Override
     public String toString() {
         return "CKOExpense{" +
@@ -188,6 +207,8 @@ public class CKOExpense {
                 ", purpose=" + purpose +
                 ", rating=" + rating +
                 ", rating_comment='" + rating_comment + '\'' +
+                ", certification=" + certification +
+                ", certified=" + certified +
                 '}';
     }
 }
