@@ -122,7 +122,21 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 getBtnAddSalary().setCaption("CREATE");
                 button.setCaption(expense.getStatus().getCaption());
             });
-            ratingStars.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+
+            HorizontalLayout ratingContent = new MHorizontalLayout(
+                    new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
+                    ratingStars,
+                    new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withListener(event -> {
+                        TextArea textField = new TextArea(expense.getRating_comment());
+                        PopupView popupView = new PopupView(null, new MHorizontalLayout(textField));
+                        popupView.setVisible(true);
+                        popupView.addPopupVisibilityListener(event1 -> {
+                            expense.setRating_comment(textField.getValue());
+                            ckoExpenseRepository.save(expense);
+                        });
+                    })
+            ).alignAll(Alignment.MIDDLE_CENTER);
+            ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
 
             button.addClickListener(event -> {
                 if (expense.getStatus().equals(CKOExpenseStatus.WISHLIST))
@@ -132,7 +146,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 else if (expense.getStatus().equals(CKOExpenseStatus.COMPLETED))
                     expense.setStatus(CKOExpenseStatus.WISHLIST);
                 ckoExpenseRepository.save(expense);
-                ratingStars.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
                 binder.readBean(ckoExpense = new CKOExpense(user));
                 getBtnAddSalary().setCaption("CREATE");
                 button.setCaption(expense.getStatus().getCaption());
@@ -140,19 +154,8 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
             expenseItem.getVLStatus().addComponents(
                     new MHorizontalLayout(button).alignAll(Alignment.MIDDLE_CENTER),
-                    new MHorizontalLayout(
-                            new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
-                            ratingStars,
-                            new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withListener(event -> {
-                                TextArea textField = new TextArea(expense.getRating_comment());
-                                PopupView popupView = new PopupView("Rating description", new MHorizontalLayout(textField));
-                                expenseItem.getVLStatus().addComponent(popupView);
-                                popupView.addPopupVisibilityListener(event1 -> {
-                                    expense.setRating_comment(textField.getValue());
-                                    ckoExpenseRepository.save(expense);
-                                });
-                            })
-                    ).alignAll(Alignment.MIDDLE_CENTER));
+                    ratingContent
+                    );
             expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
             expenseItem.getLblPurpose().setValue(expense.getPurpose().getCaption());
             expenseItem.getVlExtra().setVisible(false);
