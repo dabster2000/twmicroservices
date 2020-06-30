@@ -24,6 +24,7 @@ import org.vaadin.teemu.ratingstars.RatingStars;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -112,7 +113,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             expenseItem.getLblStatus().setValue(expense.getStatus().getCaption());
             expenseItem.getLblStatus().setVisible(false);
 
-            MButton button = new MButton(expense.getStatus().getCaption()).withStyleName("friendly");
+            MButton button = new MButton(expense.getStatus().getCaption()).withStyleName("friendly").withFullWidth();
 
             RatingStars ratingStars = new RatingStars();
             ratingStars.setMaxValue(5);
@@ -135,12 +136,16 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             MHorizontalLayout ratingContent = new MHorizontalLayout(
                     new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
                     ratingStars,
-                    new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withListener(event -> {
+                    new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withDescription("Click to elaborate on your rating").withListener(event -> {
                         popupView.setPopupVisible(true);
                     }),
                     popupView
             );
+            ratingContent.setWidth(100, Unit.PERCENTAGE);
             ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+
+            CheckBox its_a_certification = new CheckBox("Its a certification", expense.getCertification() == 1);
+            CheckBox i_passed = new CheckBox("I passed", expense.getCertified() == 1);
 
             button.addClickListener(event -> {
                 if (expense.getStatus().equals(CKOExpenseStatus.WISHLIST))
@@ -151,27 +156,25 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                     expense.setStatus(CKOExpenseStatus.WISHLIST);
                 ckoExpenseRepository.save(expense);
                 ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                i_passed.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
                 binder.readBean(ckoExpense = new CKOExpense(user));
                 getBtnAddSalary().setCaption("CREATE");
                 button.setCaption(expense.getStatus().getCaption());
                 expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
             });
 
-            CheckBox its_a_certification = new CheckBox("Its a certification", expense.getCertification() == 1);
-            CheckBox i_passed = new CheckBox("I passed", expense.getCertified() == 1);
-            i_passed.setVisible(false);
-
             its_a_certification.addValueChangeListener(event -> {
                 expense.setCertification(its_a_certification.getValue()?1:0);
                 i_passed.setVisible(its_a_certification.getValue() && expense.getStatus().equals(CKOExpenseStatus.COMPLETED));
                 ckoExpenseRepository.save(expense);
             });
+            i_passed.setVisible(false);
             i_passed.addValueChangeListener(event -> {
                 expense.setCertified(i_passed.getValue()?1:0);
                 ckoExpenseRepository.save(expense);
             });
 
-            MHorizontalLayout certificateContent = new MHorizontalLayout(
+            MVerticalLayout certificateContent = new MVerticalLayout(
                     its_a_certification,
                     i_passed
             );
