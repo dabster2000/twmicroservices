@@ -36,15 +36,18 @@ public class ProjectSummaryService {
 
     private final ProjectService projectService;
 
+    private final TaskService taskService;
+
     private final WorkService workService;
 
     private final InvoiceRepository invoiceClient;
 
     @Autowired
-    public ProjectSummaryService(ReceiptsRepository receiptsRepository, ContractService contractService, ProjectService projectService, WorkService workService, InvoiceRepository invoiceClient) {
+    public ProjectSummaryService(ReceiptsRepository receiptsRepository, ContractService contractService, ProjectService projectService, TaskService taskService, WorkService workService, InvoiceRepository invoiceClient) {
         this.receiptsRepository = receiptsRepository;
         this.contractService = contractService;
         this.projectService = projectService;
+        this.taskService = taskService;
         this.workService = workService;
         this.invoiceClient = invoiceClient;
     }
@@ -237,7 +240,13 @@ public class ProjectSummaryService {
         } else if (projectSummary.getProjectSummaryType().equals(ProjectSummaryType.CONTRACT)) {
             System.out.println("beginning...");
             //List<Work> workResources = workClient.findByYearAndMonth(year, month);
-            List<Work> workResources = workService.findByYearAndMonthAndProject(year, month+1, projectSummary.getProjectuuid());
+
+            List<Task> taskList = taskService.findByProject(projectSummary.getProjectuuid());
+            System.out.println("taskList.size() = " + taskList.size());
+
+
+            //List<Work> workResources = workService.findByYearAndMonthAndProject(year, month+1, projectSummary.getProjectuuid());
+            List<Work> workResources = workService.findByYearAndMonthAndTasks(year, month+1, taskList);
             System.out.println("workResources.size() = " + workResources.size());
             Map<String, InvoiceItem> invoiceItemMap = new HashMap<>();
 

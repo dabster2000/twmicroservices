@@ -3,7 +3,6 @@ package dk.trustworks.invoicewebui.services;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,6 @@ import reactor.bus.EventBus;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -103,10 +101,18 @@ public class WorkService {
         return workRepository.findByPeriod(DateUtils.getFirstDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
+    public List<Work> findByYearAndMonthAndTasks(int year, int month, List<Task> tasks) {
+        String[] strings = tasks.stream().map(Task::getUuid).toArray(String[]::new);
+        return workRepository.findByPeriodAndTasks(DateUtils.getFirstDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), strings);
+    }
+
     //@Cacheable(value = "work")
+    /*
     public List<Work> findByYearAndMonthAndProject(int year, int month, String projectuuid) {
         return workRepository.findByPeriodAndProject(DateUtils.getFirstDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), projectuuid);
     }
+
+     */
 
     public List<Work> getWorkOnContractByUser(Contract contract) {
         return findByProjectsAndUsersAndDateRange(
