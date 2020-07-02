@@ -32,6 +32,12 @@ public class LoginImpl extends LoginDesign {
         getImgTop().setSource(new ThemeResource("images/password-card.jpg"));
         getBtnLogin().addClickListener(clickEvent -> {
             LoginToken loginToken = loginClient.login(getTxtUsername().getValue(), getTxtPassword().getValue());
+            if(!loginToken.isSuccess()) {
+                Notification.show("Login failed",
+                        "Wrong username or password!",
+                        Notification.Type.WARNING_MESSAGE);
+                return;
+            }
             User user = userService.findByUsername(getTxtUsername().getValue());
             if(user == null) {
                 Notification.show("Login failed",

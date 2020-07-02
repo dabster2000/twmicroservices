@@ -170,11 +170,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
             MLabel spacer = new MLabel("").withWidth(100, PERCENTAGE);
 
-            System.out.println("dateButtons.getSelActiveUser().getSelectedItem().get() = " + dateButtons.getSelActiveUser().getSelectedItem().get());
             List<Contract> activeConsultantContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getSelectedItem().get());
-            System.out.println("activeConsultantContracts.size() = " + activeConsultantContracts.size());
             List<Client> clientResources = getClients(activeConsultantContracts);
-            System.out.println("clientResources.size() = " + clientResources.size());
 
             ComboBox<Client> clientComboBox = new ComboBox<>();
             clientComboBox.setItemCaptionGenerator(Client::getName);
