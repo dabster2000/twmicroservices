@@ -246,30 +246,18 @@ public class DraftEditImpl extends DraftEditDesign {
     }
 
     public Invoice saveInvoice() {
-        //if(!invoice.getStatus().equals(InvoiceStatus.DRAFT)) return invoice;
         try {
             for (Binder<InvoiceItem> binder : binders.keySet()) {
                 binder.writeBean(binders.get(binder));
             }
             invoiceBinder.writeBean(invoice);
-            System.out.println("writebean: invoice = " + invoice);
             dfInvoiceDueDate.setValue(invoice.invoicedate.plusMonths(1));
-            invoiceService.save(invoice);
-            System.out.println("after create: invoice = " + invoice);
+            invoiceService.update(invoice);
             Notification.show("Saved", Notification.Type.TRAY_NOTIFICATION);
         } catch (ValidationException e) {
             Notification.show("Invoice could not be saved, " +
                     "please check error messages for each field.", Notification.Type.ERROR_MESSAGE);
         }
-        return invoice;
-    }
-
-    public Invoice createInvoice() {
-        invoice.setStatus(InvoiceStatus.CREATED);
-        invoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
-        invoice.pdf = invoiceService.createInvoicePdf(invoice);
-        System.out.println("after pdf: invoice = " + invoice);
-        invoice = saveInvoice();
         return invoice;
     }
 

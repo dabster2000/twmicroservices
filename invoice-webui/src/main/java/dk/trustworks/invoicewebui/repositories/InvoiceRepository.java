@@ -1,25 +1,12 @@
 package dk.trustworks.invoicewebui.repositories;
 
-import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
-import java.util.List;
-
 /**
  * Created by hans on 11/07/2017.
  */
+/*
 @RepositoryRestResource(collectionResourceRel = "invoices", path = "invoices")
 public interface InvoiceRepository extends CrudRepository<Invoice, String> {
-    /**
-     *
-     * @param year the year
-     * @param month the month-of-year, from 0 to 11
-     * @return
-     */
+
     List<Invoice> findByYearAndMonth(@Param("year") int year, @Param("month") int month);
 
     @Query(value = "SELECT COALESCE(SUM(ii.hours * ii.rate), 0) AS result FROM invoices i LEFT JOIN invoiceitems ii ON i.uuid = ii.invoiceuuid " +
@@ -57,5 +44,9 @@ public interface InvoiceRepository extends CrudRepository<Invoice, String> {
     List<Invoice> findAll();
 
 
+
+
 }
+
+ */
 

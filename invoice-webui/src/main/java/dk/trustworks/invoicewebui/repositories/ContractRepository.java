@@ -1,22 +1,9 @@
 package dk.trustworks.invoicewebui.repositories;
 
-import dk.trustworks.invoicewebui.model.Client;
-import dk.trustworks.invoicewebui.model.Contract;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
-
-import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.util.List;
-
 /**
  * Created by hans on 23/06/2017.
  */
+/*
 @Transactional
 @RepositoryRestResource(collectionResourceRel = "contracts", path = "contracts")
 public interface ContractRepository extends CrudRepository<Contract, String> {
@@ -43,7 +30,7 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
             "    where c.activefrom <= :workDate and c.activeto >= :workDate and cc.useruuid like :useruuid AND t.uuid like :taskuuid AND c.status IN :statusList ", nativeQuery = true)
     Contract findContractByWork(@Param("workDate") String workDate, @Param("useruuid") String useruuid, @Param("taskuuid") String taskuuid, @Param("statusList") List<String> statusList);
 
-     */
+
 
     List<Contract> findByActiveFromBeforeAndActiveToAfterAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
     List<Contract> findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList);
@@ -60,6 +47,8 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Contract entity);
+
+     */
 /*
     @Query(value = "select c.uuid, " +
             "       c.contracttype, " +
@@ -81,4 +70,4 @@ public interface ContractRepository extends CrudRepository<Contract, String> {
     List<Contract> findByProjectuuid(@Param("projectuuid") String projectuuid);
 
  */
-}
+//}

@@ -1,36 +1,17 @@
 package dk.trustworks.invoicewebui.jobs;
 
 
-import dk.trustworks.invoicewebui.model.IncomeForecast;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.IncomeForcastRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import weka.classifiers.evaluation.NumericPrediction;
-import weka.classifiers.functions.GaussianProcesses;
-import weka.classifiers.functions.SMOreg;
-import weka.classifiers.timeseries.WekaForecaster;
-import weka.core.Instances;
-import weka.filters.supervised.attribute.TSLagMaker;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.StringReader;
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,12 +19,6 @@ import java.util.stream.Collectors;
 public class CountEmployeesJob {
 
     private static final Logger log = LoggerFactory.getLogger(CountEmployeesJob.class);
-
-    private final IncomeForcastRepository incomeForcastRepository;
-
-    private final WorkService workService;
-
-    private final ContractService contractService;
 
     private final UserService userService;
 
@@ -56,10 +31,7 @@ public class CountEmployeesJob {
     private final List <Integer> dailyPeopleForecast;
 
     @Autowired
-    public CountEmployeesJob(IncomeForcastRepository incomeForcastRepository, WorkService workService, ContractService contractService, UserService userService) {
-        this.incomeForcastRepository = incomeForcastRepository;
-        this.workService = workService;
-        this.contractService = contractService;
+    public CountEmployeesJob(UserService userService) {
         this.userService = userService;
         usersByLocalDate = new HashMap<>();
         startDate = LocalDate.of(2014, 2, 1);
@@ -104,9 +76,9 @@ public class CountEmployeesJob {
     }
 
     // http://wiki.pentaho.com/display/DATAMINING/Time+Series+Analysis+and+Forecasting+with+Weka
-    @Transactional
     // TODO: Microservice
     //@Scheduled(cron = "0 0 23 * * ?")
+    /*
     public void forecastIncome() throws Exception {
         log.info("CountEmployeesJob.forecastIncome");
         LocalDate now = LocalDate.now().minusDays(7);
@@ -223,9 +195,11 @@ public class CountEmployeesJob {
         log.debug("forecast = " + sum);
     }
 
-    @Transactional
+     */
+
     // TODO: Microservice
     //@Scheduled(cron = "0 0 22 * * ?")
+    /*
     public void forecastPeople() throws Exception {
         log.info("CountEmployeesJob.forecastPeople");
         LocalDate now = LocalDate.now().minusDays(7);
@@ -305,6 +279,8 @@ public class CountEmployeesJob {
         log.debug("forecast = " + sum);
     }
 
+     */
+
     public List<User> getUsersByLocalDate(LocalDate localDate) {
         log.info("CountEmployeesJob.getUsersByLocalDate");
         log.info("localDate = [" + localDate + "]");
@@ -324,7 +300,7 @@ public class CountEmployeesJob {
     public List<Double> getDailyForecast() {
         if(dailyForecast.size() == 0) try {
             log.warn("Daily revenue forecast not run!!!");
-            forecastIncome();
+            //forecastIncome();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -334,7 +310,7 @@ public class CountEmployeesJob {
     public List<Integer> getPeopleForecast() {
         if(dailyPeopleForecast.size() == 0) try {
             log.warn("Daily people forecast not run!!!");
-            forecastPeople();
+            //forecastPeople();
         } catch (Exception e) {
             e.printStackTrace();
         }

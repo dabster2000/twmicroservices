@@ -77,7 +77,7 @@ public class AvgExpensesPerYearChart {
             for (int j = 0; j < 12; j++) {
                 LocalDate currentDate = periodStart.plusMonths(monthCount);
                 if(currentDate.isAfter(periodEnd)) break;
-                expensesByMonth.addAll(statisticsService.getConsultantsExpensesByMonth(currentDate));
+                // TODO: expensesByMonth.addAll(statisticsService.getConsultantsExpensesByMonth(currentDate));
                 monthCount++;
             }
 

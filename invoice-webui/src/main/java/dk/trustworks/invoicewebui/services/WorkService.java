@@ -1,48 +1,76 @@
 package dk.trustworks.invoicewebui.services;
 
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.Task;
+import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.network.rest.WorkRestService;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 @Service
 public class WorkService {
 
-    private final WorkRepository workRepository;
-
     private final WorkRestService workRestService;
 
-    private final TaskService taskService;
-
-    private final ClientService clientService;
+    private final AvailabilityService availabilityService;
 
     @Autowired
-    public WorkService(WorkRepository workRepository, WorkRestService workRestService, TaskService taskService, ClientService clientService) {
-        this.workRepository = workRepository;
+    public WorkService(WorkRestService workRestService, AvailabilityService availabilityService) {
         this.workRestService = workRestService;
-        this.taskService = taskService;
-        this.clientService = clientService;
+        this.availabilityService = availabilityService;
     }
 
-    //@Cacheable("work")
+    public List<Work> findByPeriod(LocalDate fromDate, LocalDate toDate) {
+        return workRestService.findByPeriod(fromDate, toDate);
+    }
+
+    public List<Work> findByTasks(List<Task> tasks) {
+        return workRestService.findByTasks(tasks);
+    }
+
+    public Double findAmountUsedByContract(Contract contract) {
+        return workRestService.findAmountUsedByContract(contract);
+    }
+
+    public int getWorkdaysInMonth(String uuid, LocalDate currentDate) {
+        return (int) availabilityService.getWorkdaysInMonth(uuid, currentDate);
+    }
+
+    public List<Work> findWorkOnContract(String contractuuid) {
+        return workRestService.findWorkOnContract(contractuuid);
+    }
+
+    public List<Work> findByYearAndMonth(int year, int month) {
+        return workRestService.findByYearAndMonth(year, month);
+    }
+
+    public List<Work> findByYearAndMonthAndProject(int year, int i, String projectuuid) {
+        return workRestService.findByYearAndMonthAndProject(year, i, projectuuid);
+    }
+
+    public List<Work> findByTask(Task task) {
+        return workRestService.findByTask(task.getUuid());
+    }
+
     public List<Work> findByPeriodAndUserUUID(LocalDate fromdate, LocalDate todate, String useruuid) {
         return workRestService.findByPeriodAndUserUUID(
                 fromdate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 todate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 useruuid);
     }
+
+    public List<Work> findVacationByUser(String useruuid) {
+        return workRestService.findVacationByUser(useruuid);
+    }
+
+    public void save(Work work) {
+
+    }
+    /*
 
     //@Cacheable("work")
     public int getWorkDaysInMonth(String userUUID, LocalDate month) {
@@ -89,7 +117,7 @@ public class WorkService {
     }
 
      */
-
+/*
     //@Cacheable(value = "work")
     public List<Work> findByYearAndMonth(int year, int month) {
         return workRepository.findByPeriod(DateUtils.getFirstDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), DateUtils.getLastDayOfMonth(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -144,6 +172,7 @@ public class WorkService {
         return workRepository.findByPeriodAndUserAndTasks(stringIt(fromdate), stringIt(todate), useruuid, taskArray).stream().mapToDouble(Work::getWorkduration).sum();
     }
 
+
     /*
     public UserWork getUserWorkHoursByPeriod(UserWork userWork) {
         workRepository.findBillableWorkByUserInPeriod(user.getUuid(), stringIt(fromDate), stringIt(toDate));
@@ -157,7 +186,7 @@ public class WorkService {
     }
 
  */
-
+/*
     public List<Work> findByActiveClients() {
         return workRepository.findByTasks(
                 clientService.findByActiveTrue().stream()
@@ -166,6 +195,7 @@ public class WorkService {
                         .map(Task::getUuid)
                         .collect(Collectors.toList()));
     }
+    /*
 
     @Transactional
     public Work save(Work work) {
@@ -177,6 +207,7 @@ public class WorkService {
         eventBus.notify("notificationConsumer", Event.wrap(work));
         return savedWork;
          */
+    /*
     }
 
     @Transactional
@@ -192,5 +223,7 @@ public class WorkService {
         eventBus.notify("notificationConsumer", Event.wrap(work));
         return savedWork;
          */
-    }
+    //}
+
+
 }

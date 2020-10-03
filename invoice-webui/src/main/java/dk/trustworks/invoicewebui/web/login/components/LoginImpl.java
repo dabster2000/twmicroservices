@@ -34,6 +34,8 @@ public class LoginImpl extends LoginDesign {
         getImgTop().setSource(new ThemeResource("images/password-card.jpg"));
         getBtnLogin().addClickListener(clickEvent -> {
             LoginToken loginToken = loginClient.login(getTxtUsername().getValue(), getTxtPassword().getValue());
+            UserSession userSession = new UserSession(loginToken);
+            VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
             User user = userService.findByUsername(getTxtUsername().getValue());
             if(!loginToken.isSuccess()) {
                 Notification.show("Login failed",
@@ -49,7 +51,7 @@ public class LoginImpl extends LoginDesign {
                 return;
             }
 
-            UserSession userSession = new UserSession(user, loginToken, userRoles);
+            userSession = new UserSession(user, loginToken, userRoles);
             VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
             Cookie newCookie = new Cookie(NAME_COOKIE, user.getUuid());
             newCookie.setMaxAge(2592000);

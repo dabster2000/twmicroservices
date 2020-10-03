@@ -1,56 +1,9 @@
 package dk.trustworks.invoicewebui.web.invoice.components;
 
-import com.vaadin.annotations.Push;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.Query;
-import com.vaadin.server.StreamResource;
-import com.vaadin.shared.Registration;
-import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.FooterCell;
-import com.vaadin.ui.components.grid.FooterRow;
-import com.vaadin.ui.components.grid.HeaderRow;
-import com.vaadin.ui.renderers.NumberRenderer;
-import com.vaadin.ui.themes.ValoTheme;
-import com.whitestein.vaadin.widgets.wtpdfviewer.WTPdfViewer;
-import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.model.InvoiceItem;
-import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
-import dk.trustworks.invoicewebui.model.enums.InvoiceType;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
-import dk.trustworks.invoicewebui.security.Authorizer;
-import dk.trustworks.invoicewebui.services.InvoiceService;
-import dk.trustworks.invoicewebui.utils.NumberConverter;
-import dk.trustworks.invoicewebui.web.Broadcaster;
-import dk.trustworks.invoicewebui.web.model.SubTotal;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.addons.producttour.actions.TourActions;
-import org.vaadin.addons.producttour.button.StepButton;
-import org.vaadin.addons.producttour.shared.step.StepAnchor;
-import org.vaadin.addons.producttour.step.Step;
-import org.vaadin.addons.producttour.step.StepBuilder;
-import org.vaadin.addons.producttour.tour.Tour;
-import org.vaadin.simplefiledownloader.SimpleFileDownloader;
-import org.vaadin.viritin.label.MLabel;
-import org.vaadin.viritin.layouts.MVerticalLayout;
-
-import java.io.ByteArrayInputStream;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.vaadin.server.Sizeable.Unit.PIXELS;
-import static dk.trustworks.invoicewebui.model.enums.InvoiceStatus.*;
-
 /**
  * Created by hans on 13/07/2017.
  */
-
+/*
 @SpringComponent
 @SpringUI
 @Push
@@ -423,3 +376,5 @@ public class InvoiceListImpl extends InvoiceListDesign
                 .build();
     }
 }
+
+ */

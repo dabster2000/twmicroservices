@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.services;
 
 import com.vaadin.server.VaadinSession;
-import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.network.rest.ProjectRestService;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,13 +20,11 @@ public class ProjectService implements InitializingBean {
     private static ProjectService instance;
 
     private final ProjectRestService projectRestService;
-    private final TaskService taskService;
     private final UserService userService;
 
     @Autowired
-    public ProjectService(ProjectRestService projectRestService, TaskService taskService, UserService userService) {
+    public ProjectService(ProjectRestService projectRestService, UserService userService) {
         this.projectRestService = projectRestService;
-        this.taskService = taskService;
         this.userService = userService;
     }
 
@@ -38,8 +36,13 @@ public class ProjectService implements InitializingBean {
         return projectRestService.findByActiveTrue();
     }
 
-    public List<Project> findByClientAndActiveTrueOrderByNameAsc(Client client) {
-        return projectRestService.findByClientAndActiveTrue(client);
+    public int findByWorkonCount(LocalDate fromDate, LocalDate toDate) {
+        return Integer.parseInt(projectRestService.findByWorkonCount(fromDate, toDate).getValue());
+    }
+
+
+    public List<Project> findByClientAndActiveTrueOrderByNameAsc(String clientuuid) {
+        return projectRestService.findByClientAndActiveTrue(clientuuid);
     }
 
     public List<Project> findByClientuuidOrderByNameAsc(String clientuuid) {
@@ -48,6 +51,10 @@ public class ProjectService implements InitializingBean {
 
     public List<Project> findByClientdata(Clientdata clientdata) {
         return projectRestService.findByClientdata(clientdata);
+    }
+
+    public double findRateByProjectAndUserAndDate(String projectuuid, String useruuid, LocalDate date) {
+        return projectRestService.findRate(projectuuid, useruuid, date);
     }
 
     public void delete(String id) {

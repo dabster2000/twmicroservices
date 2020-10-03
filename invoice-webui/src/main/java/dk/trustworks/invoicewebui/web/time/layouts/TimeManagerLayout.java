@@ -21,9 +21,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+import dk.trustworks.invoicewebui.network.rest.WeekRestService;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
-import dk.trustworks.invoicewebui.repositories.WeekRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -60,15 +60,15 @@ import static dk.trustworks.invoicewebui.utils.DateUtils.lastDayOfMonth;
 @SpringUI
 public class TimeManagerLayout extends ResponsiveLayout {
 
-    private static final Logger log = LoggerFactory.getLogger(TimeManagerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TimeManagerLayout.class);
+
+    private final WeekRestService weekRestService;
 
     private final ProjectService projectService;
 
     private final UserService userService;
 
     private final ClientService clientService;
-
-    private final WeekRepository weekRepository;
 
     private final WorkService workService;
 
@@ -82,7 +82,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final StatisticsService statisticsService;
 
-    private ResponsiveLayout responsiveLayout;
+    private final ResponsiveLayout responsiveLayout;
 
     private LocalDate currentDate = LocalDate.now().with(DayOfWeek.MONDAY);
 
@@ -90,22 +90,22 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final DateButtons dateButtons;
     private final CustomerExpenses customerExpenses;
 
-    private NumberFormat nf = NumberFormat.getInstance();
-    private Binder<WeekValues> weekValuesBinder = new Binder<>();
-    private Binder<Receipt> receiptBinder = new Binder<>();
+    private final NumberFormat nf = NumberFormat.getInstance();
+    private final Binder<WeekValues> weekValuesBinder = new Binder<>();
+    private final Binder<Receipt> receiptBinder = new Binder<>();
     private WeekValues weekDaySums;
     private double sumHours = 0.0;
 
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WeekRepository weekRepository, WorkService workService, PhotoRepository photoRepository, TimeService timeService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository, StatisticsService statisticsService) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WorkService workService, PhotoRepository photoRepository, TimeService timeService, WeekRestService weekRestService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository, StatisticsService statisticsService) {
         this.projectService = projectService;
         this.userService = userService;
         this.clientService = clientService;
-        this.weekRepository = weekRepository;
         this.workService = workService;
         this.photoRepository = photoRepository;
+        this.weekRestService = weekRestService;
         this.photoService = photoService;
         this.contractService = contractService;
         this.receiptsRepository = receiptsRepository;
@@ -249,22 +249,14 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 } else {
                     user = dateButtons.getSelActiveUser().getSelectedItem().get();//userSession.getUser();
                 }
-                log.info("Finding user contracts for "+ user.getUsername());
                 List<Contract> newActiveConsultantContracts = getMainContracts(contractService, user);
-                System.out.println("newActiveConsultantContracts:");
-                newActiveConsultantContracts.forEach(System.out::println);
-                System.out.println("contract projects:");
-                newActiveConsultantContracts.stream().flatMap(contract -> contract.getProjects().stream()).distinct().forEach(System.out::println);
-                List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue());
-                System.out.println("allProjects:");
-                allProjects.forEach(System.out::println);
+                List<Project> allProjects = projectService.findByClientAndActiveTrueOrderByNameAsc(event1.getValue().getUuid());
                 Set<Project> projects;
+                // If Trustworks is Client
                 if(event1.getValue().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) {
-                    System.out.println("TW");
                     projects = new HashSet<>(allProjects);
                 } else {
-                    System.out.println("OTHER");
-                    projects = newActiveConsultantContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
+                    projects = newActiveConsultantContracts.stream().map(contract -> contractService.findProjectsByContractuuid(contract.getUuid())).flatMap(List::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
                     projects.forEach(System.out::println);
                 }
 
@@ -293,13 +285,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
             addTaskButton.addClickListener(event1 -> {
                 if(onOffSwitch.getValue()) {
-                    weekRepository.save(new Week(UUID.randomUUID().toString(),
+                    weekRestService.save(new Week(UUID.randomUUID().toString(),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
                             dateButtons.getSelActiveUser().getValue(),
                             taskComboBox.getSelectedItem().get(), userComboBox.getSelectedItem().get()));
                 } else {
-                    weekRepository.save(new Week(UUID.randomUUID().toString(),
+                    weekRestService.save(new Week(UUID.randomUUID().toString(),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
                             dateButtons.getSelActiveUser().getValue(),
@@ -315,7 +307,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private List<Client> getClients(List<Contract> activeConsultantContracts) {
-        List<Client> clientList = activeConsultantContracts.stream().map(Contract::getClient).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+        List<Client> clientList = activeConsultantContracts.stream().map(contract -> clientService.findOne(contract.getClientuuid())).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
         clientList.add(clientService.findOne("40c93307-1dfa-405a-8211-37cbda75318b"));
         return clientList;
     }
@@ -382,7 +374,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         List<Contract> mainContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getValue());
         List<Project> allProjects = projectService.findAllByActiveTrueOrderByNameAsc();
 
-        Set<Project> projectSet = mainContracts.stream().map(Contract::getProjects).flatMap(Set::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
+        Set<Project> projectSet = mainContracts.stream().map(contract -> contractService.findProjectsByContractuuid(contract.getUuid())).flatMap(List::stream).distinct().filter(allProjects::contains).collect(Collectors.toSet());
 
         customerExpensesGrid.getCbProject().setItems(projectSet);
         customerExpensesGrid.getCbProject().setItemCaptionGenerator(item -> item.getClient().getName()+" - "+item.getName());
@@ -449,7 +441,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private void createTimesheet(User user) {
         sumHours = 0.0;
         weekDaySums = new WeekValues();
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user.getUuid());
+        List<Week> weeks = weekRestService.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user.getUuid());
         LocalDate startOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
         LocalDate endOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
         List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
@@ -461,7 +453,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                         workResource.getUser(),
                         workResource.getTask(),
                         workResource.getWorkasUser());
-                weekRepository.save(week);
+                weekRestService.save(week);
                 weeks.add(week);
             }
         }
@@ -545,10 +537,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private void createMonthBudgetCards(LocalDate month, ResponsiveRow budgetRow, String color) {
-        List<BudgetDocument> consultantBudgetList = statisticsService.getConsultantBudgetDataByMonth(dateButtons.getSelActiveUser().getValue(), month);
+        // TODO:FIX
+        List<BudgetDocument> consultantBudgetList = new ArrayList<>();//statisticsService.getConsultantBudgetDataByMonth(dateButtons.getSelActiveUser().getValue(), month);
 
         for (BudgetDocument budgetDocument : consultantBudgetList) {
-            double workSum = workService.getWorkOnContractByUser(budgetDocument.getContract()).stream()
+            double workSum = workService.findWorkOnContract(budgetDocument.getContract().getUuid()).stream()
                     .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)) &&
                             work.getUseruuid().equals(budgetDocument.getUser().getUuid()))
                     .mapToDouble(Work::getWorkduration).sum();
@@ -694,7 +687,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 Notification.show("Cannot remove row!", "Cannot remove row as long as you have registered hours on the task this week", Notification.Type.WARNING_MESSAGE);
                 return;
             }
-            weekRepository.delete(weekItem.getWeek().getUuid());
+            weekRestService.delete(weekItem.getWeek().getUuid());
             responsiveLayout.removeComponent(time1Row);
         });
         Photo photo = photoRepository.findByRelateduuid(weekItem.getTask().getProject().getClient().getUuid());
@@ -885,7 +878,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             } else {
                 work = new Work(workDate, newValue, weekItem.getUser(), weekItem.getTask(), weekItem.getWorkas());
             }
-            workService.saveWork(work);
+            workService.save(work);
             if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));
         } catch (ParseException e) {
             log.error("Could not create work for weekItem " + weekItem, e);
@@ -907,7 +900,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private boolean isOnContract(LocalDate localDate, User user, Task task) {
-        return contractService.findConsultantRate(localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth(), user, task, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED)!=null;
+        return contractService.findConsultantRate(localDate, user, task, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED)!=null;
     }
 
     private class WeekValues {

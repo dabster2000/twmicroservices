@@ -96,6 +96,10 @@ public class DateUtils {
         return true;
     }
 
+    public LocalDate dateIt(String date) {
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
     public static List<LocalDate> getVacationDayArray(int year) {
         int a = year % 19;
         int b = (int) Math.round(year/100.0);

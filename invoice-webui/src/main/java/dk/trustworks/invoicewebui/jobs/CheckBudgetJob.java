@@ -9,8 +9,8 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.Capacity;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
 import dk.trustworks.invoicewebui.services.ClientService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -41,17 +41,17 @@ public class CheckBudgetJob {
 
     private final WorkService workService;
 
-    private final StatisticsService statisticsService;
+    private final AvailabilityService availabilityService;
 
     @Value("${motherSlackBotToken}")
     private String motherSlackToken;
 
     @Autowired
-    public CheckBudgetJob(UserService userService, ClientService clientService, WorkService workService, StatisticsService statisticsService) {
+    public CheckBudgetJob(UserService userService, ClientService clientService, WorkService workService, AvailabilityService availabilityService) {
         this.userService = userService;
         this.clientService = clientService;
         this.workService = workService;
-        this.statisticsService = statisticsService;
+        this.availabilityService = availabilityService;
     }
 
     @PostConstruct
@@ -70,7 +70,7 @@ public class CheckBudgetJob {
         LocalDate localDateEnd = localDateStart.plusMonths(3);
         log.info("localDateEnd = " + localDateEnd);
 
-        List<UserBooking> bookingList = statisticsService.getUserBooking(-1, 4);
+        List<UserBooking> bookingList = availabilityService.getUserBooking(-1, 4);
 
         List<User> activeUsers = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT);
 
@@ -81,7 +81,7 @@ public class CheckBudgetJob {
             int[] businessDaysInMonth = new int[3];
 
             for (int i = 0; i < 3; i++) {
-                businessDaysInMonth[i] = workService.getWorkDaysInMonth(user.getUuid(), localDateStart.plusMonths(i));//DateUtils.countWeekDays(DateUtils.getFirstDayOfMonth(localDateStart.plusMonths(i)).minusDays(1), DateUtils.getLastDayOfMonth(localDateStart.plusMonths(i)));
+                businessDaysInMonth[i] = workService.getWorkdaysInMonth(user.getUuid(), localDateStart.plusMonths(i));//DateUtils.countWeekDays(DateUtils.getFirstDayOfMonth(localDateStart.plusMonths(i)).minusDays(1), DateUtils.getLastDayOfMonth(localDateStart.plusMonths(i)));
             }
 
 

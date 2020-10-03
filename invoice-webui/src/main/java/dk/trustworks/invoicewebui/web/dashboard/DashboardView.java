@@ -25,10 +25,7 @@ import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.network.clients.VimeoAPI;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.EmailSender;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.SpriteSheet;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
@@ -83,8 +80,6 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final MainTemplate mainTemplate;
 
-    private final BudgetNewRepository budgetNewRepository;
-
     private final ContractService contractService;
 
     private final BubbleRepository bubbleRepository;
@@ -113,11 +108,14 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final KnowledgeChart knowledgeChart;
 
+    private final ClientService clientService;
+
+    private final BudgetService budgetService;
+
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, ClientService clientService, BudgetService budgetService) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
-        this.budgetNewRepository = budgetNewRepository;
         this.contractService = contractService;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
@@ -132,6 +130,8 @@ public class   DashboardView extends VerticalLayout implements View {
         this.revenuePerMonthChart = revenuePerMonthChart;
         this.spriteSheet = spriteSheet;
         this.knowledgeChart = knowledgeChart;
+        this.clientService = clientService;
+        this.budgetService = budgetService;
     }
 
     @Transactional
@@ -155,7 +155,7 @@ public class   DashboardView extends VerticalLayout implements View {
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
         VacationCard vacationCard = new VacationCard();
-        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
+        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, clientService, budgetService, 2, 6, "consultantAllocationCardDesign");
 
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrustworksStatus()));

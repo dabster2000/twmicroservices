@@ -8,11 +8,7 @@ import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -22,17 +18,15 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
 public class DashboardBoxCreator {
 
-    private final WorkService workService;
+    private final ProjectService projectService;
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
+    private final WorkService workService;
 
     private final ContractService contractService;
 
@@ -40,18 +34,27 @@ public class DashboardBoxCreator {
 
     private final UserService userService;
 
+    private final FinanceService financeService;
+
+    private final RevenueService revenueService;
+
+    private final AvailabilityService availabilityService;
+
     @Autowired
-    public DashboardBoxCreator(WorkService workService, GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, StatisticsService statisticsService, UserService userService) {
+    public DashboardBoxCreator(ProjectService projectService, WorkService workService, ContractService contractService, StatisticsService statisticsService, UserService userService, FinanceService financeService, RevenueService revenueService, AvailabilityService availabilityService) {
+        this.projectService = projectService;
         this.workService = workService;
-        this.graphKeyValueRepository = graphKeyValueRepository;
         this.contractService = contractService;
         this.statisticsService = statisticsService;
         this.userService = userService;
+        this.financeService = financeService;
+        this.revenueService = revenueService;
+        this.availabilityService = availabilityService;
     }
 
     public TopCardContent getGoodPeopleBox() {
-        float goodPeopleNow = statisticsService.getActiveEmployeeCountByMonth(LocalDate.now()); //userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
-        float goodPeopleLastYear = statisticsService.getActiveEmployeeCountByMonth(LocalDate.now().minusYears(1));//userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleNow = userService.findCurrentlyEmployedUsers().size();//.getActiveEmployeeCountByMonth(LocalDate.now()); //userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleLastYear = userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();//userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
         int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
         return new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Good People", percent + "% more than last year", Math.round(goodPeopleNow)+"", "dark-blue");
     }
@@ -69,7 +72,7 @@ public class DashboardBoxCreator {
 
             double revenueByMonth = statisticsService.getInvoicedOrRegisteredRevenueByMonth(currentDate);
             cumulativeRevenuePerMonth += revenueByMonth;
-            double expense = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+            double expense = financeService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
             cumulativeExpensePerMonth += expense;
 
             regression.addData(i+1, cumulativeRevenuePerMonth-cumulativeExpensePerMonth);
@@ -80,15 +83,15 @@ public class DashboardBoxCreator {
 
     public TopCardContent getPayout() {
         SimpleRegression regression = new SimpleRegression();
-        Number[] payouts = statisticsService.getPayoutsByPeriod(DateUtils.getCurrentFiscalStartDate(), LocalDate.now().withDayOfMonth(1));
+        GraphKeyValue[] payouts = financeService.getPayoutsByPeriod(DateUtils.getCurrentFiscalStartDate(), LocalDate.now().withDayOfMonth(1));
 
         LocalDate periodStart = DateUtils.getCurrentFiscalStartDate();
         double payout = 0.0;
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             if (!currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) break;
-            regression.addData(i+1, payouts[i].doubleValue());
-            payout = payouts[i].doubleValue();
+            regression.addData(i+1, payouts[i].getValue());
+            payout = payouts[i].getValue();
         }
 
         return new TopCardContent("images/icons/trustworks_icon_data.svg", "Employee bonus",  "Forecast is "+NumberUtils.round(regression.predict(12), 2), NumberUtils.round(payout,2)+"%", "dark-blue");
@@ -112,8 +115,8 @@ public class DashboardBoxCreator {
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
+                double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
+                AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
                 if (availability == null) {
                     availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
                 }
@@ -135,6 +138,7 @@ public class DashboardBoxCreator {
         LocalDate endDate = LocalDate.now();
         LocalDate lastStartDate = startDate.minusYears(1);
         LocalDate lastEndDate = endDate.minusYears(1);
+        /*
         Map<String, Project> currentProjectSet = new HashMap<>();
         for (Work work : workService.findByPeriod(startDate, endDate)) {
             Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
@@ -150,13 +154,15 @@ public class DashboardBoxCreator {
                 lastProjectSet.put(work.getTask().getProject().getUuid(), work.getTask().getProject());
             }
         }
-        float projectsThisYear = currentProjectSet.size();
-        int projectsLastYear = lastProjectSet.size();
+         */
+
+        float projectsThisYear = projectService.findByWorkonCount(startDate, endDate);
+        int projectsLastYear = projectService.findByWorkonCount(lastStartDate, lastEndDate);
         int percentProjects = Math.round((projectsThisYear / projectsLastYear) * 100) - 100;
         String projectsMoreOrLess = "more";
         if(percentProjects < 0) projectsMoreOrLess = "less";
         percentProjects = Math.abs(percentProjects);
-        return new TopCardContent("images/icons/trustworks_icon_kalender.svg", "Active Projects", percentProjects+"% "+projectsMoreOrLess+" than last year", ""+currentProjectSet.size(), "dark-blue");
+        return new TopCardContent("images/icons/trustworks_icon_kalender.svg", "Active Projects", percentProjects+"% "+projectsMoreOrLess+" than last year", ""+projectsThisYear, "dark-blue");
     }
 
     @Cacheable("billablehours")
@@ -176,11 +182,11 @@ public class DashboardBoxCreator {
         double lastHoursSumAvg = 0;
 
         do {
-            double consultants = statisticsService.countActiveConsultantCountByMonth(startDate);
-            double lastConsultants = statisticsService.countActiveConsultantCountByMonth(lastStartDate);
+            double consultants = availabilityService.countActiveConsultantsByMonth(startDate);
+            double lastConsultants = availabilityService.countActiveConsultantsByMonth(lastStartDate);
 
-            double hoursByMonth = statisticsService.getHoursByMonth(startDate);
-            double lastHoursByMonth = statisticsService.getHoursByMonth(lastStartDate);
+            double hoursByMonth = revenueService.getRegisteredHoursForSingleMonth(startDate);
+            double lastHoursByMonth = revenueService.getRegisteredHoursForSingleMonth(lastStartDate);
 
             hoursSumAvg += (hoursByMonth / consultants);
             lastHoursSumAvg += (lastHoursByMonth / lastConsultants);

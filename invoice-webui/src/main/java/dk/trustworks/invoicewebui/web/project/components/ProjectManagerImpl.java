@@ -16,7 +16,9 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.repositories.*;
+import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
+import dk.trustworks.invoicewebui.repositories.NewsRepository;
+import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
@@ -61,8 +63,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final WorkService workService;
 
-    private final BudgetNewRepository budgetNewRepository;
-
     private final PhotoRepository photoRepository;
 
     private final PhotoService photoService;
@@ -71,9 +71,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final AmbitionRepository ambitionRepository;
 
-    private ResponsiveLayout responsiveLayout;
+    private final BudgetService budgetService;
 
-    //private Project currentProject;
+    private ResponsiveLayout responsiveLayout;
 
     private BudgetCardDesign budgetCard;
 
@@ -85,18 +85,18 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository) {
+    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository, BudgetService budgetService) {
         this.userService = userService;
         this.projectService = projectService;
         this.clientService = clientService;
         this.taskService = taskService;
         this.workService = workService;
-        this.budgetNewRepository = budgetNewRepository;
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.newsRepository = newsRepository;
         this.contractService = contractService;
         this.ambitionRepository = ambitionRepository;
+        this.budgetService = budgetService;
 
         getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Create Project");
@@ -472,7 +472,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         consultantsLayout.addComponent(responsiveLayout);
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
-        for (Contract mainContract : currentProject.getContracts().stream().sorted(Comparator.comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
+        for (Contract mainContract : contractService.getContractsByProject(currentProject).stream().sorted(Comparator.comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
             for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
                 ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
                 consultantRowDesign.getLblName().setValue(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
@@ -480,7 +480,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 consultantRowDesign.getTxtRate().setReadOnly(true);
                 consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours()) + "");
                 consultantRowDesign.getTxtHours().setReadOnly(true);
-                consultantRowDesign.getVlHours().setVisible(contractConsultant.getContract().getContractType().equals(ContractType.PERIOD));
+                consultantRowDesign.getVlHours().setVisible(mainContract.getContractType().equals(ContractType.PERIOD));
                 consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUser(), false));
                 consultantRowDesign.getBtnDelete().setVisible(false);
                 if(mainContract.getActiveTo().isBefore(LocalDate.now().withDayOfMonth(1))) {
@@ -559,7 +559,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 LocalDate budgetDate = startDate;
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
+                    BudgetNew budget = budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
                     if(budget!=null) budgetSum += budget.getBudget();
                     budgetDate = budgetDate.plusMonths(1);
                 }
@@ -585,7 +585,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         grid = new Grid<>();
 
         grid.addColumn(BudgetRow::getUsername).setWidth(150).setCaption("Consultant").setId("name-column");
-        grid.addColumn(budgetRow -> budgetRow.getContractConsultant().getContract().getName()).setWidth(100).setCaption("Contract").setId("contract-column");
+        grid.addColumn(budgetRow -> budgetRow.getContract().getName()).setWidth(100).setCaption("Contract").setId("contract-column");
         grid.setFrozenColumnCount(2);
         grid.setWidth("100%");
         grid.getEditor().setEnabled(true);
@@ -593,22 +593,21 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         List<BudgetRow> budgetRows = new ArrayList<>();
 
         for (Contract mainContract : currentProject.getContracts()) {
-            System.out.println("mainContract = " + mainContract);
             if(mainContract.getActiveTo().isBefore(startDate)) continue;
             if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) continue;
             for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
-                BudgetRow budgetRow = new BudgetRow(contractConsultant, (int)(monthsBetween+1));
+                BudgetRow budgetRow = new BudgetRow(contractConsultant, mainContract, (int)(monthsBetween+1));
                 LocalDate budgetDate = startDate;
 
                 int month = 0;
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
+                    BudgetNew budget = null; // TODO: budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
 
                     if(budget != null) {
                         budgetRow.setMonth(month, (budget.getBudget() / contractConsultant.getRate())+"");
                     } else {
-                        budgetNewRepository.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, contractConsultant, currentProject));
+                        budgetService.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, contractConsultant, currentProject));
                         budgetRow.setMonth(month, "0.0");
                     }
                     month++;
@@ -649,33 +648,29 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         grid.getEditor().setEnabled(true);
         grid.getEditor().addSaveListener(event -> {
             BudgetRow budgetRow = event.getBean();
-            System.out.println("budgetRow = " + budgetRow);
             LocalDate budgetCountDate = startDate;
             for (String budgetString : budgetRow.getBudget()) {
-                System.out.println("budgetCountDate = " + budgetCountDate);
-                System.out.println("budgetString = " + budgetString);
-                System.out.println("budgetRow.getContractConsultant().getContract().getActiveTo() = " + budgetRow.getContractConsultant().getContract().getActiveTo());
-                if(budgetCountDate.isAfter(budgetRow.getContractConsultant().getContract().getActiveTo())) {
+                if(budgetCountDate.isAfter(budgetRow.getContract().getActiveTo())) {
                     budgetCountDate = budgetCountDate.plusMonths(1);
                     continue;
                 }
-                System.out.println("budgetRow.getContractConsultant().getContract().getActiveFrom() = " + budgetRow.getContractConsultant().getContract().getActiveFrom());
-                if(budgetCountDate.isBefore(budgetRow.getContractConsultant().getContract().getActiveFrom())) {
+                if(budgetCountDate.isBefore(budgetRow.getContract().getActiveFrom())) {
                     budgetCountDate = budgetCountDate.plusMonths(1);
                     continue;
                 }
                 if(budgetString==null) budgetString = "0.0";
-                System.out.println("budgetString = " + budgetString);
-                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(
+                /*
+                TODO
+                BudgetNew budget = budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
                         budgetRow.getContractConsultant(),
                         currentProject.getUuid());
-                System.out.println("budget = " + budget);
+                 */
+                BudgetNew budget = new BudgetNew();
                 //if(budget.getProject()==null) budget.setProject(currentProject);
                 budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
-                System.out.println("budget = " + budget);
-                budgetNewRepository.save(budget);
+                budgetService.save(budget);
                 budgetCountDate = budgetCountDate.plusMonths(1);
             }
             updateTreeGrid(currentProject);

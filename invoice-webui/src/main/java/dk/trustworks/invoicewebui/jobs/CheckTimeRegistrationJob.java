@@ -1,25 +1,14 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import allbegray.slack.SlackClientFactory;
 import allbegray.slack.webapi.SlackWebApiClient;
-import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.dto.UserBooking;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.logging.Logger;
 
 

@@ -5,10 +5,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import dk.trustworks.invoicewebui.services.*;
+import dk.trustworks.invoicewebui.services.ClientService;
+import dk.trustworks.invoicewebui.services.ContractService;
+import dk.trustworks.invoicewebui.services.TaskService;
+import dk.trustworks.invoicewebui.services.UserService;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 
 public class Project {

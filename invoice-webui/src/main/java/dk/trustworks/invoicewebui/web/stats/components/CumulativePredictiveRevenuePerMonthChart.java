@@ -8,6 +8,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.IncomeForecast;
 import dk.trustworks.invoicewebui.repositories.IncomeForcastRepository;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
     private CountEmployeesJob countEmployeesJob;
 
     @Autowired
-    private StatisticsService statisticsService;
+    private RevenueService revenueService;
 
     @Autowired
     IncomeForcastRepository incomeForcastRepository;
@@ -78,11 +79,11 @@ public class CumulativePredictiveRevenuePerMonthChart {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
-            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), statisticsService.getMonthRevenue(currentDate)));
+            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), revenueService.getRegisteredRevenueForSingleMonth(currentDate)));
             historicalMonthsCount++;
             System.out.println("currentDate = " + monthNames[i]);
             System.out.println("historicalMonthsCount = " + historicalMonthsCount);
-            System.out.println("statisticsService.getMonthRevenue(currentDate) = " + statisticsService.getMonthRevenue(currentDate));
+            System.out.println("statisticsService.getMonthRevenue(currentDate) = " + revenueService.getRegisteredRevenueForSingleMonth(currentDate));
         }
 
         System.out.println("Known dates: DONE");
@@ -96,7 +97,7 @@ public class CumulativePredictiveRevenuePerMonthChart {
             revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), NumberUtils.round(incomeForecastList.get(i-historicalMonthsCount).getAmount(),0)));
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
             System.out.println("currentDate = " + monthNames[i]);
-            System.out.println("statisticsService.getMonthRevenue(currentDate) = " + statisticsService.getMonthRevenue(currentDate));
+            System.out.println("statisticsService.getMonthRevenue(currentDate) = " + revenueService.getRegisteredRevenueForSingleMonth(currentDate));
         }
 
         System.out.println("Forecast dates: DONE");

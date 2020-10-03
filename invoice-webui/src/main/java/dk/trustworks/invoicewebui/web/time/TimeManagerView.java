@@ -1,26 +1,9 @@
 package dk.trustworks.invoicewebui.web.time;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FontIcon;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.security.Authorizer;
-import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
-import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
-import dk.trustworks.invoicewebui.web.time.components.TimeManagerImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.alump.materialicons.MaterialIcons;
-
-import javax.annotation.PostConstruct;
-
 /**
  * Created by hans on 16/08/2017.
  */
+/*
 @AccessRules(roleTypes = {RoleType.USER})
 @SpringView(name = TimeManagerView.VIEW_NAME)
 public class TimeManagerView extends VerticalLayout implements View {
@@ -59,3 +42,5 @@ public class TimeManagerView extends VerticalLayout implements View {
         authorizer.authorize(this, RoleType.USER);
     }
 }
+
+ */

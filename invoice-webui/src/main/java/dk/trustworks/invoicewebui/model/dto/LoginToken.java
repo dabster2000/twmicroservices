@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 public class LoginToken {
     private String token;
     private String useruuid;
-    private boolean success;
+    private boolean success = false;
     private String failureReason;
 }

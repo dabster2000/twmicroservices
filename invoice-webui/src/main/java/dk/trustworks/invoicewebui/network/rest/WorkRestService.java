@@ -1,24 +1,30 @@
 package dk.trustworks.invoicewebui.network.rest;
 
+import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.Work;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 import static org.springframework.http.HttpMethod.*;
 
 @Service
 public class WorkRestService {
 
-    @Value("#{environment.WORKSERVICE_URL}")
-    private String workServiceUrl;
+    protected static Logger logger = LoggerFactory.getLogger(WorkRestService.class.getName());
+
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
@@ -27,28 +33,51 @@ public class WorkRestService {
         this.systemRestService = systemRestService;
     }
 
-    @Cacheable("work")
     public List<Work> findAll() {
-        String url = workServiceUrl +"/work";
+        String url = apiGatewayUrl +"/work";
+        logger.debug(url);
         ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("work")
     public Work findOne(long id) {
-        String url = workServiceUrl +"/work/"+id;
+        String url = apiGatewayUrl +"/work/"+id;
+        logger.debug(url);
         ResponseEntity<Work> result = systemRestService.secureCall(url, GET, Work.class);
         return result.getBody();
     }
 
     public List<Work> findByPeriodAndUserUUID(String fromDate, String toDate, String useruuid) {
-        String url = workServiceUrl +"/users/"+useruuid+"/work?fromdate="+fromDate+"&todate="+toDate;
+        String url = apiGatewayUrl +"/users/"+useruuid+"/work?fromdate="+fromDate+"&todate="+toDate;
+        logger.debug(url);
+        ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public List<Work> findByPeriod(LocalDate fromDate, LocalDate toDate) {
+        String url = apiGatewayUrl +"/work/search/findByPeriod?fromdate="+stringIt(fromDate)+"&todate="+stringIt(toDate);
+        logger.debug(url);
         ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
         return Arrays.asList(result.getBody());
     }
 
     public List<Work> findByTask(String uuid) {
-        String url = workServiceUrl + "/tasks/"+uuid+"/work";
+        String url = apiGatewayUrl + "/tasks/"+uuid+"/work";
+        logger.debug(url);
+        ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public List<Work> findVacationByUser(String useruuid) {
+        String url = apiGatewayUrl + "/users/"+useruuid+"/vacation";
+        logger.debug(url);
+        ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public List<Work> findByTasks(List<Task> tasks) {
+        String url = apiGatewayUrl + "/work?taskuuids="+tasks.stream().map(Task::getUuid).collect(Collectors.joining(","));
+        logger.debug(url);
         ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
         return Arrays.asList(result.getBody());
     }
@@ -57,21 +86,40 @@ public class WorkRestService {
         return null;
     }
 
-    @CacheEvict(value = "work", allEntries = true)
+    public Double findAmountUsedByContract(Contract contract) {
+        return null;
+    }
+
+    public List<Work> findWorkOnContract(String contractuuid) {
+        String url = apiGatewayUrl + "/contracts/" + contractuuid + "/work";
+        logger.debug(url);
+        ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
+        return Arrays.asList(result.getBody());
+    }
+
     public Work save(Work work) {
-        String url = workServiceUrl+"/work";
+        String url = apiGatewayUrl +"/work";
+        logger.debug(url);
         ResponseEntity<Work> result = systemRestService.secureCall(url, POST, Work.class, work);
         return result.getBody();
     }
 
-    @CacheEvict(value = "work", allEntries = true)
     public void delete(Work work) {
         delete(work.getId());
     }
 
-    @CacheEvict(value = "work", allEntries = true)
     public void delete(long id) {
-        String url = workServiceUrl+"/work/"+id;
+        String url = apiGatewayUrl +"/work/"+id;
+        logger.debug(url);
         systemRestService.secureCall(url, DELETE, Void.class);
     }
+
+    public List<Work> findByYearAndMonth(int year, int month) {
+        return null;
+    }
+
+    public List<Work> findByYearAndMonthAndProject(int year, int i, String projectuuid) {
+        return null;
+    }
+
 }

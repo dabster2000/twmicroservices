@@ -3,7 +3,8 @@ package dk.trustworks.invoicewebui.model;
 import dk.trustworks.invoicewebui.services.TaskService;
 import dk.trustworks.invoicewebui.services.UserService;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDate;
 
 /**

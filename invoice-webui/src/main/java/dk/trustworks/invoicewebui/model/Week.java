@@ -4,7 +4,8 @@ import com.google.common.base.Objects;
 import dk.trustworks.invoicewebui.services.TaskService;
 import dk.trustworks.invoicewebui.services.UserService;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Created by hans on 28/06/2017.

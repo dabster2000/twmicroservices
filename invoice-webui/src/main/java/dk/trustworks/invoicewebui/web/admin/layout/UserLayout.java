@@ -14,13 +14,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
-import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.admin.components.*;
 import dk.trustworks.invoicewebui.web.admin.model.Employee;
@@ -44,12 +42,6 @@ import static com.vaadin.server.Sizeable.Unit.PIXELS;
 @SpringUI
 @SpringComponent
 public class UserLayout {
-
-    @Autowired
-    private ConsultantRepository consultantRepository;
-
-    @Autowired
-    private CountEmployeesJob countEmployees;
 
     @Autowired
     private UserService userService;
@@ -92,7 +84,7 @@ public class UserLayout {
                 .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Students", "The transmission", userService.findCurrentlyEmployedUsers(ConsultantType.STUDENT).size()+"", "orange")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Former", "CO2", consultantRepository.findByStatus(StatusType.TERMINATED).size()+"", "dark-grey")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Former", "CO2", userService.findByStatus(StatusType.TERMINATED).size()+"", "dark-grey")));
 
         MButton addUserButton = new MButton("add user").withStyleName("flat", "friendly").withListener((Button.ClickListener) event -> {
             User user = new User();

@@ -1,31 +1,35 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.services.TaskService;
 import dk.trustworks.invoicewebui.services.UserService;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 
-/**
- * Created by hans on 28/06/2017.
- */
-@Entity
+@Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Work {
 
-    @Id
-    @GeneratedValue
     private int id;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate registered;
     private double workduration;
-
+    private String clientuuid;
+    private String projectuuid;
     private String taskuuid;
-
+    private String contractuuid;
     private String useruuid;
-
     private String workas;
-
-    public Work() {
-    }
+    private double rate;
 
     public Work(LocalDate registered, double workduration, User user, Task task) {
         this.registered = registered;
@@ -42,76 +46,16 @@ public class Work {
         this.workas = workas.getUuid();
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public LocalDate getRegistered() {
-        return registered;
-    }
-
-    public void setRegistered(LocalDate registered) {
-        this.registered = registered;
-    }
-
-    public double getWorkduration() {
-        return workduration;
-    }
-
-    public void setWorkduration(double workduration) {
-        this.workduration = workduration;
-    }
-
     public Task getTask() {
         return TaskService.get().findOne(taskuuid);
-    }
-
-    public String getTaskuuid() {
-        return taskuuid;
-    }
-
-    public void setTask(Task task) {
-        this.taskuuid = task.getUuid();
-    }
-
-    public String getUseruuid() {
-        return useruuid;
     }
 
     public User getUser() {
         return UserService.get().findByUUID(getUseruuid());
     }
 
-    public void setUseruuid(String useruuid) {
-        this.useruuid = useruuid;
-    }
-
-    public String getWorkas() {
-        return workas;
-    }
-
-    public void setWorkas(String workas) {
-        this.workas = workas;
-    }
-
     public User getWorkasUser() {
         if(getWorkas()==null || getWorkas().trim().equals("")) return null;
         return UserService.get().findByUUID(getWorkas());
-    }
-
-    @Override
-    public String toString() {
-        return "Work{" +
-                "id=" + id +
-                ", registered=" + registered +
-                ", workduration=" + workduration +
-                ", taskuuid='" + taskuuid + '\'' +
-                ", useruuid='" + useruuid + '\'' +
-                ", workas='" + workas + '\'' +
-                '}';
     }
 }

@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.network.rest;
 
 import dk.trustworks.invoicewebui.model.Client;
-import dk.trustworks.invoicewebui.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,8 +16,8 @@ import static org.springframework.http.HttpMethod.*;
 @Service
 public class ClientRestService {
 
-    @Value("#{environment.CRMSERVICE_URL}")
-    private String crmServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
@@ -28,45 +27,39 @@ public class ClientRestService {
     }
 
     public List<Client> findAll() {
-        String url = crmServiceUrl +"/clients";
+        String url = apiGatewayUrl +"/clients";
         ResponseEntity<Client[]> result = systemRestService.secureCall(url, GET, Client[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("clients")
     public Client findOne(String uuid) {
-        String url = crmServiceUrl +"/clients/"+uuid;
+        String url = apiGatewayUrl +"/clients/"+uuid;
         ResponseEntity<Client> result = systemRestService.secureCall(url, GET, Client.class);
         return result.getBody();
     }
 
-    @Cacheable("clients")
     public List<Client> findByActiveTrue() {
-        String url = crmServiceUrl +"/clients/search/findByActiveTrue";
+        String url = apiGatewayUrl +"/clients/active";
         ResponseEntity<Client[]> result = systemRestService.secureCall(url, GET, Client[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @CacheEvict(value = "clients", allEntries = true)
     public Client save(Client client) {
-        String url = crmServiceUrl+"/clients";
+        String url = apiGatewayUrl +"/clients";
         return (Client) systemRestService.secureCall(url, POST, Client.class, client).getBody();//restTemplate.postForObject(url, user, User.class);
     }
 
-    @CacheEvict(value = "clients", allEntries = true)
     public void update(Client client) {
-        String url = crmServiceUrl+"/clients";
+        String url = apiGatewayUrl +"/clients";
         systemRestService.secureCall(url, PUT, Client.class, client).getBody(); //restTemplate.put(url, user);
     }
 
-    @CacheEvict(value = "clients", allEntries = true)
     public void delete(Client client) {
         delete(client.getUuid());
     }
 
-    @CacheEvict(value = "clients", allEntries = true)
     public void delete(String uuid) {
-        String url = crmServiceUrl+"/clients/"+uuid;
+        String url = apiGatewayUrl +"/clients/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);
     }
 }

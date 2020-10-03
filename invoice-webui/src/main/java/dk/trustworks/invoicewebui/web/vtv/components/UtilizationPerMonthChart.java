@@ -10,8 +10,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,13 +28,22 @@ import java.util.List;
 @SpringUI
 public class UtilizationPerMonthChart {
 
-    private UserService userService;
+    private final UserService userService;
 
-    private StatisticsService statisticsService;
+    private final BudgetService budgetService;
+
+    private final RevenueService revenueService;
+
+    private final AvailabilityService availabilityService;
+
+    private final StatisticsService statisticsService;
 
     @Autowired
-    public UtilizationPerMonthChart(UserService userService, StatisticsService statisticsService) {
+    public UtilizationPerMonthChart(UserService userService, BudgetService budgetService, RevenueService revenueService, AvailabilityService availabilityService, StatisticsService statisticsService) {
         this.userService = userService;
+        this.budgetService = budgetService;
+        this.revenueService = revenueService;
+        this.availabilityService = availabilityService;
         this.statisticsService = statisticsService;
     }
 
@@ -67,11 +75,11 @@ public class UtilizationPerMonthChart {
             LocalDate localDate = periodStart.plusMonths(m);
             for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
-                double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate);
+                double budget = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), localDate);
                 monthAvailabilites[m] += budget;
-                double netAvailability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getNetAvailableHours();
+                double netAvailability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), localDate).getNetAvailableHours();
                 monthTotalNetAvailabilites[m] += netAvailability;
-                double grossAvailability = statisticsService.getConsultantAvailabilityByMonth(user, localDate).getGrossAvailableHours();
+                double grossAvailability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), localDate).getGrossAvailableHours();
                 monthTotalGrossAvailabilites[m] += grossAvailability;
             }
         }
@@ -124,8 +132,8 @@ public class UtilizationPerMonthChart {
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
+                double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
+                AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
                 if (availability == null || !availability.getStatusType().equals(StatusType.ACTIVE)) {
                     continue;
                 }

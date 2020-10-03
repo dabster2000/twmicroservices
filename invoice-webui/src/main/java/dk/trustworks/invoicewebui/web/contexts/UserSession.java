@@ -21,6 +21,10 @@ public class UserSession {
     public UserSession() {
     }
 
+    public UserSession(LoginToken loginToken) {
+        this.loginToken = loginToken;
+    }
+
     public UserSession(User user, LoginToken loginToken, List<Role> roles) {
         this.user = user;
         this.loginToken = loginToken;

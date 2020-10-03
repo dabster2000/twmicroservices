@@ -6,7 +6,9 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.FinanceService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -23,11 +25,17 @@ import java.util.stream.Collectors;
 @SpringUI
 public class AverageConsultantRevenueByYearChart {
 
-    private final StatisticsService statisticsService;
+    private final FinanceService financeService;
+
+    private final RevenueService revenueService;
+
+    private final AvailabilityService availabilityService;
 
     @Autowired
-    public AverageConsultantRevenueByYearChart(StatisticsService statisticsService) {
-        this.statisticsService = statisticsService;
+    public AverageConsultantRevenueByYearChart(FinanceService financeService, RevenueService revenueService, AvailabilityService availabilityService) {
+        this.financeService = financeService;
+        this.revenueService = revenueService;
+        this.availabilityService = availabilityService;
     }
 
     public Chart createRevenuePerConsultantChart() {
@@ -64,10 +72,10 @@ public class AverageConsultantRevenueByYearChart {
 
             for (int m = 0; m < 12; m++) {
                 if(periodStart.plusMonths(m).isAfter(LocalDate.now().withDayOfMonth(1))) break;
-                double expenses = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(m));
+                double expenses = financeService.calcAllExpensesByMonth(periodStart.plusMonths(m));
                 if(expenses <= 0.0) continue;
-                double revenue = statisticsService.getMonthRevenue(periodStart.plusMonths(m));
-                long countUsers = statisticsService.countActiveConsultantCountByMonth(periodStart.plusMonths(m));
+                double revenue = revenueService.getRegisteredRevenueForSingleMonth(periodStart.plusMonths(m));
+                double countUsers = availabilityService.countActiveConsultantsByMonth(periodStart.plusMonths(m));
                 sum += (revenue - expenses) / countUsers;
                 countMonthsWithExpenses++;
             }

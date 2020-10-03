@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.ACTIVE;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.NON_PAY_LEAVE;
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 @Service
 public class UserService implements InitializingBean {
@@ -42,6 +43,10 @@ public class UserService implements InitializingBean {
 
     public Optional<User> getLoggedInUser() {
         return Optional.of(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser());
+    }
+
+    public Optional<LoginToken> getLoggedInUserToken() {
+        return Optional.of(VaadinSession.getCurrent().getAttribute(UserSession.class).getLoginToken());
     }
 
     public User findByUUID(String uuid) {
@@ -177,6 +182,11 @@ public class UserService implements InitializingBean {
         return first?statuses.get(0):statuses.get(statuses.size()-1);
     }
 
+    public List<User> findByStatus(StatusType statusType) {
+        String[] statusTypes = {statusType.toString()};
+        return userRestService.findUsersByDateAndStatusListAndTypes(stringIt(LocalDate.now()), statusTypes, CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
+    }
+
     public List<UserStatus> findUserStatusList(String useruuid) {
         return userRestService.findUserStatusList(useruuid);
     }
@@ -235,4 +245,5 @@ public class UserService implements InitializingBean {
     public void create(User user, Role role) {
         userRestService.create(user, role);
     }
+
 }

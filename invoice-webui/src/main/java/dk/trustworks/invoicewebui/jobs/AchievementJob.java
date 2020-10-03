@@ -4,13 +4,13 @@ package dk.trustworks.invoicewebui.jobs;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.*;
 import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.BudgetService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.services.WorkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -37,13 +37,14 @@ public class AchievementJob {
     private final LogEventRepository logEventRepository;
     private final AmbitionRepository ambitionRepository;
     private final UserAmbitionDTORepository userAmbitionDTORepository;
-    private final StatisticsService statisticsService;
     private final BubbleMemberRepository bubbleMemberRepository;
     private final BubbleRepository bubbleRepository;
+    private final BudgetService budgetService;
+    private final RevenueService revenueService;
 
 
     @Autowired
-    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, StatisticsService statisticsService, BubbleMemberRepository bubbleMemberRepository, BubbleRepository bubbleRepository) {
+    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, BubbleMemberRepository bubbleMemberRepository, BubbleRepository bubbleRepository, BudgetService budgetService, RevenueService revenueService) {
         this.achievementRepository = achievementRepository;
         this.userService = userService;
         this.workService = workService;
@@ -53,9 +54,10 @@ public class AchievementJob {
         this.logEventRepository = logEventRepository;
         this.ambitionRepository = ambitionRepository;
         this.userAmbitionDTORepository = userAmbitionDTORepository;
-        this.statisticsService = statisticsService;
+        this.revenueService = revenueService;
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.bubbleRepository = bubbleRepository;
+        this.budgetService = budgetService;
     }
 
     @PostConstruct
@@ -183,7 +185,7 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfVacationAllMonthsAchievement(User user) {
-        List<Work> workList = workService.findVacationByUser(user);
+        List<Work> workList = workService.findVacationByUser(user.getUuid());
         int[] months = new int[12];
         for (Work work : workList) {
             if(work.getWorkduration() >= 7.4) months[work.getRegistered().getMonthValue()-1] += 1;
@@ -199,9 +201,9 @@ public class AchievementJob {
         System.out.println("A");
         int count = 0;
         do {
-            double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, employedDate);
+            double budgetHoursByMonth = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), employedDate);
             System.out.println("K");
-            double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, employedDate);
+            double revenueHoursByMonth = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), employedDate);
             System.out.println("L");
             if(revenueHoursByMonth>budgetHoursByMonth) count++;
             employedDate = employedDate.plusMonths(1);
@@ -243,7 +245,7 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfVacationAllWeeksAchievement(User user) {
-        List<Work> workList = workService.findVacationByUser(user);
+        List<Work> workList = workService.findVacationByUser(user.getUuid());
         int[] weeks = new int[53];
         for (Work work : workList) {
             int week = work.getRegistered().get(ChronoField.ALIGNED_WEEK_OF_YEAR);
@@ -265,7 +267,7 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfVacationAchievement(User user, int minWork) {
-        List<Work> workList = workService.findVacationByUser(user);
+        List<Work> workList = workService.findVacationByUser(user.getUuid());
         Map<String, Double> hoursPerWeekMap = getHoursPerWeek(workList);
         if(hoursPerWeekMap.size()==0) return false;
 

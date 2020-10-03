@@ -4,11 +4,10 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
-import dk.trustworks.invoicewebui.model.Expense;
-import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
+import dk.trustworks.invoicewebui.model.CompanyExpense;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
-import dk.trustworks.invoicewebui.services.ExpenseService;
+import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -32,13 +31,13 @@ public class ExpenseTable {
 
     private final UserService userService;
 
-    private final ExpenseService expenseService;
+    private final FinanceService financeService;
 
     @Autowired
-    public ExpenseTable(StatisticsService statisticsService, UserService userService, ExpenseService expenseService) {
+    public ExpenseTable(StatisticsService statisticsService, UserService userService, FinanceService financeService) {
         this.statisticsService = statisticsService;
         this.userService = userService;
-        this.expenseService = expenseService;
+        this.financeService = financeService;
     }
 
     public Grid<ExpenseItem> createRevenuePerConsultantChart() {
@@ -59,9 +58,9 @@ public class ExpenseTable {
 
         for (int j = 0; j < months; j++) {
             double sum = 0.0;
-            for (Expense expense : expenseService.findByMonth(currentDate.plusMonths(j))) {
-                expenseItemList.get(expense.getExpensetype().name()).getExpenses()[j] = expense.getAmount();
-                sum += expense.getAmount();
+            for (CompanyExpense companyExpense : financeService.findByMonth(currentDate.plusMonths(j))) {
+                expenseItemList.get(companyExpense.getExpensetype().name()).getExpenses()[j] = companyExpense.getAmount();
+                sum += companyExpense.getAmount();
             }
             expenseItemList.get("2_SUM").getExpenses()[j] = sum;
         }
@@ -70,10 +69,14 @@ public class ExpenseTable {
             currentDate = startDate.plusMonths(i);
             double sharedExpenses = 0.0;
             double staffSalaries = 0.0;
+
+            //TODO: FIX
+            /*
             for (UserExpenseDocument userExpenseDocument : statisticsService.getConsultantsExpensesByMonth(currentDate)) {
                 staffSalaries += userExpenseDocument.getStaffSalaries();
                 sharedExpenses += userExpenseDocument.getSharedExpense();
             }
+             */
 
             //double sharedExpenses = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate), 0);
             expenseItemList.get("3_SHARED_EXP").getExpenses()[i] = sharedExpenses;

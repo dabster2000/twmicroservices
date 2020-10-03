@@ -10,13 +10,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.services.ClientService;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,20 +42,28 @@ public class SalesHeatMap {
 
     private final StatisticsService statisticsService;
 
+    private final AvailabilityService availabilityService;
+
+    private final BudgetService budgetService;
+
     private final UserService userService;
 
     double[] monthTotalAvailabilites;
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(ClientService clientService, PhotoService photoService, StatisticsService statisticsService, UserService userService1) {
+    public SalesHeatMap(ClientService clientService, PhotoService photoService, StatisticsService statisticsService, AvailabilityService availabilityService, BudgetService budgetService, UserService userService1) {
         this.clientService = clientService;
         this.photoService = photoService;
         this.statisticsService = statisticsService;
+        this.availabilityService = availabilityService;
+        this.budgetService = budgetService;
         this.userService = userService1;
     }
 
-    public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
+    public Component getChart(LocalDate localDateStart2, LocalDate localDateEnd) {
+        LocalDate localDateStart = localDateStart2.minusMonths(9);
+        localDateEnd = localDateEnd.minusMonths(9);
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
@@ -93,30 +99,42 @@ public class SalesHeatMap {
 
         Map<String, Map<String, double[]>> userAllocationPerAssignmentMap = new HashMap<>();
         List<User> users = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
+
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);
 
             for (User user : users) {
-                List<BudgetDocument> budgets = statisticsService.getBudgetData()
-                        .stream()
-                        .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(currentDate.withDayOfMonth(1)))
-                        .collect(Collectors.toList());
+
+                List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
 
                 for (BudgetDocument budget : budgets) {
+                    if(user.getUsername().equalsIgnoreCase("hans.lassen")) System.out.println("budget = " + budget);
                     userAllocationPerAssignmentMap.putIfAbsent(user.getUuid(), new HashMap<>());
                     userAllocationPerAssignmentMap.get(user.getUuid()).putIfAbsent(budget.getClient().getUuid(), new double[12]);
                     userAllocationPerAssignmentMap.get(user.getUuid()).get(budget.getClient().getUuid())[i] +=  (budget.getGrossBudgetHours());
                 }
             }
-
         }
+        for (String s : userAllocationPerAssignmentMap.keySet()) {
+            Map<String, double[]> stringMap = userAllocationPerAssignmentMap.get(s);
+            System.out.println("s = " + s);
+            for (String s1 : stringMap.keySet()) {
+                System.out.println(s1+": "+ Arrays.stream(stringMap.get(s1)).boxed().map(Object::toString).collect(Collectors.joining(",")));
+
+            }
+        }
+
         for (User user : users) {
             LocalDate localDate = localDateStart;
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
-                double budget = statisticsService.getConsultantBudgetHoursByMonth(user, localDate.withDayOfMonth(1));
+                double budget = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), localDate.withDayOfMonth(1));
                 monthAvailabilites[m] += budget;
-                double availability = statisticsService.getConsultantAvailabilityByMonth(user, localDate.withDayOfMonth(1)).getNetAvailableHours();
+
+                // TODO: FIX
+                AvailabilityDocument availabilityDocument = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), localDate.withDayOfMonth(1));
+                if(user.getUsername().equalsIgnoreCase("hans.lassen")) System.out.println("availabilityDocument = " + availabilityDocument);
+                double availability = availabilityDocument.getNetAvailableHours();
                 monthTotalAvailabilites[m] += availability;
                 rs.addHeatPoint(m, userNumber, Math.round((budget / availability)*100.0));
                 localDate = localDate.plusMonths(1);
@@ -263,7 +281,7 @@ public class SalesHeatMap {
 
         LocalDate currentDate;
 
-        List<UserBooking> userBookings = statisticsService.getUserBooking(monthsInPast, monthsInFuture);
+        List<UserBooking> userBookings = availabilityService.getUserBooking(monthsInPast, monthsInFuture);
 
         currentDate = LocalDate.now().withDayOfMonth(1).minusMonths(monthsInPast);
 

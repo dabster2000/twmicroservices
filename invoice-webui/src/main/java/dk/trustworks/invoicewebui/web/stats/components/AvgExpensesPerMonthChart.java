@@ -6,9 +6,10 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.model.dto.FinanceDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,14 @@ import java.util.stream.DoubleStream;
 @SpringUI
 public class AvgExpensesPerMonthChart {
 
-    private final StatisticsService statisticsService;
+    private final AvailabilityService availabilityService;
+    private final FinanceService financeService;
     private final UserService userService;
 
     @Autowired
-    public AvgExpensesPerMonthChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public AvgExpensesPerMonthChart(AvailabilityService availabilityService, FinanceService financeService, UserService userService) {
+        this.availabilityService = availabilityService;
+        this.financeService = financeService;
         this.userService = userService;
     }
 
@@ -103,14 +106,14 @@ public class AvgExpensesPerMonthChart {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            List<ExpenseDocument> allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
+            List<FinanceDocument> allExpensesByMonth = financeService.getAllExpensesByMonth(currentDate);
 
             double consultantNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
             double staffNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.STAFF.toString());
 
-            double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSalaries).sum());
+            double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSalaries).sum());
 
-            long numberOfConsultants = statisticsService.countActiveConsultantCountByMonth(currentDate);
+            long numberOfConsultants = Math.round(availabilityService.countActiveConsultantsByMonth(currentDate));
 
             double forholdstal = totalSalaries / (consultantNetSalaries + staffNetSalaries);
 
@@ -119,11 +122,11 @@ public class AvgExpensesPerMonthChart {
 
             consultantSalarySeries.addData(consultantSalaries);
             staffSalarySeries.addData(staffSalaries);
-            addSeries(personaleExpensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteEmployee_expenses));
-            addSeries(lokaleExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteHousing));
-            addSeries(salgExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSales));
-            addSeries(productionExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteProduktion));
-            addSeries(administrationExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteAdministration));
+            addSeries(personaleExpensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteEmployee_expenses));
+            addSeries(lokaleExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteHousing));
+            addSeries(salgExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSales));
+            addSeries(productionExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteProduktion));
+            addSeries(administrationExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteAdministration));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }

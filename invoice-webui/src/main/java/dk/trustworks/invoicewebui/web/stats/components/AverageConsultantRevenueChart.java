@@ -7,7 +7,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +26,12 @@ import java.util.stream.Collectors;
 @SpringUI
 public class AverageConsultantRevenueChart {
 
-    private final StatisticsService statisticsService;
-
+    private final RevenueService revenueService;
     private final UserService userService;
 
     @Autowired
-    public AverageConsultantRevenueChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public AverageConsultantRevenueChart(RevenueService revenueService, UserService userService) {
+        this.revenueService = revenueService;
         this.userService = userService;
     }
 
@@ -70,8 +69,8 @@ public class AverageConsultantRevenueChart {
             averagePerUserPerYear.put(user, map);
 
             do {
-                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
-                double expenseSum = statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum();
+                double revenue = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), currentDate);
+                double expenseSum = 0.0; // TODO: statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum();
                 //if(revenue > 0)
                     map.put(currentDate, revenue - expenseSum);
 

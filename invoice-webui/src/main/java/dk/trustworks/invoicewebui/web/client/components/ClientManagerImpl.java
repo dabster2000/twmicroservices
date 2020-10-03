@@ -16,20 +16,15 @@ import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.PhotoRepository;
-import dk.trustworks.invoicewebui.services.ClientdataService;
-import dk.trustworks.invoicewebui.services.ClientService;
-import dk.trustworks.invoicewebui.services.ProjectService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * Created by hans on 12/08/2017.
@@ -48,18 +43,18 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
     private final UserService userService;
 
-    private final ChartCacheJob chartCache;
+    private final RevenueService revenueService;
 
     ResponsiveLayout responsiveLayout;
 
     @Autowired
-    public ClientManagerImpl(ClientService clientService, ClientdataService clientdataService, PhotoRepository photoRepository, ProjectService projectService, ChartCacheJob chartCache, UserService userService) {
+    public ClientManagerImpl(ClientService clientService, ClientdataService clientdataService, PhotoRepository photoRepository, ProjectService projectService, UserService userService, RevenueService revenueService) {
         this.clientService = clientService;
         this.clientdataService = clientdataService;
         this.photoRepository = photoRepository;
         this.projectService = projectService;
-        this.chartCache = chartCache;
         this.userService = userService;
+        this.revenueService = revenueService;
     }
 
     public ClientManagerImpl init() {
@@ -202,22 +197,17 @@ public class ClientManagerImpl extends ClientManagerDesign {
         });
         clientComponent.getCbClientManager().setItems(userService.findAll());
         clientComponent.getCbClientManager().setItemCaptionGenerator(User::getUsername);
-        clientComponent.getCbClientManager().setSelectedItem(client.getAccount_manager());
+        clientComponent.getCbClientManager().setSelectedItem(client.getAccountManager());
         clientComponent.getCbClientManager().addValueChangeListener(event -> {
-            client.setAccount_manager(event.getValue());
+            client.setAccountManager(event.getValue());
+            System.out.println("client = " + client);
             saveClient(client);
         });
         return clientComponent;
     }
 
     private void saveClient(Client client) {
-        //if(client.getUuid() == null || client.getUuid().equals("")) {
-        //    client.setUuid(UUID.randomUUID().toString());
-        //    client.setCreated(Timestamp.from(Instant.now()));
-        //    clientService.update(client);
-        //} else {
-            clientService.update(client);
-        //}
+        clientService.update(client);
     }
 
     private Image createCompanyLogo(Client client) {
@@ -266,7 +256,12 @@ public class ClientManagerImpl extends ClientManagerDesign {
     }
 
     private Chart createClientRevenueChart() {
-        Map<String, Number> revenueMap = chartCache.getRevenuePerClientMap();
+        Map<String, Number> revenueMap = new HashMap<>();
+        revenueService.getSumOfRegisteredRevenueByClient().forEach(graphKeyValue -> revenueMap.put(graphKeyValue.getDescription(), graphKeyValue.getValue()));
+
+        List<Number> sortedValues = new ArrayList<>();
+        sortedValues.addAll(revenueMap.values().stream().map(Number::intValue).sorted(Comparator.reverseOrder()).collect(toList()));
+        Map<String, Number> revenueMapFiltered = revenueMap.entrySet().stream().filter(entry -> (entry.getValue().intValue() > sortedValues.get(10).intValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Chart chart = new Chart(ChartType.COLUMN);
 
@@ -276,7 +271,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         conf.setSubTitle("Only showing active clients");
 
         XAxis x = new XAxis();
-        x.setCategories(revenueMap.keySet().stream().toArray(String[]::new));
+        x.setCategories(revenueMapFiltered.keySet().stream().toArray(String[]::new));
         conf.addxAxis(x);
 
         YAxis y = new YAxis();
@@ -294,7 +289,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         plot.setPointPadding(0.2);
         plot.setBorderWidth(0);
 
-        conf.addSeries(new ListSeries("Revenue", revenueMap.values()));
+        conf.addSeries(new ListSeries("Revenue", revenueMapFiltered.values()));
 
         chart.drawChart(conf);
         return chart;

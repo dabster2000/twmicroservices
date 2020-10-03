@@ -9,7 +9,9 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.BudgetService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,19 @@ import java.util.List;
 @SpringUI
 public class HoursPerConsultantChart {
 
-    private final StatisticsService statisticsService;
+    private final RevenueService revenueService;
+
+    private final BudgetService budgetService;
+
+    private final AvailabilityService availabilityService;
 
     private final UserService userService;
 
     @Autowired
-    public HoursPerConsultantChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public HoursPerConsultantChart(RevenueService revenueService, BudgetService budgetService, AvailabilityService availabilityService, UserService userService) {
+        this.revenueService = revenueService;
+        this.budgetService = budgetService;
+        this.availabilityService = availabilityService;
         this.userService = userService;
     }
 
@@ -61,12 +69,12 @@ public class HoursPerConsultantChart {
 
         int i = 0;
         for (User user : users) {
-            double revenueHoursByMonth = statisticsService.getConsultantRevenueHoursByMonth(user, month); // 59
-            double budgetHoursByMonth = statisticsService.getConsultantBudgetHoursByMonth(user, month); // 117
+            double revenueHoursByMonth = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), month); // 59
+            double budgetHoursByMonth = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), month); // 117
             budgetHoursByMonth -= revenueHoursByMonth; // 58
             if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
 
-            AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, month);
+            AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), month);
             double availableHoursByMonth = availability.getNetAvailableHours(); // 147
             availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth; // 147 - 59 - 58 = 30
             if(availableHoursByMonth < 0) availableHoursByMonth = 0;

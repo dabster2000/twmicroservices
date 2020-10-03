@@ -7,7 +7,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.FinanceService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +27,15 @@ import java.util.stream.Collectors;
 @SpringUI
 public class PeriodContractFulfillmentChart {
 
-    private final StatisticsService statisticsService;
+    private final RevenueService revenueService;
+    private final FinanceService financeService;
 
     private final UserService userService;
 
     @Autowired
-    public PeriodContractFulfillmentChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public PeriodContractFulfillmentChart(RevenueService revenueService, FinanceService financeService, UserService userService) {
+        this.revenueService = revenueService;
+        this.financeService = financeService;
         this.userService = userService;
     }
 
@@ -70,8 +73,9 @@ public class PeriodContractFulfillmentChart {
             averagePerUserPerYear.put(user, map);
 
             do {
-                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
-                double expenseSum = statisticsService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum();
+                double revenue = revenueService.getRegisteredRevenueForSingleMonthAndSingleConsultant(user.getUuid(), currentDate);
+                //TODO: FIX
+                double expenseSum = 0.0;//financeService.getConsultantExpensesByMonth(user, currentDate).getExpenseSum();
                 //if(revenue > 0)
                     map.put(currentDate, revenue - expenseSum);
 

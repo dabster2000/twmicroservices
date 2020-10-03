@@ -16,8 +16,7 @@ import dk.trustworks.invoicewebui.model.Note;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.network.rest.KnowledgeRoleRestService;
 import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import dk.trustworks.invoicewebui.web.common.ImageListItem;
@@ -58,9 +57,7 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final ContractService contractService;
 
-    private final BudgetNewRepository budgetNewRepository;
-
-    private final ConsultantRepository consultantRepository;
+    private final UserService userService;
 
     private final KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController;
 
@@ -90,6 +87,10 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final PhotoService photoService;
 
+    private final ClientService clientService;
+
+    private final BudgetService budgetService;
+
     private final BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart;
 
     private final VacationPerYearChart vacationPerYearChart;
@@ -114,10 +115,9 @@ public class EmployeeLayout extends VerticalLayout {
     private UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, BudgetNewRepository budgetNewRepository, ConsultantRepository consultantRepository, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, MicroCourseStudentRepository microCourseStudentRepository, VacationPerYearChart vacationPerYearChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(ContractService contractService, UserService userService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, MicroCourseStudentRepository microCourseStudentRepository, ClientService clientService, BudgetService budgetService, VacationPerYearChart vacationPerYearChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.contractService = contractService;
-        this.budgetNewRepository = budgetNewRepository;
-        this.consultantRepository = consultantRepository;
+        this.userService = userService;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
         this.achievementCardController = achievementCardController;
         this.ckoExpenseRepository = ckoExpenseRepository;
@@ -133,6 +133,8 @@ public class EmployeeLayout extends VerticalLayout {
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
         this.knowledgeRoleRestService = knowledgeRoleRestService;
         this.microCourseStudentRepository = microCourseStudentRepository;
+        this.clientService = clientService;
+        this.budgetService = budgetService;
         this.vacationPerYearChart = vacationPerYearChart;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
@@ -197,9 +199,9 @@ public class EmployeeLayout extends VerticalLayout {
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnBudget);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnDocuments);
         //buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
-        workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign"));
+        workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(contractService, clientService, budgetService, 2, 6, "consultantAllocationCardDesign"));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseImpl(user, notesRepository, reminderRepository));
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, consultantRepository));
+        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, userService));
         int adjustStartYear = 0;
         if(LocalDate.now().getMonthValue() <= 6)  adjustStartYear = 1;
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);

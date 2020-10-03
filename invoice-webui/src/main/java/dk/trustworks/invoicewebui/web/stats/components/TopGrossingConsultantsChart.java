@@ -7,7 +7,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,14 @@ public class TopGrossingConsultantsChart {
 
     private final StatisticsService statisticsService;
 
+    private final RevenueService revenueService;
+
     private final UserService userService;
 
     @Autowired
-    public TopGrossingConsultantsChart(GraphKeyValueRepository graphKeyValueRepository, StatisticsService statisticsService, UserService userService) {
+    public TopGrossingConsultantsChart(StatisticsService statisticsService, RevenueService revenueService, UserService userService) {
         this.statisticsService = statisticsService;
+        this.revenueService = revenueService;
         this.userService = userService;
     }
 
@@ -55,7 +58,7 @@ public class TopGrossingConsultantsChart {
             LocalDate currentDate = periodStart;
             GraphKeyValue gkv = new GraphKeyValue(user.getUuid(), user.getInitials(), 0);
             do {
-                double revenue = statisticsService.getConsultantRevenueByMonth(user, currentDate);
+                double revenue = revenueService.getRegisteredRevenueForSingleMonthAndSingleConsultant(user.getUuid(), currentDate);
                 gkv.addValue((int) Math.round(revenue));
                 currentDate = currentDate.plusMonths(1);
             } while (currentDate.isBefore(periodEnd.plusMonths(1)));

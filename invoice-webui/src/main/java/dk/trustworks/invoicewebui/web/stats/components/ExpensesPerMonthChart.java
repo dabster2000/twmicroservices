@@ -10,10 +10,10 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ExpenseDetails;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
+import dk.trustworks.invoicewebui.model.dto.FinanceDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.network.clients.EconomicsAPI;
-import dk.trustworks.invoicewebui.services.ExpenseService;
+import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by hans on 20/09/2017.
@@ -40,13 +37,13 @@ public class ExpensesPerMonthChart {
 
     private final UserService userService;
 
-    private final ExpenseService expenseService;
+    private final FinanceService financeService;
 
     @Autowired
-    public ExpensesPerMonthChart(StatisticsService statisticsService, UserService userService, ExpenseService expenseService) {
+    public ExpensesPerMonthChart(StatisticsService statisticsService, UserService userService, FinanceService financeService) {
         this.statisticsService = statisticsService;
         this.userService = userService;
-        this.expenseService = expenseService;
+        this.financeService = financeService;
     }
 
     public Chart createExpensePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -132,12 +129,14 @@ public class ExpensesPerMonthChart {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            List<ExpenseDocument> allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
+            // TODO: FIX
+            //List<FinanceDocument> allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
+            List<FinanceDocument> allExpensesByMonth = new ArrayList<>(); //statisticsService.getAllExpensesByMonth(currentDate);
 
             double consultantNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
             double staffNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.STAFF.toString());
 
-            double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSalaries).sum());
+            double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSalaries).sum());
             
             double forholdstal = totalSalaries / (consultantNetSalaries + staffNetSalaries);
 
@@ -146,11 +145,11 @@ public class ExpensesPerMonthChart {
 
             consultantSalarySeries.addData(consultantSalaries);
             staffSalarySeries.addData(staffSalaries);
-            personaleExpensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteEmployee_expenses).sum());
-            lokaleExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteHousing).sum());
-            salgExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteSales).sum());
-            productionExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteProduktion).sum());
-            administrationExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(ExpenseDocument::geteAdministration).sum());
+            personaleExpensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteEmployee_expenses).sum());
+            lokaleExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteHousing).sum());
+            salgExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSales).sum());
+            productionExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteProduktion).sum());
+            administrationExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteAdministration).sum());
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
@@ -182,7 +181,7 @@ public class ExpensesPerMonthChart {
             accountNumber[i-range.getMinimum()] = i;
         }
 
-        List<ExpenseDetails> expenseDetailsList = expenseService.findByExpensedateAndAccountnumberInOrderByAmountDesc(month, accountNumber);
+        List<ExpenseDetails> expenseDetailsList = financeService.findByExpensedateAndAccountnumberInOrderByAmountDesc(month, accountNumber);
 
         Grid<ExpenseDetails> treeGrid = new Grid<>();
         treeGrid.setWidth(100, Sizeable.Unit.PERCENTAGE);

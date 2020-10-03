@@ -1,22 +1,9 @@
 package dk.trustworks.invoicewebui.repositories;
 
-import dk.trustworks.invoicewebui.model.Task;
-import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.WorkWithRate;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Created by hans on 23/06/2017.
  */
+/*
 @RepositoryRestResource(collectionResourceRel = "work", path = "work")
 public interface WorkRepository extends CrudRepository<Work, String> {
 
@@ -72,9 +59,12 @@ public interface WorkRepository extends CrudRepository<Work, String> {
 
     @Override @RestResource(exported = false) void delete(String id);
     @Override @RestResource(exported = false) void delete(Work entity);
-*/
+
 
 }
+
+     */
+
  /*
     @Query(value = "select '2017-05-17 08:09:35' created, w.id, w.registered as registered, w.taskuuid as taskuuid, w.useruuid as useruuid, workduration as workduration, w.workas as workas from work w " +
             "left join task t on w.taskuuid = t.uuid " +

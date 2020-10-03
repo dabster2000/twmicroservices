@@ -76,7 +76,7 @@ public class VacationPerYearChart {
         poc3.setColor(new SolidColor("#98E6C4"));
         hoursLeftSeries.setPlotOptions(poc3);
 
-        List<VacationPeriod> vacationPeriods = vacationAPI.getVacationPeriods(userService.findByUsername("emilie.duedahl"), workService.findVacationByUser(userService.findByUsername("emilie.duedahl")));
+        List<VacationPeriod> vacationPeriods = vacationAPI.getVacationPeriods(userService.findByUsername("emilie.duedahl"), workService.findVacationByUser(userService.findByUsername("emilie.duedahl").getUuid()));
 
         String[] monthNames = vacationPeriods.stream().map(VacationPeriod::getFrom).sorted().toArray(String[]::new);
 

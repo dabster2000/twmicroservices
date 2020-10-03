@@ -7,14 +7,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.services.WorkService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.StringUtils;
+import dk.trustworks.invoicewebui.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -22,8 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 /**
  * Created by hans on 20/09/2017.
@@ -33,20 +24,16 @@ import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 @SpringUI
 public class ConsultantsBudgetRealizationChart {
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-    private final StatisticsService statisticsService;
+    private final RevenueService revenueService;
     private final ContractService contractService;
     private final WorkService workService;
-    private final BudgetNewRepository budgetNewRepository;
     private final UserService userService;
 
     @Autowired
-    public ConsultantsBudgetRealizationChart(GraphKeyValueRepository graphKeyValueRepository, StatisticsService statisticsService, ContractService contractService, WorkService workService, BudgetNewRepository budgetNewRepository, UserService userService) {
-        this.graphKeyValueRepository = graphKeyValueRepository;
-        this.statisticsService = statisticsService;
+    public ConsultantsBudgetRealizationChart(RevenueService revenueService, ContractService contractService, WorkService workService, UserService userService) {
+        this.revenueService = revenueService;
         this.contractService = contractService;
         this.workService = workService;
-        this.budgetNewRepository = budgetNewRepository;
         this.userService = userService;
     }
 
@@ -66,7 +53,7 @@ public class ConsultantsBudgetRealizationChart {
         chart.getConfiguration().getLegend().setEnabled(false);
 
 
-        List<GraphKeyValue> amountPerItemList = statisticsService.findConsultantBillableHoursByPeriod(periodStart, periodEnd).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
+        List<GraphKeyValue> amountPerItemList = revenueService.getRegisteredRevenueByPeriod(periodStart, periodEnd).stream().sorted(Comparator.comparing(GraphKeyValue::getDescription)).collect(Collectors.toList());
 
         String[] categories = new String[amountPerItemList.size()+5];
         DataSeries revenueList = new DataSeries("Realization");
@@ -83,7 +70,7 @@ public class ConsultantsBudgetRealizationChart {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     //double weeks = currentDate.getMonth().maxLength() / 7.0;
                     for (ContractConsultant consultant : contract.getContractConsultants()) {
-                        double weeks = workService.getWorkDaysInMonth(consultant.getUser().getUuid(), currentDate) / 5.0;
+                        double weeks = workService.getWorkdaysInMonth(consultant.getUser().getUuid(), currentDate) / 5.0;
                         List<Work> workList = workService.findByPeriodAndUserUUID(
                                 currentDate.withDayOfMonth(1),
                                 currentDate.withDayOfMonth(currentDate.lengthOfMonth()),
@@ -98,7 +85,7 @@ public class ConsultantsBudgetRealizationChart {
                     }
                 }
             }
-            List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
+            List<BudgetNew> budgets = new ArrayList<>();// TODO: budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
             for (BudgetNew budget : budgets) {
                 addBudgetPerUser(budgetPerUser, budget);
             }

@@ -2,23 +2,14 @@ package dk.trustworks.invoicewebui.model;
 
 import dk.trustworks.invoicewebui.services.UserService;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity
-@Table(name = "contract_consultants")
 public class ContractConsultant {
 
-    @Id
     private String uuid;
 
-    @ManyToOne(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "contractuuid")
     private Contract contract;
 
     private String useruuid;
@@ -29,7 +20,6 @@ public class ContractConsultant {
 
     private double hours;
 
-    @OneToMany(mappedBy = "contractConsultant", fetch = FetchType.LAZY)
     private List<BudgetNew> budgets;
 
     public ContractConsultant() {
@@ -52,7 +42,7 @@ public class ContractConsultant {
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
-
+/*
     public Contract getContract() {
         return contract;
     }
@@ -60,6 +50,8 @@ public class ContractConsultant {
     public void setContract(Contract contract) {
         this.contract = contract;
     }
+    
+ */
 
     public User getUser() {
         return UserService.get().findByUUID(getUseruuid());

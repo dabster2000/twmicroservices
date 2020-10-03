@@ -5,17 +5,12 @@ import dk.trustworks.invoicewebui.services.ProjectService;
 import javax.persistence.*;
 import java.util.UUID;
 
-@Entity
-@Table(name = "budgets")
 public class BudgetNew {
-    @Id
     private String uuid;
     private int month;
     private int year;
     private Double budget;
 
-    @ManyToOne()
-    @JoinColumn(name = "consultantuuid")
     private ContractConsultant contractConsultant;
 
     private String projectuuid;

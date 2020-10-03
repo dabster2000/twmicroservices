@@ -1,32 +1,9 @@
 package dk.trustworks.invoicewebui.web.time.components;
 
-import com.vaadin.data.Binder;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.HeaderRow;
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.repositories.WeekRepository;
-import dk.trustworks.invoicewebui.services.*;
-import dk.trustworks.invoicewebui.utils.NumberConverter;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import dk.trustworks.invoicewebui.web.time.model.WeekItem;
-import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import tm.kod.widgets.numberfield.NumberField;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 /**
  * Created by hans on 16/08/2017.
  */
+/*
 @SpringComponent
 @SpringUI
 public class TimeManagerImpl extends TimeManagerDesign {
@@ -379,3 +356,5 @@ public class TimeManagerImpl extends TimeManagerDesign {
         //log.info("Top Dates = "+(currentDate.stringIt("dd. MMM yyyy") + " - " + currentDate.withDayOfWeek(7).stringIt("dd. MMM yyyy")));
     }
 }
+
+ */

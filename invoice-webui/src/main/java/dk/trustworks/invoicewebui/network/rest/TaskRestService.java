@@ -16,8 +16,8 @@ import static org.springframework.http.HttpMethod.*;
 @Service
 public class TaskRestService {
 
-    @Value("#{environment.CRMSERVICE_URL}")
-    private String crmServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
@@ -28,28 +28,28 @@ public class TaskRestService {
 
     @Cacheable("tasks")
     public List<Task> findAll() {
-        String url = crmServiceUrl +"/tasks";
+        String url = apiGatewayUrl +"/tasks";
         ResponseEntity<Task[]> result = systemRestService.secureCall(url, GET, Task[].class);
         return Arrays.asList(result.getBody());
     }
 
     @Cacheable("tasks")
     public Task findOne(String uuid) {
-        String url = crmServiceUrl +"/tasks/"+uuid;
+        String url = apiGatewayUrl +"/tasks/"+uuid;
         ResponseEntity<Task> result = systemRestService.secureCall(url, GET, Task.class);
         return result.getBody();
     }
 
     @Cacheable("tasks")
     public List<Task> findByProject(String projectuuid) {
-        String url = crmServiceUrl +"/projects/"+projectuuid+"/tasks";
+        String url = apiGatewayUrl +"/projects/"+projectuuid+"/tasks";
         ResponseEntity<Task[]> result = systemRestService.secureCall(url, GET, Task[].class);
         return Arrays.asList(result.getBody());
     }
 
     @CacheEvict(value = "tasks", allEntries = true)
     public Task save(Task task) {
-        String url = crmServiceUrl+"/tasks";
+        String url = apiGatewayUrl +"/tasks";
         ResponseEntity<Task> result = systemRestService.secureCall(url, POST, Task.class, task);
         return result.getBody();
     }
@@ -61,7 +61,7 @@ public class TaskRestService {
 
     @CacheEvict(value = "tasks", allEntries = true)
     public void delete(String uuid) {
-        String url = crmServiceUrl+"/tasks/"+uuid;
+        String url = apiGatewayUrl +"/tasks/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);
     }
 }
