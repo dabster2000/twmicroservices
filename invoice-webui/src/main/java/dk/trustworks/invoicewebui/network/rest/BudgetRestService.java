@@ -65,4 +65,17 @@ public class BudgetRestService {
     public BudgetNew findByMonthAndYearAndContractConsultantAndProjectuuid(int monthValue, int year, String contractconsultantuuid, String projectuuid) {
         return null;
     }
+
+    public List<BudgetNew> findByConsultantAndProject(String projectUuid, String contractConsultantUuid) {
+        String url = apiGatewayUrl +"/cached/budgets/consultants/{consultantuuid}?projectuuid="+projectUuid;
+        List<BudgetNew> budgetNewList;
+        try {
+            ResponseEntity<BudgetNew[]> result = systemRestService.secureCall(url, GET, BudgetNew[].class);
+            budgetNewList = Arrays.asList(result.getBody());
+        } catch (Exception e) {
+            log.warn("Could not budgets: "+url, e);
+            budgetNewList = new ArrayList<>();
+        }
+        return budgetNewList;
+    }
 }

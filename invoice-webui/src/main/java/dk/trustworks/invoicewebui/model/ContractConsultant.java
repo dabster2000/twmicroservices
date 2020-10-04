@@ -1,8 +1,8 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dk.trustworks.invoicewebui.services.UserService;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ public class ContractConsultant {
 
     private String uuid;
 
-    private Contract contract;
+    private String contractuuid;
 
     private String useruuid;
 
@@ -20,16 +20,13 @@ public class ContractConsultant {
 
     private double hours;
 
-    private List<BudgetNew> budgets;
-
     public ContractConsultant() {
-        uuid = UUID.randomUUID().toString();
     }
 
-    public ContractConsultant(Contract contract, User user, double rate, double budget, double hours) {
-        this();
-        this.contract = contract;
-        this.useruuid = user.getUuid();
+    public ContractConsultant(String contractuuid, String useruuid, double rate, double budget, double hours) {
+        uuid = UUID.randomUUID().toString();
+        this.contractuuid = contractuuid;
+        this.useruuid = useruuid;
         this.rate = rate;
         this.budget = budget;
         this.hours = hours;
@@ -42,21 +39,13 @@ public class ContractConsultant {
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
-/*
-    public Contract getContract() {
-        return contract;
-    }
 
-    public void setContract(Contract contract) {
-        this.contract = contract;
-    }
-    
- */
-
+    @JsonIgnore
     public User getUser() {
         return UserService.get().findByUUID(getUseruuid());
     }
 
+    @JsonIgnore
     public void setUser(User user) {
         this.useruuid = user.getUuid();
     }
@@ -85,22 +74,21 @@ public class ContractConsultant {
         this.hours = hours;
     }
 
-    public List<BudgetNew> getBudgets() {
-        return budgets;
+    public String getContractuuid() {
+        return contractuuid;
     }
 
-    public void setBudgets(List<BudgetNew> budgets) {
-        this.budgets = budgets;
+    public void setContractuuid(String contractuuid) {
+        this.contractuuid = contractuuid;
     }
 
     @Override
     public String toString() {
         return "ContractConsultant{" +
                 "uuid='" + uuid + '\'' +
-                ", contract=" + contract.getUuid() +
+                ", contract=" + contractuuid +
                 ", user=" + useruuid +
                 ", rate=" + rate +
-                ", budget=" + budget +
                 ", hours=" + hours +
                 '}';
     }

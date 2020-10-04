@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -167,6 +168,7 @@ public class Contract {
         this.status = status;
     }
 
+    @JsonIgnore
     public List<ContractConsultant> getContractConsultants() {
         return contractConsultants;
     }
@@ -219,12 +221,23 @@ public class Contract {
         this.name = name;
     }
 
+    @JsonIgnore
     public Clientdata getClientdata() {
         return ClientdataService.get().findOne(clientdatauuid);
     }
 
+    @JsonIgnore
     public void setClientdata(Clientdata clientdata) {
         clientdatauuid = clientdata.getUuid();
+    }
+
+    @JsonIgnore
+    public List<Object> getContractProjects() {
+        return contractProjects;
+    }
+
+    public void setContractProjects(List<Object> contractProjects) {
+        this.contractProjects = contractProjects;
     }
 
     public String getClientdatauuid() {

@@ -36,10 +36,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static java.lang.Math.*;
 import static java.util.Comparator.comparing;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
 
@@ -476,9 +478,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
                 ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
                 consultantRowDesign.getLblName().setValue(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
-                consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate()) + "");
+                consultantRowDesign.getTxtRate().setValue(round(contractConsultant.getRate()) + "");
                 consultantRowDesign.getTxtRate().setReadOnly(true);
-                consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours()) + "");
+                consultantRowDesign.getTxtHours().setValue(round(contractConsultant.getHours()) + "");
                 consultantRowDesign.getTxtHours().setReadOnly(true);
                 consultantRowDesign.getVlHours().setVisible(mainContract.getContractType().equals(ContractType.PERIOD));
                 consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUser(), false));
@@ -547,6 +549,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         conf.addSeries(budgetSeries);
         ListSeries usedSeries = new ListSeries("used");
         conf.addSeries(usedSeries);
+
+
+
         for (Contract contract : contractList) {
             if(contract.getContractType().equals(ContractType.PERIOD)) continue;
             double used = contractService.findAmountUsedOnContract(contract);
@@ -554,22 +559,25 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             LocalDate startDate = LocalDate.now().withDayOfMonth(1);
             LocalDate endDate = currentProject.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
 
-            double budgetSum = 0.0;
+            AtomicReference<Double> budgetSum = new AtomicReference<>(0.0);
             for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                List<BudgetNew> budgets = budgetService.findByConsultantAndProject(currentProject.getUuid(), contractConsultant.getUuid());
+
                 LocalDate budgetDate = startDate;
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
-                    if(budget!=null) budgetSum += budget.getBudget();
+                    Optional<BudgetNew> optionalBudgetNew = budgets.stream().filter(budgetNew -> budgetNew.getYear() == filterDate.getYear() && budgetNew.getMonth() == filterDate.getMonthValue() - 1).findFirst();
+                    //BudgetNew budget = budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
+                    optionalBudgetNew.ifPresent(budgetNew -> budgetSum.updateAndGet(v -> v + budgetNew.getBudget()));
                     budgetDate = budgetDate.plusMonths(1);
                 }
             }
 
-            double rest = contract.getAmount() - used - budgetSum;
+            double rest = contract.getAmount() - used - budgetSum.get();
 
             usedSeries.addData(used);
-            budgetSeries.addData(budgetSum);
-            restSeries.addData(rest<0.0?0.0:rest);
+            budgetSeries.addData(budgetSum.get());
+            restSeries.addData(max(rest, 0.0));
         }
 
         chart.drawChart(conf);

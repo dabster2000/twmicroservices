@@ -47,6 +47,10 @@ public class BudgetService {
         return budgetRestService.findByMonthAndYearAndContractConsultantAndProjectuuid(monthValue, year, contractConsultant.getUuid(), projectuuid);
     }
 
+    public List<BudgetNew> findByConsultantAndProject(String projectUuid, String contractConsultantUuid) {
+        return budgetRestService.findByConsultantAndProject(projectUuid, contractConsultantUuid);
+    }
+
     /*
     public double getUserBudgetInMonth(User user, LocalDate month, boolean withBudget) {
         List<Contract> contracts = contractService.findActiveContractsByDate(month, ContractStatus.BUDGET, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);

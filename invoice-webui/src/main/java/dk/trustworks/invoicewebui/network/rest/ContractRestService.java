@@ -90,7 +90,7 @@ public class ContractRestService {
 
     public void update(Contract contract) {
         String url = apiGatewayUrl +"/contracts";
-        systemRestService.secureCall(url, PUT, Contract.class, contract);
+        systemRestService.secureCall(url, PUT, Void.class, contract);
     }
 
     public void delete(Contract contract) {
@@ -107,22 +107,32 @@ public class ContractRestService {
     public void addProjectToContract(Contract contract, Project project) {
         String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/projects/"+project.getUuid();
         logger.debug(url);
-        systemRestService.secureCall(url, POST, Contract.class, project);
+        systemRestService.secureCall(url, POST, Project.class, project);
+    }
+
+    public void removeProjectFromContract(Contract contract, Project project) {
+        String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/projects/"+project.getUuid();
+        logger.debug(url);
+        systemRestService.secureCall(url, DELETE, Void.class);
     }
 
     // *** CONSULTANT OPERATIONS ***
 
     public void addConsultant(Contract contract, ContractConsultant contractConsultant) {
         String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/consultants/"+contractConsultant.getUuid();
+        logger.info(url);
+        systemRestService.secureCall(url, POST, Void.class, contractConsultant);
+    }
+
+    public void updateConsultant(Contract contract, ContractConsultant contractConsultant) {
+        String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/consultants/"+contractConsultant.getUuid();
+        logger.info(url);
+        systemRestService.secureCall(url, PUT, Void.class, contractConsultant);
+    }
+
+    public void removeConsultant(Contract contract, ContractConsultant contractConsultant) {
+        String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/consultants/"+contractConsultant.getUuid();
         logger.debug(url);
-        systemRestService.secureCall(url, POST, Contract.class, contractConsultant);
-    }
-
-    public void update(ContractConsultant contractConsultant) {
-
-    }
-
-    public void delete(ContractConsultant contractConsultant) {
-
+        systemRestService.secureCall(url, DELETE, Void.class);
     }
 }

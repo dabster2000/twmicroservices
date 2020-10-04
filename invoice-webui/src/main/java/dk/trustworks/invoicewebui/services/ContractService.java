@@ -115,8 +115,7 @@ public class ContractService implements InitializingBean {
     }
 
     public void removeProject(Contract contract, Project project) {
-        contract = contractRestService.findByUuid(contract.getUuid());
-        updateContract(contract);
+        contractRestService.removeProjectFromContract(contract, project);
     }
 /*
     public Map<String, Work> getWorkErrors(LocalDate errorDate, int months) {
@@ -231,12 +230,12 @@ public class ContractService implements InitializingBean {
         return contract;
     }
 
-    public void updateConsultant(ContractConsultant contractConsultant) {
-        contractRestService.update(contractConsultant);
+    public void updateConsultant(Contract contract, ContractConsultant contractConsultant) {
+        contractRestService.updateConsultant(contract, contractConsultant);
     }
 
-    public void deleteConsultant(ContractConsultant contractConsultant) {
-        contractRestService.delete(contractConsultant);
+    public void deleteConsultant(Contract contract, ContractConsultant contractConsultant) {
+        contractRestService.removeConsultant(contract, contractConsultant);
     }
 
     public List<Contract> findByClientuuid(String clientuuid) {

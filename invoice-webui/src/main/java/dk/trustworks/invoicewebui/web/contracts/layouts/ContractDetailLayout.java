@@ -17,7 +17,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
@@ -564,11 +563,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             projectRowDesign.getBtnIcon().setIcon(MaterialIcons.DATE_RANGE);
             projectRowDesign.getBtnDelete().setIcon(MaterialIcons.DELETE);
             projectRowDesign.getBtnDelete().addClickListener(event -> {
-                try {
-                    removeProject(contract, project);
-                } catch (ContractValidationException e) {
-                    Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-                }
+                removeProject(contract, project);
             });
             projectsLayout.addComponent(projectRowDesign);
         }
@@ -673,7 +668,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate())+"");
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {
                 contractConsultant.setRate(NumberConverter.parseDouble(event.getValue()));
-                contractService.updateConsultant(contractConsultant);
+                contractService.updateConsultant(contract, contractConsultant);
                 updateData(contract);
             });
             consultantRowDesign.getTxtRate().setValueChangeMode(ValueChangeMode.BLUR);
@@ -681,7 +676,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours())+"");
             consultantRowDesign.getTxtHours().addValueChangeListener(event -> {
                 contractConsultant.setHours(NumberConverter.parseDouble(event.getValue()));
-                contractService.updateConsultant(contractConsultant);
+                contractService.updateConsultant(contract, contractConsultant);
                 updateData(contract);
             });
             consultantRowDesign.getVlHours().setVisible(contract.getContractType().equals(ContractType.PERIOD));
@@ -712,11 +707,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> userComboBox.getOptionalValue().ifPresent(user -> {
                         //User user = userComboBox.getSelectedItem().get();
-                        try {
-                            createConsultant(contract, user, 0.0, 0.0);
-                        } catch (ContractValidationException e) {
-                            Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-                        }
+                        createConsultant(contract, user, 0.0, 0.0);
                         subWindow.close();
                     }));
                     subContent.addComponent(addButton);
@@ -779,15 +770,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
         consultantRowDesign.getImgPhoto().setEnabled(false);
         consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
         consultantRowDesign.getBtnDelete().addClickListener(event -> {
-            try {
-                createConsultant(
-                        Contract,
-                        user,
-                        NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
-                        NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue()));
-            } catch (ContractValidationException e) {
-                Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-            }
+            createConsultant(
+                    Contract,
+                    user,
+                    NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
+                    NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue()));
         });
 
         responsiveRow.addColumn()
@@ -802,10 +789,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
         updateData(Contract);
     }
 
-    private void removeConsultant(Contract Contract, ContractConsultant contractConsultant) {
-        Contract.getContractConsultants().remove(contractConsultant);
-        contractService.deleteConsultant(contractConsultant);
-        updateData(Contract);
+    private void removeConsultant(Contract contract, ContractConsultant contractConsultant) {
+        contract.getContractConsultants().remove(contractConsultant);
+        contractService.deleteConsultant(contract, contractConsultant);
+        updateData(contract);
     }
 
     private void updateData(Contract contract) {
@@ -834,13 +821,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
         }
     }
 
-    private void removeProject(Contract contract, Project project) throws ContractValidationException {
+    private void removeProject(Contract contract, Project project) {
         contractService.removeProject(contract, project);
-        updateData(contract);
     }
 
-    private void createConsultant(Contract contract, User user, double hours, double rate) throws ContractValidationException {
-        ContractConsultant contractConsultant = new ContractConsultant(contract, user, rate, 0.0, hours);
+    private void createConsultant(Contract contract, User user, double hours, double rate) {
+        ContractConsultant contractConsultant = new ContractConsultant(contract.getUuid(), user.getUuid(), rate, 0.0, hours);
         contractService.addConsultant(contract, contractConsultant);
         updateData(contract);
     }
