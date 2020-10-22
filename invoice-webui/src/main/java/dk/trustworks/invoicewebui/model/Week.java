@@ -1,49 +1,42 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import dk.trustworks.invoicewebui.services.TaskService;
 import dk.trustworks.invoicewebui.services.UserService;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
 /**
  * Created by hans on 28/06/2017.
  */
 
-@Entity
 public class Week {
 
-    @Id private String uuid;
-
+    private String uuid;
     private String taskuuid;
-
     private String useruuid;
-
     private int weeknumber;
     private int year;
     private int sorting;
-
     private String workas;
 
     public Week() {
     }
 
-    public Week(String uuid, int weeknumber, int year, User user, Task task) {
+    public Week(String uuid, int weeknumber, int year, String useruuid, String taskuuid) {
         this.uuid = uuid;
         this.weeknumber = weeknumber;
         this.year = year;
-        this.useruuid = user.getUuid();
-        this.taskuuid = task.getUuid();
+        this.useruuid = useruuid;
+        this.taskuuid = taskuuid;
     }
 
-    public Week(String uuid, int weeknumber, int year, User user, Task task, User workas) {
+    public Week(String uuid, int weeknumber, int year, String useruuid, String taskuuid, String workas) {
         this.uuid = uuid;
         this.weeknumber = weeknumber;
         this.year = year;
-        this.useruuid = user.getUuid();
-        this.taskuuid = task.getUuid();
-        this.workas = (workas!=null)?workas.getUuid():null;
+        this.useruuid = useruuid;
+        this.taskuuid = taskuuid;
+        this.workas = (workas!=null)?workas:null;
     }
 
     public String getUuid() {
@@ -86,14 +79,12 @@ public class Week {
         this.taskuuid = taskuuid;
     }
 
+    @JsonIgnore
     public Task getTask() {
         return TaskService.get().findOne(taskuuid);
     }
 
-    public void setTask(Task task) {
-        this.taskuuid = task.getUuid();
-    }
-
+    @JsonIgnore
     public User getUser() {
         return UserService.get().findByUUID(getUseruuid());
     }
@@ -106,6 +97,7 @@ public class Week {
         this.workas = workas;
     }
 
+    @JsonIgnore
     public User getWorkasUser() {
         return UserService.get().findByUUID(getWorkas());
     }
@@ -131,8 +123,8 @@ public class Week {
     public String toString() {
         return "Week{" +
                 "uuid='" + uuid + '\'' +
-                ", taskuuid=" + taskuuid +
-                ", useruuid='" + UserService.get().findByUUID(useruuid).getUsername() + '\'' +
+                ", taskuuid='" + taskuuid + '\'' +
+                ", useruuid='" + useruuid + '\'' +
                 ", weeknumber=" + weeknumber +
                 ", year=" + year +
                 ", sorting=" + sorting +

@@ -32,12 +32,14 @@ public class ClientRestService {
         return Arrays.asList(result.getBody());
     }
 
+    @Cacheable(cacheNames = "client")
     public Client findOne(String uuid) {
         String url = apiGatewayUrl +"/clients/"+uuid;
         ResponseEntity<Client> result = systemRestService.secureCall(url, GET, Client.class);
         return result.getBody();
     }
 
+    @Cacheable(cacheNames = "client")
     public List<Client> findByActiveTrue() {
         String url = apiGatewayUrl +"/clients/active";
         ResponseEntity<Client[]> result = systemRestService.secureCall(url, GET, Client[].class);

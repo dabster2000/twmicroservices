@@ -17,8 +17,8 @@ import static org.springframework.http.HttpMethod.*;
 @Service
 public class InvoiceRestService {
 
-    @Value("#{environment.APISERVICE_URL}")
-    private String apiServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
@@ -28,65 +28,85 @@ public class InvoiceRestService {
     }
 
     public List<Invoice> findAll() {
-        String url = apiServiceUrl + "/invoices";
+        String url = apiGatewayUrl + "/invoices";
         ResponseEntity<Invoice[]> result = systemRestService.secureCall(url, GET, Invoice[].class);
         return Arrays.asList(result.getBody());
     }
 
     public List<Invoice> findByPeriod(LocalDate fromdate, LocalDate todate) {
-        String url = apiServiceUrl + "/invoices?fromdate="+fromdate+"&todate="+todate;
+        System.out.println("InvoiceRestService.findByPeriod");
+        String url = apiGatewayUrl + "/invoices?fromdate="+fromdate+"&todate="+todate;
+        System.out.println("url = " + url);
         ResponseEntity<Invoice[]> result = systemRestService.secureCall(url, GET, Invoice[].class);
         return Arrays.asList(result.getBody());
     }
 
     public List<Invoice> getInvoicesForSingleMonth(LocalDate month) {
-        String url = apiServiceUrl + "/invoices/months/"+ DateUtils.stringIt(month);
+        System.out.println("InvoiceRestService.getInvoicesForSingleMonth");
+        String url = apiGatewayUrl + "/invoices/months/"+ DateUtils.stringIt(month.withDayOfMonth(1));
+        System.out.println("url = " + url);
         ResponseEntity<Invoice[]> result = systemRestService.secureCall(url, GET, Invoice[].class);
         return Arrays.asList(result.getBody());
     }
 
-    public List<ProjectSummary> loadProjectSummaryByYearAndMonth(int year, int month) {
-        String url = apiServiceUrl + "/invoices/candidates/"+year+"/"+month;
+    public List<ProjectSummary> loadProjectSummaryByYearAndMonth(LocalDate month) {
+        System.out.println("InvoiceRestService.loadProjectSummaryByYearAndMonth");
+        String url = apiGatewayUrl + "/invoices/candidates/months/"+DateUtils.stringIt(month);
+        System.out.println("url = " + url);
         ResponseEntity<ProjectSummary[]> result = systemRestService.secureCall(url, GET, ProjectSummary[].class);
         return Arrays.asList(result.getBody());
     }
 
     public Invoice createDraftFromProject(ProjectSummary projectSummary, LocalDate month) {
-        String url = apiServiceUrl + "/invoices/drafts?month="+DateUtils.stringIt(month);
+        String url = apiGatewayUrl + "/invoices/drafts?" +
+                "contractuuid="+projectSummary.getContractuuid()+
+                "&projectuuid="+projectSummary.getProjectuuid()+
+                "&type="+projectSummary.getProjectSummaryType()+
+                "&month="+DateUtils.stringIt(month.withDayOfMonth(1));
+        System.out.println("url = " + url);
         ResponseEntity<Invoice> result = systemRestService.secureCall(url, POST, Invoice.class, projectSummary);
         return result.getBody();
     }
 
-    public Invoice updateDraftInvoice(Invoice invoice) {
-        String url = apiServiceUrl + "/invoices/drafts";
-        ResponseEntity<Invoice> result = systemRestService.secureCall(url, PUT, Invoice.class, invoice);
-        return result.getBody();
+    public void updateDraftInvoice(Invoice invoice) {
+        System.out.println("InvoiceRestService.updateDraftInvoice");
+        System.out.println("invoice = " + invoice);
+        String url = apiGatewayUrl + "/invoices/drafts";
+        systemRestService.secureCall(url, PUT, Invoice.class, invoice);
     }
 
     public Invoice createInvoice(Invoice draftInvoice) {
-        String url = apiServiceUrl + "/invoices";
+        String url = apiGatewayUrl + "/invoices";
         ResponseEntity<Invoice> result = systemRestService.secureCall(url, POST, Invoice.class, draftInvoice);
         return result.getBody();
     }
 
     public Invoice createPhantomInvoice(Invoice draftInvoice) {
-        String url = apiServiceUrl + "/invoices/phantoms";
+        String url = apiGatewayUrl + "/invoices/phantoms";
         ResponseEntity<Invoice> result = systemRestService.secureCall(url, POST, Invoice.class, draftInvoice);
         return result.getBody();
     }
 
     public Invoice createCreditNote(Invoice draftInvoice) {
-        String url = apiServiceUrl + "/invoices/creditnotes";
+        String url = apiGatewayUrl + "/invoices/creditnotes";
         ResponseEntity<Invoice> result = systemRestService.secureCall(url, POST, Invoice.class, draftInvoice);
         return result.getBody();
     }
 
     public void delete(String uuid) {
-        String url = apiServiceUrl + "/invoices/"+uuid;
-        systemRestService.secureCall(url, PUT, Void.class);
+        String url = apiGatewayUrl + "/invoices/drafts/"+uuid;
+        systemRestService.secureCall(url, DELETE, Void.class);
+    }
+
+    public List<Invoice> findProjectInvoices(String projectuuid) {
+        String url = apiGatewayUrl + "/projects/"+projectuuid+"/invoices";
+        ResponseEntity<Invoice[]> result = systemRestService.secureCall(url, GET, Invoice[].class);
+        return Arrays.asList(result.getBody());
     }
 
     public Invoice findByLatestInvoiceByProjectuuid(String projectuuid) {
-        return null;
+        System.out.println("InvoiceRestService.findByLatestInvoiceByProjectuuid");
+        System.out.println("projectuuid = " + projectuuid);
+        return findProjectInvoices(projectuuid).get(0);
     }
 }

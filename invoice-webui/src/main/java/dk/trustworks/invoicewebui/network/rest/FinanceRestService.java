@@ -5,6 +5,7 @@ import dk.trustworks.invoicewebui.model.ExpenseDetails;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.dto.FinanceDocument;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
+import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
 import dk.trustworks.invoicewebui.network.dto.enums.EconomicAccountGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +23,8 @@ import static org.springframework.http.HttpMethod.GET;
 @Service
 public class FinanceRestService {
 
-    @Value("#{environment.APISERVICE_URL}")
-    private String apiServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
@@ -33,17 +34,17 @@ public class FinanceRestService {
     }
 
     public List<ExpenseDetails> findExpenseDetailsByGroup(EconomicAccountGroup accountGroup) {
-        String url = apiServiceUrl +"/expensesdetails/"+accountGroup.name();
+        String url = apiGatewayUrl +"/expensesdetails/"+accountGroup.name();
         return Arrays.asList((ExpenseDetails[]) systemRestService.secureCall(url, GET, ExpenseDetails[].class).getBody());
     }
 
     public List<CompanyExpense> findByAccountAndPeriod(ExcelExpenseType expenseType, LocalDate from, LocalDate to) {
-        String url = apiServiceUrl + "/expenses/"+expenseType+"/search/findByPeriod?from="+stringIt(from)+"&to="+stringIt(to);
+        String url = apiGatewayUrl + "/expenses/"+expenseType+"/search/findByPeriod?from="+stringIt(from)+"&to="+stringIt(to);
         return Arrays.asList((CompanyExpense[]) systemRestService.secureCall(url, GET, CompanyExpense[].class).getBody());
     }
 
     public List<ExpenseDetails> findByExpensedateAndAccountnumbers(LocalDate expensedate, int[] accountnumbers) {
-        String url = apiServiceUrl + "/expensedetails/search/findByExpenseMonthAndAccountnumbers?month=" +
+        String url = apiGatewayUrl + "/expensedetails/search/findByExpenseMonthAndAccountnumbers?month=" +
                 stringIt(expensedate)+"&accountNumbers=" +
                 Arrays.stream(accountnumbers)
                         .mapToObj(String::valueOf)
@@ -52,23 +53,23 @@ public class FinanceRestService {
     }
 
     public List<CompanyExpense> findByMonth(LocalDate month) {
-        String url = apiServiceUrl + "/expenses/company/search/findByMonth?month="+stringIt(month.withDayOfMonth(1));
+        String url = apiGatewayUrl + "/expenses/company/search/findByMonth?month="+stringIt(month.withDayOfMonth(1));
         return Arrays.asList((CompanyExpense[]) systemRestService.secureCall(url, GET, CompanyExpense[].class).getBody());
     }
 
     public List<FinanceDocument> getAllExpensesByMonth(LocalDate month) {
-        String url = apiServiceUrl +"/cached/expenses/datemonths/"+stringIt(month);
+        String url = apiGatewayUrl +"/cached/expenses/datemonths/"+stringIt(month)+"/cached";
         ResponseEntity<FinanceDocument[]> result = systemRestService.secureCall(url, GET, FinanceDocument[].class);
         return Arrays.asList(result.getBody());
     }
 
     public double calcAllExpensesByMonth(LocalDate datemonth) {
-        String url = apiServiceUrl + "/expenses/company/datemonths/"+stringIt(datemonth.withDayOfMonth(1))+"/sum";
-        return Arrays.stream((CompanyExpense[]) systemRestService.secureCall(url, GET, CompanyExpense[].class).getBody()).mapToDouble(CompanyExpense::getAmount).sum();
+        String url = apiGatewayUrl + "/expenses/company/datemonths/"+stringIt(datemonth.withDayOfMonth(1))+"/sum";
+        return Double.parseDouble(((KeyValueDTO) systemRestService.secureCall(url, GET, KeyValueDTO.class).getBody()).getValue());
     }
 
     public GraphKeyValue[] getPayoutsByPeriod(LocalDate fromdate, LocalDate todate) {
-        String url = apiServiceUrl +"/expenses/company/bonus?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
+        String url = apiGatewayUrl +"/expenses/company/bonus?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
         return (GraphKeyValue[]) systemRestService.secureCall(url, GET, GraphKeyValue[].class).getBody();
     }
 }

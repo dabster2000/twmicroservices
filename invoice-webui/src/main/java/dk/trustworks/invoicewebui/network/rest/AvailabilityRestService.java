@@ -35,7 +35,7 @@ public class AvailabilityRestService {
     }
 
     public AvailabilityDocument getConsultantAvailabilityByMonth(String useruuid, LocalDate month) {
-        String url = apiGatewayUrl +"/cached/availabilities/months/"+stringIt(month)+"/users/"+useruuid+"";
+        String url = apiGatewayUrl +"/cached/availabilities/months/"+stringIt(month)+"/users/"+useruuid;
         ResponseEntity<AvailabilityDocument> result = systemRestService.secureCall(url, GET, AvailabilityDocument.class);
         return result.getBody();
     }

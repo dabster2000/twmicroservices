@@ -7,6 +7,7 @@ import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.text.WordUtils;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,13 +31,9 @@ public class User {
     private String username;
     private String slackusername;
     private LocalDate birthday;
-    @JsonIgnore
     private List<Salary> salaries;
-    @JsonIgnore
     private List<UserStatus> statuses;
-    @JsonIgnore
     private List<Role> roleList;
-    @JsonIgnore
     private UserContactinfo userContactinfo;
 
     public User() {

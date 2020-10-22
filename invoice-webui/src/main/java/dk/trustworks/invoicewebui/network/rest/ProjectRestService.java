@@ -6,6 +6,7 @@ import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,12 +35,14 @@ public class ProjectRestService {
         return Arrays.asList(result.getBody());
     }
 
+    @Cacheable(cacheNames = "project")
     public Project findOne(String uuid) {
         String url = apiGatewayUrl + "/projects/" + uuid;
         ResponseEntity<Project> result = systemRestService.secureCall(url, GET, Project.class);
         return result.getBody();
     }
 
+    @Cacheable(cacheNames = "project")
     public List<Project> findByActiveTrue() {
         String url = apiGatewayUrl + "/projects/active";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
@@ -52,12 +55,14 @@ public class ProjectRestService {
         return result.getBody();
     }
 
+    @Cacheable(cacheNames = "project")
     public List<Project> findByClientAndActiveTrue(String clientuuid) {
         String url = apiGatewayUrl + "/clients/" + clientuuid + "/projects/active";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }
 
+    @Cacheable(cacheNames = "project")
     public List<Project> findByClientuuid(String clientuuid) {
         String url = apiGatewayUrl + "/clients/" + clientuuid + "/projects";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);

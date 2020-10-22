@@ -14,7 +14,6 @@ import dk.trustworks.invoicewebui.model.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.CkoCourseStudent;
 import dk.trustworks.invoicewebui.model.Note;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.network.rest.KnowledgeRoleRestService;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
@@ -28,7 +27,6 @@ import dk.trustworks.invoicewebui.web.employee.components.cards.EmployeeContactI
 import dk.trustworks.invoicewebui.web.employee.components.cards.KeyPurposeHeadlinesCardController;
 import dk.trustworks.invoicewebui.web.employee.components.charts.AmbitionSpiderChart;
 import dk.trustworks.invoicewebui.web.employee.components.charts.BillableConsultantHoursPerMonthChart;
-import dk.trustworks.invoicewebui.web.employee.components.charts.VacationPerYearChart;
 import dk.trustworks.invoicewebui.web.employee.components.parts.CKOExpenseImpl;
 import dk.trustworks.invoicewebui.web.employee.components.parts.KeyPurposeNoteImpl;
 import dk.trustworks.invoicewebui.web.employee.components.parts.SpeedDateImpl;
@@ -36,7 +34,6 @@ import dk.trustworks.invoicewebui.web.employee.components.parts.TouchBaseImpl;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.DocumentTab;
 import dk.trustworks.invoicewebui.web.employee.components.tabs.ItBudgetTab;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
-import dk.trustworks.invoicewebui.web.stats.components.YourTrustworksForecastChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
@@ -55,9 +52,9 @@ public class EmployeeLayout extends VerticalLayout {
 
     private User user;
 
-    private final ContractService contractService;
-
     private final UserService userService;
+
+    private final AvailabilityService availabilityService;
 
     private final KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController;
 
@@ -79,21 +76,15 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final AmbitionCategoryRepository ambitionCategoryRepository;
 
-    private final KnowledgeRoleRestService knowledgeRoleRestService;
-
     private final MicroCourseStudentRepository microCourseStudentRepository;
 
     private final PhotoRepository photoRepository;
 
     private final PhotoService photoService;
 
-    private final ClientService clientService;
-
     private final BudgetService budgetService;
 
     private final BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart;
-
-    private final VacationPerYearChart vacationPerYearChart;
 
     private final ItBudgetTab itBudgetTab;
 
@@ -101,23 +92,23 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final EmployeeContactInfoCardController employeeContactInfoCardController;
 
-    private ResponsiveRow baseContentRow;
+    private final ResponsiveRow baseContentRow;
 
-    private ResponsiveRow buttonContentRow;
+    private final ResponsiveRow buttonContentRow;
 
-    private ResponsiveRow workContentRow;
-    private ResponsiveRow knowContentRow;
-    private ResponsiveRow skillContentRow;
-    private ResponsiveRow docsContentRow;
-    private ResponsiveRow purpContentRow;
-    private ResponsiveRow budgContentRow;
+    private final ResponsiveRow workContentRow;
+    private final ResponsiveRow knowContentRow;
+    private final ResponsiveRow skillContentRow;
+    private final ResponsiveRow docsContentRow;
+    private final ResponsiveRow purpContentRow;
+    private final ResponsiveRow budgContentRow;
 
-    private UserMonthReportImpl monthReport;
+    private final UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(ContractService contractService, UserService userService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, YourTrustworksForecastChart yourTrustworksForecastChart, KnowledgeRoleRestService knowledgeRoleRestService, MicroCourseStudentRepository microCourseStudentRepository, ClientService clientService, BudgetService budgetService, VacationPerYearChart vacationPerYearChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
-        this.contractService = contractService;
+    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.userService = userService;
+        this.availabilityService = availabilityService;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
         this.achievementCardController = achievementCardController;
         this.ckoExpenseRepository = ckoExpenseRepository;
@@ -131,11 +122,8 @@ public class EmployeeLayout extends VerticalLayout {
         this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
-        this.knowledgeRoleRestService = knowledgeRoleRestService;
         this.microCourseStudentRepository = microCourseStudentRepository;
-        this.clientService = clientService;
         this.budgetService = budgetService;
-        this.vacationPerYearChart = vacationPerYearChart;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
         this.employeeContactInfoCardController = employeeContactInfoCardController;
@@ -199,7 +187,7 @@ public class EmployeeLayout extends VerticalLayout {
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnBudget);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnDocuments);
         //buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
-        workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(contractService, clientService, budgetService, 2, 6, "consultantAllocationCardDesign"));
+        workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign"));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseImpl(user, notesRepository, reminderRepository));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, userService));
         int adjustStartYear = 0;
@@ -207,7 +195,7 @@ public class EmployeeLayout extends VerticalLayout {
         LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(vacationPerYearChart.createExpensePerMonthChart(user)));
+        //workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(vacationPerYearChart.createExpensePerMonthChart(user)));
         workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthReport);
 
         for (Note note : notesRepository.findByUseruuidOrderByNotedateDesc(user.getUuid())) {

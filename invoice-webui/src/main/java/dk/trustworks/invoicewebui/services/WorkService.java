@@ -68,7 +68,7 @@ public class WorkService {
     }
 
     public void save(Work work) {
-
+        workRestService.save(work);
     }
     /*
 

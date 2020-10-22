@@ -245,6 +245,8 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfVacationAllWeeksAchievement(User user) {
+        // TODO:
+        /*
         List<Work> workList = workService.findVacationByUser(user.getUuid());
         int[] weeks = new int[53];
         for (Work work : workList) {
@@ -254,6 +256,8 @@ public class AchievementJob {
         for (int week : weeks) {
             if(week == 0) return false;
         }
+
+         */
         return true;
     }
 

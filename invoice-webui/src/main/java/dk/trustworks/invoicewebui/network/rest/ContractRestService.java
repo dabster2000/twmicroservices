@@ -4,14 +4,17 @@ import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,6 +73,7 @@ public class ContractRestService {
         return Arrays.asList(result.getBody());
     }
 
+    @Cacheable(cacheNames = "contracts")
     public List<Contract> findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList) {
         String url = apiGatewayUrl + "/contracts?fromdate=" + activeFrom + "&todate=" + activeTo + "&statuslist=" + Arrays.stream(statusList).map(Enum::toString).collect(Collectors.joining(","));
         logger.info(url);
@@ -77,8 +81,11 @@ public class ContractRestService {
         return Arrays.asList(result.getBody());
     }
 
-    public List<Contract> findTimeActiveConsultantContracts(String uuid, String format) {
-        return null;
+    public List<Contract> findTimeActiveConsultantContracts(String useruuid, LocalDate activeOn) {
+        String url = apiGatewayUrl + "/users/"+useruuid+"/contracts?activedate="+DateUtils.stringIt(activeOn);
+        logger.info(url);
+        ResponseEntity<Contract[]> result = systemRestService.secureCall(url, GET, Contract[].class);
+        return Arrays.asList(result.getBody());
     }
 
     public Contract save(Contract contract) {

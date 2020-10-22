@@ -85,7 +85,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     public void reloadData() {
         logger.info("NewInvoiceImpl.reloadData");
 
-        List<ProjectSummary> projectSummaries = invoiceService.loadProjectSummaryByYearAndMonth(yearMonthSelectComboBox.getValue().getDate().getYear(), yearMonthSelectComboBox.getValue().getDate().getMonthValue());
+        List<ProjectSummary> projectSummaries = invoiceService.loadProjectSummaryByYearAndMonth(yearMonthSelectComboBox.getValue().getDate());
 
         ResponsiveLayout invoiceListItemsResponsiveLayout = new ResponsiveLayout();
         VerticalLayout invoiceListLayout = new MVerticalLayout(new MVerticalLayout().withStyleName("card-1").with(invoiceListItemsResponsiveLayout));
@@ -260,7 +260,6 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 invoice.pdf = invoiceService.createInvoicePdf(invoice);
                 Invoice savedInvoice = invoiceService.save(invoice);
                  */
-
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);
                 refreshTabs(tabSheet, projectSummary);

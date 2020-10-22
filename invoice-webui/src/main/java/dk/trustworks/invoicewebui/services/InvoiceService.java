@@ -31,8 +31,8 @@ public class InvoiceService {
         return invoiceRestService.findByLatestInvoiceByProjectuuid(projectuuid);
     }
 
-    public List<ProjectSummary> loadProjectSummaryByYearAndMonth(int year, int month) {
-        return invoiceRestService.loadProjectSummaryByYearAndMonth(year, month);
+    public List<ProjectSummary> loadProjectSummaryByYearAndMonth(LocalDate month) {
+        return invoiceRestService.loadProjectSummaryByYearAndMonth(month);
     }
 
     public Invoice createInvoiceFromProject(ProjectSummary projectSummary, LocalDate month) {
@@ -51,9 +51,8 @@ public class InvoiceService {
         return invoiceRestService.createCreditNote(invoice);
     }
 
-    public Invoice update(Invoice invoice) {
-        invoice = invoiceRestService.updateDraftInvoice(invoice);
-        return invoice;
+    public void update(Invoice invoice) {
+        invoiceRestService.updateDraftInvoice(invoice);
     }
 
     public void delete(String uuid) {

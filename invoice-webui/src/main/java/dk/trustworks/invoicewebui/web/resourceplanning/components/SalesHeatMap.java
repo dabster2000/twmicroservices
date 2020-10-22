@@ -40,8 +40,6 @@ public class SalesHeatMap {
 
     private final PhotoService photoService;
 
-    private final StatisticsService statisticsService;
-
     private final AvailabilityService availabilityService;
 
     private final BudgetService budgetService;
@@ -52,18 +50,17 @@ public class SalesHeatMap {
     double[] monthAvailabilites;
 
     @Autowired
-    public SalesHeatMap(ClientService clientService, PhotoService photoService, StatisticsService statisticsService, AvailabilityService availabilityService, BudgetService budgetService, UserService userService1) {
+    public SalesHeatMap(ClientService clientService, PhotoService photoService, AvailabilityService availabilityService, BudgetService budgetService, UserService userService1) {
         this.clientService = clientService;
         this.photoService = photoService;
-        this.statisticsService = statisticsService;
         this.availabilityService = availabilityService;
         this.budgetService = budgetService;
         this.userService = userService1;
     }
 
-    public Component getChart(LocalDate localDateStart2, LocalDate localDateEnd) {
-        LocalDate localDateStart = localDateStart2.minusMonths(9);
-        localDateEnd = localDateEnd.minusMonths(9);
+    public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
+        //LocalDate localDateStart = localDateStart2.minusMonths(9);
+        //localDateEnd = localDateEnd.minusMonths(9);
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
@@ -96,31 +93,18 @@ public class SalesHeatMap {
         HeatSeries rs = new HeatSeries("% allocation");
         int userNumber = 0;
 
-
         Map<String, Map<String, double[]>> userAllocationPerAssignmentMap = new HashMap<>();
         List<User> users = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
 
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);
-
             for (User user : users) {
-
                 List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
-
                 for (BudgetDocument budget : budgets) {
-                    if(user.getUsername().equalsIgnoreCase("hans.lassen")) System.out.println("budget = " + budget);
                     userAllocationPerAssignmentMap.putIfAbsent(user.getUuid(), new HashMap<>());
                     userAllocationPerAssignmentMap.get(user.getUuid()).putIfAbsent(budget.getClient().getUuid(), new double[12]);
                     userAllocationPerAssignmentMap.get(user.getUuid()).get(budget.getClient().getUuid())[i] +=  (budget.getGrossBudgetHours());
                 }
-            }
-        }
-        for (String s : userAllocationPerAssignmentMap.keySet()) {
-            Map<String, double[]> stringMap = userAllocationPerAssignmentMap.get(s);
-            System.out.println("s = " + s);
-            for (String s1 : stringMap.keySet()) {
-                System.out.println(s1+": "+ Arrays.stream(stringMap.get(s1)).boxed().map(Object::toString).collect(Collectors.joining(",")));
-
             }
         }
 
@@ -133,7 +117,6 @@ public class SalesHeatMap {
 
                 // TODO: FIX
                 AvailabilityDocument availabilityDocument = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), localDate.withDayOfMonth(1));
-                if(user.getUsername().equalsIgnoreCase("hans.lassen")) System.out.println("availabilityDocument = " + availabilityDocument);
                 double availability = availabilityDocument.getNetAvailableHours();
                 monthTotalAvailabilites[m] += availability;
                 rs.addHeatPoint(m, userNumber, Math.round((budget / availability)*100.0));

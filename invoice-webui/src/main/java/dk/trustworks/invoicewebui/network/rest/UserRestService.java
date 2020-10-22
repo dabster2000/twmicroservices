@@ -63,7 +63,8 @@ public class UserRestService {
     }
 
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, String... consultantTypes) {
-        String url = apiGatewayUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes);
+        String url = apiGatewayUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes)+"&shallow=false";
+        System.out.println("url = " + url);
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
         return Arrays.asList(result.getBody());
     }
@@ -111,6 +112,7 @@ public class UserRestService {
         }
     }
 
+    @Cacheable(cacheNames = "userstatuses")
     public List<UserStatus> findUserStatusList(String useruuid) {
         String url = apiGatewayUrl+"/users/"+useruuid+"/statuses";
         ResponseEntity<UserStatus[]> result = systemRestService.secureCall(url, GET, UserStatus[].class);

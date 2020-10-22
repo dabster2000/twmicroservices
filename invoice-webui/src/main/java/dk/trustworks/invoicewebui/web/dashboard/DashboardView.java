@@ -108,12 +108,12 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final KnowledgeChart knowledgeChart;
 
-    private final ClientService clientService;
-
     private final BudgetService budgetService;
 
+    private final AvailabilityService availabilityService;
+
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, ClientService clientService, BudgetService budgetService) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, BudgetService budgetService, AvailabilityService availabilityService) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.contractService = contractService;
@@ -130,8 +130,8 @@ public class   DashboardView extends VerticalLayout implements View {
         this.revenuePerMonthChart = revenuePerMonthChart;
         this.spriteSheet = spriteSheet;
         this.knowledgeChart = knowledgeChart;
-        this.clientService = clientService;
         this.budgetService = budgetService;
+        this.availabilityService = availabilityService;
     }
 
     @Transactional
@@ -155,7 +155,7 @@ public class   DashboardView extends VerticalLayout implements View {
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
         VacationCard vacationCard = new VacationCard();
-        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, clientService, budgetService, 2, 6, "consultantAllocationCardDesign");
+        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign");
 
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrustworksStatus()));

@@ -16,6 +16,7 @@ import java.util.List;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @JBossLog
 @Service
@@ -62,12 +63,8 @@ public class BudgetRestService {
         return result.getBody();
     }
 
-    public BudgetNew findByMonthAndYearAndContractConsultantAndProjectuuid(int monthValue, int year, String contractconsultantuuid, String projectuuid) {
-        return null;
-    }
-
     public List<BudgetNew> findByConsultantAndProject(String projectUuid, String contractConsultantUuid) {
-        String url = apiGatewayUrl +"/cached/budgets/consultants/{consultantuuid}?projectuuid="+projectUuid;
+        String url = apiGatewayUrl +"/cached/budgets/consultants/"+contractConsultantUuid+"?projectuuid="+projectUuid;
         List<BudgetNew> budgetNewList;
         try {
             ResponseEntity<BudgetNew[]> result = systemRestService.secureCall(url, GET, BudgetNew[].class);
@@ -77,5 +74,16 @@ public class BudgetRestService {
             budgetNewList = new ArrayList<>();
         }
         return budgetNewList;
+    }
+
+    public BudgetNew findByMonthAndYearAndContractConsultantAndProjectuuid(int month, int year, String contractconsultantuuid, String projectuuid) {
+        String url = apiGatewayUrl +"/projects/"+projectuuid+"/budgets?consultantuuid=";
+
+        return null;
+    }
+
+    public void save(BudgetNew budget) {
+        String url = apiGatewayUrl +"/projects/"+budget.getProjectuuid()+"/budgets";
+        systemRestService.secureCall(url, POST, Void.class, budget);
     }
 }

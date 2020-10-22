@@ -7,16 +7,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.*;
 
 @Service
 public class WeekRestService {
 
-    @Value("#{environment.APISERVICE_URL}")
-    private String apiServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
@@ -25,28 +26,20 @@ public class WeekRestService {
         this.systemRestService = systemRestService;
     }
 
-    public List<Work> findAll() {
-        String url = apiServiceUrl +"/week";
-        ResponseEntity<Work[]> result = systemRestService.secureCall(url, GET, Work[].class);
-        return Arrays.asList(result.getBody());
-    }
-
-    public Work findOne(long id) {
-        String url = apiServiceUrl +"/week/"+id;
-        ResponseEntity<Work> result = systemRestService.secureCall(url, GET, Work.class);
-        return result.getBody();
-    }
-
-    public List<Week> findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(int i, int i1, String uuid) {
-        // TODO: Implement
-        return null;
+    public List<Week> findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(int weeknumber, int year, String useruuid) {
+        String url = apiGatewayUrl + "/users/"+useruuid+"/weeks/"+year+"/"+weeknumber;
+        System.out.println("url = " + url);
+        ResponseEntity<Week[]> result = systemRestService.secureCall(url, GET, Week[].class);
+        return new ArrayList<>(Arrays.asList(result.getBody()));
     }
 
     public void save(Week week) {
-        // TODO: Implement
+        String url = apiGatewayUrl + "/weeks";
+        systemRestService.secureCall(url, POST, Void.class, week);
     }
 
-    public void delete(String uuid) {
-        // TODO: Implement
+    public void delete(String weekuuid) {
+        String url = apiGatewayUrl + "/weeks/"+weekuuid;
+        systemRestService.secureCall(url, DELETE, Void.class);
     }
 }

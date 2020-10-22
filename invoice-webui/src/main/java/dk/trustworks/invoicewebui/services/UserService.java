@@ -132,8 +132,11 @@ public class UserService implements InitializingBean {
     public int calcMonthSalaries(LocalDate date, String... consultantTypes) {
         String[] statusList = {ACTIVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
-                .stream().mapToInt(value ->
-                        value.getSalaries().stream().filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0)).getSalary()
+                .stream().peek(user -> {
+                    System.out.println("user.getUsername() = " + user.getUsername());
+                    System.out.println("user.getSalaries().size() = " + user.getSalaries().size());
+                }).mapToInt(value ->
+                        value.getSalaries().stream().peek(salary -> System.out.println("salary = " + salary)).filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0)).getSalary()
                 ).sum();
     }
 

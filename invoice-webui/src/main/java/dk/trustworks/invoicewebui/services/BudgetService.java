@@ -36,19 +36,19 @@ public class BudgetService {
     }
 
     public void save(BudgetNew budget) {
-
+        budgetRestService.save(budget);
     }
 
     public List<BudgetDocument> getConsultantBudgetHoursByMonthDocuments(String useruuid, LocalDate month) {
         return budgetRestService.getConsultantBudgetHoursByMonthDocuments(useruuid, month);
     }
 
-    public BudgetNew findByMonthAndYearAndContractConsultantAndProjectuuid(int monthValue, int year, ContractConsultant contractConsultant, String projectuuid) {
-        return budgetRestService.findByMonthAndYearAndContractConsultantAndProjectuuid(monthValue, year, contractConsultant.getUuid(), projectuuid);
-    }
-
     public List<BudgetNew> findByConsultantAndProject(String projectUuid, String contractConsultantUuid) {
         return budgetRestService.findByConsultantAndProject(projectUuid, contractConsultantUuid);
+    }
+
+    public BudgetNew findByMonthAndYearAndContractConsultantAndProjectuuid(int month, int year, String contractconsultantuuid, String projectuuid) {
+        return budgetRestService.findByMonthAndYearAndContractConsultantAndProjectuuid(month, year, contractconsultantuuid, projectuuid);
     }
 
     /*

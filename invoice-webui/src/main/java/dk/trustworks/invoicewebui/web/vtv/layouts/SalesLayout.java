@@ -82,8 +82,7 @@ public class SalesLayout extends VerticalLayout {
         field.addStyleName("floating");
         hoursPerConsultantCard.getHlTitleBar().addComponent(field);
 
-        row.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
+        row.addColumn().withDisplayRules(12, 12, 12, 12)
                 .withComponent(hoursPerConsultantCard);
 
         Card allocationChartCard = new Card();
@@ -101,8 +100,6 @@ public class SalesLayout extends VerticalLayout {
 
         Card marginCard = new Card();
 
-
-
         List<MarginRow> marginRowList = new ArrayList<>();
 
         for (Contract contract : contractService.findActiveContractsByDate(LocalDate.now(), ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.BUDGET)) {
@@ -111,8 +108,6 @@ public class SalesLayout extends VerticalLayout {
                 marginRowList.add(new MarginRow(clientService.findOne(contract.getClientuuid()).getName(), contractConsultant.getUser().getUsername(), contractConsultant.getRate(), margin));
             }
         }
-
-
 
         Grid<MarginRow> grid = new Grid<>(MarginRow.class);
         grid.setItems(marginRowList);

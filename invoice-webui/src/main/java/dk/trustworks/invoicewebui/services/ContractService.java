@@ -182,7 +182,7 @@ public class ContractService implements InitializingBean {
      */
 
     public List<Contract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
-        return contractRestService.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        return contractRestService.findTimeActiveConsultantContracts(user.getUuid(), activeOn);
     }
 
     public double findAmountUsedOnContract(Contract contract) {

@@ -154,9 +154,9 @@ public class ConsultantsBudgetRealizationChart {
     }
 
     private void addBudgetPerUser(Map<String, Double> prebookingPerUser, BudgetNew budget) {
-        prebookingPerUser.putIfAbsent(budget.getContractConsultant().getUser().getUuid(), 0.0);
-        Double aDouble = Math.floor(prebookingPerUser.get(budget.getContractConsultant().getUser().getUuid()) + budget.getBudget() / budget.getContractConsultant().getRate());
-        prebookingPerUser.replace(budget.getContractConsultant().getUser().getUuid(), aDouble);
+        //prebookingPerUser.putIfAbsent(budget.getContractConsultant().getUser().getUuid(), 0.0);
+        //Double aDouble = Math.floor(prebookingPerUser.get(budget.getContractConsultant().getUser().getUuid()) + budget.getBudget() / budget.getContractConsultant().getRate());
+        //prebookingPerUser.replace(budget.getContractConsultant().getUser().getUuid(), aDouble);
     }
 
     private void addBookingToMap(Map<String, Double> prebookingPerUser, ContractConsultant consultant, double weeks, double notWork) {

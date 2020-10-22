@@ -125,6 +125,7 @@ public class UtilizationPerMonthChart {
         startDate = startDate.withDayOfMonth(1);
         List<DataSeriesItem> dataSeriesItemList = new ArrayList<>();
         do {
+            System.out.println("startDate = " + startDate);
             double totalBillableHours = 0.0;
             double totalAvailableHours = 0.0;
             double totalAllocation;
@@ -133,15 +134,20 @@ public class UtilizationPerMonthChart {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
                 double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
+                System.out.println("billableWorkHours = " + billableWorkHours);
                 AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
+                System.out.println("availability = " + availability);
                 if (availability == null || !availability.getStatusType().equals(StatusType.ACTIVE)) {
                     continue;
                 }
                 totalAvailableHours += availability.getNetAvailableHours();
+                System.out.println("totalAvailableHours = " + totalAvailableHours);
                 totalBillableHours += billableWorkHours;
+                System.out.println("totalBillableHours = " + totalBillableHours);
                 countEmployees++;
             }
             totalAllocation = Math.floor(((totalBillableHours / countEmployees) / (totalAvailableHours / countEmployees)) * 100.0);
+            System.out.println("totalAllocation = " + totalAllocation);
             dataSeriesItemList.add(new DataSeriesItem(startDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), NumberUtils.round(totalAllocation, 0)));
             startDate = startDate.plusMonths(1);
         } while (startDate.isBefore(endDate));

@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.network.rest;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.Work;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,11 +84,11 @@ public class WorkRestService {
     }
 
     public List<Work> findByRegisteredAndUseruuidAndTaskuuid() {
-        return null;
+        throw new NotImplementedException("findByRegisteredAndUseruuidAndTaskuuid");
     }
 
     public Double findAmountUsedByContract(Contract contract) {
-        return null;
+        throw new NotImplementedException("findAmountUsedByContract");
     }
 
     public List<Work> findWorkOnContract(String contractuuid) {
@@ -97,21 +98,10 @@ public class WorkRestService {
         return Arrays.asList(result.getBody());
     }
 
-    public Work save(Work work) {
+    public void save(Work work) {
         String url = apiGatewayUrl +"/work";
         logger.debug(url);
-        ResponseEntity<Work> result = systemRestService.secureCall(url, POST, Work.class, work);
-        return result.getBody();
-    }
-
-    public void delete(Work work) {
-        delete(work.getId());
-    }
-
-    public void delete(long id) {
-        String url = apiGatewayUrl +"/work/"+id;
-        logger.debug(url);
-        systemRestService.secureCall(url, DELETE, Void.class);
+        systemRestService.secureCall(url, POST, Void.class, work);
     }
 
     public List<Work> findByYearAndMonth(int year, int month) {

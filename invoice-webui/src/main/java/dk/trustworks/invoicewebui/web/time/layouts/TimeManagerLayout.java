@@ -80,8 +80,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final ReceiptsRepository receiptsRepository;
 
-    private final StatisticsService statisticsService;
-
     private final ResponsiveLayout responsiveLayout;
 
     private LocalDate currentDate = LocalDate.now().with(DayOfWeek.MONDAY);
@@ -99,7 +97,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WorkService workService, PhotoRepository photoRepository, TimeService timeService, WeekRestService weekRestService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository, StatisticsService statisticsService) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WorkService workService, PhotoRepository photoRepository, TimeService timeService, WeekRestService weekRestService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
         this.projectService = projectService;
         this.userService = userService;
         this.clientService = clientService;
@@ -109,7 +107,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
         this.photoService = photoService;
         this.contractService = contractService;
         this.receiptsRepository = receiptsRepository;
-        this.statisticsService = statisticsService;
 
         footerButtons = new FooterButtons();
         dateButtons = new DateButtons();
@@ -170,11 +167,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
             MLabel spacer = new MLabel("").withWidth(100, PERCENTAGE);
 
-            System.out.println("dateButtons.getSelActiveUser().getSelectedItem().get() = " + dateButtons.getSelActiveUser().getSelectedItem().get());
             List<Contract> activeConsultantContracts = getMainContracts(contractService, dateButtons.getSelActiveUser().getSelectedItem().get());
-            System.out.println("activeConsultantContracts.size() = " + activeConsultantContracts.size());
             List<Client> clientResources = getClients(activeConsultantContracts);
-            System.out.println("clientResources.size() = " + clientResources.size());
 
             ComboBox<Client> clientComboBox = new ComboBox<>();
             clientComboBox.setItemCaptionGenerator(Client::getName);
@@ -288,14 +282,14 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     weekRestService.save(new Week(UUID.randomUUID().toString(),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
-                            dateButtons.getSelActiveUser().getValue(),
-                            taskComboBox.getSelectedItem().get(), userComboBox.getSelectedItem().get()));
+                            dateButtons.getSelActiveUser().getValue().getUuid(),
+                            taskComboBox.getSelectedItem().orElse(new Task()).getUuid(), userComboBox.getSelectedItem().orElse(new User()).getUuid()));
                 } else {
                     weekRestService.save(new Week(UUID.randomUUID().toString(),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
                             currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
-                            dateButtons.getSelActiveUser().getValue(),
-                            taskComboBox.getSelectedItem().get()));
+                            dateButtons.getSelActiveUser().getValue().getUuid(),
+                            taskComboBox.getSelectedItem().orElse(new Task()).getUuid()));
                 }
                 window.close();
                 loadTimeview(dateButtons.getSelActiveUser().getSelectedItem().get());
@@ -445,14 +439,14 @@ public class TimeManagerLayout extends ResponsiveLayout {
         LocalDate startOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
         LocalDate endOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
         List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
-        for (Work workResource : workResources) {
-            if(weeks.stream().noneMatch(week -> week.getTask().getUuid().equals(workResource.getTask().getUuid()))) {
+        for (Work workResource : workResources.stream().filter(work -> work.getWorkduration() > 0.0).collect(Collectors.toList())) {
+            if(weeks.stream().noneMatch(week -> week.getTaskuuid().equals(workResource.getTaskuuid()))) {
                 Week week = new Week(UUID.randomUUID().toString(),
                         currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()),
                         currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()),
-                        workResource.getUser(),
-                        workResource.getTask(),
-                        workResource.getWorkasUser());
+                        workResource.getUseruuid(),
+                        workResource.getTaskuuid(),
+                        workResource.getWorkas());
                 weekRestService.save(week);
                 weeks.add(week);
             }
@@ -472,7 +466,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
             double sumTask = 0.0;
             for (Work work : workResources) {
-                if(!work.getTask().getUuid().equals(task.getUuid())) continue;
+                if(!work.getTaskuuid().equals(task.getUuid())) continue;
                 sumHours += work.getWorkduration();
                 sumTask += work.getWorkduration();
                 setWeekItemAmounts(weekItem, work, work.getRegistered());
@@ -868,8 +862,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private void saveWork(WeekItem weekItem, HasValue.ValueChangeEvent<String> event, LocalDate workDate) {
-        //System.out.println("TimeManagerLayout.saveWork");
-        //System.out.println("weekItem = [" + weekItem + "], event = [" + event + "], workDate = [" + workDate + "]");
         try {
             double newValue = event.getValue().equals("")?0.0:nf.parse(event.getValue()).doubleValue();
             Work work;

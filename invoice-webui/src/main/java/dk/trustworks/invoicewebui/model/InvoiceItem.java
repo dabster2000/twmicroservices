@@ -11,25 +11,18 @@ import java.util.UUID;
  * Created by hans on 08/07/2017.
  */
 @EqualsAndHashCode
-@Entity
-@Table(name = "invoiceitems")
 public class InvoiceItem {
 
-    @Id
     public String uuid;
     @EqualsAndHashCode.Exclude public String itemname;
     @EqualsAndHashCode.Exclude public String description;
     @EqualsAndHashCode.Exclude public double rate;
     @EqualsAndHashCode.Exclude public double hours;
-    //public String invoiceuuid;
 
     public InvoiceItem() {
-
     }
 
     public InvoiceItem(String itemname, String description, double rate, double hours) {
-        this();
-        uuid = UUID.randomUUID().toString();
         this.itemname = itemname;
         this.description = description;
         this.rate = rate;

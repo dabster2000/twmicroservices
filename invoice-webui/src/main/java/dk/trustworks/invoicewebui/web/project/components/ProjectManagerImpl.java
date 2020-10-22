@@ -193,8 +193,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             getSelProject().setItems(projectService.findAllByActiveTrueOrderByNameAsc());
             reloadGrid(Optional.empty());
         });
-        if(currentProject.getTasks().stream().anyMatch(task -> !task.getType().equals(TaskType.SO))) projectDetailCard.getBtnDelete().setVisible(false);
-        else projectDetailCard.getBtnDelete().setVisible(true);
+        projectDetailCard.getBtnDelete().setVisible(currentProject.getTasks().stream().allMatch(task -> task.getType().equals(TaskType.SO)));
         ResponsiveRow clientDetailsRow = responsiveLayout.addRow();
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -330,25 +329,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         tasksLayout.add(newTaskRow);
     }
 
-    private ComboBox<SimpleTokenizable> buildComboBox()
-    {
-        ComboBox<SimpleTokenizable> result = new ComboBox<>("", initTokenCollection());
-        result.setItemCaptionGenerator(SimpleTokenizable::getStringValue);
-        result.setPlaceholder("Type here to add");
-        return result;
-    }
-
-    private Collection<SimpleTokenizable> initTokenCollection() {
-        return ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue().stream()
-                .map(ambition -> new SimpleTokenizable(ambition.getId(), ambition.getName()))//
-                .collect(Collectors.toList());
-    }
-
-    private void updateTask(Task task, TaskRowDesign taskRowDesign) {
-        System.out.println("ProjectManagerImpl.updateTask");
-        System.out.println("task = [" + task + "], taskRowDesign = [" + taskRowDesign + "]");
-    }
-
     private void saveNewTask(TaskRowDesign newTaskRow, Project currentProject) {
         final Task task = new Task(newTaskRow.getTxtName().getValue(), currentProject);
         taskService.save(task);
@@ -455,11 +435,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 dataSeriesItem.setLow(mainContract.getActiveFrom().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
                 dataSeriesItem.setHigh(mainContract.getActiveTo().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
                 ls.add(dataSeriesItem);
-                /*
-                for (SubContract subContract : mainContract.getChildren()) {
-                    ls.add(new DataSeriesItem(subContract.getActiveTo().atStartOfDay().toInstant(ZoneOffset.UTC), contractNumber));
-                }
-                */
                 conf.addSeries(ls);
             }
 
@@ -500,8 +475,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     private void updateTreeGrid(Project currentProject) {
         budgetCard.getContainer().removeAllComponents();
         if(currentProject.getContracts().stream().anyMatch(contract -> contract.getContractType().equals(ContractType.AMOUNT))) {
-            System.out.println("currentProject = " + currentProject);
-            System.out.println("currentProject.getContracts().get(0) = " + currentProject.getContracts().get(0).getUuid());
             grid = createGrid(currentProject);
             ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
             ResponsiveRow row = responsiveLayout.addRow();
@@ -567,7 +540,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
                     Optional<BudgetNew> optionalBudgetNew = budgets.stream().filter(budgetNew -> budgetNew.getYear() == filterDate.getYear() && budgetNew.getMonth() == filterDate.getMonthValue() - 1).findFirst();
-                    //BudgetNew budget = budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
                     optionalBudgetNew.ifPresent(budgetNew -> budgetSum.updateAndGet(v -> v + budgetNew.getBudget()));
                     budgetDate = budgetDate.plusMonths(1);
                 }
@@ -584,7 +556,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         return chart;
     }
 
-    private Grid createGrid(Project currentProject) {
+    private Grid<BudgetRow> createGrid(Project currentProject) {
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
         if(currentProject.getContracts().size()==0) return new Grid();
         LocalDate endDate = currentProject.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
@@ -607,15 +579,17 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 BudgetRow budgetRow = new BudgetRow(contractConsultant, mainContract, (int)(monthsBetween+1));
                 LocalDate budgetDate = startDate;
 
+                List<BudgetNew> budgets = budgetService.findByConsultantAndProject(currentProject.getUuid(), contractConsultant.getUuid());
+
                 int month = 0;
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = null; // TODO: budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
+                    Optional<BudgetNew> optionalBudgetNew = budgets.stream().filter(budgetNew -> budgetNew.getYear() == filterDate.getYear() && budgetNew.getMonth() == filterDate.getMonthValue() - 1).findFirst();
 
-                    if(budget != null) {
-                        budgetRow.setMonth(month, (budget.getBudget() / contractConsultant.getRate())+"");
+                    if(optionalBudgetNew.isPresent()) {
+                        budgetRow.setMonth(month, (optionalBudgetNew.get().getBudget() / contractConsultant.getRate())+"");
                     } else {
-                        budgetService.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, contractConsultant, currentProject));
+                        budgetService.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, contractConsultant.getUuid(), currentProject.getUuid()));
                         budgetRow.setMonth(month, "0.0");
                     }
                     month++;
@@ -667,17 +641,21 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                     continue;
                 }
                 if(budgetString==null) budgetString = "0.0";
+                BudgetNew budget = new BudgetNew(
+                        budgetCountDate.getMonthValue() - 1,
+                        budgetCountDate.getYear(),
+                        Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()),
+                        budgetRow.getContractConsultant().getUuid(),
+                        currentProject.getUuid());
                 /*
-                TODO
                 BudgetNew budget = budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
-                        budgetRow.getContractConsultant(),
+                        budgetRow.getContractConsultant().getUuid(),
                         currentProject.getUuid());
                  */
-                BudgetNew budget = new BudgetNew();
-                //if(budget.getProject()==null) budget.setProject(currentProject);
-                budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
+
+                //budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
                 budgetService.save(budget);
                 budgetCountDate = budgetCountDate.plusMonths(1);
             }

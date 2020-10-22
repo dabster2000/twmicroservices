@@ -86,9 +86,10 @@ public class ContractConsultant {
     public String toString() {
         return "ContractConsultant{" +
                 "uuid='" + uuid + '\'' +
-                ", contract=" + contractuuid +
-                ", user=" + useruuid +
+                ", contractuuid='" + contractuuid + '\'' +
+                ", useruuid='" + useruuid + '\'' +
                 ", rate=" + rate +
+                ", budget=" + budget +
                 ", hours=" + hours +
                 '}';
     }
