@@ -99,7 +99,18 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             init();
         });
 
-        if(userService.getLoggedInUser().get().getUsername().equals("simon.gomez") || userService.getLoggedInUser().get().getUsername().equals("hans.lassen")) editButton.setVisible(true);
+        if(userService.getLoggedInUser().get().getUsername().equals("simon.gomez") ||
+                userService.getLoggedInUser().get().getUsername().equals("hans.lassen") ||
+                userService.getLoggedInUser().get().getUsername().equals("elvi.nissen") ||
+                userService.getLoggedInUser().get().getUsername().equals("regitze.carneiro") ||
+                userService.getLoggedInUser().get().getUsername().equals("stephan.jensen") ||
+                userService.getLoggedInUser().get().getUsername().equals("thomas.buchholdt") ||
+                userService.getLoggedInUser().get().getUsername().equals("brian.flaskager") ||
+                userService.getLoggedInUser().get().getUsername().equals("anna.mette.hansen") ||
+                userService.getLoggedInUser().get().getUsername().equals("sebastian.frandsen") ||
+                userService.getLoggedInUser().get().getUsername().equals("jan.borg") ||
+                userService.getLoggedInUser().get().getUsername().equals("lars.albert")
+        ) editButton.setVisible(true);
 
         this.addComponents(new VerticalLayout(new HorizontalLayout(backButton, editButton)), mainBox);
 
