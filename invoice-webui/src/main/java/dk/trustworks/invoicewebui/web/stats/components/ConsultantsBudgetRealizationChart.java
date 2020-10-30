@@ -144,7 +144,7 @@ public class ConsultantsBudgetRealizationChart {
     private Map<String, Double> prepareNamedMap(Map<String, Double> budgetPerUser) {
         Map<String, Double> budgetPerUserMap = new TreeMap<>();
         for (String useruuid : budgetPerUser.keySet()) {
-            User user = userService.findByUUID(useruuid);
+            User user = userService.findByUUID(useruuid, true);
             String userFullname = user.getFirstname() + " " + user.getLastname();
             Double budget = budgetPerUser.get(useruuid);
             if (budget < 0.0) budget = 0.0;

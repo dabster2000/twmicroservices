@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.web.client.components;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Photo;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.services.PhotoService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,25 +17,25 @@ import static com.vaadin.ui.Notification.Type.*;
  */
 public class ClientImpl extends ClientDesign {
 
-    private PhotoRepository photoRepository;
+    private PhotoService photoService;
     private Client client;
 
-    public ClientImpl(PhotoRepository photoRepository, Client client) {
-        this.photoRepository = photoRepository;
+    public ClientImpl(PhotoService photoService, Client client) {
+        this.photoService = photoService;
         this.client = client;
     }
 
     private void uploadReceived(String fileName, Path file) {
         Notification.show("Upload finished: " + fileName, HUMANIZED_MESSAGE);
         try {
-            Photo photo = photoRepository.findByRelateduuid(client.getUuid());
+            Photo photo = photoService.getRelatedPhoto(client.getUuid());
             byte[] bytes = Files.readAllBytes(file);
-            if(photo==null) {
+            if(photo==null || photo.getPhoto()!=null) {
                 photo = new Photo(UUID.randomUUID().toString(), client.getUuid(), bytes);
             } else {
                 photo.setPhoto(bytes);
             }
-            photoRepository.save(photo);
+            photoService.save(photo);
         } catch (IOException e) {
             uploadFailed(fileName, file);
         }

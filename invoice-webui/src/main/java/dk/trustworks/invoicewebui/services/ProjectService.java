@@ -67,7 +67,7 @@ public class ProjectService implements InitializingBean {
 
     @Transactional
     public Project save(Project project) {
-        project.setOwner(userService.findByUUID(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser().getUuid()));
+        project.setUserowneruuid(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser().getUuid());
         project = projectRestService.save(project);
         return project;
     }

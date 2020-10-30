@@ -6,9 +6,7 @@ import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.network.rest.ContractRestService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,19 +20,16 @@ public class ContractService implements InitializingBean {
 
     private final ContractRestService contractRestService;
 
-    private final ProjectService projectService;
-
     private final WorkService workService;
 
     @Autowired
-    public ContractService(ContractRestService contractRestService, ProjectService projectService, TaskService taskService, WorkService workService) {
+    public ContractService(ContractRestService contractRestService, WorkService workService) {
         this.contractRestService = contractRestService;
-        this.projectService = projectService;
         this.workService = workService;
     }
 
-    public Contract createContract(Contract contract) {
-        return contractRestService.save(contract);
+    public void createContract(Contract contract) {
+        contractRestService.save(contract);
     }
 
     public void updateContract(Contract contract) {
@@ -101,10 +96,11 @@ public class ContractService implements InitializingBean {
 
      */
 
-    public Double findConsultantRate(LocalDate date, User user, Task task, ContractStatus... statusList) {
+    public Double findConsultantRate(LocalDate date, String useruuid, Task task, ContractStatus... statusList) {
         if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(task.getType().equals(TaskType.SO)) return 0.0;
-        return findConsultantRateByWork(new Work(date, 0, user, task));
+        return contractRestService.findRateByProjectuuidAndUseruuidAndDate(task.getProjectuuid(), useruuid, date);
+        //return findConsultantRateByWork(new Work(date, 0, user, task));
         //Optional<Contract> optionalContract = getContractsByProject(taskService.findOne(task.getUuid()).getProject()).stream().filter(contract -> isBetween(LocalDate.of(year, month, day), contract.getActiveFrom(), contract.getActiveTo()) && contract.findByUseruuid(user.getUuid()) != null).findFirst();
         //return optionalContract.map(contract -> contract.findByUseruuid(user.getUuid()).getRate()).orElse(0.0);
         //return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
@@ -205,15 +201,8 @@ public class ContractService implements InitializingBean {
         return errorList.values();
     }
 
-    @Transactional
-    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public void deleteContract(Contract contract) {
-        try {
-            contractRestService.delete(contract.getUuid());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    public void deleteContract(String contractuuid) {
+        contractRestService.delete(contractuuid);
     }
 
     public List<Contract> findAll() {

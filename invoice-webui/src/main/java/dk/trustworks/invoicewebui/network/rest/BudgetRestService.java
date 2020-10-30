@@ -32,7 +32,7 @@ public class BudgetRestService {
         this.systemRestService = systemRestService;
     }
 
-    public List<GraphKeyValue> getBudgetsPerMonth(LocalDate fromdate, LocalDate todate) {
+    public List<GraphKeyValue> getBudgetsByPeriod(LocalDate fromdate, LocalDate todate) {
         String url = apiGatewayUrl +"/cached/budgets/datemonths?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
         List<GraphKeyValue> graphKeyValues;
         try {

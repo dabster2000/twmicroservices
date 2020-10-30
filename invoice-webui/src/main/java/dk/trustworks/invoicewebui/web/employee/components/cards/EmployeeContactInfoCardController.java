@@ -8,7 +8,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserContactinfo;
-import dk.trustworks.invoicewebui.repositories.UserContactinfoRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.employee.components.parts.UserDetailsCardDesign;
 
@@ -17,9 +16,6 @@ import dk.trustworks.invoicewebui.web.employee.components.parts.UserDetailsCardD
 public class EmployeeContactInfoCardController {
 
     private final UserService userService;
-
-    // TODO: Migrate to UserService
-    private UserContactinfoRepository userContactinfoRepository;
 
     public EmployeeContactInfoCardController(UserService userService) {
         this.userService = userService;
@@ -37,11 +33,11 @@ public class EmployeeContactInfoCardController {
 
         userBinder.forField(userDetailsCard.getDfBirthday()).bind(User::getBirthday, User::setBirthday);
 
-        final UserContactinfo contactinfo = user.getUserContactinfo()!=null?user.getUserContactinfo():new UserContactinfo("", "" ,"", "");//userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo("", "" ,"", ""));
+        final UserContactinfo contactinfo = userService.findUserContactinfo(user.getUuid());//user.getUserContactinfo()!=null?user.getUserContactinfo():new UserContactinfo("", "" ,"", "");//userContactinfoRepository.findFirstByUser(user).orElse(new UserContactinfo("", "" ,"", ""));
         //if(contactinfo==null) contactinfo = new UserContactinfo("", "" ,"", "");
         contactinfoBinder.forField(userDetailsCard.getTxtCity()).bind(UserContactinfo::getCity, UserContactinfo::setCity);
-        contactinfoBinder.forField(userDetailsCard.getTxtPostal()).bind(UserContactinfo::getPostalCode, UserContactinfo::setPostalCode);
-        contactinfoBinder.forField(userDetailsCard.getTxtStreet()).bind(UserContactinfo::getStreetName, UserContactinfo::setStreetName);
+        contactinfoBinder.forField(userDetailsCard.getTxtPostal()).bind(UserContactinfo::getPostalcode, UserContactinfo::setPostalcode);
+        contactinfoBinder.forField(userDetailsCard.getTxtStreet()).bind(UserContactinfo::getStreetname, UserContactinfo::setStreetname);
         contactinfoBinder.forField(userDetailsCard.getTxtPhone()).bind(UserContactinfo::getPhone, UserContactinfo::setPhone);
 
         userBinder.readBean(user);
@@ -52,8 +48,8 @@ public class EmployeeContactInfoCardController {
                 userBinder.writeBean(user);
                 contactinfoBinder.writeBean(contactinfo);
 
-                userService.update(user);
-                userContactinfoRepository.save(contactinfo);
+                userService.updateBirthday(user);
+                userService.updateUserContactinfo(user.getUuid(), contactinfo);
 
                 Notification.show("Contact information updated", Notification.Type.TRAY_NOTIFICATION);
             } catch (ValidationException e) {

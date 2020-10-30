@@ -90,12 +90,12 @@ public class UserLayout {
             User user = new User();
             user.setUsername("new.new");
             userService.create(user);
-            userComboBox.setItems(userService.findAll());
+            userComboBox.setItems(userService.findAll(false));
             userComboBox.setSelectedItem(user);
         });
 
         userComboBox = new ComboBox<>();
-        userComboBox.setItems(userService.findAll());
+        userComboBox.setItems(userService.findAll(false));
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setEmptySelectionAllowed(false);
         selectionContentRow
@@ -155,7 +155,7 @@ public class UserLayout {
 
         ArrayList<Employee> employees = new ArrayList<>();
         // Set the data provider (ListDataProvider<CompanyBudgetHistory>)
-        for (User user : userService.findAll()) {
+        for (User user : userService.findAll(false)) {
             Optional<Salary> salary = user.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom));
             if(!salary.isPresent()) continue;
             Optional<UserStatus> userStatus = user.getStatuses().stream().max((Comparator.comparing(UserStatus::getStatusdate)));

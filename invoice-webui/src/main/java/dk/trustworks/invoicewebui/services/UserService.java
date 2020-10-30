@@ -2,10 +2,7 @@ package dk.trustworks.invoicewebui.services;
 
 
 import com.vaadin.server.VaadinSession;
-import dk.trustworks.invoicewebui.model.Role;
-import dk.trustworks.invoicewebui.model.Salary;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.Capacity;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
@@ -17,6 +14,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,6 +26,8 @@ import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.ACTIVE;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.NON_PAY_LEAVE;
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PUT;
 
 @Service
 public class UserService implements InitializingBean {
@@ -49,9 +49,9 @@ public class UserService implements InitializingBean {
         return Optional.of(VaadinSession.getCurrent().getAttribute(UserSession.class).getLoginToken());
     }
 
-    public User findByUUID(String uuid) {
+    public User findByUUID(String uuid, boolean shallow) {
         if(uuid==null) return null;
-        return userRestService.findOne(uuid);
+        return userRestService.findOne(uuid, shallow);
     }
 
     public User findByUsername(String username) {
@@ -62,8 +62,8 @@ public class UserService implements InitializingBean {
         return userRestService.findBySlackusername(userId);
     }
 
-    public List<User> findAll() {
-        return userRestService.findByOrderByUsername();
+    public List<User> findAll(boolean shallow) {
+        return userRestService.findByOrderByUsername(true);
     }
 
     public List<User> findCurrentlyEmployedUsers() {
@@ -120,6 +120,14 @@ public class UserService implements InitializingBean {
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
+    public UserContactinfo findUserContactinfo(String useruuid) {
+        return userRestService.findUserContactinfo(useruuid);
+    }
+
+    public void updateUserContactinfo(String useruuid, UserContactinfo userContactinfo) {
+        userRestService.updateUserContactinfo(useruuid, userContactinfo);
+    }
+
     public int getUserSalary(User user, LocalDate date) {
         Salary salary = user.getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0));
         return salary.getSalary();
@@ -132,11 +140,13 @@ public class UserService implements InitializingBean {
     public int calcMonthSalaries(LocalDate date, String... consultantTypes) {
         String[] statusList = {ACTIVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
-                .stream().peek(user -> {
-                    System.out.println("user.getUsername() = " + user.getUsername());
-                    System.out.println("user.getSalaries().size() = " + user.getSalaries().size());
-                }).mapToInt(value ->
-                        value.getSalaries().stream().peek(salary -> System.out.println("salary = " + salary)).filter(salary -> salary.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0)).getSalary()
+                .stream()
+                .mapToInt(value -> value.getSalaries()
+                        .stream()
+                        .filter(salary -> salary.getActivefrom().isBefore(date))
+                        .max(Comparator.comparing(Salary::getActivefrom))
+                        .orElse(new Salary(date, 0))
+                        .getSalary()
                 ).sum();
     }
 
@@ -149,7 +159,7 @@ public class UserService implements InitializingBean {
     }
 
     public List<UserStatus> findByUserAndTypeAndStatusOrderByStatusdateAsc(User user, ConsultantType type, StatusType status) {
-        return userRestService.findOne(user.getUuid()).getStatuses()
+        return userRestService.findOne(user.getUuid(), true).getStatuses()
                 .stream()
                 .filter(userStatus -> userStatus.getStatus().equals(status) && userStatus.getType().equals(type))
                 .sorted(Comparator.comparing(UserStatus::getStatusdate).reversed())
@@ -194,6 +204,10 @@ public class UserService implements InitializingBean {
         return userRestService.findUserStatusList(useruuid);
     }
 
+    public List<Salary> findUserSalaries(String useruuid) {
+        return userRestService.findUserSalaries(useruuid);
+    }
+
     public boolean isEmployed(User user) {
         return findCurrentlyEmployedUsers().stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
     }
@@ -212,6 +226,11 @@ public class UserService implements InitializingBean {
         userRestService.update(user);
     }
 
+    public void updateBirthday(User user) {
+        Validate.notNull(user.getUuid());
+        userRestService.updateBirthday(user);
+    }
+
     @Override
     public void afterPropertiesSet() {
         instance = this;
@@ -225,28 +244,28 @@ public class UserService implements InitializingBean {
         return userRestService.login(username, password);
     }
 
-    public void deleteSalaries(User user, Set<Salary> salaries) {
-        userRestService.deleteSalaries(user, salaries);
+    public void deleteSalaries(String useruuid, Set<Salary> salaries) {
+        userRestService.deleteSalaries(useruuid, salaries);
     }
 
-    public void deleteUserStatuses(User user, Set<UserStatus> userStatuses) {
-        userRestService.deleteUserStatuses(user, userStatuses);
+    public void deleteUserStatuses(String useruuid, Set<UserStatus> userStatuses) {
+        userRestService.deleteUserStatuses(useruuid, userStatuses);
     }
 
     public void deleteRoles(User user, List<Role> roles) {
         userRestService.deleteRoles(user, roles);
     }
 
-    public void create(User user, Salary salary) {
-        userRestService.create(user, salary);
+    public void create(String useruuid, Salary salary) {
+        userRestService.create(useruuid, salary);
     }
 
-    public void create(User user, UserStatus userStatus) {
-        userRestService.create(user, userStatus);
+    public void create(String useruuid, UserStatus userStatus) {
+        userRestService.create(useruuid, userStatus);
     }
 
-    public void create(User user, Role role) {
-        userRestService.create(user, role);
+    public void create(String useruuid, Role role) {
+        userRestService.create(useruuid, role);
     }
 
 }

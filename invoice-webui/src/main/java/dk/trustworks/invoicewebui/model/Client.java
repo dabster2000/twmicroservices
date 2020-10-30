@@ -95,7 +95,7 @@ public class Client {
 
     @JsonIgnore
     public User getAccountManager() {
-        return UserService.get().findByUUID(accountmanager);
+        return UserService.get().findByUUID(accountmanager, true);
     }
 
     @JsonIgnore

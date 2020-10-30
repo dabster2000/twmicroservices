@@ -152,7 +152,7 @@ public class ContractListLayout extends VerticalLayout {
                 contractFormDesign.getBtnUpdate().setVisible(false);
 
                 contractFormDesign.getBtnCreate().addClickListener(event3 -> {
-                    Contract contract = contractService.createContract(new Contract(
+                    Contract contract = new Contract(
                             contractFormDesign.getCbType().getValue(),
                             contractFormDesign.getCbStatus().getValue(),
                             contractFormDesign.getTxtNote().getValue(),
@@ -160,7 +160,8 @@ public class ContractListLayout extends VerticalLayout {
                             contractFormDesign.getDfFrom().getValue().withDayOfMonth(1),
                             contractFormDesign.getDfTo().getValue().withDayOfMonth(contractFormDesign.getDfTo().getValue().lengthOfMonth()),
                             NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
-                            client));
+                            client);
+                    contractService.createContract(contract);
                     this.removeComponent(contractResponsiveLayout);
                     NavigationBar navigationBar = new NavigationBar();
                     navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
@@ -187,7 +188,6 @@ public class ContractListLayout extends VerticalLayout {
 
     private void createContractView(Client client) {
         for (Contract contract : clientService.findOne(client.getUuid()).getContracts().stream().sorted(comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
-            System.out.println("contract = " + contract);
             ContractDesign contractDesign = new ContractDesign();
 
             if(contract.getName()==null || contract.getName().equals("")) {
@@ -243,14 +243,15 @@ public class ContractListLayout extends VerticalLayout {
 
             contractDesign.getBtnDelete().addClickListener(event1 -> ConfirmDialog.show(UI.getCurrent(), "Really delete contract?", dialog -> {
                 if(dialog.isConfirmed()) {
-                    contractService.deleteContract(contract);
+                    contractService.deleteContract(contract.getUuid());
                     reloadContractView(clientService.findOne(client.getUuid()));
                 }
             }));
 
             contractDesign.getBtnExtendContract().setIcon(MaterialIcons.PLAYLIST_ADD);
             contractDesign.getBtnExtendContract().addClickListener(event1 -> {
-                Contract newContract = contractService.createContract(new Contract(contract));
+                Contract newContract = new Contract(contract);
+                contractService.createContract(newContract);
                 this.removeComponent(contractResponsiveLayout);
                 NavigationBar navigationBar = new NavigationBar();
                 navigationBar.getBtnBack().addClickListener(event -> this.createLayout());

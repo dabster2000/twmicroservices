@@ -21,8 +21,9 @@ public class UserSession {
     public UserSession() {
     }
 
-    public UserSession(LoginToken loginToken) {
+    public UserSession(LoginToken loginToken, List<Role> roles) {
         this.loginToken = loginToken;
+        this.roles = roles;
     }
 
     public UserSession(User user, LoginToken loginToken, List<Role> roles) {

@@ -75,7 +75,7 @@ public class RevenuePerMonthChart {
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#123375"));
         budgetSeries.setPlotOptions(plotOptionsArea);
-        for (GraphKeyValue graphKeyValue : budgetService.getBudgetsPerMonth(periodStart, periodEnd)) {
+        for (GraphKeyValue graphKeyValue : budgetService.getBudgetsByPeriod(periodStart, periodEnd)) {
             budgetSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
         }
         chart.getConfiguration().addSeries(budgetSeries);
@@ -94,16 +94,18 @@ public class RevenuePerMonthChart {
                 "Invoiced Revenue",
                 "#CFD6E3"));
 
-        DataSeries earningsSeries = new DataSeries("Gross Profit");
+        if(showEarnings) {
+            DataSeries earningsSeries = new DataSeries("Gross Profit");
 
-        PlotOptionsAreaspline plotOptionsArea3 = new PlotOptionsAreaspline();
-        plotOptionsArea3.setColor(new SolidColor("#54D69E"));
-        plotOptionsArea3.setNegativeColor(new SolidColor("#FD5F5B"));
-        earningsSeries.setPlotOptions(plotOptionsArea3);
-        for (GraphKeyValue graphKeyValue : revenueService.getProfitsByPeriod(periodStart, (periodEnd.isBefore(LocalDate.now()))?periodEnd:LocalDate.now().withDayOfMonth(1))) {
-            earningsSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
+            PlotOptionsAreaspline plotOptionsArea3 = new PlotOptionsAreaspline();
+            plotOptionsArea3.setColor(new SolidColor("#54D69E"));
+            plotOptionsArea3.setNegativeColor(new SolidColor("#FD5F5B"));
+            earningsSeries.setPlotOptions(plotOptionsArea3);
+            for (GraphKeyValue graphKeyValue : revenueService.getProfitsByPeriod(periodStart, (periodEnd.isBefore(LocalDate.now())) ? periodEnd : LocalDate.now().withDayOfMonth(1))) {
+                earningsSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
+            }
+            chart.getConfiguration().addSeries(earningsSeries);
         }
-        if(showEarnings) chart.getConfiguration().addSeries(earningsSeries);
 
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, periodEnd));
 

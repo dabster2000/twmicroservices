@@ -51,11 +51,11 @@ public class Work {
     }
 
     public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
+        return UserService.get().findByUUID(getUseruuid(), true);
     }
 
     public User getWorkasUser() {
         if(getWorkas()==null || getWorkas().trim().equals("")) return null;
-        return UserService.get().findByUUID(getWorkas());
+        return UserService.get().findByUUID(getWorkas(), true);
     }
 }

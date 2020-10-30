@@ -13,7 +13,7 @@ import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.NotificationRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.Broadcaster;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
     private NotificationRepository notificationRepository;
 
     @Autowired
-    private PhotoRepository photoRepository;
+    private PhotoService photoService;
 
     private FancyNotifications notifications;
 
@@ -104,7 +104,7 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
         topMenuUserDesign = new TopMenuUserDesign();
         Photo photo;
         Image image;
-        if((photo = photoRepository.findByRelateduuid(user.getUuid())) != null) {
+        if((photo = photoService.getRelatedPhoto(user.getUuid())) != null) {
             image = new Image(null,
                     new StreamResource((StreamResource.StreamSource) () ->
                             new ByteArrayInputStream(photo.getPhoto()),

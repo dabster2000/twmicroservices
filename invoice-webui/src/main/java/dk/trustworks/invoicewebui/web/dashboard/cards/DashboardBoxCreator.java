@@ -26,10 +26,6 @@ public class DashboardBoxCreator {
 
     private final ProjectService projectService;
 
-    private final WorkService workService;
-
-    private final ContractService contractService;
-
     private final StatisticsService statisticsService;
 
     private final UserService userService;
@@ -41,10 +37,8 @@ public class DashboardBoxCreator {
     private final AvailabilityService availabilityService;
 
     @Autowired
-    public DashboardBoxCreator(ProjectService projectService, WorkService workService, ContractService contractService, StatisticsService statisticsService, UserService userService, FinanceService financeService, RevenueService revenueService, AvailabilityService availabilityService) {
+    public DashboardBoxCreator(ProjectService projectService, StatisticsService statisticsService, UserService userService, FinanceService financeService, RevenueService revenueService, AvailabilityService availabilityService) {
         this.projectService = projectService;
-        this.workService = workService;
-        this.contractService = contractService;
         this.statisticsService = statisticsService;
         this.userService = userService;
         this.financeService = financeService;

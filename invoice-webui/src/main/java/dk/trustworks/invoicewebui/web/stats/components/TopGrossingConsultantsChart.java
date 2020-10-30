@@ -54,7 +54,7 @@ public class TopGrossingConsultantsChart {
 
         List<GraphKeyValue> amountPerItemList = new ArrayList<>();//graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
-        for (User user : userService.findAll()) {
+        for (User user : userService.findAll(true)) {
             LocalDate currentDate = periodStart;
             GraphKeyValue gkv = new GraphKeyValue(user.getUuid(), user.getInitials(), 0);
             do {

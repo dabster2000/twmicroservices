@@ -84,11 +84,6 @@ public class Week {
         return TaskService.get().findOne(taskuuid);
     }
 
-    @JsonIgnore
-    public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
-    }
-
     public String getWorkas() {
         return workas;
     }
@@ -99,7 +94,7 @@ public class Week {
 
     @JsonIgnore
     public User getWorkasUser() {
-        return UserService.get().findByUUID(getWorkas());
+        return UserService.get().findByUUID(getWorkas(), true);
     }
 
     @Override
@@ -110,13 +105,13 @@ public class Week {
         return getWeeknumber() == week.getWeeknumber() &&
                 getYear() == week.getYear() &&
                 Objects.equal(getTask(), week.getTask()) &&
-                Objects.equal(getUser(), week.getUser()) &&
+                Objects.equal(getUseruuid(), week.getUseruuid()) &&
                 Objects.equal(getWorkas(), week.getWorkas());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getTask(), getUser(), getWeeknumber(), getYear(), getWorkas());
+        return Objects.hashCode(getTask(), getUseruuid(), getWeeknumber(), getYear(), getWorkas());
     }
 
     @Override

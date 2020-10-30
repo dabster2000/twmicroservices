@@ -10,12 +10,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by hans on 12/08/2017.
@@ -37,7 +35,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
     private final ClientdataService clientdataService;
 
-    private final PhotoRepository photoRepository;
+    private final PhotoService photoService;
 
     private final ProjectService projectService;
 
@@ -48,10 +46,10 @@ public class ClientManagerImpl extends ClientManagerDesign {
     ResponsiveLayout responsiveLayout;
 
     @Autowired
-    public ClientManagerImpl(ClientService clientService, ClientdataService clientdataService, PhotoRepository photoRepository, ProjectService projectService, UserService userService, RevenueService revenueService) {
+    public ClientManagerImpl(ClientService clientService, ClientdataService clientdataService, PhotoService photoService, ProjectService projectService, UserService userService, RevenueService revenueService) {
         this.clientService = clientService;
         this.clientdataService = clientdataService;
-        this.photoRepository = photoRepository;
+        this.photoService = photoService;
         this.projectService = projectService;
         this.userService = userService;
         this.revenueService = revenueService;
@@ -75,7 +73,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
         Iterable<Client> clients = clientService.findAll().stream().sorted(Comparator.comparing(Client::isActive).reversed()).collect(Collectors.toList());
         for (Client client : clients) {
-            ClientCardImpl clientCard = new ClientCardImpl(client, photoRepository.findByRelateduuid(client.getUuid()));
+            ClientCardImpl clientCard = new ClientCardImpl(client, photoService.getRelatedPhoto(client.getUuid()));
             clientCard.getBtnEdit().addClickListener(event -> createClientDetailsView(client));
             clientCard.getBtnDelete().addClickListener(event -> {
                 client.setActive(!client.isActive());
@@ -115,7 +113,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
         cardLogo.getContainer().addComponent(logo);
 
         LogoCardDesign cardLogoWithEditor = new LogoCardDesign();
-        cardLogoWithEditor.getContainer().addComponent(new PhotoUploader(client.getUuid(), 800, 400, "Find and upload a logo for this client.", PhotoUploader.Step.PHOTO, photoRepository).getUploader());
+        cardLogoWithEditor.getContainer().addComponent(new PhotoUploader(client.getUuid(), 800, 400, "Find and upload a logo for this client.", PhotoUploader.Step.PHOTO, photoService).getUploader());
 
         ClientImpl clientComponent = createClientBlock(client);
 
@@ -178,7 +176,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
     }
 
     private ClientImpl createClientBlock(Client client) {
-        ClientImpl clientComponent = new ClientImpl(photoRepository, client);
+        ClientImpl clientComponent = new ClientImpl(photoService, client);
         clientComponent.setHeight("100%");
         clientComponent.getBtnActive().setValue(client.isActive());
         clientComponent.getBtnActive().addValueChangeListener(event -> {
@@ -195,7 +193,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
             client.setCrmid(event.getValue());
             saveClient(client);
         });
-        clientComponent.getCbClientManager().setItems(userService.findAll());
+        clientComponent.getCbClientManager().setItems(userService.findAll(true));
         clientComponent.getCbClientManager().setItemCaptionGenerator(User::getUsername);
         clientComponent.getCbClientManager().setSelectedItem(client.getAccountManager());
         clientComponent.getCbClientManager().addValueChangeListener(event -> {
@@ -212,7 +210,7 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
     private Image createCompanyLogo(Client client) {
         Image logo;
-        Photo photo = photoRepository.findByRelateduuid(client.getUuid());
+        Photo photo = photoService.getRelatedPhoto(client.getUuid());
         if(photo!=null && photo.getPhoto().length > 0) {
             logo = new Image(null,
                     new StreamResource((StreamResource.StreamSource) () ->

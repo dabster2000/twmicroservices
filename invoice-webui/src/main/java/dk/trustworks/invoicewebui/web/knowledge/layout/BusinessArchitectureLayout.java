@@ -15,7 +15,6 @@ import dk.trustworks.invoicewebui.functions.TokenEventListener;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
 import dk.trustworks.invoicewebui.repositories.KnowArchiColumnRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.ProjectService;
@@ -54,9 +53,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
     @Autowired
     private PhotoService photoService;
-
-    @Autowired
-    private PhotoRepository photoRepository;
 
     @Autowired
     private UserService userService;
@@ -148,7 +144,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
         box.addStyleName("semi-white-bg");
 
-        box.getImgTop().setSource(photoService.getRelatedPhoto(item.getPhotoUuid()));
+        box.getImgTop().setSource(photoService.getRelatedPhotoResource(item.getPhotoUuid()));
 
         box.getVlContent().addComponent(
                 new MVerticalLayout(
@@ -163,7 +159,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                             new MButton(MaterialIcons.PHOTO).withStyleName("icon-only tiny").withListener(clickEvent -> {
                                 if(item.getPhotoUuid().equals("")) item.setPhotoUuid(UUID.randomUUID().toString());
                                 knowArchiColumnRepository.save(archiColumn);
-                                new PhotoUploader(item.getPhotoUuid(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoRepository).getUploader();
+                                new PhotoUploader(item.getPhotoUuid(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoService).getUploader();
                             }),
                             new MButton(MaterialIcons.EDIT).withStyleName("icon-only tiny").withListener(clickEvent -> {
                                 Window window = new Window();
@@ -291,14 +287,14 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                 registrationList.clear();
 
                 KnowledgeArchitectureFile cardFile = fileItems.get(event1.getValue());
-                architectureCell1.getImgTop().setSource(photoService.getRelatedPhoto(cardFile.getPreview()));
+                architectureCell1.getImgTop().setSource(photoService.getRelatedPhotoResource(cardFile.getPreview()));
                 architectureCell1.getVlConsultants().removeAllComponents();
 
                 for (String author : cardFile.getAuthors().split(",")) {
                     if(author.length()<2) continue;
-                    architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(userService.findByUUID(author), false, 50, Unit.PIXELS));
+                    architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(userService.findByUUID(author, true), false, 50, Unit.PIXELS));
                 }
-                architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhoto(cardFile.getCustomeruuid()));
+                architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhotoResource(cardFile.getCustomeruuid()));
                 architectureCell1.getImgCustomer().setHeight(50, Unit.PIXELS);
                 architectureCell1.getContent().removeAllComponents();
                 architectureCell1.getContent().addComponent(new MLabel(cardFile.getDescription()).withContentMode(ContentMode.HTML).withFullWidth());
@@ -323,7 +319,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                     registrationList.add(architectureCell1.getBtnImgFile().addClickListener(clickEvent -> {
                         if(cardFile.getPreview() == null || cardFile.getPreview().equals("")) cardFile.setPreview(UUID.randomUUID().toString());
                         knowArchiColumnRepository.save(archiColumn);
-                        new PhotoUploader(cardFile.getPreview(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoRepository).getUploader();
+                        new PhotoUploader(cardFile.getPreview(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoService).getUploader();
                     }));
 
                     /*
@@ -335,11 +331,11 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                     }).withStyleName("icon-only tiny").withIcon(MaterialIcons.DELETE_FOREVER));
                     */
                     registrationList.add(architectureCell1.getBtnEditFile().addClickListener(clickEvent -> {
-                        List<User> allUsers = userService.findAll();
+                        List<User> allUsers = userService.findAll(true);
                         List<User> selectedUsers = new ArrayList<>();
                         for (String useruuids : cardFile.getAuthors().split(",")) {
                             if(useruuids.length()<2) continue;
-                            selectedUsers.add(userService.findByUUID(useruuids));
+                            selectedUsers.add(userService.findByUUID(useruuids, true));
                         }
 
                         TokenListImpl tokenList = new TokenListImpl(

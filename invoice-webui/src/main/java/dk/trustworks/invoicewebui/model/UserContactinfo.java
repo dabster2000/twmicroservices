@@ -5,44 +5,44 @@ package dk.trustworks.invoicewebui.model;
  */
 public class UserContactinfo {
 
-    private int id;
-    private String streetName;
-    private String postalCode;
+    private String uuid;
+    private String streetname;
+    private String postalcode;
     private String city;
     private String phone;
 
     public UserContactinfo() {
     }
 
-    public UserContactinfo(String streetName, String postalCode, String city, String phone) {
-        this.streetName = streetName;
-        this.postalCode = postalCode;
+    public UserContactinfo(String streetname, String postalcode, String city, String phone) {
+        this.streetname = streetname;
+        this.postalcode = postalcode;
         this.city = city;
         this.phone = phone;
     }
 
-    public int getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getStreetName() {
-        return streetName;
+    public String getStreetname() {
+        return streetname;
     }
 
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
+    public void setStreetname(String streetname) {
+        this.streetname = streetname;
     }
 
-    public String getPostalCode() {
-        return postalCode;
+    public String getPostalcode() {
+        return postalcode;
     }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+    public void setPostalcode(String postalcode) {
+        this.postalcode = postalcode;
     }
 
     public String getCity() {
@@ -64,9 +64,9 @@ public class UserContactinfo {
     @Override
     public String toString() {
         return "UserContactinfo{" +
-                "id=" + id +
-                ", streetName='" + streetName + '\'' +
-                ", postalCode='" + postalCode + '\'' +
+                "uuid=" + uuid +
+                ", streetName='" + streetname + '\'' +
+                ", postalCode='" + postalcode + '\'' +
                 ", city='" + city + '\'' +
                 ", phone='" + phone + '\'' +
                 '}';

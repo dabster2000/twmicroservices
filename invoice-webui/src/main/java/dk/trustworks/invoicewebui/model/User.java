@@ -130,7 +130,7 @@ public class User {
     }
 
     public List<UserStatus> getStatuses() {
-        return UserService.get().findUserStatusList(this.getUuid());
+        return statuses; //UserService.get().findUserStatusList(this.getUuid());
     }
 
     public void setStatuses(List<UserStatus> statuses) {

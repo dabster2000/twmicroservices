@@ -3,8 +3,8 @@ package dk.trustworks.invoicewebui.web.admin.components;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserPhotoCardImpl extends UserPhotoCardDesign {
 
     @Autowired
-    private PhotoRepository photoRepository;
+    private PhotoService photoService;
 
     public UserPhotoCardImpl() {
     }
@@ -26,7 +26,7 @@ public class UserPhotoCardImpl extends UserPhotoCardDesign {
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
     public void init(String userUUID) {
         getContainer().removeAllComponents();
-        getContainer().addComponents(new PhotoUploader(userUUID, 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader());
+        getContainer().addComponents(new PhotoUploader(userUUID, 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoService).getUploader());
     }
 
 }

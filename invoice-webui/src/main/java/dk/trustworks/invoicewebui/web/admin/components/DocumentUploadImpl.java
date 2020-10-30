@@ -50,7 +50,7 @@ public class DocumentUploadImpl extends DocumentUpload {
         });
 
         getCbUser().setItemCaptionGenerator(User::getUsername);
-        getCbUser().setItems(userService.findAll());
+        getCbUser().setItems(userService.findAll(true));
 
         getBtnRemoveUpload().addClickListener(event -> {
             bytes = null;

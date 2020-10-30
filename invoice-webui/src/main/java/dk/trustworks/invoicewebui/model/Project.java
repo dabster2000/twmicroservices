@@ -142,7 +142,7 @@ public class Project {
 
     @JsonIgnore
     public User getOwner() {
-        return UserService.get().findByUUID(getUserowneruuid());
+        return UserService.get().findByUUID(getUserowneruuid(), true);
     }
 
     @JsonIgnore

@@ -15,7 +15,10 @@ import dk.trustworks.invoicewebui.model.CkoCourseStudent;
 import dk.trustworks.invoicewebui.model.Note;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.services.*;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.BudgetService;
+import dk.trustworks.invoicewebui.services.PhotoService;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import dk.trustworks.invoicewebui.web.common.ImageListItem;
@@ -78,8 +81,6 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final MicroCourseStudentRepository microCourseStudentRepository;
 
-    private final PhotoRepository photoRepository;
-
     private final PhotoService photoService;
 
     private final BudgetService budgetService;
@@ -106,7 +107,7 @@ public class EmployeeLayout extends VerticalLayout {
     private final UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoRepository photoRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.userService = userService;
         this.availabilityService = availabilityService;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
@@ -119,7 +120,6 @@ public class EmployeeLayout extends VerticalLayout {
         this.reminderRepository = reminderRepository;
         this.ambitionSpiderChart = ambitionSpiderChart;
         this.ambitionCategoryRepository = ambitionCategoryRepository;
-        this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
         this.microCourseStudentRepository = microCourseStudentRepository;
@@ -162,7 +162,7 @@ public class EmployeeLayout extends VerticalLayout {
 
         baseContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(achievementCardController.getCard(user));
 
-        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(new PhotoUploader(user.getUuid(), 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoRepository).getUploader()));
+        baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(new PhotoUploader(user.getUuid(), 100, 100, 400, 400, "Upload a photograph of this employee:", PhotoUploader.Step.PHOTO, photoService).getUploader()));
         baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(employeeContactInfoCardController.getCard(user));
         baseContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(keyPurposeHeadlinesCardController.getCard(user));
 
@@ -250,7 +250,7 @@ public class EmployeeLayout extends VerticalLayout {
         );
 
         for (CkoCourseStudent ckoCourseStudent : microCourseStudentRepository.findByUseruuid(user.getUuid()).stream().filter(ckoCourseStudent -> ckoCourseStudent.getStatus().equals(type)).collect(Collectors.toList())) {
-            ImageListItem courseListItem = new ImageListItem().withComponents(photoService.getRelatedPhoto(ckoCourseStudent.getCkoCourse().getUuid()), ckoCourseStudent.getCkoCourse().getName(), ckoCourseStudent.getApplication().format(DateTimeFormatter.ofPattern("dd. MMMM yyyy")));
+            ImageListItem courseListItem = new ImageListItem().withComponents(photoService.getRelatedPhotoResource(ckoCourseStudent.getCkoCourse().getUuid()), ckoCourseStudent.getCkoCourse().getName(), ckoCourseStudent.getApplication().format(DateTimeFormatter.ofPattern("dd. MMMM yyyy")));
             graduatedCoursesCard.getVlContent().addComponent(courseListItem);
         }
         return graduatedCoursesCard;

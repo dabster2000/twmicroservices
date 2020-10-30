@@ -1,10 +1,7 @@
 package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.network.rest.BudgetRestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +20,8 @@ public class BudgetService {
         this.budgetRestService = budgetRestService;
     }
 
-    public List<GraphKeyValue> getBudgetsPerMonth(LocalDate periodStart, LocalDate periodEnd) {
-        return budgetRestService.getBudgetsPerMonth(periodStart, periodEnd);
+    public List<GraphKeyValue> getBudgetsByPeriod(LocalDate periodStart, LocalDate periodEnd) {
+        return budgetRestService.getBudgetsByPeriod(periodStart, periodEnd);
     }
 
     public double getConsultantBudgetHoursByMonth(String useruuid, LocalDate month) {

@@ -14,7 +14,6 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
 import dk.trustworks.invoicewebui.repositories.MicroCourseStudentRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -31,7 +30,6 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 public class BasicSkillsLayout extends VerticalLayout {
 
     private final UserService userService;
-    private final PhotoRepository photoRepository;
     private final PhotoService photoService;
     private final MicroCourseRepository microCourseRepository;
     private final MicroCourseStudentRepository microCourseStudentRepository;
@@ -42,9 +40,8 @@ public class BasicSkillsLayout extends VerticalLayout {
     private CourseForm courseForm;
 
     @Autowired
-    public BasicSkillsLayout(UserService userService, PhotoRepository photoRepository, PhotoService photoService, MicroCourseRepository microCourseRepository, MicroCourseStudentRepository microCourseStudentRepository) {
+    public BasicSkillsLayout(UserService userService, PhotoService photoService, MicroCourseRepository microCourseRepository, MicroCourseStudentRepository microCourseStudentRepository) {
         this.userService = userService;
-        this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.microCourseRepository = microCourseRepository;
         this.microCourseStudentRepository = microCourseStudentRepository;
@@ -53,7 +50,7 @@ public class BasicSkillsLayout extends VerticalLayout {
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public BasicSkillsLayout init() {
-        courseForm = new CourseForm("basic", userService, microCourseRepository, photoRepository);
+        courseForm = new CourseForm("basic", userService, microCourseRepository, photoService);
 
         responsiveLayout.removeAllComponents();
         responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new PhotosCardImpl().loadResourcePhoto("images/banners/trustworks-academy-basic-skills.png").withFullWidth());
@@ -137,7 +134,7 @@ public class BasicSkillsLayout extends VerticalLayout {
             courseDesign.getTextContentHolder().setHeight(300, Unit.PIXELS);
 
             String relatedID = ckoCourse.getUuid();
-            Resource resource = photoService.getRelatedPhoto(relatedID);
+            Resource resource = photoService.getRelatedPhotoResource(relatedID);
 
             courseDesign.getImgTop().setSource(resource);
             if(ckoCourse.getUser().getUuid().equals(user.getUuid()) || user.getUsername().equals("marie.myssing")) {

@@ -80,7 +80,7 @@ public class Bubble {
     }
 
     public User getUser() {
-        return UserService.get().findByUUID(getOwner());
+        return UserService.get().findByUUID(getOwner(), true);
     }
 
     public void setUser(User user) {

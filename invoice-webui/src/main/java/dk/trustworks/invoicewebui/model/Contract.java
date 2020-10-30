@@ -13,10 +13,7 @@ import main.java.com.maximeroussy.invitrode.RandomWord;
 import main.java.com.maximeroussy.invitrode.WordLengthException;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Contract {
 
@@ -51,9 +48,9 @@ public class Contract {
     @JsonProperty("note")
     public String note;
     @JsonProperty("contractConsultants")
-    public List<ContractConsultant> contractConsultants = null;
+    public List<ContractConsultant> contractConsultants = new ArrayList<>();
     @JsonProperty("contractProjects")
-    public List<Object> contractProjects = null;
+    public List<Object> contractProjects = new ArrayList<>();
 
     /*
     private String uuid;

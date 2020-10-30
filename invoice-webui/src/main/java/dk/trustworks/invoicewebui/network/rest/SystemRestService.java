@@ -4,6 +4,8 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -19,6 +21,8 @@ import javax.annotation.PostConstruct;
 
 @Service
 public class SystemRestService {
+
+    protected static Logger logger = LoggerFactory.getLogger(SystemRestService.class.getName());
 
     @Value("#{environment.APIGATEWAY_URL}")
     private String apiGatewayUrl;
@@ -42,6 +46,7 @@ public class SystemRestService {
         try {
             String url = apiGatewayUrl + "/login?username=" + username + "&password=" + password;
             loginToken = restTemplate.getForObject(url, LoginToken.class);
+            logger.info("loginToken: "+loginToken);
         } catch (ResourceAccessException e) {
             loginToken = new LoginToken();
         }
@@ -55,6 +60,7 @@ public class SystemRestService {
         try {
             String url = apiGatewayUrl + "/login?username=" + user.getUsername() + "&password=" + user.getPassword();
             loginToken = restTemplate.getForObject(url, LoginToken.class);
+            logger.info("relogin loginToken: "+loginToken);
             systemToken = loginToken;
         } catch (ResourceAccessException e) {
             loginToken = new LoginToken();

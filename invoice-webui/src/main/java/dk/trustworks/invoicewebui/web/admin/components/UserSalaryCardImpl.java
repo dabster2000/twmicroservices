@@ -22,9 +22,7 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
 
     @Autowired
     private UserService userService;
-
-    private User user;
-    private List<Salary> salaries;
+    private String useruuid;
 
     public UserSalaryCardImpl() {
         this.setVisible(false);
@@ -40,14 +38,12 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
         });
 
         getBtnDelete().addClickListener(event -> {
-            userService.deleteSalaries(user, getGridSalaries().getSelectedItems());
-            getGridSalaries().setItems(userService.findByUUID(user.getUuid()).getSalaries());
+            userService.deleteSalaries(useruuid, getGridSalaries().getSelectedItems());
+            getGridSalaries().setItems(userService.findUserSalaries(useruuid));
         });
         getBtnAddSalary().addClickListener(event -> {
-            userService.create(user, new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue())));
-            user = userService.findByUUID(user.getUuid());
-            salaries = user.getSalaries();
-            getGridSalaries().setItems(salaries);
+            userService.create(useruuid, new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue())));
+            getGridSalaries().setItems(userService.findUserSalaries(useruuid));
         });
     }
 
@@ -55,8 +51,7 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.CXO})
     public void init(String userUUID) {
         this.setVisible(true);
-        user = userService.findByUUID(userUUID);
-        salaries = user.getSalaries();
-        getGridSalaries().setItems(salaries);
+        useruuid = userUUID;
+        getGridSalaries().setItems(userService.findUserSalaries(useruuid));
     }
 }

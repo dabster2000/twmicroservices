@@ -81,7 +81,7 @@ public class ItBudgetTab {
 
         ComboBox<User> comboBox = new ComboBox<>("Select User: ");
         comboBox.setItemCaptionGenerator(User::getUsername);
-        comboBox.setItems(userService.findAll());
+        comboBox.setItems(userService.findAll(true));
         comboBox.addValueChangeListener(event -> {
             if(!event.getSource().isEmpty()) {
                 user = event.getValue();

@@ -54,7 +54,7 @@ public class CountEmployeesJob {
     public void countEmployees() {
         log.info("CountEmployeesJob.countEmployees");
         usersByLocalDate.clear();
-        for (User user : userService.findAll()) {
+        for (User user : userService.findAll(false)) {
             LocalDate tryDate = startDate;
             StatusType currentStatus = StatusType.TERMINATED;
             while(tryDate.isBefore(LocalDate.now().plusMonths(2))) {

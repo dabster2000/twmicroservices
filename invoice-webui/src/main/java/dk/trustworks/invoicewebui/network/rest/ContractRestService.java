@@ -4,7 +4,9 @@ import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +90,13 @@ public class ContractRestService {
         return Arrays.asList(result.getBody());
     }
 
+    public Double findRateByProjectuuidAndUseruuidAndDate(String projectuuid, String useruuid, LocalDate date) {
+        String url = apiGatewayUrl + "/contracts/search/findRateByProjectuuidAndUseruuidAndDate?projectuuid="+projectuuid+"&useruuid="+useruuid+"&date="+DateUtils.stringIt(date);
+        logger.info(url);
+        ResponseEntity<KeyValueDTO> result = systemRestService.secureCall(url, GET, KeyValueDTO.class);
+        return Double.parseDouble(result.getBody().getValue());
+    }
+
     public Contract save(Contract contract) {
         String url = apiGatewayUrl +"/contracts";
         logger.debug(url);
@@ -100,12 +109,8 @@ public class ContractRestService {
         systemRestService.secureCall(url, PUT, Void.class, contract);
     }
 
-    public void delete(Contract contract) {
-        delete(contract.getUuid());
-    }
-
     public void delete(String uuid) {
-        String url = apiGatewayUrl +"/contract/"+uuid;
+        String url = apiGatewayUrl +"/contracts/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);
     }
 

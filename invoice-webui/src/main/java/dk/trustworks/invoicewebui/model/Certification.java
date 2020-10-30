@@ -41,14 +41,6 @@ public class Certification {
         this.id = id;
     }
 
-    public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
-    }
-
-    public void setUser(User user) {
-        this.useruuid = user.getUuid();
-    }
-
     public String getCertification() {
         return certification;
     }

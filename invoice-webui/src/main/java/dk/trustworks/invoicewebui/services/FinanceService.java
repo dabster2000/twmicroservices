@@ -58,6 +58,10 @@ public class FinanceService implements InitializingBean {
         return financeRestService.findExpenseDetailsByGroup(accountGroup);
     }
 
+    public List<FinanceDocument> findExpensesPeriod(LocalDate periodStart, LocalDate periodEnd) {
+        return financeRestService.findExpensesPeriod(periodStart, periodEnd);
+    }
+
     public double calcAllExpensesByMonth(LocalDate datemonth) {
         return financeRestService.calcAllExpensesByMonth(datemonth);
     }

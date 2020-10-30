@@ -97,7 +97,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
         System.out.println("time start...");
         long timer = System.currentTimeMillis();
         createNavigationBarCard(navigationBar, 12);
-        System.out.println("createNavigationBarCard " + (timer - System.currentTimeMillis()));
         timer = System.currentTimeMillis();
         createUsedBudgetCard(contract, 6);
         System.out.println("createUsedBudgetCard " + (timer - System.currentTimeMillis()));
@@ -489,7 +488,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         plotOptions.setMarker(marker);
         conf.setPlotOptions(plotOptions);
 
-        Map<User, Map<LocalDate, Double>> userMapMap = new HashMap<>();
+        Map<String, Map<LocalDate, Double>> userMapMap = new HashMap<>();
         String unit = "weeks";
         TemporalAdjuster temporalAdjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
         if(between > 26) {
@@ -507,10 +506,10 @@ public class ContractDetailLayout extends ResponsiveLayout {
             //if(!optionalConsultant.isPresent()) continue;
             LocalDate workDate = work.getRegistered().with(temporalAdjuster);
             Map<LocalDate, Double> runningBudget;
-            if(!userMapMap.containsKey(work.getUser())) {
-                userMapMap.put(work.getUser(), new TreeMap<>());
+            if(!userMapMap.containsKey(work.getUseruuid())) {
+                userMapMap.put(work.getUseruuid(), new TreeMap<>());
             }
-            runningBudget = userMapMap.get(work.getUser());
+            runningBudget = userMapMap.get(work.getUseruuid());
             double workDuration = 0.0;
             if(!runningBudget.containsKey(workDate)) {
                 runningBudget.put(workDate, workDuration);
@@ -519,8 +518,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             runningBudget.put(workDate, workDuration);
         }
         if(unit.equals("months")) {
-            for (User user : userMapMap.keySet()) {
-                Map<LocalDate, Double> doubleMap = userMapMap.get(user);
+            for (String useruuid : userMapMap.keySet()) {
+                Map<LocalDate, Double> doubleMap = userMapMap.get(useruuid);
                 for (LocalDate localDate : doubleMap.keySet()) {
                     double aDouble = doubleMap.get(localDate);
                     double length = Month.from(localDate).length(true) / 7.0;
@@ -529,8 +528,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             }
         }
         if(unit.equals("quarters")) {
-            for (User user : userMapMap.keySet()) {
-                Map<LocalDate, Double> doubleMap = userMapMap.get(user);
+            for (String useruuid : userMapMap.keySet()) {
+                Map<LocalDate, Double> doubleMap = userMapMap.get(useruuid);
                 for (LocalDate localDate : doubleMap.keySet()) {
                     double aDouble = doubleMap.get(localDate);
                     double length = (Month.from(localDate).length(true)
@@ -541,8 +540,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
             }
         }
 
-        for (User user : userMapMap.keySet()) {
-            Map<LocalDate, Double> runningBudget = userMapMap.get(user);
+        for (String useruuid : userMapMap.keySet()) {
+            Map<LocalDate, Double> runningBudget = userMapMap.get(useruuid);
+            User user = userService.findByUUID(useruuid, true);
             DataSeries ls = new DataSeries(user.getFirstname()+" "+user.getLastname());
             for (LocalDate localDate : runningBudget.keySet()) {
                 DataSeriesItem item = new DataSeriesItem(localDate.atStartOfDay().toInstant(ZoneOffset.UTC),runningBudget.get(localDate));
@@ -564,6 +564,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             projectRowDesign.getBtnDelete().setIcon(MaterialIcons.DELETE);
             projectRowDesign.getBtnDelete().addClickListener(event -> {
                 removeProject(contract, project);
+                updateData(contract);
             });
             projectsLayout.addComponent(projectRowDesign);
         }
@@ -661,8 +662,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
         for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+            User user = contractConsultant.getUser();
             ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
-            consultantRowDesign.getLblName().setValue(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
+            consultantRowDesign.getLblName().setValue(user.getFirstname() + " " + user.getLastname());
             consultantRowDesign.getLblMargin().setValue("Margin: "+MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.floor(contractConsultant.getRate()))+"%");
             consultantRowDesign.getLblMargin().setVisible(true);
             consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate())+"");
@@ -680,7 +682,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 updateData(contract);
             });
             consultantRowDesign.getVlHours().setVisible(contract.getContractType().equals(ContractType.PERIOD));
-            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUser(), false));
+            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
 
             consultantRowDesign.getBtnDelete().addClickListener(event -> removeConsultant(contract, contractConsultant));
 
@@ -689,7 +691,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     .withDisplayRules(12, 12, 6, 6);
         }
 
-        createProposedConsultants(contract, responsiveLayout.addRow());
+        //createProposedConsultants(contract, responsiveLayout.addRow());
 
         consultantsLayout.addComponent(new MButton(
                 VaadinIcons.PLUS,
@@ -701,7 +703,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     // Put some components in it
                     subContent.addComponent(new Label("Add consultant"));
                     ComboBox<User> userComboBox = new ComboBox<>();
-                    userComboBox.setItems(userService.findAll());
+                    userComboBox.setItems(userService.findAll(true));
                     userComboBox.setItemCaptionGenerator(User::getUsername);
                     subContent.addComponent(userComboBox);
                     Button addButton = new Button("Add");
@@ -783,8 +785,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createProject(Contract Contract, Project project) {
-        System.out.println("ContractDetailLayout.createProject");
-        System.out.println("Contract = [" + Contract + "], project = [" + project + "]");
         contractService.addProject(Contract, project);
         updateData(Contract);
     }

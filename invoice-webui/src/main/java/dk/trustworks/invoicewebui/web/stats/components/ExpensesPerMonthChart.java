@@ -10,11 +10,11 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ExpenseDetails;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.dto.FinanceDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.network.clients.EconomicsAPI;
 import dk.trustworks.invoicewebui.services.FinanceService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.apache.commons.lang3.Range;
@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 20/09/2017.
@@ -33,15 +34,12 @@ import java.util.*;
 @SpringUI
 public class ExpensesPerMonthChart {
 
-    private final StatisticsService statisticsService;
-
     private final UserService userService;
 
     private final FinanceService financeService;
 
     @Autowired
-    public ExpensesPerMonthChart(StatisticsService statisticsService, UserService userService, FinanceService financeService) {
-        this.statisticsService = statisticsService;
+    public ExpensesPerMonthChart(UserService userService, FinanceService financeService) {
         this.userService = userService;
         this.financeService = financeService;
     }
@@ -126,17 +124,22 @@ public class ExpensesPerMonthChart {
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         String[] monthNames = new String[months];
 
+        List<FinanceDocument> expensesPeriod = financeService.findExpensesPeriod(periodStart, periodEnd);
+        personaleExpensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteEmployee_expenses).collect(Collectors.toList()));
+        lokaleExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteHousing).collect(Collectors.toList()));
+        salgExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteSales).collect(Collectors.toList()));
+        productionExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteProduktion).collect(Collectors.toList()));
+        administrationExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteAdministration).collect(Collectors.toList()));
+
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            // TODO: FIX
-            //List<FinanceDocument> allExpensesByMonth = statisticsService.getAllExpensesByMonth(currentDate);
-            List<FinanceDocument> allExpensesByMonth = new ArrayList<>(); //statisticsService.getAllExpensesByMonth(currentDate);
+            //List<FinanceDocument> allExpensesByMonth = financeService.getAllExpensesByMonth(currentDate); //new ArrayList<>(); //statisticsService.getAllExpensesByMonth(currentDate);
 
             double consultantNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
             double staffNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.STAFF.toString());
 
-            double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSalaries).sum());
+            double totalSalaries = Math.round(expensesPeriod.stream().filter(financeDocument -> financeDocument.getMonth().isAfter(currentDate)).mapToDouble(FinanceDocument::geteSalaries).sum());
             
             double forholdstal = totalSalaries / (consultantNetSalaries + staffNetSalaries);
 
@@ -145,11 +148,11 @@ public class ExpensesPerMonthChart {
 
             consultantSalarySeries.addData(consultantSalaries);
             staffSalarySeries.addData(staffSalaries);
-            personaleExpensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteEmployee_expenses).sum());
-            lokaleExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteHousing).sum());
-            salgExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSales).sum());
-            productionExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteProduktion).sum());
-            administrationExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteAdministration).sum());
+            //personaleExpensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteEmployee_expenses).sum());
+            //lokaleExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteHousing).sum());
+            //salgExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSales).sum());
+            //productionExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteProduktion).sum());
+            //administrationExensesSeries.addData(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteAdministration).sum());
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }

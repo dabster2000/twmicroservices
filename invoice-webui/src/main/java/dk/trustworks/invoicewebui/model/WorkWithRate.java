@@ -86,24 +86,8 @@ public class WorkWithRate {
         this.taskuuid = taskuuid;
     }
 
-    public Task getTask() {
-        return TaskService.get().findOne(taskuuid);
-    }
-
-    public void setTask(Task task) {
-        this.taskuuid = task.getUuid();
-    }
-
     public String getUseruuid() {
         return useruuid;
-    }
-
-    public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
-    }
-
-    public User getWorkas() {
-        return UserService.get().findByUUID(workas);
     }
 
     public LocalDate getDate() {

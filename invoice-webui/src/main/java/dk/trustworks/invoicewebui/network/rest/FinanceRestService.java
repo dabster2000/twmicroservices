@@ -34,12 +34,12 @@ public class FinanceRestService {
     }
 
     public List<ExpenseDetails> findExpenseDetailsByGroup(EconomicAccountGroup accountGroup) {
-        String url = apiGatewayUrl +"/expensesdetails/"+accountGroup.name();
+        String url = apiGatewayUrl +"/company/expensesdetails/"+accountGroup.name();
         return Arrays.asList((ExpenseDetails[]) systemRestService.secureCall(url, GET, ExpenseDetails[].class).getBody());
     }
 
     public List<CompanyExpense> findByAccountAndPeriod(ExcelExpenseType expenseType, LocalDate from, LocalDate to) {
-        String url = apiGatewayUrl + "/expenses/"+expenseType+"/search/findByPeriod?from="+stringIt(from)+"&to="+stringIt(to);
+        String url = apiGatewayUrl + "/company/expenses/"+expenseType+"/search/findByPeriod?from="+stringIt(from)+"&to="+stringIt(to);
         return Arrays.asList((CompanyExpense[]) systemRestService.secureCall(url, GET, CompanyExpense[].class).getBody());
     }
 
@@ -53,23 +53,29 @@ public class FinanceRestService {
     }
 
     public List<CompanyExpense> findByMonth(LocalDate month) {
-        String url = apiGatewayUrl + "/expenses/company/search/findByMonth?month="+stringIt(month.withDayOfMonth(1));
+        String url = apiGatewayUrl + "/company/expenses/search/findByMonth?month="+stringIt(month.withDayOfMonth(1));
         return Arrays.asList((CompanyExpense[]) systemRestService.secureCall(url, GET, CompanyExpense[].class).getBody());
     }
 
     public List<FinanceDocument> getAllExpensesByMonth(LocalDate month) {
-        String url = apiGatewayUrl +"/cached/expenses/datemonths/"+stringIt(month)+"/cached";
+        String url = apiGatewayUrl +"/company/expensedocuments/datemonths/"+stringIt(month);
+        ResponseEntity<FinanceDocument[]> result = systemRestService.secureCall(url, GET, FinanceDocument[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public List<FinanceDocument> findExpensesPeriod(LocalDate fromdate, LocalDate todate) {
+        String url = apiGatewayUrl +"/company/expensedocuments?fromdate="+fromdate+"&todate="+todate;
         ResponseEntity<FinanceDocument[]> result = systemRestService.secureCall(url, GET, FinanceDocument[].class);
         return Arrays.asList(result.getBody());
     }
 
     public double calcAllExpensesByMonth(LocalDate datemonth) {
-        String url = apiGatewayUrl + "/expenses/company/datemonths/"+stringIt(datemonth.withDayOfMonth(1))+"/sum";
+        String url = apiGatewayUrl + "/company/expenses/datemonths/"+stringIt(datemonth.withDayOfMonth(1))+"/sum";
         return Double.parseDouble(((KeyValueDTO) systemRestService.secureCall(url, GET, KeyValueDTO.class).getBody()).getValue());
     }
 
     public GraphKeyValue[] getPayoutsByPeriod(LocalDate fromdate, LocalDate todate) {
-        String url = apiGatewayUrl +"/expenses/company/bonus?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
+        String url = apiGatewayUrl +"/company/bonus?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
         return (GraphKeyValue[]) systemRestService.secureCall(url, GET, GraphKeyValue[].class).getBody();
     }
 }

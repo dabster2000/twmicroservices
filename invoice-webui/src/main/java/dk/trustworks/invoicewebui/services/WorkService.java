@@ -44,14 +44,6 @@ public class WorkService {
         return workRestService.findWorkOnContract(contractuuid);
     }
 
-    public List<Work> findByYearAndMonth(int year, int month) {
-        return workRestService.findByYearAndMonth(year, month);
-    }
-
-    public List<Work> findByYearAndMonthAndProject(int year, int i, String projectuuid) {
-        return workRestService.findByYearAndMonthAndProject(year, i, projectuuid);
-    }
-
     public List<Work> findByTask(Task task) {
         return workRestService.findByTask(task.getUuid());
     }

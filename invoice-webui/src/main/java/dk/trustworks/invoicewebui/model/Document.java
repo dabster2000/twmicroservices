@@ -65,7 +65,7 @@ public class Document {
     }
 
     public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
+        return UserService.get().findByUUID(getUseruuid(), true);
     }
 
     public void setUseruuid(String useruuid) {

@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.project.components;
 
-import com.explicatis.ext_token_field.SimpleTokenizable;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
@@ -18,7 +17,6 @@ import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
@@ -41,7 +39,8 @@ import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
-import static java.lang.Math.*;
+import static java.lang.Math.max;
+import static java.lang.Math.round;
 import static java.util.Comparator.comparing;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
 
@@ -65,8 +64,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final WorkService workService;
 
-    private final PhotoRepository photoRepository;
-
     private final PhotoService photoService;
 
     private final NewsRepository newsRepository;
@@ -87,13 +84,12 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, PhotoRepository photoRepository, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository, BudgetService budgetService) {
+    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository, BudgetService budgetService) {
         this.userService = userService;
         this.projectService = projectService;
         this.clientService = clientService;
         this.taskService = taskService;
         this.workService = workService;
-        this.photoRepository = photoRepository;
         this.photoService = photoService;
         this.newsRepository = newsRepository;
         this.contractService = contractService;
@@ -179,8 +175,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
-        Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
-        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(), photoResource, projectService, newsRepository, userService);
+        Photo photoResource = photoService.getRelatedPhoto(currentProject.getClient().getUuid());
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(true), photoResource, projectService, newsRepository, userService);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.update();
             updateTreeGrid(currentProject);

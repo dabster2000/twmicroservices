@@ -3,6 +3,7 @@ package dk.trustworks.invoicewebui.network.rest;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.Work;
+import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,12 +84,11 @@ public class WorkRestService {
         return Arrays.asList(result.getBody());
     }
 
-    public List<Work> findByRegisteredAndUseruuidAndTaskuuid() {
-        throw new NotImplementedException("findByRegisteredAndUseruuidAndTaskuuid");
-    }
-
     public Double findAmountUsedByContract(Contract contract) {
-        throw new NotImplementedException("findAmountUsedByContract");
+        String url = apiGatewayUrl + "/contracts/"+contract.getUuid()+"/registeredamount";
+        logger.debug(url);
+        ResponseEntity<KeyValueDTO> result = systemRestService.secureCall(url, GET, KeyValueDTO.class);
+        return Double.parseDouble(result.getBody().getValue());
     }
 
     public List<Work> findWorkOnContract(String contractuuid) {
@@ -103,13 +103,4 @@ public class WorkRestService {
         logger.debug(url);
         systemRestService.secureCall(url, POST, Void.class, work);
     }
-
-    public List<Work> findByYearAndMonth(int year, int month) {
-        return null;
-    }
-
-    public List<Work> findByYearAndMonthAndProject(int year, int i, String projectuuid) {
-        return null;
-    }
-
 }

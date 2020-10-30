@@ -18,7 +18,6 @@ import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
-import dk.trustworks.invoicewebui.repositories.MicroCourseStudentRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
@@ -41,9 +40,6 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
     @Autowired
     private MicroCourseRepository microCourseRepository;
-
-    @Autowired
-    private MicroCourseStudentRepository microCourseStudentRepository;
 
     @Autowired UserService userService;
 

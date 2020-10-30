@@ -80,7 +80,7 @@ public class AllRevenuePerMonthChart {
         PlotOptionsFlags plotOptionsFlags = new PlotOptionsFlags();
         plotOptionsFlags.setOnSeries("Revenue");
         usersEmployedSeries.setPlotOptions(plotOptionsFlags);
-        for (User user : userService.findAll()) {
+        for (User user : userService.findAll(true)) {
             Optional<LocalDate> employedDate = userService.findEmployedDate(user);
             if(!employedDate.isPresent()) continue;
             if(!employedDate.get().isBefore(LocalDate.now().withDayOfMonth(1))) continue; // Spring over, hvis personen er ansat i denne måned eller senere

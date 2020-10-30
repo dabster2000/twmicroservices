@@ -22,7 +22,6 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.network.rest.WeekRestService;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -68,11 +67,11 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final UserService userService;
 
+    private final BudgetService budgetService;
+
     private final ClientService clientService;
 
     private final WorkService workService;
-
-    private final PhotoRepository photoRepository;
 
     private final PhotoService photoService;
 
@@ -97,13 +96,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WorkService workService, PhotoRepository photoRepository, TimeService timeService, WeekRestService weekRestService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WorkService workService, TimeService timeService, WeekRestService weekRestService, BudgetService budgetService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
         this.projectService = projectService;
         this.userService = userService;
         this.clientService = clientService;
         this.workService = workService;
-        this.photoRepository = photoRepository;
         this.weekRestService = weekRestService;
+        this.budgetService = budgetService;
         this.photoService = photoService;
         this.contractService = contractService;
         this.receiptsRepository = receiptsRepository;
@@ -532,7 +531,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void createMonthBudgetCards(LocalDate month, ResponsiveRow budgetRow, String color) {
         // TODO:FIX
-        List<BudgetDocument> consultantBudgetList = new ArrayList<>();//statisticsService.getConsultantBudgetDataByMonth(dateButtons.getSelActiveUser().getValue(), month);
+        List<BudgetDocument> consultantBudgetList = budgetService.getConsultantBudgetHoursByMonthDocuments(dateButtons.getSelActiveUser().getValue().getUuid(), month); //new ArrayList<>();//statisticsService.getConsultantBudgetDataByMonth(dateButtons.getSelActiveUser().getValue(), month);
 
         for (BudgetDocument budgetDocument : consultantBudgetList) {
             double workSum = workService.findWorkOnContract(budgetDocument.getContract().getUuid()).stream()
@@ -684,7 +683,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             weekRestService.delete(weekItem.getWeek().getUuid());
             responsiveLayout.removeComponent(time1Row);
         });
-        Photo photo = photoRepository.findByRelateduuid(weekItem.getTask().getProject().getClient().getUuid());
+        Photo photo = photoService.getRelatedPhoto(weekItem.getTask().getProject().getClient().getUuid());
         if(photo!=null && photo.getPhoto().length > 0) {
             taskTitle.getImgLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()),
@@ -818,7 +817,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private MTextField checkIfDisabled(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
-        boolean onContract = isOnContract(weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday), workingAs, task);
+        boolean onContract = isOnContract(weekItem.getDate().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), weekday), workingAs.getUuid(), task);
         if(!onContract) return mTextField.withEnabled(false);
 
         // check if item is last month and user is not project manager. Project managers should be able to edit old timesheets
@@ -885,14 +884,13 @@ public class TimeManagerLayout extends ResponsiveLayout {
         boolean result = false;
         LocalDate localDateStart = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
         LocalDate localDateEnd = LocalDate.now().with(WeekFields.of(Locale.getDefault()).weekBasedYear(), week.getYear()).with(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear(), week.getWeeknumber()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
-        log.info("isOnContract: "+week);
-        if(isOnContract(localDateStart, (week.getWorkasUser()!=null)?week.getWorkasUser():week.getUser(), week.getTask())) result = true;
-        if(isOnContract(localDateEnd, (week.getWorkasUser()!=null)?week.getWorkasUser():week.getUser(), week.getTask())) result = true;
+        if(isOnContract(localDateStart, (week.getWorkasUser()!=null)?week.getWorkasUser().getUuid():week.getUseruuid(), week.getTask())) result = true;
+        if(isOnContract(localDateEnd, (week.getWorkasUser()!=null)?week.getWorkasUser().getUuid():week.getUseruuid(), week.getTask())) result = true;
         return result;
     }
 
-    private boolean isOnContract(LocalDate localDate, User user, Task task) {
-        return contractService.findConsultantRate(localDate, user, task, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED)!=null;
+    private boolean isOnContract(LocalDate localDate, String useruuid, Task task) {
+        return contractService.findConsultantRate(localDate, useruuid, task, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED)!=null;
     }
 
     private class WeekValues {
