@@ -7,7 +7,6 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.invoice.components.InvoiceListImpl;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
 import org.slf4j.Logger;
@@ -20,6 +19,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 11/07/2017.
  */
+
 @AccessRules(roleTypes = {RoleType.ACCOUNTING})
 @SpringView(name = InvoiceListView.VIEW_NAME)
 public class InvoiceListView extends VerticalLayout implements View {
@@ -31,8 +31,8 @@ public class InvoiceListView extends VerticalLayout implements View {
 
     protected static Logger logger = LoggerFactory.getLogger(InvoiceListView.class.getName());
 
-    @Autowired
-    private InvoiceListImpl invoiceListComponent;
+    //@Autowired
+    //private InvoiceListImpl invoiceListComponent;
 
     @Autowired
     private TopMenu topMenu;
@@ -48,7 +48,7 @@ public class InvoiceListView extends VerticalLayout implements View {
         this.addComponent(mainTemplate);
 
         //Broadcaster.register(this);
-        mainTemplate.setMainContent(invoiceListComponent, VIEW_ICON, MENU_NAME, "Everything that we ever billed - atleast since Juli 1. 2017", VIEW_BREADCRUMB);
+        //mainTemplate.setMainContent(invoiceListComponent, VIEW_ICON, MENU_NAME, "Everything that we ever billed - atleast since Juli 1. 2017", VIEW_BREADCRUMB);
     }
 
     public void receiveBroadcast(String message) {
@@ -68,7 +68,7 @@ public class InvoiceListView extends VerticalLayout implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         //Authorizer.authorize(this);
-        invoiceListComponent.loadInvoicesToGrid();
+        //invoiceListComponent.loadInvoicesToGrid();
         //leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
     }
 }

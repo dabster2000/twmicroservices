@@ -1,16 +1,16 @@
 package dk.trustworks.invoicewebui.network.rest;
 
-import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.Project;
+import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,8 +19,8 @@ import static org.springframework.http.HttpMethod.*;
 @Service
 public class ProjectRestService {
 
-    @Value("#{environment.CRMSERVICE_URL}")
-    private String crmServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
@@ -30,77 +30,83 @@ public class ProjectRestService {
     }
 
     public List<Project> findAll() {
-        String url = crmServiceUrl + "/projects";
+        String url = apiGatewayUrl + "/projects";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("projects")
+    @Cacheable(cacheNames = "project")
     public Project findOne(String uuid) {
-        String url = crmServiceUrl + "/projects/" + uuid;
+        String url = apiGatewayUrl + "/projects/" + uuid;
         ResponseEntity<Project> result = systemRestService.secureCall(url, GET, Project.class);
         return result.getBody();
     }
 
-    @Cacheable("projects")
+    @Cacheable(cacheNames = "project")
     public List<Project> findByActiveTrue() {
-        String url = crmServiceUrl + "/projects/search/findByActiveTrue";
+        String url = apiGatewayUrl + "/projects/active";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("projects")
-    public List<Project> findByClientAndActiveTrue(Client client) {
-        String url = crmServiceUrl + "/clients/" + client.getUuid() + "/projects/search/findByActiveTrue";
+    public KeyValueDTO findByWorkonCount(LocalDate fromDate, LocalDate toDate) {
+        String url = apiGatewayUrl + "/projects/workedon/count?fromdate="+DateUtils.stringIt(fromDate)+"&todate="+DateUtils.stringIt(toDate);
+        ResponseEntity<KeyValueDTO> result = systemRestService.secureCall(url, GET, KeyValueDTO.class);
+        return result.getBody();
+    }
+
+    @Cacheable(cacheNames = "project")
+    public List<Project> findByClientAndActiveTrue(String clientuuid) {
+        String url = apiGatewayUrl + "/clients/" + clientuuid + "/projects/active";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("projects")
+    @Cacheable(cacheNames = "project")
     public List<Project> findByClientuuid(String clientuuid) {
-        String url = crmServiceUrl + "/clients/" + clientuuid + "/projects";
+        String url = apiGatewayUrl + "/clients/" + clientuuid + "/projects";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("projects")
     public List<Project> findByClientdata(Clientdata clientdata) {
-        String url = crmServiceUrl + "/clientdata/" + clientdata.getUuid() + "/projects";
+        String url = apiGatewayUrl + "/clientdata/" + clientdata.getUuid() + "/projects";
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("projects")
     public List<Project> findByLocked(boolean isLocked) {
-        String url = crmServiceUrl + "/search/findByLocked?locked="+isLocked;
+        String url = apiGatewayUrl + "/search/findByLocked?locked="+isLocked;
         ResponseEntity<Project[]> result = systemRestService.secureCall(url, GET, Project[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @CacheEvict(value = "projects", allEntries = true)
+    public double findRate(String projectuuid, String useruuid, LocalDate date) {
+        String url = apiGatewayUrl + "/projects/"+projectuuid+"/users/"+useruuid+"/rates?date="+ DateUtils.stringIt(date);
+        ResponseEntity<KeyValueDTO> result = systemRestService.secureCall(url, GET, KeyValueDTO.class);
+        return Double.parseDouble(result.getBody().getValue());
+    }
+
     public void save(List<Project> projects) {
         projects.forEach(this::save);
     }
 
-    @CacheEvict(value = "projects", allEntries = true)
     public Project save(Project project) {
-        String url = crmServiceUrl+"/projects";
+        String url = apiGatewayUrl +"/projects";
         return (Project) systemRestService.secureCall(url, POST, Project.class, project).getBody();//restTemplate.postForObject(url, user, User.class);
     }
 
     public void update(Project project) {
-        String url = crmServiceUrl+"/projects";
+        String url = apiGatewayUrl +"/projects";
         systemRestService.secureCall(url, PUT, Project.class, project).getBody(); //restTemplate.put(url, user);
     }
 
-    @CacheEvict(value = "projects", allEntries = true)
     public void delete(Project project) {
         delete(project.getUuid());
     }
 
-    @CacheEvict(value = "projects", allEntries = true)
     public void delete(String uuid) {
-        String url = crmServiceUrl+"/projects/"+uuid;
+        String url = apiGatewayUrl +"/projects/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);
     }
 }

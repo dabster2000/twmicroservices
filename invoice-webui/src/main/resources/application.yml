@@ -10,10 +10,11 @@ spring:
     level:
       org.springframework: WARN
       org.hibernate: WARN
+      dk.trustworks: DEBUG
   cache:
     #cache-names: dropbox, vimeo, consultantsperproject, billablehours, activeprojects, goodpeople, graphkey
     caffeine:
-      spec: maximumSize=1000,expireAfterAccess=18000s
+      spec: maximumSize=1000,expireAfterAccess=180s
   jpa:
     hibernate.ddl-auto: none
     properties:
@@ -80,7 +81,7 @@ jms:
     time-to-live: 36000
 
 rtmUrl: https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads
-slackIncomingWebhookUrl: https://hooks.slack. com/services/T036JELTL/B1E7W0TJB/jQMD9nYblJUro2h3O83v0pPn
+slackIncomingWebhookUrl: https://hooks.slack.com/services/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
 
 slackApi: https://slack.com/api
 halSlackBotToken: ${HALSLACKBOTTOKEN}
@@ -111,3 +112,9 @@ flyway:
   baseline-on-migrate: true # schemas to update
 
 management.security.enabled: false
+
+opentracing:
+  jaeger:
+    udp-sender:
+      host: ${JAEGERHOST:localhost}
+      port: ${JAEGERPORT:6831}

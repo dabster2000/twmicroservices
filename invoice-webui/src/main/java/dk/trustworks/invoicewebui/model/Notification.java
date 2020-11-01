@@ -60,14 +60,6 @@ public class Notification {
         this.uuid = uuid;
     }
 
-    public User getReceiver() {
-        return UserService.get().findByUUID(getUseruuid());
-    }
-
-    public void setReceiver(User receiver) {
-        this.useruuid = receiver.getUuid();
-    }
-
     public LocalDate getExpirationdate() {
         return expirationdate;
     }

@@ -21,7 +21,6 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -45,7 +44,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class BubblesLayout extends VerticalLayout {
 
     private final UserService userService;
-    private final PhotoRepository photoRepository;
     private final PhotoService photoService;
     private final BubbleRepository bubbleRepository;
     private final BubbleMemberRepository bubbleMemberRepository;
@@ -66,9 +64,8 @@ public class BubblesLayout extends VerticalLayout {
     private SlackWebApiClient bubbleUserBotClient;
 
     @Autowired
-    public BubblesLayout(UserService userService, BubbleRepository bubbleRepository, PhotoRepository photoRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService) {
+    public BubblesLayout(UserService userService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService) {
         this.userService = userService;
-        this.photoRepository = photoRepository;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.photoService = photoService;
@@ -79,7 +76,7 @@ public class BubblesLayout extends VerticalLayout {
     public BubblesLayout init() {
         bubbleWebApiClient = SlackClientFactory.createWebApiClient(bubbleSlackToken);
         bubbleUserBotClient = SlackClientFactory.createWebApiClient(bubbleBotUserSlackToken);
-        bubbleForm = new BubbleForm(userService, bubbleRepository, bubbleMemberRepository, photoRepository, bubbleWebApiClient);
+        bubbleForm = new BubbleForm(userService, bubbleRepository, bubbleMemberRepository, photoService, bubbleWebApiClient);
 
         responsiveLayout.removeAllComponents();
         responsiveLayout.addRow(bubbleForm.getNewBubbleButton());
@@ -170,7 +167,7 @@ public class BubblesLayout extends VerticalLayout {
                 }
             }
             String relatedUUID = bubble.getUuid();
-            Resource resource = photoService.getRelatedPhoto(relatedUUID);
+            Resource resource = photoService.getRelatedPhotoResource(relatedUUID);
 
             bubblesDesign.getImgTop().setSource(resource);
             if(bubble.getUser().getUuid().equals(user.getUuid()) || user.getUsername().equals("hans.lassen")) {

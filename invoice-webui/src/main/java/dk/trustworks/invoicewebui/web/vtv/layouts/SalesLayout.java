@@ -2,8 +2,6 @@ package dk.trustworks.invoicewebui.web.vtv.layouts;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.Color;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.themes.ValoLightTheme;
@@ -13,15 +11,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.repositories.AmbitionCategoryRepository;
-import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
+import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.MarginService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
@@ -33,8 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by hans on 21/12/2016.
@@ -44,19 +40,7 @@ import java.util.*;
 public class SalesLayout extends VerticalLayout {
 
     @Autowired
-    private AmbitionRepository ambitionRepository;
-
-    @Autowired
-    private AmbitionCategoryRepository ambitionCategoryRepository;
-
-    @Autowired
-    private WorkRepository workRepository;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private StatisticsService statisticsService;
+    private ClientService clientService;
 
     @Autowired
     private ContractService contractService;
@@ -98,8 +82,7 @@ public class SalesLayout extends VerticalLayout {
         field.addStyleName("floating");
         hoursPerConsultantCard.getHlTitleBar().addComponent(field);
 
-        row.addColumn()
-                .withDisplayRules(12, 12, 12, 12)
+        row.addColumn().withDisplayRules(12, 12, 12, 12)
                 .withComponent(hoursPerConsultantCard);
 
         Card allocationChartCard = new Card();
@@ -117,18 +100,14 @@ public class SalesLayout extends VerticalLayout {
 
         Card marginCard = new Card();
 
-
-
         List<MarginRow> marginRowList = new ArrayList<>();
 
         for (Contract contract : contractService.findActiveContractsByDate(LocalDate.now(), ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.BUDGET)) {
             for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
                 int margin = MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.round(contractConsultant.getRate()));
-                marginRowList.add(new MarginRow(contract.getClient().getName(), contractConsultant.getUser().getUsername(), contractConsultant.getRate(), margin));
+                marginRowList.add(new MarginRow(clientService.findOne(contract.getClientuuid()).getName(), contractConsultant.getUser().getUsername(), contractConsultant.getRate(), margin));
             }
         }
-
-
 
         Grid<MarginRow> grid = new Grid<>(MarginRow.class);
         grid.setItems(marginRowList);

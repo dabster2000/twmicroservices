@@ -1,9 +1,8 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Credits;
-import com.vaadin.addon.charts.model.Tooltip;
+import com.vaadin.addon.charts.model.*;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -11,9 +10,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
+import dk.trustworks.invoicewebui.services.BudgetService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,10 +37,16 @@ public class RevenuePerMonthChart {
 
     private final InvoiceService invoiceService;
 
+    private final BudgetService budgetService;
+
+    private final RevenueService revenueService;
+
     @Autowired
-    public RevenuePerMonthChart(StatisticsService statisticsService, InvoiceService invoiceService) {
+    public RevenuePerMonthChart(StatisticsService statisticsService, InvoiceService invoiceService, BudgetService budgetService, RevenueService revenueService) {
         this.statisticsService = statisticsService;
         this.invoiceService = invoiceService;
+        this.budgetService = budgetService;
+        this.revenueService = revenueService;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -63,17 +71,49 @@ public class RevenuePerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        chart.getConfiguration().addSeries(statisticsService.calcBudgetPerMonth(periodStart, periodEnd));
+        DataSeries budgetSeries = new DataSeries("Budget Revenue");
+        PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
+        plotOptionsArea.setColor(new SolidColor("#123375"));
+        budgetSeries.setPlotOptions(plotOptionsArea);
+        for (GraphKeyValue graphKeyValue : budgetService.getBudgetsByPeriod(periodStart, periodEnd)) {
+            budgetSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
+        }
+        chart.getConfiguration().addSeries(budgetSeries);
+
+        DataSeries revenueSeries = new DataSeries("Registered Hours Revenue");
+        PlotOptionsAreaspline plotOptionsArea2 = new PlotOptionsAreaspline();
+        plotOptionsArea2.setColor(new SolidColor("#7084AC"));
+        revenueSeries.setPlotOptions(plotOptionsArea2);
+        for (GraphKeyValue graphKeyValue : revenueService.getRegisteredRevenueByPeriod(periodStart, periodEnd)) {
+            revenueSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
+        }
+        chart.getConfiguration().addSeries(revenueSeries);
+
+        if(showEarnings) chart.getConfiguration().addSeries(createDataSeries(
+                revenueService.getInvoicedOrRegisteredRevenueByPeriod(periodStart, (periodEnd.isBefore(LocalDate.now())) ? periodEnd : LocalDate.now().plusMonths(1).withDayOfMonth(1)),
+                "Invoiced Revenue",
+                "#CFD6E3"));
+
+        if(showEarnings) {
+            DataSeries earningsSeries = new DataSeries("Gross Profit");
+
+            PlotOptionsAreaspline plotOptionsArea3 = new PlotOptionsAreaspline();
+            plotOptionsArea3.setColor(new SolidColor("#54D69E"));
+            plotOptionsArea3.setNegativeColor(new SolidColor("#FD5F5B"));
+            earningsSeries.setPlotOptions(plotOptionsArea3);
+            for (GraphKeyValue graphKeyValue : revenueService.getProfitsByPeriod(periodStart, (periodEnd.isBefore(LocalDate.now())) ? periodEnd : LocalDate.now().withDayOfMonth(1))) {
+                earningsSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
+            }
+            chart.getConfiguration().addSeries(earningsSeries);
+        }
+
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, periodEnd));
-        chart.getConfiguration().addSeries(statisticsService.calcRegisteredHoursRevenuePerMonth(periodStart, periodEnd));
-        if(showEarnings) chart.getConfiguration().addSeries(createDataSeries(statisticsService.calcActualRevenuePerMonth(periodStart, (periodEnd.isBefore(LocalDate.now()))?periodEnd:LocalDate.now().plusMonths(1).withDayOfMonth(1)), "Invoiced Revenue", "#CFD6E3"));
-        if(showEarnings) chart.getConfiguration().addSeries(statisticsService.calcEarningsPerMonth(periodStart, (periodEnd.isBefore(LocalDate.now()))?periodEnd:LocalDate.now().withDayOfMonth(1)));
 
         chart.addPointClickListener(event -> {
             if(!event.getSeries().getName().equals("Invoiced Revenue")) return;
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());
 
-            List<Invoice> invoiceList = invoiceService.findByInvoicedateAndBookingdate(currentDate);
+            List<Invoice> invoiceList = invoiceService.getInvoicesForSingleMonth(currentDate);
             invoiceList = invoiceList.stream().filter(invoice -> invoice.getStatus().equals(InvoiceStatus.CREATED) || invoice.getStatus().equals(InvoiceStatus.CREDIT_NOTE)).filter(invoice -> {
                 if (invoice.bookingdate.withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1))) return true;
                 else return invoice.bookingdate.isEqual(LocalDate.of(1900, 1, 1)) && invoice.invoicedate.withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1));

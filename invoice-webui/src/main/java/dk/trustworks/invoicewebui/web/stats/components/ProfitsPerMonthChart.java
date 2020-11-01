@@ -5,14 +5,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.BudgetNew;
-import dk.trustworks.invoicewebui.model.Contract;
-import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
-import dk.trustworks.invoicewebui.repositories.GraphKeyValueRepository;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.WorkService;
@@ -34,21 +27,15 @@ import java.util.stream.Collectors;
 @SpringUI
 public class ProfitsPerMonthChart {
 
-    private final GraphKeyValueRepository graphKeyValueRepository;
-
     private final ContractService contractService;
-
-    private final BudgetNewRepository budgetNewRepository;
 
     private final WorkService workService;
 
     private final StatisticsService statisticsService;
 
     @Autowired
-    public ProfitsPerMonthChart(GraphKeyValueRepository graphKeyValueRepository, ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, StatisticsService statisticsService) {
-        this.graphKeyValueRepository = graphKeyValueRepository;
+    public ProfitsPerMonthChart(ContractService contractService, WorkService workService, StatisticsService statisticsService) {
         this.contractService = contractService;
-        this.budgetNewRepository = budgetNewRepository;
         this.workService = workService;
         this.statisticsService = statisticsService;
     }
@@ -103,6 +90,9 @@ public class ProfitsPerMonthChart {
         double cumulativeRevenuePerMonth = 0.0;
         double cumulativeBudgetPerMonth = 0.0;
         double cumulativeExpensePerMonth = 0.0;
+
+        // TODO: FIX
+        /*
         for (int i = 0; i < period; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             double expense = 0.0;
@@ -123,13 +113,6 @@ public class ProfitsPerMonthChart {
                 }
             }
 
-            /*
-            if(amountPerItemList.size() > i && amountPerItemList.get(i) != null) {
-                cumulativeRevenuePerMonth += amountPerItemList.get(i).getValue();
-                expense = expenseRepository.findByPeriod(Date.from(periodStart.plusMonths(i).atStartOfDay(ZoneId.systemDefault()).toInstant())).stream().mapToDouble(Expense::getAmount).sum();
-                cumulativeExpensePerMonth += expense;
-            }
-            */
             revenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth));
             if(expense > 0.0) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), cumulativeRevenuePerMonth-cumulativeExpensePerMonth));
 
@@ -137,7 +120,7 @@ public class ProfitsPerMonthChart {
             for (Contract contract : contracts) {
                 if(contract.getContractType().equals(ContractType.PERIOD)) {
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                        double weeks = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0;
+                        double weeks = workService.getWorkdaysInMonth(contractConsultant.getUser().getUuid(), currentDate) / 5.0;
                         cumulativeBudgetPerMonth += (contractConsultant.getHours() * weeks) * contractConsultant.getRate();
                     }
                 }
@@ -150,6 +133,7 @@ public class ProfitsPerMonthChart {
             budgetSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeBudgetPerMonth)));
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
+        */
         chart.getConfiguration().getxAxis().setCategories(categories);
         chart.getConfiguration().addSeries(revenueSeries);
         chart.getConfiguration().addSeries(budgetSeries);

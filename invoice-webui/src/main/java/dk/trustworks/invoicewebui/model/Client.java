@@ -1,12 +1,15 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dk.trustworks.invoicewebui.services.ClientdataService;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 public class Client {
     private String uuid;
@@ -75,18 +78,28 @@ public class Client {
         this.active = active;
     }
 
+    @JsonProperty("accountmanager")
+    public String getAccountmanager() {
+        return accountmanager;
+    }
+
+    @JsonProperty("accountmanager")
+    public void setAccountmanager(String accountmanager) {
+        this.accountmanager = accountmanager;
+    }
+
     @JsonIgnore
     public List<Project> getProjects() {
         return ProjectService.get().findByClientuuidOrderByNameAsc(this.getUuid());
     }
 
     @JsonIgnore
-    public User getAccount_manager() {
-        return UserService.get().findByUUID(accountmanager);
+    public User getAccountManager() {
+        return UserService.get().findByUUID(accountmanager, true);
     }
 
     @JsonIgnore
-    public void setAccount_manager(User accountmanager) {
+    public void setAccountManager(User accountmanager) {
         this.accountmanager = accountmanager.getUuid();
     }
 

@@ -13,8 +13,8 @@ import java.util.Map;
 @Service
 public class KnowledgeRoleRestService {
 
-    @Value("#{environment.KNOWLEDGESERVICE_URL}")
-    private String knowledgeServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final RestTemplate restTemplate;
 
@@ -29,7 +29,7 @@ public class KnowledgeRoleRestService {
         if(knowledgeRoleCache.containsKey(useruuid)) return knowledgeRoleCache.get(useruuid);
         KnowledgeRole knowledgeRole = null;
         try {
-            knowledgeRole = restTemplate.getForObject(knowledgeServiceUrl + "/knowledgeroles/" + useruuid, KnowledgeRole.class);
+            knowledgeRole = restTemplate.getForObject(apiGatewayUrl + "/knowledgeroles/" + useruuid, KnowledgeRole.class);
         } catch (HttpClientErrorException exception) {
 
         }
@@ -39,13 +39,13 @@ public class KnowledgeRoleRestService {
 
     public KnowledgeRole create(KnowledgeRole knowledgeRole) {
         knowledgeRoleCache.clear();
-        String url = knowledgeServiceUrl +"/knowledgeroles";
+        String url = apiGatewayUrl +"/knowledgeroles";
         return restTemplate.postForObject(url, knowledgeRole, KnowledgeRole.class);
     }
 
     public void update(KnowledgeRole knowledgeRole) {
         knowledgeRoleCache.clear();
-        String url = knowledgeServiceUrl +"/knowledgeroles/"+knowledgeRole.getUseruuid();
+        String url = apiGatewayUrl +"/knowledgeroles/"+knowledgeRole.getUseruuid();
         restTemplate.put(url, knowledgeRole);
     }
 }

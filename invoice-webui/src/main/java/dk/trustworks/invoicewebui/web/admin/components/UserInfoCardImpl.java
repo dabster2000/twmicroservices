@@ -47,7 +47,7 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
     @Transactional
     @AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
     public void init(String userUUID) {
-        user = userRepository.findByUUID(userUUID);
+        user = userRepository.findByUUID(userUUID, false);
         binder = new Binder<>();
 
         SlackWebApiClient slackWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);

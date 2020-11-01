@@ -193,7 +193,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
                 firstUser = false;
             }
             //if(!triangleImageList.isEmpty()) triangleImageList.get(0).setVisible(true);
-            Resource resource = photoService.getRelatedPhoto(projectDescription.getClient().getUuid());
+            Resource resource = photoService.getRelatedPhotoResource(projectDescription.getClient().getUuid());
 
             projectDescriptionDesign.getImgTop().setSource(resource);
         }
@@ -280,7 +280,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
         selectUser.setEmptySelectionCaption("Select Consultant");
         //selectUser.setPlaceholder("Select Consultant");
         selectUser.setItemCaptionGenerator(User::getUsername);
-        selectUser.setItems(userService.findAll());
+        selectUser.setItems(userService.findAll(true));
         selectUser.addValueChangeListener(event2 -> {
             if(userStorieMap.containsKey(event2.getValue())) return;
             formDesign.getVlUserStories().removeComponent(selectUser);

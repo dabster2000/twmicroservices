@@ -40,7 +40,7 @@ public class UserAmbition {
     public void refresh(UserAmbition userAmbition) {
         this.id = userAmbition.getId();
         this.ambitionid = userAmbition.getAmbitionid();
-        this.useruuid = userAmbition.getUser().getUuid();
+        this.useruuid = userAmbition.getUseruuid();
         this.score = userAmbition.getScore();
         this.ambition = userAmbition.getAmbition();
         this.updated = userAmbition.getUpdated();
@@ -56,14 +56,6 @@ public class UserAmbition {
 
     public void setAmbitionid(int ambitionid) {
         this.ambitionid = ambitionid;
-    }
-
-    public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
-    }
-
-    public void setUser(User user) {
-        this.useruuid = user.getUuid();
     }
 
     public int getScore() {

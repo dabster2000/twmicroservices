@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.services.UserService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.text.WordUtils;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -128,7 +130,7 @@ public class User {
     }
 
     public List<UserStatus> getStatuses() {
-        return statuses;
+        return statuses; //UserService.get().findUserStatusList(this.getUuid());
     }
 
     public void setStatuses(List<UserStatus> statuses) {

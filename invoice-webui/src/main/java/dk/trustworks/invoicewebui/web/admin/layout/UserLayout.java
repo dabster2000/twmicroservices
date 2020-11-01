@@ -14,13 +14,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
-import dk.trustworks.invoicewebui.jobs.CountEmployeesJob;
 import dk.trustworks.invoicewebui.model.Salary;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.ConsultantRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.admin.components.*;
 import dk.trustworks.invoicewebui.web.admin.model.Employee;
@@ -44,12 +42,6 @@ import static com.vaadin.server.Sizeable.Unit.PIXELS;
 @SpringUI
 @SpringComponent
 public class UserLayout {
-
-    @Autowired
-    private ConsultantRepository consultantRepository;
-
-    @Autowired
-    private CountEmployeesJob countEmployees;
 
     @Autowired
     private UserService userService;
@@ -92,18 +84,18 @@ public class UserLayout {
                 .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Students", "The transmission", userService.findCurrentlyEmployedUsers(ConsultantType.STUDENT).size()+"", "orange")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Former", "CO2", consultantRepository.findByStatus(StatusType.TERMINATED).size()+"", "dark-grey")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Former", "CO2", userService.findByStatus(StatusType.TERMINATED).size()+"", "dark-grey")));
 
         MButton addUserButton = new MButton("add user").withStyleName("flat", "friendly").withListener((Button.ClickListener) event -> {
             User user = new User();
             user.setUsername("new.new");
             userService.create(user);
-            userComboBox.setItems(userService.findAll());
+            userComboBox.setItems(userService.findAll(false));
             userComboBox.setSelectedItem(user);
         });
 
         userComboBox = new ComboBox<>();
-        userComboBox.setItems(userService.findAll());
+        userComboBox.setItems(userService.findAll(false));
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setEmptySelectionAllowed(false);
         selectionContentRow
@@ -163,7 +155,7 @@ public class UserLayout {
 
         ArrayList<Employee> employees = new ArrayList<>();
         // Set the data provider (ListDataProvider<CompanyBudgetHistory>)
-        for (User user : userService.findAll()) {
+        for (User user : userService.findAll(false)) {
             Optional<Salary> salary = user.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom));
             if(!salary.isPresent()) continue;
             Optional<UserStatus> userStatus = user.getStatuses().stream().max((Comparator.comparing(UserStatus::getStatusdate)));

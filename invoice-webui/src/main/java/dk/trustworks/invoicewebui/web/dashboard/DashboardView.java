@@ -12,7 +12,6 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
-import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.ReminderHistory;
 import dk.trustworks.invoicewebui.model.User;
@@ -23,10 +22,7 @@ import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.network.clients.VimeoAPI;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.EmailSender;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.SpriteSheet;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
@@ -82,8 +78,6 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final MainTemplate mainTemplate;
 
-    private final BudgetNewRepository budgetNewRepository;
-
     private final ContractService contractService;
 
     private final BubbleRepository bubbleRepository;
@@ -112,6 +106,10 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final KnowledgeChart knowledgeChart;
 
+    private final BudgetService budgetService;
+
+    private final AvailabilityService availabilityService;
+
     @Autowired
     public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart) {
         this.topMenu = topMenu;
@@ -131,6 +129,8 @@ public class   DashboardView extends VerticalLayout implements View {
         this.revenuePerMonthChart = revenuePerMonthChart;
         this.spriteSheet = spriteSheet;
         this.knowledgeChart = knowledgeChart;
+        this.budgetService = budgetService;
+        this.availabilityService = availabilityService;
     }
 
     @Transactional
@@ -188,6 +188,8 @@ public class   DashboardView extends VerticalLayout implements View {
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
+        VacationCard vacationCard = new VacationCard();
+        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign");
         //VacationCard vacationCard = new VacationCard();
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
 
@@ -263,12 +265,10 @@ public class   DashboardView extends VerticalLayout implements View {
 
         // *** RIGHT COLUMN ***
         if(Math.random()>0.5) {
-            //rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
         } else {
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(dnaCard);
-            //rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantLocationBox);
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
         }
         // rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(cateringCard);

@@ -6,9 +6,13 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
+import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.BudgetService;
+import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
@@ -29,7 +33,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
     private int boxWidth;
     private String name;
 
-    public ConsultantAllocationCardImpl(ContractService contractService, BudgetNewRepository budgetNewRepository, int priority, int boxWidth, String name) {
+    public ConsultantAllocationCardImpl(AvailabilityService availabilityService, BudgetService budgetService, int priority, int boxWidth, String name) {
         this.priority = priority;
         this.boxWidth = boxWidth;
         this.name = name;
@@ -69,6 +73,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
         User user = userSession.getUser();
 
         Map<String, double[]> budgetRowList = new HashMap<>();
+        /*
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.plusMonths(i);
 
@@ -78,25 +83,35 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
                     double weeks = currentDate.getMonth().length(true) / 7.0;
                     for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
                         if(!contractConsultant.getUser().getUuid().equals(user.getUuid())) continue;
-                        budgetRowList.putIfAbsent(contract.getClient().getName(), new double[12]);
-                        budgetRowList.get(contract.getClient().getName())[i] = (contractConsultant.getHours() * weeks) + budgetRowList.get(contract.getClient().getName())[i];
+                        String clientName = clientService.findOne(contract.getClientuuid()).getName();
+                        budgetRowList.putIfAbsent(clientName, new double[12]);
+                        budgetRowList.get(clientName)[i] = (contractConsultant.getHours() * weeks) + budgetRowList.get(clientName)[i];
                     }
                 }
             }
-            List<BudgetNew> budgets = budgetNewRepository.findByMonthAndYear(currentDate.getMonthValue() - 1, currentDate.getYear());
-            for (BudgetNew budget : budgets) {
-                ContractConsultant contractConsultant = budget.getContractConsultant();
-                if(!contractConsultant.getUser().getUuid().equals(user.getUuid())) continue;
-                budgetRowList.putIfAbsent(contractConsultant.getContract().getClient().getName(), new double[12]);
-                budgetRowList.get(contractConsultant.getContract().getClient().getName())[i] = (budget.getBudget() / budget.getContractConsultant().getRate()) + budgetRowList.get(contractConsultant.getContract().getClient().getName())[i];
+            // TODO: FIX
+            List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
+            for (BudgetDocument budget : budgets) {
+                budgetRowList.putIfAbsent(budget.getClient().getName(), new double[12]);
+                budgetRowList.get(budget.getClient().getName())[i] = (budget.getGrossBudgetHours() / budget.getRate()) + budgetRowList.get(budget.getClient().getName())[i];
             }
+
+
+        }*/
+
+        for (int i = 0; i < 12; i++) {
+            LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);
+
+            List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
+            for (BudgetDocument budget : budgets) {
+                budgetRowList.putIfAbsent(budget.getClient().getName(), new double[12]);
+                budgetRowList.get(budget.getClient().getName())[i] +=  (budget.getGrossBudgetHours());
+            }
+
         }
 
-
-            //budgetRowList.putIfAbsent(user.getUuid(), new double[12]);
         for (String key : budgetRowList.keySet()) {
             double[] hoursPerMonth = budgetRowList.get(key);
-
 
             LocalDate localDate = localDateStart;
             int m = 0;
@@ -125,6 +140,23 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
             }
             userNumber++;
         }
+
+
+        /*
+        LocalDate localDate = localDateStart;
+        int m = 0;
+        while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
+            double budget = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), localDate.withDayOfMonth(1));
+
+            AvailabilityDocument availabilityDocument = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), localDate.withDayOfMonth(1));
+            double availability = availabilityDocument.getNetAvailableHours();
+            rs.addHeatPoint(m, userNumber, Math.round((budget / availability)*100.0));
+            localDate = localDate.plusMonths(1);
+            m++;
+        }
+        userNumber++;
+
+         */
 
         config.getxAxis().setCategories(monthNames);
         config.getyAxis().setCategories(budgetRowList.keySet().toArray(new String[0]));

@@ -7,7 +7,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
 import dk.trustworks.invoicewebui.model.Photo;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.network.rest.PhotoRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,18 +17,18 @@ import java.io.ByteArrayInputStream;
 public class PhotoService {
 
     @Autowired
-    private PhotoRepository photoRepository;
+    private PhotoRestService photoRestService;
 
     public Image getRoundMemberImage(User member, boolean isOwner) {
         return getRoundMemberImage(member, isOwner, 75, Sizeable.Unit.PIXELS);
     }
 
     public Image getRoundMemberImage(User member, boolean isOwner, int width, Sizeable.Unit unit) {
-        Photo photo = photoRepository.findByRelateduuid(member.getUuid());
+        Photo photo = photoRestService.findPhotoByRelateduuid(member.getUuid());
 
         Image image = new Image();
         image.setDescription(member.getFirstname()+" "+member.getLastname());
-        if(photo!=null && photo.getPhoto()!=null) {
+        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto()!=null) {
             image.setSource(
                     new StreamResource((StreamResource.StreamSource) () ->
                             new ByteArrayInputStream(photo.getPhoto()),
@@ -44,10 +44,10 @@ public class PhotoService {
     }
 
     public Image getRoundImage(String uuid, boolean isOwner, int width, Sizeable.Unit unit) {
-        Photo photo = photoRepository.findByRelateduuid(uuid);
+        Photo photo = photoRestService.findPhotoByRelateduuid(uuid);
 
         Image image = new Image();
-        if(photo!=null && photo.getPhoto()!=null) {
+        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto()!=null) {
             image.setSource(
                     new StreamResource((StreamResource.StreamSource) () ->
                             new ByteArrayInputStream(photo.getPhoto()),
@@ -61,13 +61,21 @@ public class PhotoService {
         return image;
     }
 
-    public Resource getRelatedPhoto(String relatedUUID) {
-        Photo photo = photoRepository.findByRelateduuid(relatedUUID);
-        if(photo!=null && photo.getPhoto().length > 0) {
+    public Resource getRelatedPhotoResource(String relatedUUID) {
+        Photo photo = photoRestService.findPhotoByRelateduuid(relatedUUID);
+        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto().length > 0) {
             return new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()), System.currentTimeMillis() + ".jpg");
         } else {
             return new ThemeResource("images/clients/missing-logo.jpg");
         }
+    }
+
+    public Photo getRelatedPhoto(String relatedUUID) {
+        return photoRestService.findPhotoByRelateduuid(relatedUUID);
+    }
+
+    public void save(Photo photo) {
+        photoRestService.update(photo);
     }
 }

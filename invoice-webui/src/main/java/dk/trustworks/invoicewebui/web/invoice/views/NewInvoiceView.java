@@ -7,7 +7,6 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
-import dk.trustworks.invoicewebui.web.invoice.components.NewInvoiceImpl;
 import dk.trustworks.invoicewebui.web.invoice.components.NewInvoiceImpl2;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
@@ -33,9 +32,6 @@ public class NewInvoiceView extends VerticalLayout implements View {
     protected static Logger logger = LoggerFactory.getLogger(NewInvoiceView.class.getName());
 
     @Autowired
-    private NewInvoiceImpl newInvoiceComponent;
-
-    @Autowired
     private NewInvoiceImpl2 newInvoiceImpl2;
 
     @Autowired
@@ -54,25 +50,10 @@ public class NewInvoiceView extends VerticalLayout implements View {
         mainTemplate.setMainContent(newInvoiceImpl2.init(), VIEW_ICON, MENU_NAME, "Primed for billing", VIEW_BREADCRUMB);
     }
 
-    public void receiveBroadcast(String message) {
-        logger.debug("MainWindowImpl.receiveBroadcast");
-        logger.debug("message = " + message);
-        /*
-        int numberOfDrafts = invoiceClient.findByStatus(DRAFT).size();
-        System.out.println("numberOfDrafts = " + numberOfDrafts);
-        getUI().access(() -> {
-            newInvoiceComponent.reloadData();
-            if(numberOfDrafts>0) getMenuButton4().setCaption("DRAFTS ("+numberOfDrafts+")");
-            else getMenuButton4().setCaption("DRAFTS");
-        });
-        */
-    }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         System.out.println("NewInvoiceView.enter");
-        //Authorizer.authorize(this);
         newInvoiceImpl2.reloadData();
-        //leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
     }
 }

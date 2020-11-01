@@ -7,7 +7,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
@@ -58,7 +61,7 @@ public class Receipt {
     }
 
     public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
+        return UserService.get().findByUUID(getUseruuid(), true);
     }
 
     public void setUser(User user) {

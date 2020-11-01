@@ -9,7 +9,8 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,13 +30,14 @@ import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 @SpringUI
 public class AverageConsultantAllocationChart {
 
-    private final StatisticsService statisticsService;
-
+    private final RevenueService revenueService;
+    private final AvailabilityService availabilityService;
     private final UserService userService;
 
     @Autowired
-    public AverageConsultantAllocationChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public AverageConsultantAllocationChart(RevenueService revenueService, AvailabilityService availabilityService, UserService userService) {
+        this.revenueService = revenueService;
+        this.availabilityService = availabilityService;
         this.userService = userService;
     }
 
@@ -75,8 +77,8 @@ public class AverageConsultantAllocationChart {
             double allocation = 0.0;
             double count = 0.0;
             do {
-                double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
+                double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
+                AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
                 if(availability==null) {
                     //startDate = startDate.plusMonths(1);
                     //continue;

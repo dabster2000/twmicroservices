@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.web.project.components;
 
-import com.explicatis.ext_token_field.SimpleTokenizable;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
@@ -17,9 +16,7 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.repositories.AmbitionRepository;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.repositories.NewsRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
@@ -37,10 +34,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static java.lang.Math.max;
+import static java.lang.Math.round;
 import static java.util.Comparator.comparing;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
 
@@ -64,13 +64,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final WorkService workService;
 
-    private final BudgetNewRepository budgetNewRepository;
-
-    private final PhotoRepository photoRepository;
-
     private final PhotoService photoService;
 
+    private final NewsRepository newsRepository;
+
     private final AmbitionRepository ambitionRepository;
+
+    private final BudgetService budgetService;
 
     private ResponsiveLayout responsiveLayout;
 
@@ -84,17 +84,17 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, BudgetNewRepository budgetNewRepository, PhotoRepository photoRepository, PhotoService photoService, ContractService contractService, AmbitionRepository ambitionRepository) {
+    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository, BudgetService budgetService) {
         this.userService = userService;
         this.projectService = projectService;
         this.clientService = clientService;
         this.taskService = taskService;
         this.workService = workService;
-        this.budgetNewRepository = budgetNewRepository;
-        this.photoRepository = photoRepository;
         this.photoService = photoService;
+        this.newsRepository = newsRepository;
         this.contractService = contractService;
         this.ambitionRepository = ambitionRepository;
+        this.budgetService = budgetService;
 
         getBtnAddNewProject().addClickListener((Button.ClickEvent event) -> {
             final Window window = new Window("Create Project");
@@ -175,8 +175,8 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
-        Photo photoResource = photoRepository.findByRelateduuid(currentProject.getClient().getUuid());
-        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(), photoResource, projectService, userService);
+        Photo photoResource = photoService.getRelatedPhoto(currentProject.getClient().getUuid());
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(true), photoResource, projectService, newsRepository, userService);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.update();
             updateTreeGrid(currentProject);
@@ -189,8 +189,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             getSelProject().setItems(projectService.findAllByActiveTrueOrderByNameAsc());
             reloadGrid(Optional.empty());
         });
-        if(currentProject.getTasks().stream().anyMatch(task -> !task.getType().equals(TaskType.SO))) projectDetailCard.getBtnDelete().setVisible(false);
-        else projectDetailCard.getBtnDelete().setVisible(true);
+        projectDetailCard.getBtnDelete().setVisible(currentProject.getTasks().stream().allMatch(task -> task.getType().equals(TaskType.SO)));
         ResponsiveRow clientDetailsRow = responsiveLayout.addRow();
         clientDetailsRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
@@ -254,9 +253,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 if(taskRow.getSubRow().isVisible()) {
                     taskRow.getSubRow().setVisible(false);
                 } else {
-                    Task updatedTask = taskService.findOne(task.getUuid());
-                    List<Ambition> ambitionList = ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue();
-                    List<Ambition> selectedAmbitions = new ArrayList<>();
+                    //Task updatedTask = taskService.findOne(task.getUuid());
+                    //List<Ambition> ambitionList = ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue();
+                    //List<Ambition> selectedAmbitions = new ArrayList<>();
                     /*
                     for (TaskOffering taskOffering : updatedTask.getTaskOfferings()) {
                         ambitionList.stream().filter(ambition -> ambition.getName().equals(taskOffering.getName())).findFirst().ifPresent(selectedAmbitions::add);
@@ -324,25 +323,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             reloadGrid(Optional.of(currentProject));
         });
         tasksLayout.add(newTaskRow);
-    }
-
-    private ComboBox<SimpleTokenizable> buildComboBox()
-    {
-        ComboBox<SimpleTokenizable> result = new ComboBox<>("", initTokenCollection());
-        result.setItemCaptionGenerator(SimpleTokenizable::getStringValue);
-        result.setPlaceholder("Type here to add");
-        return result;
-    }
-
-    private Collection<SimpleTokenizable> initTokenCollection() {
-        return ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue().stream()
-                .map(ambition -> new SimpleTokenizable(ambition.getId(), ambition.getName()))//
-                .collect(Collectors.toList());
-    }
-
-    private void updateTask(Task task, TaskRowDesign taskRowDesign) {
-        System.out.println("ProjectManagerImpl.updateTask");
-        System.out.println("task = [" + task + "], taskRowDesign = [" + taskRowDesign + "]");
     }
 
     private void saveNewTask(TaskRowDesign newTaskRow, Project currentProject) {
@@ -451,11 +431,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 dataSeriesItem.setLow(mainContract.getActiveFrom().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
                 dataSeriesItem.setHigh(mainContract.getActiveTo().atStartOfDay().toEpochSecond(ZoneOffset.UTC)*1000);
                 ls.add(dataSeriesItem);
-                /*
-                for (SubContract subContract : mainContract.getChildren()) {
-                    ls.add(new DataSeriesItem(subContract.getActiveTo().atStartOfDay().toInstant(ZoneOffset.UTC), contractNumber));
-                }
-                */
                 conf.addSeries(ls);
             }
 
@@ -470,15 +445,15 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         consultantsLayout.addComponent(responsiveLayout);
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
-        for (Contract mainContract : currentProject.getContracts().stream().sorted(Comparator.comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
+        for (Contract mainContract : contractService.getContractsByProject(currentProject).stream().sorted(Comparator.comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
             for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
                 ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
                 consultantRowDesign.getLblName().setValue(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
-                consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate()) + "");
+                consultantRowDesign.getTxtRate().setValue(round(contractConsultant.getRate()) + "");
                 consultantRowDesign.getTxtRate().setReadOnly(true);
-                consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours()) + "");
+                consultantRowDesign.getTxtHours().setValue(round(contractConsultant.getHours()) + "");
                 consultantRowDesign.getTxtHours().setReadOnly(true);
-                consultantRowDesign.getVlHours().setVisible(contractConsultant.getContract().getContractType().equals(ContractType.PERIOD));
+                consultantRowDesign.getVlHours().setVisible(mainContract.getContractType().equals(ContractType.PERIOD));
                 consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUser(), false));
                 consultantRowDesign.getBtnDelete().setVisible(false);
                 if(mainContract.getActiveTo().isBefore(LocalDate.now().withDayOfMonth(1))) {
@@ -496,8 +471,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
     private void updateTreeGrid(Project currentProject) {
         budgetCard.getContainer().removeAllComponents();
         if(currentProject.getContracts().stream().anyMatch(contract -> contract.getContractType().equals(ContractType.AMOUNT))) {
-            System.out.println("currentProject = " + currentProject);
-            System.out.println("currentProject.getContracts().get(0) = " + currentProject.getContracts().get(0).getUuid());
             grid = createGrid(currentProject);
             ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
             ResponsiveRow row = responsiveLayout.addRow();
@@ -545,6 +518,9 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         conf.addSeries(budgetSeries);
         ListSeries usedSeries = new ListSeries("used");
         conf.addSeries(usedSeries);
+
+
+
         for (Contract contract : contractList) {
             if(contract.getContractType().equals(ContractType.PERIOD)) continue;
             double used = contractService.findAmountUsedOnContract(contract);
@@ -552,29 +528,31 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
             LocalDate startDate = LocalDate.now().withDayOfMonth(1);
             LocalDate endDate = currentProject.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
 
-            double budgetSum = 0.0;
+            AtomicReference<Double> budgetSum = new AtomicReference<>(0.0);
             for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                List<BudgetNew> budgets = budgetService.findByConsultantAndProject(currentProject.getUuid(), contractConsultant.getUuid());
+
                 LocalDate budgetDate = startDate;
                 while (budgetDate.isBefore(endDate)) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue() - 1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
-                    if(budget!=null) budgetSum += budget.getBudget();
+                    Optional<BudgetNew> optionalBudgetNew = budgets.stream().filter(budgetNew -> budgetNew.getYear() == filterDate.getYear() && budgetNew.getMonth() == filterDate.getMonthValue() - 1).findFirst();
+                    optionalBudgetNew.ifPresent(budgetNew -> budgetSum.updateAndGet(v -> v + budgetNew.getBudget()));
                     budgetDate = budgetDate.plusMonths(1);
                 }
             }
 
-            double rest = contract.getAmount() - used - budgetSum;
+            double rest = contract.getAmount() - used - budgetSum.get();
 
             usedSeries.addData(used);
-            budgetSeries.addData(budgetSum);
-            restSeries.addData(rest<0.0?0.0:rest);
+            budgetSeries.addData(budgetSum.get());
+            restSeries.addData(max(rest, 0.0));
         }
 
         chart.drawChart(conf);
         return chart;
     }
 
-    private Grid createGrid(Project currentProject) {
+    private Grid<BudgetRow> createGrid(Project currentProject) {
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
         if(currentProject.getContracts().size()==0) return new Grid();
         LocalDate endDate = currentProject.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo();
@@ -583,7 +561,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         grid = new Grid<>();
 
         grid.addColumn(BudgetRow::getUsername).setWidth(150).setCaption("Consultant").setId("name-column");
-        grid.addColumn(budgetRow -> budgetRow.getContractConsultant().getContract().getName()).setWidth(100).setCaption("Contract").setId("contract-column");
+        grid.addColumn(budgetRow -> budgetRow.getContract().getName()).setWidth(100).setCaption("Contract").setId("contract-column");
         grid.setFrozenColumnCount(2);
         grid.setWidth("100%");
         grid.getEditor().setEnabled(true);
@@ -591,22 +569,23 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         List<BudgetRow> budgetRows = new ArrayList<>();
 
         for (Contract mainContract : currentProject.getContracts()) {
-            System.out.println("mainContract = " + mainContract);
             if(mainContract.getActiveTo().isBefore(startDate)) continue;
             if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) continue;
             for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
-                BudgetRow budgetRow = new BudgetRow(contractConsultant, (int)(monthsBetween+1));
+                BudgetRow budgetRow = new BudgetRow(contractConsultant, mainContract, (int)(monthsBetween+1));
                 LocalDate budgetDate = startDate;
+
+                List<BudgetNew> budgets = budgetService.findByConsultantAndProject(currentProject.getUuid(), contractConsultant.getUuid());
 
                 int month = 0;
                 while(budgetDate.isBefore(mainContract.getActiveTo())) {
                     final LocalDate filterDate = budgetDate;
-                    BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(filterDate.getMonthValue()-1, filterDate.getYear(), contractConsultant, currentProject.getUuid());
+                    Optional<BudgetNew> optionalBudgetNew = budgets.stream().filter(budgetNew -> budgetNew.getYear() == filterDate.getYear() && budgetNew.getMonth() == filterDate.getMonthValue() - 1).findFirst();
 
-                    if(budget != null) {
-                        budgetRow.setMonth(month, (budget.getBudget() / contractConsultant.getRate())+"");
+                    if(optionalBudgetNew.isPresent()) {
+                        budgetRow.setMonth(month, (optionalBudgetNew.get().getBudget() / contractConsultant.getRate())+"");
                     } else {
-                        budgetNewRepository.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, contractConsultant, currentProject));
+                        budgetService.save(new BudgetNew(filterDate.getMonthValue()-1, filterDate.getYear(), 0.0, contractConsultant.getUuid(), currentProject.getUuid()));
                         budgetRow.setMonth(month, "0.0");
                     }
                     month++;
@@ -647,33 +626,33 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         grid.getEditor().setEnabled(true);
         grid.getEditor().addSaveListener(event -> {
             BudgetRow budgetRow = event.getBean();
-            System.out.println("budgetRow = " + budgetRow);
             LocalDate budgetCountDate = startDate;
             for (String budgetString : budgetRow.getBudget()) {
-                System.out.println("budgetCountDate = " + budgetCountDate);
-                System.out.println("budgetString = " + budgetString);
-                System.out.println("budgetRow.getContractConsultant().getContract().getActiveTo() = " + budgetRow.getContractConsultant().getContract().getActiveTo());
-                if(budgetCountDate.isAfter(budgetRow.getContractConsultant().getContract().getActiveTo())) {
+                if(budgetCountDate.isAfter(budgetRow.getContract().getActiveTo())) {
                     budgetCountDate = budgetCountDate.plusMonths(1);
                     continue;
                 }
-                System.out.println("budgetRow.getContractConsultant().getContract().getActiveFrom() = " + budgetRow.getContractConsultant().getContract().getActiveFrom());
-                if(budgetCountDate.isBefore(budgetRow.getContractConsultant().getContract().getActiveFrom())) {
+                if(budgetCountDate.isBefore(budgetRow.getContract().getActiveFrom())) {
                     budgetCountDate = budgetCountDate.plusMonths(1);
                     continue;
                 }
                 if(budgetString==null) budgetString = "0.0";
-                System.out.println("budgetString = " + budgetString);
-                BudgetNew budget = budgetNewRepository.findByMonthAndYearAndContractConsultantAndProjectuuid(
+                BudgetNew budget = new BudgetNew(
                         budgetCountDate.getMonthValue() - 1,
                         budgetCountDate.getYear(),
-                        budgetRow.getContractConsultant(),
+                        Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()),
+                        budgetRow.getContractConsultant().getUuid(),
                         currentProject.getUuid());
-                System.out.println("budget = " + budget);
-                //if(budget.getProject()==null) budget.setProject(currentProject);
-                budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
-                System.out.println("budget = " + budget);
-                budgetNewRepository.save(budget);
+                /*
+                BudgetNew budget = budgetService.findByMonthAndYearAndContractConsultantAndProjectuuid(
+                        budgetCountDate.getMonthValue() - 1,
+                        budgetCountDate.getYear(),
+                        budgetRow.getContractConsultant().getUuid(),
+                        currentProject.getUuid());
+                 */
+
+                //budget.setBudget(Double.parseDouble(budgetString) * NumberConverter.parseDouble(budgetRow.getRate()));
+                budgetService.save(budget);
                 budgetCountDate = budgetCountDate.plusMonths(1);
             }
             updateTreeGrid(currentProject);

@@ -6,16 +6,16 @@ import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
-import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.services.ClientService;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.ContractDesign;
@@ -25,20 +25,13 @@ import dk.trustworks.invoicewebui.web.contracts.components.NavigationBar;
 import main.java.com.maximeroussy.invitrode.RandomWord;
 import main.java.com.maximeroussy.invitrode.WordLengthException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tltv.gantt.Gantt;
-import org.tltv.gantt.client.shared.Resolution;
-import org.tltv.gantt.client.shared.Step;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.label.MLabel;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -61,11 +54,6 @@ public class ContractListLayout extends VerticalLayout {
     private ResponsiveLayout contractResponsiveLayout;
     private ResponsiveRow contractRow;
     private ResponsiveRow errorRow;
-    private ResponsiveRow ganttRow;
-    private Card errorCard;
-
-    LocalDate startDate;
-    LocalDate endDate;
 
     @Autowired
     public ContractListLayout(ClientService clientService, ContractService contractService, ContractSearchImpl contractSearch, ContractDetailLayout contractDetailLayout, PhotoService photoService) {
@@ -85,7 +73,6 @@ public class ContractListLayout extends VerticalLayout {
         this.removeAllComponents();
         contractResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         createSearchBar();
-        //showGantt();
         createErrorBox();
         contractRow = contractResponsiveLayout.addRow();
         this.addComponent(contractResponsiveLayout);
@@ -94,13 +81,11 @@ public class ContractListLayout extends VerticalLayout {
 
     private void createErrorBox() {
         errorRow = contractResponsiveLayout.addRow();
-        errorCard = new Card();
+        Card errorCard = new Card();
         errorCard.getContent().setHeight(450, Unit.PIXELS);
         errorCard.getContent().addStyleName("v-scrollable");
         errorCard.getLblTitle().setValue("Work registration errors");
-        errorCard.getHlTitleBar().addComponent(new MButton("load all", event -> createErrorContent(100)));
-
-        createErrorContent(2);
+        //errorCard.getHlTitleBar().addComponent(new MButton("load all", event -> createErrorContent(100)));
     }
 
     private void createSearchBar() {
@@ -125,219 +110,9 @@ public class ContractListLayout extends VerticalLayout {
 
     private void reloadContractView(Client client) {
         errorRow.setVisible(false);
-        //ganttRow.setVisible(false);
         contractRow.removeAllComponents();
-        client = createContractView(client);
+        createContractView(client);
         createNewContractButton(client);
-    }
-
-    private void showGantt() {
-        ganttRow = contractResponsiveLayout.addRow();
-        //errorRow.removeAllComponents();
-
-        Card card = new Card();
-        card.getLblTitle().setValue("Customer Timeline");
-        ganttRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(card);
-
-        Gantt gantt = new Gantt();
-        card.getContent().addComponent(gantt);
-
-        gantt.setWidth(100, Unit.PERCENTAGE);
-        gantt.setHeight(500, Unit.PIXELS);
-        gantt.setResizableSteps(false);
-        gantt.setMovableSteps(false);
-        gantt.setResolution(Resolution.Week);
-        gantt.setMovableStepsBetweenRows(true);
-        gantt.setShowCurrentTime(true);
-
-        List<Client> clients = clientService.findByActiveTrue();
-        //List<Contract> contracts = client.getContracts();
-        //List<Project> projects = client.getProjects();
-
-        startDate = LocalDate.now();
-        endDate = LocalDate.now().plusMonths(1);
-
-        Map<String, Step> contractSet = new HashMap<>();
-        Map<String, Step> projectSet = new HashMap<>();
-
-        for (Client client : clients) {
-            createClient(gantt, client);
-        }
-
-/*
-        for (Contract contract : contracts) {
-            createContract(gantt, contractSet, projectSet, contract);
-        }
-        */
-/*
-        for (Project project : projects) {
-            createProject(gantt, project, contractSet, projectSet);
-        }
-*/
-
-        gantt.setStartDate(DateUtils.convertLocalDateToDate(startDate));
-        gantt.setEndDate(DateUtils.convertLocalDateToDate(endDate));
-
-        //gantt.addClickListener((Gantt.ClickListener) event -> Notification.show("Clicked" + event.getStep().getCaption()));
-
-        //gantt.addMoveListener((Gantt.MoveListener) event -> Notification.show("Moved " + event.getStep().getCaption()));
-
-        //gantt.addResizeListener((Gantt.ResizeListener) event -> Notification.show("Resized " + event.getStep().getCaption()));
-    }
-
-    private void createClient(Gantt gantt, Client client) {
-        Step projectStep = new Step(client.getName());
-
-        Optional<Contract> firstContract = client.getContracts().stream().filter(contract -> contract.getActiveTo().isAfter(LocalDate.now())).min(Comparator.comparing(Contract::getActiveFrom));
-        Optional<Contract> lastContract = client.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo));
-        if(!firstContract.isPresent() || !lastContract.isPresent()) return;
-        if(lastContract.get().getActiveTo().isBefore(LocalDate.now())) return;
-        //projectStep.setStartDate(DateUtils.convertLocalDateToDate((firstContract.get().getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():firstContract.get().getActiveFrom()));
-        projectStep.setStartDate(DateUtils.convertLocalDateToDate(firstContract.get().getActiveFrom()));
-        projectStep.setEndDate(DateUtils.convertLocalDateToDate(lastContract.get().getActiveTo()));
-
-        projectStep.setBackgroundColor("5FA75C");
-
-
-        //projectSet.put(project.getUuid(), projectStep);
-
-        gantt.addStep(projectStep);
-
-        for (Contract contract : client.getContracts()) {
-            Step relatedContract = createContract(contract);
-            if(relatedContract == null) continue;
-            //projectStep.addStep(relatedContract);
-            gantt.addStep(relatedContract);
-        }
-    }
-
-    private Step createContract(Contract contract) {
-        if(contract.getActiveTo().isBefore(LocalDate.now())) return null;
-
-        if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
-        if(contract.getActiveTo().isAfter(endDate)) endDate = contract.getActiveTo();
-
-        String consultantNames = String.join(",", contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
-        Step contractStep = new Step(contract.getContractType().name() + "(" + consultantNames + ")");
-        //Date contractStartDate = DateUtils.convertLocalDateToDate((contract.getActiveFrom().isBefore(LocalDate.now()))?LocalDate.now():contract.getActiveFrom());
-        Date contractStartDate = DateUtils.convertLocalDateToDate(contract.getActiveFrom());
-        Date contractEndDate = DateUtils.convertLocalDateToDate(contract.getActiveTo());
-        contractStep.setStartDate(contractStartDate);
-        contractStep.setEndDate(contractEndDate);
-
-        contractStep.setDescription(consultantNames);
-        contractStep.setBackgroundColor("F9D8B0");
-
-        double amountUsedOnContract = contractService.findAmountUsedOnContract(contract);
-        double percentage;
-        if(contract.getContractType().equals(ContractType.AMOUNT)) {
-            percentage = (amountUsedOnContract/contract.getAmount()) * 100.0;
-        } else {
-            long weeks = ChronoUnit.WEEKS.between(contract.getActiveFrom(), contract.getActiveTo());
-            double amount = 0.0;
-            for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                amount += contractConsultant.getRate() * contractConsultant.getHours() * weeks;
-            }
-            percentage = (amountUsedOnContract / amount) * 100.0;
-        }
-        contractStep.setShowProgress(true);
-        contractStep.setProgress(percentage);
-
-        return contractStep;
-    }
-
-    private void showGantt(Client client) {
-        errorRow.removeAllComponents();
-
-        Card card = new Card();
-        card.getLblTitle().setValue("Customer Timeline");
-        errorRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(card);
-
-        Gantt gantt = new Gantt();
-        card.getContent().addComponent(gantt);
-
-        gantt.setWidth(100, Unit.PERCENTAGE);
-        gantt.setHeight(500, Unit.PIXELS);
-        gantt.setResizableSteps(true);
-        gantt.setMovableSteps(true);
-        gantt.setResolution(Resolution.Week);
-        gantt.setMovableStepsBetweenRows(true);
-
-        List<Contract> contracts = client.getContracts();
-        List<Project> projects = client.getProjects();
-
-        startDate = LocalDate.now();
-        endDate = LocalDate.now().plusMonths(1);
-
-        Map<String, Step> contractSet = new HashMap<>();
-        Map<String, Step> projectSet = new HashMap<>();
-
-        for (Contract contract : contracts) {
-            createContract(gantt, contractSet, projectSet, contract);
-        }
-/*
-        for (Project project : projects) {
-            createProject(gantt, project, contractSet, projectSet);
-        }
-*/
-
-        gantt.setStartDate(startDate);
-        gantt.setEndDate(endDate);
-
-        gantt.addClickListener((Gantt.ClickListener) event -> Notification.show("Clicked" + event.getStep().getCaption()));
-
-        gantt.addMoveListener((Gantt.MoveListener) event -> Notification.show("Moved " + event.getStep().getCaption()));
-
-        gantt.addResizeListener((Gantt.ResizeListener) event -> Notification.show("Resized " + event.getStep().getCaption()));
-    }
-
-    private Step createContract(Gantt gantt, Map<String, Step> contractSet, Map<String, Step> projectSet, Contract contract) {
-        //if(contractSet.containsKey(contract.getUuid())) return contractSet.get(contract.getUuid());
-        if(contract.getActiveFrom().isBefore(startDate)) startDate = contract.getActiveFrom();
-        if(contract.getActiveTo().isAfter(endDate)) endDate = contract.getActiveTo();
-
-        String consultantNames = String.join(",", contract.getContractConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
-        Step contractStep = new Step(contract.getContractType().name() + "(" + consultantNames + ")");
-        contractStep.setStartDate(Date.from(contract.getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        contractStep.setEndDate(Date.from(contract.getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
-        contractStep.setDescription(consultantNames);
-        contractStep.setBackgroundColor("FBB14D");
-        gantt.addStep(contractStep);
-
-        //contractSet.put(contract.getUuid(), contractStep);
-/*
-        for (Project project : contract.getProjects()) {
-            Step relatedProject = createProject(gantt, project, contractSet, projectSet);
-        }
-        */
-        return contractStep;
-    }
-
-    private Step createProject(Gantt gantt, Project project, Map<String, Step> contractSet, Map<String, Step> projectSet) {
-        if(projectSet.containsKey(project.getUuid())) return projectSet.get(project.getUuid());
-
-        Step projectStep = new Step(project.getName());
-
-        projectStep.setStartDate(Date.from(project.getContracts().stream().min(Comparator.comparing(Contract::getActiveFrom)).get().getActiveFrom().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        projectStep.setEndDate(Date.from(project.getContracts().stream().max(Comparator.comparing(Contract::getActiveTo)).get().getActiveTo().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
-        //String consultantNames = String.join(",", contract.getConsultants().stream().map(consultant -> consultant.getUser().getUsername()).collect(Collectors.toList()));
-
-        //projectStep.setDescription(consultantNames);
-        projectStep.setBackgroundColor("8FA78A");
-
-        projectSet.put(project.getUuid(), projectStep);
-
-        gantt.addStep(projectStep);
-
-        for (Contract contract : project.getContracts()) {
-            Step relatedContract = createContract(gantt, contractSet, projectSet, contract);
-            //projectStep.addSubStep(relatedContract);
-            gantt.addStep(relatedContract);
-        }
-
-        return projectStep;
     }
 
     private void createNewContractButton(Client client) {
@@ -372,29 +147,21 @@ public class ContractListLayout extends VerticalLayout {
             contractFormDesign.getDfTo().setDescription("Not included selected month...");
             contractFormDesign.getBtnCreate().setCaption("Create Contract");
             contractFormDesign.getCbType().addValueChangeListener(event2 -> {
-                if(contractFormDesign.getCbType().getValue().equals(ContractType.AMOUNT) || contractFormDesign.getCbType().getValue().equals(ContractType.SKI)) {
-                    contractFormDesign.getTxtAmount().setVisible(true);
-                } else {
-                    contractFormDesign.getTxtAmount().setVisible(false);
-                }
+                contractFormDesign.getTxtAmount().setVisible(contractFormDesign.getCbType().getValue().equals(ContractType.AMOUNT) || contractFormDesign.getCbType().getValue().equals(ContractType.SKI));
                 contractFormDesign.getBtnCreate().setVisible(true);
                 contractFormDesign.getBtnUpdate().setVisible(false);
 
                 contractFormDesign.getBtnCreate().addClickListener(event3 -> {
-                    Contract contract = null;
-                    try {
-                        contract = contractService.createContract(new Contract(
-                                contractFormDesign.getCbType().getValue(),
-                                contractFormDesign.getCbStatus().getValue(),
-                                contractFormDesign.getTxtNote().getValue(),
-                                contractFormDesign.getTxtRefid().getValue(),
-                                contractFormDesign.getDfFrom().getValue().withDayOfMonth(1),
-                                contractFormDesign.getDfTo().getValue().withDayOfMonth(contractFormDesign.getDfTo().getValue().lengthOfMonth()),
-                                NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
-                                client));
-                    } catch (ContractValidationException e) {
-                        Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-                    }
+                    Contract contract = new Contract(
+                            contractFormDesign.getCbType().getValue(),
+                            contractFormDesign.getCbStatus().getValue(),
+                            contractFormDesign.getTxtNote().getValue(),
+                            contractFormDesign.getTxtRefid().getValue(),
+                            contractFormDesign.getDfFrom().getValue().withDayOfMonth(1),
+                            contractFormDesign.getDfTo().getValue().withDayOfMonth(contractFormDesign.getDfTo().getValue().lengthOfMonth()),
+                            NumberConverter.parseDouble(contractFormDesign.getTxtAmount().getValue()),
+                            client);
+                    contractService.createContract(contract);
                     this.removeComponent(contractResponsiveLayout);
                     NavigationBar navigationBar = new NavigationBar();
                     navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
@@ -419,7 +186,7 @@ public class ContractListLayout extends VerticalLayout {
         });
     }
 
-    private Client createContractView(Client client) {
+    private void createContractView(Client client) {
         for (Contract contract : clientService.findOne(client.getUuid()).getContracts().stream().sorted(comparing(Contract::getActiveTo).reversed()).collect(Collectors.toList())) {
             ContractDesign contractDesign = new ContractDesign();
 
@@ -428,7 +195,7 @@ public class ContractListLayout extends VerticalLayout {
                     if(contract.getParentuuid()==null || contract.getParentuuid().equals("")) contract.setName(RandomWord.getNewWord(8));
                     else contract.setName(contractService.findOne(contract.getParentuuid()).getName());
                     contractService.updateContract(contract);
-                } catch (WordLengthException | ContractValidationException e) {
+                } catch (WordLengthException e) {
                     Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
                 }
             }
@@ -442,9 +209,9 @@ public class ContractListLayout extends VerticalLayout {
 
             contractDesign.getLblType().setValue(contract.getContractType().name());
 
-            contractDesign.getChkProjects().setItems(contract.getProjects());
+            contractDesign.getChkProjects().setItems(contractService.findProjectsByContractuuid(contract.getUuid()));
             contractDesign.getChkProjects().setItemCaptionGenerator(Project::getName);
-            contractDesign.getChkProjects().setValue(contract.getProjects());
+            contractDesign.getChkProjects().setValue(new HashSet<>(contractService.findProjectsByContractuuid(contract.getUuid())));
             contractDesign.getChkProjects().setVisible(true);
             contractDesign.getChkProjects().setEnabled(false);
 
@@ -476,19 +243,15 @@ public class ContractListLayout extends VerticalLayout {
 
             contractDesign.getBtnDelete().addClickListener(event1 -> ConfirmDialog.show(UI.getCurrent(), "Really delete contract?", dialog -> {
                 if(dialog.isConfirmed()) {
-                    contractService.deleteContract(contract);
+                    contractService.deleteContract(contract.getUuid());
                     reloadContractView(clientService.findOne(client.getUuid()));
                 }
             }));
 
             contractDesign.getBtnExtendContract().setIcon(MaterialIcons.PLAYLIST_ADD);
             contractDesign.getBtnExtendContract().addClickListener(event1 -> {
-                Contract newContract = null;
-                try {
-                    newContract = contractService.createContract(new Contract(contract));
-                } catch (ContractValidationException e) {
-                    Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-                }
+                Contract newContract = new Contract(contract);
+                contractService.createContract(newContract);
                 this.removeComponent(contractResponsiveLayout);
                 NavigationBar navigationBar = new NavigationBar();
                 navigationBar.getBtnBack().addClickListener(event -> this.createLayout());
@@ -500,9 +263,10 @@ public class ContractListLayout extends VerticalLayout {
                     .withDisplayRules(12, 12, 4, 4)
                     .withComponent(contractDesign);
         }
-        return client;
     }
 
+    // TODO: Create error list
+    /*
     private void createErrorContent(int months) {
         errorCard.getContent().removeAllComponents();
         VerticalLayout errorList = new VerticalLayout();
@@ -517,4 +281,6 @@ public class ContractListLayout extends VerticalLayout {
                     .withWidth(100, Unit.PERCENTAGE));
         }
     }
+
+     */
 }

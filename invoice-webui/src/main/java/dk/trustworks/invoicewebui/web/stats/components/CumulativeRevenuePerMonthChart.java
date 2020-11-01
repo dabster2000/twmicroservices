@@ -5,8 +5,9 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.services.InvoiceService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.BudgetService;
+import dk.trustworks.invoicewebui.services.FinanceService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -21,14 +22,17 @@ import java.time.temporal.ChronoUnit;
 @SpringUI
 public class CumulativeRevenuePerMonthChart {
 
-    private final StatisticsService statisticsService;
+    private final FinanceService financeService;
 
-    private final InvoiceService invoiceService;
+    private final RevenueService revenueService;
+
+    private final BudgetService budgetService;
 
     @Autowired
-    public CumulativeRevenuePerMonthChart(StatisticsService statisticsService, InvoiceService invoiceService) {
-        this.statisticsService = statisticsService;
-        this.invoiceService = invoiceService;
+    public CumulativeRevenuePerMonthChart(FinanceService financeService, RevenueService revenueService, BudgetService budgetService) {
+        this.financeService = financeService;
+        this.revenueService = revenueService;
+        this.budgetService = budgetService;
     }
 
     public Chart createCumulativeRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -88,14 +92,14 @@ public class CumulativeRevenuePerMonthChart {
 
             double expense;
 
-            double invoicedAmountByMonth = statisticsService.getTotalInvoiceSumByMonth(currentDate);
+            double invoicedAmountByMonth = revenueService.getInvoicedRevenueForSingleMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                expense = financeService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 cumulativeExpensePerMonth += expense;
             } else {
-                cumulativeRevenuePerMonth += statisticsService.getMonthRevenue(currentDate);
-                expense = statisticsService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+                cumulativeRevenuePerMonth += revenueService.getRegisteredRevenueForSingleMonth(currentDate);
+                expense = financeService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
                 cumulativeExpensePerMonth += expense;
             }
 
@@ -103,7 +107,7 @@ public class CumulativeRevenuePerMonthChart {
             if(currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeRevenuePerMonth-cumulativeExpensePerMonth)));
 
 
-            cumulativeBudgetPerMonth += statisticsService.getMonthBudget(periodStart.plusMonths(i).withDayOfMonth(1));
+            cumulativeBudgetPerMonth += budgetService.getMonthBudget(periodStart.plusMonths(i).withDayOfMonth(1));
 
             expensesSeries.add(new DataSeriesItem(periodStart.plusMonths(1).format(DateTimeFormatter.ofPattern("MMM-YYY")), Math.round(cumulativeExpensePerMonth)));
             budgetSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeBudgetPerMonth)));

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "expenses")
-public class Expense {
+public class CompanyExpense {
 
     @Id
     private String uuid;
@@ -18,10 +18,10 @@ public class Expense {
     private ExcelExpenseType expensetype;
     private double amount;
 
-    public Expense() {
+    public CompanyExpense() {
     }
 
-    public Expense(LocalDate period, ExcelExpenseType expensetype, double amount) {
+    public CompanyExpense(LocalDate period, ExcelExpenseType expensetype, double amount) {
         this.uuid = UUID.randomUUID().toString();
         this.period = period;
         this.expensetype = expensetype;

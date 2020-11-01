@@ -4,7 +4,6 @@ import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.network.clients.SlackAPI;
 import dk.trustworks.invoicewebui.services.ContractService;
@@ -26,8 +25,6 @@ public class ChartCacheJob {
 
     private final ContractService contractService;
 
-    private final Map<String, Number> revenueMap;
-
     private final Map<String, Map<LocalDate, Double>> burndownCache;
 
     private final StatisticsService statisticsService;
@@ -43,34 +40,16 @@ public class ChartCacheJob {
         this.statisticsService = statisticsService;
         this.slackAPI = slackAPI;
         this.userService = userService;
-        revenueMap = new TreeMap<>();
         burndownCache = new HashMap<>();
     }
 
-    @Scheduled(cron = "0 0 6,12,20 * * *")
+    //@Scheduled(cron = "0 0 6,12,20 * * *")
     private void loadCachedData() {
         User user = userService.findByUsername("hans.lassen");
         slackAPI.sendSlackMessage(user, "Reloading cached data...");
         long start = System.currentTimeMillis();
         statisticsService.refreshCache();
         slackAPI.sendSlackMessage(user, "...done! ("+(System.currentTimeMillis()-start)+" ms)");
-    }
-
-    @Scheduled(cron = "0 0 4 5 1/1 ?")
-    private void loadRevenuePerClientMap() {
-        revenueMap.clear();
-        for (Work work : workService.findByActiveClients()) {
-            String clientName = work.getTask().getProject().getClient().getName();
-            Double rate = contractService.findConsultantRateByWork(work, ContractStatus.TIME, ContractStatus.SIGNED, ContractStatus.CLOSED);
-            if(rate == null || rate == 0.0) continue;
-            revenueMap.putIfAbsent(clientName, 0);
-            revenueMap.put(clientName, revenueMap.get(clientName).doubleValue()+(work.getWorkduration() * rate));
-        }
-    }
-
-    public Map<String, Number> getRevenuePerClientMap() {
-        if(revenueMap.isEmpty()) loadRevenuePerClientMap();
-        return revenueMap;
     }
 
     public void refreshBurndownRateForSingleContract(Contract mainContract) {
@@ -87,7 +66,7 @@ public class ChartCacheJob {
     private void loadBurndownRateForSingleContract(Contract mainContract) {
         Map<LocalDate, Double> runningBudget = new TreeMap<>();
         double budget = mainContract.getAmount();
-        for (Work work : workService.getWorkOnContractByUser(mainContract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList())) {
+        for (Work work : workService.findWorkOnContract(mainContract.getUuid()).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList())) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
             Optional<ContractConsultant> optionalConsultant = mainContract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
             if(!optionalConsultant.isPresent()) continue;

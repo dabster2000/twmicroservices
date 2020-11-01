@@ -18,7 +18,6 @@ public class Clientdata {
     }
 
     public Clientdata(String city, String clientname, String contactperson, String cvr, String ean, String otheraddressinfo, Long postalcode, String streetnamenumber, Client client) {
-        this.uuid = UUID.randomUUID().toString();
         this.city = city;
         this.clientname = clientname;
         this.contactperson = contactperson;

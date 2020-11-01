@@ -17,7 +17,7 @@ import dk.trustworks.invoicewebui.model.BubbleMember;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
 import dk.trustworks.invoicewebui.repositories.BubbleRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.vaadin.viritin.button.MButton;
@@ -31,7 +31,7 @@ public class BubbleForm {
     private final UserService userService;
     private final BubbleRepository bubbleRepository;
     private final BubbleMemberRepository bubbleMemberRepository;
-    private final PhotoRepository photoRepository;
+    private final PhotoService photoService;
 
     private SlackWebApiClient motherWebApiClient;
 
@@ -41,11 +41,11 @@ public class BubbleForm {
 
     private Binder<Bubble> bubbleBinder = new Binder<>();
 
-    public BubbleForm(UserService userService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoRepository photoRepository, SlackWebApiClient motherWebApiClient) {
+    public BubbleForm(UserService userService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService, SlackWebApiClient motherWebApiClient) {
         this.userService = userService;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
-        this.photoRepository = photoRepository;
+        this.photoService = photoService;
         System.out.println("motherWebApiClient = " + motherWebApiClient);
         this.motherWebApiClient = motherWebApiClient;
         newBubbleDialogRow = getDialogRow(newBubbleResponsiveLayout);
@@ -96,7 +96,7 @@ public class BubbleForm {
         uploadRow.removeAllComponents();
         uploadRow.addColumn()
                 .withDisplayRules(12, 12, 8, 8)
-                .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble! It must be a PNG file thats atleast 800px wide and 400px heigh.", PhotoUploader.Step.UPLOAD, photoRepository, () -> next.next(prevBubble)).getUploader());
+                .withComponent(new PhotoUploader(prevBubble.getUuid(), 800, 400, "Upload some cool artwork for the bubble! It must be a PNG file thats atleast 800px wide and 400px heigh.", PhotoUploader.Step.UPLOAD, photoService, () -> next.next(prevBubble)).getUploader());
     }
 
     private void createMembersRow(final Bubble prevBubble, Next next) {

@@ -8,7 +8,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Photo;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import org.vaadin.liveimageeditor.LiveImageEditor;
 import server.droporchoose.UploadComponent;
 
@@ -35,7 +35,7 @@ import static com.vaadin.ui.Notification.Type.*;
 public class PhotoUploader {
 
 
-    private PhotoRepository photoRepository;
+    private PhotoService photoService;
     private final String uuid;
     private final int width;
     private final int height;
@@ -52,12 +52,12 @@ public class PhotoUploader {
     private VerticalLayout vlPopupContainer;
     private VerticalLayout vlContainer;
 
-    public PhotoUploader(String uuid, int width, int height, String caption, Step startStep, PhotoRepository photoRepository) {
+    public PhotoUploader(String uuid, int width, int height, String caption, Step startStep, PhotoService photoService) {
         this.width = width;
         this.height = height;
         this.caption = caption;
         this.startStep = startStep;
-        this.photoRepository = photoRepository;
+        this.photoService = photoService;
         this.uuid = uuid;
 
         editedImage.setWidth(width, PIXELS);
@@ -69,12 +69,12 @@ public class PhotoUploader {
         vlPopupContainer.setWidth(width, PIXELS);
     }
 
-    public PhotoUploader(String uuid, int widthPercent, int heightPercent, int width, int height, String caption, Step startStep, PhotoRepository photoRepository) {
+    public PhotoUploader(String uuid, int widthPercent, int heightPercent, int width, int height, String caption, Step startStep, PhotoService photoService) {
         this.width = width;
         this.height = height;
         this.caption = caption;
         this.startStep = startStep;
-        this.photoRepository = photoRepository;
+        this.photoService = photoService;
         this.uuid = uuid;
 
         editedImage.setWidth(widthPercent, PERCENTAGE);
@@ -86,13 +86,13 @@ public class PhotoUploader {
         vlPopupContainer.setWidth(width, PIXELS);
     }
 
-    public PhotoUploader(String uuid, int width, int height, String caption, Step startStep, PhotoRepository photoRepository, Done done) {
-        this(uuid, width, height, caption, startStep, photoRepository);
+    public PhotoUploader(String uuid, int width, int height, String caption, Step startStep, PhotoService photoService, Done done) {
+        this(uuid, width, height, caption, startStep, photoService);
         this.done = done;
     }
 
-    public PhotoUploader(String uuid, int widthPercent, int heightPercent, int width, int height, String caption, Step startStep, PhotoRepository photoRepository, Done done) {
-        this(uuid, widthPercent, heightPercent, width, height, caption, startStep, photoRepository);
+    public PhotoUploader(String uuid, int widthPercent, int heightPercent, int width, int height, String caption, Step startStep, PhotoService photoService, Done done) {
+        this(uuid, widthPercent, heightPercent, width, height, caption, startStep, photoService);
         this.done = done;
     }
 
@@ -133,8 +133,8 @@ public class PhotoUploader {
 
         editedImage.addClickListener(event -> setupUploadStep());
 
-        Photo photo = photoRepository.findByRelateduuid(uuid);
-        if(photo!=null && photo.getPhoto().length > 0 && startStep.equals(Step.PHOTO)) {
+        Photo photo = photoService.getRelatedPhoto(uuid);
+        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto().length > 0 && startStep.equals(Step.PHOTO)) {
             editedImage.setSource(new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()),
                     "photo-" + System.currentTimeMillis() + ".jpg"));
@@ -194,7 +194,7 @@ public class PhotoUploader {
             writer.dispose();
 
 
-            Photo photo = photoRepository.findByRelateduuid(uuid);
+            Photo photo = photoService.getRelatedPhoto(uuid);
             if(photo==null) {
                 photo = new Photo(UUID.randomUUID().toString(), uuid, bytes);
             } else {
@@ -202,7 +202,7 @@ public class PhotoUploader {
             }
             StreamResource resource = new StreamResource(() -> new ByteArrayInputStream(bytes), "edited-image-" + System.currentTimeMillis() + ".jpg");
             editedImage.setSource(resource);
-            photoRepository.save(photo);
+            photoService.save(photo);
             if(done == null) setupFinalStep();
             else done.uploaderDone();
         } catch (IOException e) {

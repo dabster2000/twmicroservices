@@ -39,7 +39,7 @@ public class ProjectDescriptionUser {
     }
 
     public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
+        return UserService.get().findByUUID(getUseruuid(), true);
     }
 
     public void setUser(User user) {

@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.contracts.model;
 
+import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -16,6 +17,7 @@ public class BudgetRow {
     private String username;
     private String rate;
     private String amount;
+    private Contract contract;
 
     private String[] budget;
 
@@ -23,10 +25,11 @@ public class BudgetRow {
         budget = new String[months];
     }
 
-    public BudgetRow(ContractConsultant contractConsultant, int months) {
+    public BudgetRow(ContractConsultant contractConsultant, Contract contract, int months) {
         this(months);
         this.user = contractConsultant.getUser();
         this.contractConsultant = contractConsultant;
+        this.contract = contract;
         this.username = user.getUsername();
         this.rate = NumberConverter.formatDouble(contractConsultant.getRate());
         this.amount = NumberConverter.formatDouble(contractConsultant.getBudget());
@@ -86,6 +89,14 @@ public class BudgetRow {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
     @Override

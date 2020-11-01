@@ -1,27 +1,11 @@
 package dk.trustworks.invoicewebui.model;
 
-import dk.trustworks.invoicewebui.services.UserService;
-
-import javax.persistence.*;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
+/*
 @Entity
 @Table(name = "contract_project")
 public class ContractProject {
 
-    @Id
-    @GeneratedValue
     private String id;
-
-    @ManyToOne(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "contractuuid")
-    private Contract contract;
-
     private String projectuuid;
 
     public ContractProject() {
@@ -57,3 +41,5 @@ public class ContractProject {
         this.projectuuid = projectuuid;
     }
 }
+
+ */

@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -7,68 +9,84 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.services.ClientdataService;
-import dk.trustworks.invoicewebui.services.ClientService;
-import dk.trustworks.invoicewebui.services.ProjectService;
 import main.java.com.maximeroussy.invitrode.RandomWord;
 import main.java.com.maximeroussy.invitrode.WordLengthException;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Entity
-@Table(name = "contracts")
 public class Contract {
 
-    @Id
+    @JsonProperty("uuid")
+    public String uuid;
+    @JsonProperty("amount")
+    public double amount;
+    @JsonProperty("contractType")
+    public ContractType contractType;
+    @JsonProperty("refid")
+    public String refid;
+    @JsonProperty("status")
+    public ContractStatus status;
+    @JsonProperty("activeFrom")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    public LocalDate activeFrom;
+    @JsonProperty("clientuuid")
+    public String clientuuid;
+    @JsonProperty("activeTo")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    public LocalDate activeTo;
+    @JsonProperty("parentuuid")
+    public String parentuuid;
+    @JsonProperty("created")
+    public String created;
+    @JsonProperty("name")
+    public String name;
+    @JsonProperty("clientdatauuid")
+    public String clientdatauuid;
+    @JsonProperty("note")
+    public String note;
+    @JsonProperty("contractConsultants")
+    public List<ContractConsultant> contractConsultants = new ArrayList<>();
+    @JsonProperty("contractProjects")
+    public List<Object> contractProjects = new ArrayList<>();
+
+    /*
     private String uuid;
 
     private double amount;
 
-    @Column(name = "contracttype")
-    @Enumerated(EnumType.STRING)
+    @JsonProperty("contractType")
     private ContractType contractType;
 
     private String refid;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
     private ContractStatus status;
 
-    @OneToMany(mappedBy = "contract", cascade = {
-            CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE
-    }, fetch = FetchType.EAGER)
     private Set<ContractConsultant> contractConsultants = new HashSet<>();
 
-    @OneToMany(mappedBy = "contract", cascade = {
-            CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE
-    }, fetch = FetchType.EAGER)
-    private Set<ContractProject> contractProjects = new HashSet<>();
-
-    @Column(name = "activefrom")
+    @JsonProperty("activeFrom")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate activeFrom;
 
     private String clientuuid;
 
-    @Column(name = "activeto")
+    @JsonProperty("activeTo")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate activeTo;
 
-    @Column(name = "parentuuid")
     private String parentuuid;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
 
     private String name;
 
     private String clientdatauuid;
 
     private String note;
+
+     */
 
     public Contract() {
         uuid = UUID.randomUUID().toString();
@@ -101,12 +119,10 @@ public class Contract {
         this.activeTo = contract.getActiveTo().plusMonths(3).withDayOfMonth(1);
         this.parentuuid = contract.getUuid();
         this.contractType = contract.getContractType();
-        this.clientuuid = contract.getClient().getUuid();
+        this.clientuuid = contract.getClientuuid();
         this.clientdatauuid = contract.getClientdatauuid();
-        for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-            this.contractConsultants.add(new ContractConsultant(this, contractConsultant.getUser(), contractConsultant.getRate(), contractConsultant.getBudget(), contractConsultant.getHours()));
-        }
         this.name = contract.getName();
+        this.contractConsultants.addAll(contract.getContractConsultants());
     }
 
     public String getUuid() {
@@ -133,20 +149,12 @@ public class Contract {
         this.contractType = contractType;
     }
 
-    public LocalDate getActiveTo() {
-        return activeTo;
+    public String getRefid() {
+        return refid;
     }
 
-    public void setActiveTo(LocalDate activeTo) {
-        this.activeTo = activeTo;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setRefid(String refid) {
+        this.refid = refid;
     }
 
     public ContractStatus getStatus() {
@@ -157,54 +165,37 @@ public class Contract {
         this.status = status;
     }
 
-    public String getNote() {
-        return note;
+    @JsonIgnore
+    public List<ContractConsultant> getContractConsultants() {
+        return contractConsultants;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getRefid() {
-        return refid;
-    }
-
-    public void setRefid(String refid) {
-        this.refid = refid;
+    public void setContractConsultants(List<ContractConsultant> contractConsultants) {
+        this.contractConsultants = contractConsultants;
     }
 
     public String getClientuuid() {
         return clientuuid;
     }
 
-    public Client getClient() {
-        return ClientService.get().findOne(getClientuuid());
+    public void setClientuuid(String clientuuid) {
+        this.clientuuid = clientuuid;
     }
 
-    public Set<ContractConsultant> getContractConsultants() {
-        return contractConsultants;
+    public LocalDate getActiveTo() {
+        return activeTo;
     }
 
-    public ContractConsultant findByUser(User user) {
-        Optional<ContractConsultant> first = contractConsultants.stream().filter(consultant -> consultant.getUser().getUuid().equals(user.getUuid())).findFirst();
-        return first.orElse(null);
+    public void setActiveTo(LocalDate activeTo) {
+        this.activeTo = activeTo;
     }
 
-    public ContractConsultant findByUseruuid(String useruuid) {
-        Optional<ContractConsultant> first = contractConsultants.stream().filter(consultant -> consultant.getUseruuid().equals(useruuid)).findFirst();
-        return first.orElse(null);
+    public String getNote() {
+        return note;
     }
 
-    public Set<ContractProject> getContractProjects() {
-        return contractProjects;
-    }
-
-    public void setContractProjects(Set<ContractProject> contractProjects) {
-        this.contractProjects = contractProjects;
-    }
-
-    public Set<String> getProjectUuids() {
-        return contractProjects.stream().map(ContractProject::getProjectuuid).collect(Collectors.toSet());
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public LocalDate getActiveFrom() {
@@ -215,30 +206,8 @@ public class Contract {
         this.activeFrom = activeFrom;
     }
 
-    public void addConsultants(List<ContractConsultant> contractConsultants) {
-        for (ContractConsultant newContractConsultant : contractConsultants) {
-            boolean consultantExists = false;
-            for (ContractConsultant contractConsultant : this.contractConsultants) {
-                if(contractConsultant.getUser().getUuid().equals(newContractConsultant.getUseruuid())) consultantExists = true;
-            }
-            if(!consultantExists) this.contractConsultants.add(newContractConsultant);
-        }
-    }
-
-    public void addConsultant(ContractConsultant newContractConsultant) {
-        boolean consultantExists = false;
-        for (ContractConsultant contractConsultant : this.contractConsultants) {
-            if(contractConsultant.getUser().getUuid().equals(newContractConsultant.getUser().getUuid())) consultantExists = true;
-        }
-        if(!consultantExists) this.contractConsultants.add(newContractConsultant);
-    }
-
     public String getParentuuid() {
         return parentuuid;
-    }
-
-    public void setParentuuid(String parentuuid) {
-        this.parentuuid = parentuuid;
     }
 
     public String getName() {
@@ -249,12 +218,31 @@ public class Contract {
         this.name = name;
     }
 
-    public void removeProject(Project project) {
-        setContractProjects(getContractProjects().stream().filter(contractProject -> !contractProject.getProjectuuid().equals(project.getUuid())).collect(Collectors.toSet()));
+    @JsonIgnore
+    public Clientdata getClientdata() {
+        return ClientdataService.get().findOne(clientdatauuid);
     }
 
-    public void addProject(Project project) {
-        getContractProjects().add(new ContractProject(this, project));
+    @JsonIgnore
+    public void setClientdata(Clientdata clientdata) {
+        clientdatauuid = clientdata.getUuid();
+    }
+
+    @JsonIgnore
+    public List<Object> getContractProjects() {
+        return contractProjects;
+    }
+
+    public void setContractProjects(List<Object> contractProjects) {
+        this.contractProjects = contractProjects;
+    }
+
+    public String getClientdatauuid() {
+        return clientdatauuid;
+    }
+
+    public void setClientdatauuid(String clientdatauuid) {
+        this.clientdatauuid = clientdatauuid;
     }
 
     @Override
@@ -277,31 +265,16 @@ public class Contract {
                 "uuid='" + uuid + '\'' +
                 ", amount=" + amount +
                 ", contractType=" + contractType +
+                ", refid='" + refid + '\'' +
                 ", status=" + status +
                 ", activeFrom=" + activeFrom +
+                ", clientuuid='" + clientuuid + '\'' +
                 ", activeTo=" + activeTo +
-                ", created=" + created +
+                ", parentuuid='" + parentuuid + '\'' +
+                ", name='" + name + '\'' +
+                ", clientdatauuid='" + clientdatauuid + '\'' +
                 ", note='" + note + '\'' +
+                ", contractConsultants=" + contractConsultants.size() +
                 '}';
-    }
-
-    public Clientdata getClientdata() {
-        return ClientdataService.get().findOne(clientdatauuid);
-    }
-
-    public void setClientdata(Clientdata clientdata) {
-        clientdatauuid = clientdata.getUuid();
-    }
-
-    public String getClientdatauuid() {
-        return clientdatauuid;
-    }
-
-    public void setClientdatauuid(String clientdatauuid) {
-        this.clientdatauuid = clientdatauuid;
-    }
-
-    public Set<Project> getProjects() {
-        return getProjectUuids().stream().map(uuid -> ProjectService.get().findOne(uuid)).collect(Collectors.toSet());
     }
 }

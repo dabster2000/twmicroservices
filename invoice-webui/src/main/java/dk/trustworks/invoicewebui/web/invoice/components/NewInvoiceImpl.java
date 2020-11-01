@@ -1,47 +1,9 @@
 package dk.trustworks.invoicewebui.web.invoice.components;
 
-import com.jarektoro.responsivelayout.ResponsiveLayout;
-import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.annotations.Push;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Grid.Column;
-import com.vaadin.ui.renderers.NumberRenderer;
-import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
-import dk.trustworks.invoicewebui.services.InvoiceService;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.ProjectService;
-import dk.trustworks.invoicewebui.services.ProjectSummaryService;
-import dk.trustworks.invoicewebui.utils.NumberConverter;
-import dk.trustworks.invoicewebui.web.common.Card;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
-import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.addons.producttour.actions.TourActions;
-import org.vaadin.addons.producttour.button.StepButton;
-import org.vaadin.addons.producttour.shared.step.StepAnchor;
-import org.vaadin.addons.producttour.step.Step;
-import org.vaadin.addons.producttour.step.StepBuilder;
-import org.vaadin.addons.producttour.tour.Tour;
-import org.vaadin.viritin.label.MLabel;
-
-import javax.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Created by hans on 12/07/2017.
  */
+/*
 @Push
 @SpringComponent
 @UIScope
@@ -296,3 +258,5 @@ public class NewInvoiceImpl extends NewInvoiceDesign {
                 .build();
     }
 }
+
+ */

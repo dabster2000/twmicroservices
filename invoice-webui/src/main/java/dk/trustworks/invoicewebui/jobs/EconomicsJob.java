@@ -4,7 +4,7 @@ package dk.trustworks.invoicewebui.jobs;
 import dk.trustworks.invoicewebui.model.ExpenseDetails;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.network.dto.enums.EconomicAccountGroup;
-import dk.trustworks.invoicewebui.services.ExpenseService;
+import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,11 +19,11 @@ public class EconomicsJob {
     private InvoiceService invoiceService;
 
     @Autowired
-    private ExpenseService expenseService;
+    private FinanceService financeService;
 
     @Scheduled(cron = "0 0 22 * * ?")
     public void synchronizeInvoices() {
-        List<ExpenseDetails> expenseList = expenseService.findExpenseDetailsByGroup(EconomicAccountGroup.OMSAETNING_ACCOUNTS);
+        List<ExpenseDetails> expenseList = financeService.findExpenseDetailsByGroup(EconomicAccountGroup.OMSAETNING_ACCOUNTS);
 
         List<Invoice> invoiceList = invoiceService.findAll();
 
@@ -32,7 +32,7 @@ public class EconomicsJob {
                     .findFirst()
                     .ifPresent(invoice -> {
                         invoice.setBookingdate(expenseDetails.getExpensedate());
-                        invoiceService.save(invoice);
+                        invoiceService.update(invoice);
                     });
         });
     }

@@ -1,36 +1,26 @@
 package dk.trustworks.invoicewebui.model;
 
-import dk.trustworks.invoicewebui.services.ProjectService;
-
-import javax.persistence.*;
 import java.util.UUID;
 
-@Entity
-@Table(name = "budgets")
 public class BudgetNew {
-    @Id
     private String uuid;
     private int month;
     private int year;
     private Double budget;
-
-    @ManyToOne()
-    @JoinColumn(name = "consultantuuid")
-    private ContractConsultant contractConsultant;
-
+    private String consultantuuid;
     private String projectuuid;
 
     public BudgetNew() {
         uuid = UUID.randomUUID().toString();
     }
 
-    public BudgetNew(int month, int year, Double budget, ContractConsultant contractConsultant, Project project) {
+    public BudgetNew(int month, int year, Double budget, String consultantuuid, String projectuuid) {
         this();
         this.month = month;
         this.year = year;
         this.budget = budget;
-        this.contractConsultant = contractConsultant;
-        this.projectuuid = project.getUuid();
+        this.consultantuuid = consultantuuid;
+        this.projectuuid = projectuuid;
     }
 
     public String getUuid() {
@@ -65,20 +55,20 @@ public class BudgetNew {
         this.budget = budget;
     }
 
-    public ContractConsultant getContractConsultant() {
-        return contractConsultant;
+    public String getProjectuuid() {
+        return projectuuid;
     }
 
-    public void setContractConsultant(ContractConsultant contractConsultant) {
-        this.contractConsultant = contractConsultant;
+    public void setProjectuuid(String projectuuid) {
+        this.projectuuid = projectuuid;
     }
 
-    public Project getProject() {
-        return ProjectService.get().findOne(projectuuid);
+    public String getConsultantuuid() {
+        return consultantuuid;
     }
 
-    public void setProject(Project project) {
-        this.projectuuid = project.getUuid();
+    public void setConsultantuuid(String consultantuuid) {
+        this.consultantuuid = consultantuuid;
     }
 
     @Override
@@ -88,6 +78,8 @@ public class BudgetNew {
                 ", month=" + month +
                 ", year=" + year +
                 ", budget=" + budget +
+                ", consultantuuid='" + consultantuuid + '\'' +
+                ", projectuuid='" + projectuuid + '\'' +
                 '}';
     }
 }

@@ -9,6 +9,8 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,19 +29,24 @@ import java.util.List;
 @SpringUI
 public class UtilizationPerYearChart {
 
-    private UserService userService;
+    private final UserService userService;
 
-    private StatisticsService statisticsService;
+    private final StatisticsService statisticsService;
+
+    private final RevenueService revenueService;
+
+    private final AvailabilityService availabilityService;
 
     @Autowired
-    public UtilizationPerYearChart(UserService userService, StatisticsService statisticsService) {
+    public UtilizationPerYearChart(UserService userService, StatisticsService statisticsService, RevenueService revenueService, AvailabilityService availabilityService) {
         this.userService = userService;
         this.statisticsService = statisticsService;
+        this.revenueService = revenueService;
+        this.availabilityService = availabilityService;
     }
 
     public Chart createChart() {
         LocalDate periodStart = LocalDate.of(2016, 7, 1);
-        int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(10))+1;
 
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -81,8 +87,8 @@ public class UtilizationPerYearChart {
             for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                double billableWorkHours = statisticsService.getConsultantRevenueHoursByMonth(user, startDate);
-                AvailabilityDocument availability = statisticsService.getConsultantAvailabilityByMonth(user, startDate);
+                double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
+                AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
                 if (availability == null || !availability.getStatusType().equals(StatusType.ACTIVE)) {
                     continue;
                 }

@@ -39,7 +39,7 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
             getLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
 
-        getSelRelationManager().setItems(userService.findAll());
+        getSelRelationManager().setItems(userService.findAll(true));
         getSelRelationManager().setItemCaptionGenerator(User::getUsername);
 
         getSelStartDate().setDateFormat("yyyy-MM");

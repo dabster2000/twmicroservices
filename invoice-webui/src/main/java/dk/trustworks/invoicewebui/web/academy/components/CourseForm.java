@@ -11,7 +11,7 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.CkoCourse;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
-import dk.trustworks.invoicewebui.repositories.PhotoRepository;
+import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.vaadin.viritin.button.MButton;
@@ -23,7 +23,7 @@ public class CourseForm {
 
     private final UserService userService;
     private final MicroCourseRepository microCourseRepository;
-    private final PhotoRepository photoRepository;
+    private final PhotoService photoService;
 
     private final ResponsiveRow newCourseDialogRow;
 
@@ -31,11 +31,11 @@ public class CourseForm {
 
     private Binder<CkoCourse> courseBinder = new Binder<>();
 
-    public CourseForm(String type, UserService userService, MicroCourseRepository microCourseRepository, PhotoRepository photoRepository) {
+    public CourseForm(String type, UserService userService, MicroCourseRepository microCourseRepository, PhotoService photoService) {
         this.type = type;
         this.userService = userService;
         this.microCourseRepository = microCourseRepository;
-        this.photoRepository = photoRepository;
+        this.photoService = photoService;
         newCourseDialogRow = getDialogRow(newCourseResponsiveLayout);
     }
 
@@ -83,7 +83,7 @@ public class CourseForm {
         uploadRow.removeAllComponents();
         uploadRow.addColumn()
                 .withDisplayRules(12, 12, 8, 8)
-                .withComponent(new PhotoUploader(prevCourse.getUuid(), 800, 400, "Upload some cool artwork for the course! It must be a JPG file thats atleast 800px wide and 400px heigh.", PhotoUploader.Step.UPLOAD, photoRepository, () -> {
+                .withComponent(new PhotoUploader(prevCourse.getUuid(), 800, 400, "Upload some cool artwork for the course! It must be a JPG file thats atleast 800px wide and 400px heigh.", PhotoUploader.Step.UPLOAD, photoService, () -> {
                     newCourseResponsiveLayout.removeAllComponents();
                     next.next(prevCourse);
                 }).getUploader());

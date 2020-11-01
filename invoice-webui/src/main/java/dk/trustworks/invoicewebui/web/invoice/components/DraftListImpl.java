@@ -1,46 +1,9 @@
 package dk.trustworks.invoicewebui.web.invoice.components;
 
-import com.vaadin.annotations.Push;
-import com.vaadin.data.Binder;
-import com.vaadin.data.ValidationException;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.renderers.LocalDateRenderer;
-import com.vaadin.ui.themes.ValoTheme;
-import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.model.InvoiceItem;
-import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
-import dk.trustworks.invoicewebui.model.enums.InvoiceType;
-import dk.trustworks.invoicewebui.repositories.InvoiceRepository;
-import dk.trustworks.invoicewebui.services.InvoiceService;
-import dk.trustworks.invoicewebui.web.Broadcaster;
-import dk.trustworks.invoicewebui.web.mainmenu.components.LeftMenu;
-import dk.trustworks.invoicewebui.web.mainmenu.components.MenuItemImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.addons.producttour.actions.TourActions;
-import org.vaadin.addons.producttour.button.StepButton;
-import org.vaadin.addons.producttour.shared.step.StepAnchor;
-import org.vaadin.addons.producttour.step.Step;
-import org.vaadin.addons.producttour.step.StepBuilder;
-import org.vaadin.addons.producttour.tour.Tour;
-
-import javax.annotation.PostConstruct;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
-
-import static dk.trustworks.invoicewebui.model.enums.InvoiceStatus.DRAFT;
-import static dk.trustworks.invoicewebui.web.invoice.views.DraftListView.MENU_NAME;
-import static dk.trustworks.invoicewebui.web.invoice.views.DraftListView.VIEW_NAME;
-
 /**
  * Created by hans on 13/07/2017.
  */
-
+/*
 @SpringComponent
 @SpringUI
 @Push
@@ -237,3 +200,4 @@ public class DraftListImpl extends DraftListDesign
                 .build();
     }
 }
+*/

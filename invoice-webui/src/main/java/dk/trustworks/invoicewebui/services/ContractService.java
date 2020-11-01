@@ -1,187 +1,88 @@
 package dk.trustworks.invoicewebui.services;
 
-import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
-import dk.trustworks.invoicewebui.repositories.ContractProjectRepository;
-import dk.trustworks.invoicewebui.repositories.ContractRepository;
-import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
+import dk.trustworks.invoicewebui.network.rest.ContractRestService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static dk.trustworks.invoicewebui.utils.DateUtils.isBetween;
-import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
-
 @Service
 public class ContractService implements InitializingBean {
 
     private static ContractService instance;
 
-    private final ProjectService projectService;
-
-    private final TaskService taskService;
-
-    private final ContractRepository contractRepository;
-
-    private final ContractProjectRepository contractProjectRepository;
-
-    private final ContractConsultantRepository consultantRepository;
-
-    private final ClientService clientService;
+    private final ContractRestService contractRestService;
 
     private final WorkService workService;
 
     @Autowired
-    public ContractService(ProjectService projectService, TaskService taskService, ContractRepository contractRepository, ContractProjectRepository contractProjectRepository, ContractConsultantRepository consultantRepository, ClientService clientService, WorkService workService) {
-        this.projectService = projectService;
-        this.taskService = taskService;
-        this.contractRepository = contractRepository;
-        this.contractProjectRepository = contractProjectRepository;
-        this.consultantRepository = consultantRepository;
-        this.clientService = clientService;
+    public ContractService(ContractRestService contractRestService, WorkService workService) {
+        this.contractRestService = contractRestService;
         this.workService = workService;
     }
 
-    @Transactional
-    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract createContract(Contract contract) throws ContractValidationException {
-        if(!isValidContract(contract)) throw new ContractValidationException("Contract not valid");
-        Contract savedContract = contractRepository.save(contract);
-        Client client = savedContract.getClient();
-        client.setActive(true);
-        clientService.update(client);
-        return contract;
+    public void createContract(Contract contract) {
+        contractRestService.save(contract);
     }
 
-    private boolean isValidContract(Contract contract) {
-        boolean isValid = true;
-        for (Contract contractTest : contractRepository.findByClientuuid(contract.getClient().getUuid())) {
-            boolean isOverlapped = false;
-            if(contract.getUuid().equals(contractTest.getUuid())) continue;
-            if((contract.getActiveFrom().isBefore(contractTest.getActiveTo()) || contract.getActiveFrom().isEqual(contractTest.getActiveTo())) &&
-                    (contract.getActiveTo().isAfter(contractTest.getActiveFrom()) || contract.getActiveTo().isEqual(contractTest.getActiveFrom()))) {
-                isOverlapped = true;
-            }
-
-            boolean hasProject = false;
-            for (ContractProject contractProject : contract.getContractProjects()) {
-                for (ContractProject contractTestProject : contractTest.getContractProjects()) {
-                    if(contractProject.getProjectuuid().equals(contractTestProject.getProjectuuid())) {
-                        hasProject = true;
-                        break;
-                    }
-                }
-                if(hasProject) break;
-            }
-
-            boolean hasConsultant = false;
-            for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                for (ContractConsultant contractTestConsultant : contractTest.getContractConsultants()) {
-                    if(contractConsultant.getUser().getUuid().equals(contractTestConsultant.getUser().getUuid())) {
-                        hasConsultant = true;
-                        break;
-                    }
-                }
-                if(hasConsultant) break;
-            }
-            if(isOverlapped && hasProject && hasConsultant) isValid = false;
-        }
-
-        return isValid;
+    public void updateContract(Contract contract) {
+        contractRestService.update(contract);
     }
 
-    @Transactional
-    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract updateContract(Contract contract) throws ContractValidationException {
-        if(!isValidContract(contract)) throw new ContractValidationException("Contract not valid");
-        return contractRepository.save(contract);
-    }
-
-    @Transactional
     public Contract reloadContract(Contract contract) {
-        return contractRepository.findOne(contract.getUuid());
+        return contractRestService.findByUuid(contract.getUuid());
     }
 
-    /*
-    @Transactional
-    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract addProjects(Contract Contract, Set<Project> projects) throws ContractValidationException {
-        // validate
-        for (Project project : projects) {
-            for (Contract contract : project.getContracts()) {
-                Set<Object> userUUIDs = contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet());
-                if(isOverlapping(contract.getActiveFrom(), contract.getActiveTo(), Contract.getActiveFrom(), Contract.getActiveTo()) &&
-                        userUUIDs.contains(Contract.getContractConsultants().stream().map(c -> c.getUser().getUuid()).collect(Collectors.toSet())))
-                    throw new ContractValidationException("Overlapping another contract with same consultants");
-            }
-        }
-
-        // execute
-        for (Project project : projects) {
-            project.addContract(Contract);
-            projectService.save(project);
-        }
-        Contract.addProjects(projects);
-        contractRepository.save(Contract);
-        return Contract;
+    public void addProject(Contract contract, Project project) {
+        contractRestService.addProjectToContract(contract, project);
     }
-     */
 
-    @Transactional
-    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract addProject(Contract contract, Project project) throws ContractValidationException {
-        contract.addProject(project);
-        if(!isValidContract(contract)) {
-            contract.removeProject(project); //.getProjects().remove(project);
-            throw new ContractValidationException("Contract not valid");
-        }
-
-        // execute
-        contract = contractRepository.findOne(contract.getUuid());
-        project = projectService.findOne(project.getUuid());
-        //project.addContract(contract);
-        //project = projectRepository.create(project);
-        contract.addProject(project);
-        contractRepository.save(contract);
-        return contract;
-    }
+    // TODO: Move to API Gateway when reciept and invoice are migrated.
 
     public Double findConsultantRateByWork(Work work, ContractStatus... statusList) {
-        if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
+        if(work.getRate()>0) {
+            return work.getRate();
+        }
+        System.out.println("WORK UNKNOWN: "+work);
+        return 0.0;
+        /*
+        if(work.getClientuuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(work.getTask().getType().equals(TaskType.SO)) return 0.0;
         if(work.getWorkasUser()==null) {
-            Optional<Contract> optionalContract = findContractByWorkAndUseruuid(work, work.getUseruuid());
-            return optionalContract.map(contract -> contract.findByUseruuid(work.getUseruuid()).getRate()).orElse(0.0);
-            //return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+            //Optional<Contract> optionalContract = findContractByWorkAndUseruuid(work, work.getUseruuid());
+            //return optionalContract.map(contract -> contract.findByUseruuid(work.getUseruuid()).getRate()).orElse(0.0);
+            return projectService.findRateByProjectAndUserAndDate(work.getProjectuuid(), work.getUseruuid(), work.getRegistered());
         } else {
-            Optional<Contract> optionalContract = findContractByWorkAndUseruuid(work, work.getWorkas());
-            return optionalContract.map(contract -> contract.findByUseruuid(work.getWorkas()).getRate()).orElse(0.0);
-            //return contractRepository.findConsultantRateByWork(DateUtils.getFirstDayOfMonth(work.getRegistered()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), work.getWorkasUser().getUuid(), work.getTask().getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
+            return projectService.findRateByProjectAndUserAndDate(work.getProjectuuid(), work.getWorkas(), work.getRegistered());
+            //Optional<Contract> optionalContract = findContractByWorkAndUseruuid(work, work.getWorkas());
+            //return optionalContract.map(contract -> contract.findByUseruuid(work.getWorkas()).getRate()).orElse(0.0);
         }
+
+         */
     }
 
-    //@Cacheable(value = "work")
+
+
+    /*
     public List<Work> findBillableWorkByPeriod(LocalDate fromDate, LocalDate toDate) {
         return workService.findByPeriod(fromDate, toDate).stream().filter(work -> findConsultantRateByWork(work, ContractStatus.SIGNED, ContractStatus.TIME, ContractStatus.CLOSED, ContractStatus.BUDGET) > 0.0).collect(Collectors.toList());
-        //return workRepository.findBillableWorkByPeriod(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
-
+     */
+/*
     private Optional<Contract> findContractByWorkAndUseruuid(Work work, String workas) {
         return getContractsByProject(taskService.findOne(work.getTaskuuid()).getProject()).stream().filter(contract -> isBetween(work.getRegistered(), contract.getActiveFrom(), contract.getActiveTo()) && contract.findByUseruuid(workas) != null).findFirst();
     }
 
+ */
+
+    /*
     public Contract findContractByWork(Work work, ContractStatus... statusList) {
         if(work.getTask().getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return null;
         if(work.getWorkasUser()==null) {
@@ -193,36 +94,26 @@ public class ContractService implements InitializingBean {
         }
     }
 
-    public Double findConsultantRate(int year, int month, int day, User user, Task task, ContractStatus... statusList) {
+     */
+
+    public Double findConsultantRate(LocalDate date, String useruuid, Task task, ContractStatus... statusList) {
         if(task.getProject().getClient().getUuid().equals("40c93307-1dfa-405a-8211-37cbda75318b")) return 0.0;
         if(task.getType().equals(TaskType.SO)) return 0.0;
-        Optional<Contract> optionalContract = getContractsByProject(taskService.findOne(task.getUuid()).getProject()).stream().filter(contract -> isBetween(LocalDate.of(year, month, day), contract.getActiveFrom(), contract.getActiveTo()) && contract.findByUseruuid(user.getUuid()) != null).findFirst();
-        return optionalContract.map(contract -> contract.findByUseruuid(user.getUuid()).getRate()).orElse(0.0);
+        return contractRestService.findRateByProjectuuidAndUseruuidAndDate(task.getProjectuuid(), useruuid, date);
+        //return findConsultantRateByWork(new Work(date, 0, user, task));
+        //Optional<Contract> optionalContract = getContractsByProject(taskService.findOne(task.getUuid()).getProject()).stream().filter(contract -> isBetween(LocalDate.of(year, month, day), contract.getActiveFrom(), contract.getActiveTo()) && contract.findByUseruuid(user.getUuid()) != null).findFirst();
+        //return optionalContract.map(contract -> contract.findByUseruuid(user.getUuid()).getRate()).orElse(0.0);
         //return contractRepository.findConsultantRateByWork(year + "-" + month + "-" + day, user.getUuid(), task.getUuid(), Arrays.stream(statusList).map(Enum::name).toArray(String[]::new));
     }
 
-    @Cacheable("contract")
     public List<Contract> findActiveContractsByDate(LocalDate activeDate, ContractStatus... statusList) {
-        return contractRepository.findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(activeDate, activeDate, statusList);
-        //return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeDate, activeDate, statusList);
+        return contractRestService.findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(activeDate, activeDate, statusList);
     }
 
-    public List<Contract> findActiveContractsByPeriod(LocalDate activeFrom, LocalDate activeTo, ContractStatus... statusList) {
-        return contractRepository.findByActiveFromBeforeAndActiveToAfterAndStatusIn(activeTo, activeFrom, statusList);
+    public void removeProject(Contract contract, Project project) {
+        contractRestService.removeProjectFromContract(contract, project);
     }
-
-    private static boolean isOverlapping(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
-        return start1.isBefore(end2) && start2.isBefore(end1);
-    }
-
-    @Transactional
-    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public Contract removeProject(Contract contract, Project project) throws ContractValidationException {
-        contract = contractRepository.findOne(contract.getUuid());
-        contract.removeProject(project);
-        return updateContract(contract);
-    }
-
+/*
     public Map<String, Work> getWorkErrors(LocalDate errorDate, int months) {
         Map<String, Work> errors = new HashMap<>();
         for (Work work : workService.findByPeriod(errorDate.minusMonths(months), errorDate)) {
@@ -234,15 +125,7 @@ public class ContractService implements InitializingBean {
         return errors;
     }
 
-    public Map<String, Work> getWorkErrors(LocalDate errorDate, User user, int months) {
-        Map<String, Work> errors = new HashMap<>();
-        for (Work work : workService.findByPeriodAndUserUUID(errorDate.minusMonths(months), errorDate, user.getUuid())) {
-            if(!(work.getWorkduration()>0)) continue;
-            if(findConsultantRateByWork(work)==null)
-                errors.put(work.getUser().getUuid()+work.getTask().getProject().getUuid(), work);
-        }
-        return errors;
-    }
+ */
 
     public Set<User> getEmployeesWorkingOnProjectWithNoContract(Project project) {
         Set<User> users = new HashSet<>();
@@ -254,7 +137,8 @@ public class ContractService implements InitializingBean {
         }
         return users;
     }
-
+    // TODO: REINTRODUCE
+    /*
     public Set<Project> getClientProjectsNotUnderContract(Client client) {
         Set<Project> projects = new HashSet<>();
         List<Contract> contracts = contractRepository.findByClientuuid(client.getUuid());
@@ -291,8 +175,10 @@ public class ContractService implements InitializingBean {
         )).orElse(null);
     }
 
+     */
+
     public List<Contract> findTimeActiveConsultantContracts(User user, LocalDate activeOn) {
-        return contractRepository.findTimeActiveConsultantContracts(user.getUuid(), activeOn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        return contractRestService.findTimeActiveConsultantContracts(user.getUuid(), activeOn);
     }
 
     public double findAmountUsedOnContract(Contract contract) {
@@ -315,37 +201,37 @@ public class ContractService implements InitializingBean {
         return errorList.values();
     }
 
-    @Transactional
-    @CacheEvict(value = {"contract", "rate"}, allEntries = true)
-    public void deleteContract(Contract contract) {
-        try {
-            contractRepository.delete(contract.getUuid());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    public void deleteContract(String contractuuid) {
+        contractRestService.delete(contractuuid);
     }
 
     public List<Contract> findAll() {
-        return contractRepository.findAll();
+        return contractRestService.findAll();
     }
 
     public Contract findOne(String contractuuid) {
-        return contractRepository.findOne(contractuuid);
+        return contractRestService.findByUuid(contractuuid);
     }
 
-    public Contract addConsultant(Contract contract, ContractConsultant contractConsultant) throws ContractValidationException {
-        contract.addConsultant(contractConsultant);
-        if(!isValidContract(contract)) {
-            contract.getContractConsultants().remove(contractConsultant);
-            throw new ContractValidationException("Contract not valid");
-        }
-
-        consultantRepository.save(contractConsultant);
-
+    public Contract addConsultant(Contract contract, ContractConsultant contractConsultant) {
+        contract.getContractConsultants().add(contractConsultant);
+        contractRestService.addConsultant(contract, contractConsultant);
         return contract;
     }
 
+    public void updateConsultant(Contract contract, ContractConsultant contractConsultant) {
+        contractRestService.updateConsultant(contract, contractConsultant);
+    }
+
+    public void deleteConsultant(Contract contract, ContractConsultant contractConsultant) {
+        contractRestService.removeConsultant(contract, contractConsultant);
+    }
+
+    public List<Contract> findByClientuuid(String clientuuid) {
+        return contractRestService.findByClientuuid(clientuuid);
+    }
+
+    /*
     public static List<Contract> getContractsByDate(List<Contract> contracts, User user, LocalDate date) {
         return contracts.stream()
                 .filter(contract -> isBetween(date, contract.getActiveFrom(), contract.getActiveTo()) &&
@@ -357,9 +243,14 @@ public class ContractService implements InitializingBean {
                         ) && contract.findByUser(user)!=null)
                 .collect(Collectors.toList());
     }
+     */
 
     public List<Contract> getContractsByProject(Project project) {
-        return contractProjectRepository.findByProjectuuid(project.getUuid()).stream().map(ContractProject::getContract).collect(Collectors.toList());
+        return contractRestService.findByProjectuuid(project.getUuid());
+    }
+
+    public List<Project> findProjectsByContractuuid(String contractuuid) {
+        return contractRestService.findProjectsByContractuuid(contractuuid);
     }
 
     @Override
@@ -369,9 +260,5 @@ public class ContractService implements InitializingBean {
 
     public static ContractService get() {
         return instance;
-    }
-
-    public List<Contract> findByClientuuid(String clientuuid) {
-        return contractRepository.findByClientuuid(clientuuid);
     }
 }

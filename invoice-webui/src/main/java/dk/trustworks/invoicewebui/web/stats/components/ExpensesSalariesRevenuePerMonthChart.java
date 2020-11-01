@@ -6,7 +6,10 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
+import dk.trustworks.invoicewebui.services.AvailabilityService;
+import dk.trustworks.invoicewebui.services.FinanceService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
+import java.util.List;
 
 import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
 
@@ -26,14 +29,20 @@ import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
 @SpringUI
 public class ExpensesSalariesRevenuePerMonthChart {
 
-    private final StatisticsService statisticsService;
-
     private final UserService userService;
 
+    private final RevenueService revenueService;
+
+    private final FinanceService financeService;
+
+    private final AvailabilityService availabilityService;
+
     @Autowired
-    public ExpensesSalariesRevenuePerMonthChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public ExpensesSalariesRevenuePerMonthChart(UserService userService, RevenueService revenueService, FinanceService financeService, AvailabilityService availabilityService) {
         this.userService = userService;
+        this.revenueService = revenueService;
+        this.financeService = financeService;
+        this.availabilityService = availabilityService;
     }
 
     public Chart createExpensesPerMonthChart() {
@@ -41,7 +50,7 @@ public class ExpensesSalariesRevenuePerMonthChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        LocalDate periodStart = LocalDate.of(2014, 07, 01);
+        LocalDate periodStart = LocalDate.of(2014, 7, 1);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1);
 
         chart.setCaption("Expenses, Salaries and Revenue per Employee");
@@ -80,18 +89,18 @@ public class ExpensesSalariesRevenuePerMonthChart {
         int average = 3;
 
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
-        Map<LocalDate, Double> revenuePerMonth = statisticsService.calcActualRevenuePerMonth(periodStart, periodEnd.plusMonths(2));
+        List<GraphKeyValue> revenuePerMonth = revenueService.getInvoicedOrRegisteredRevenueByPeriod(periodStart, periodEnd.plusMonths(2));
 
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            double consultantCount = statisticsService.countActiveConsultantCountByMonth(currentDate);
+            double consultantCount = availabilityService.countActiveConsultantsByMonth(currentDate);
 
             double consultantSalariesByMonth = NumberUtils.round((userService.calcMonthSalaries(currentDate, CONSULTANT.toString()) / consultantCount), 0);
-            double sharedExpensesAndStaffSalariesByMonth =  NumberUtils.round((statisticsService.calcAllExpensesByMonth(currentDate) / consultantCount) - consultantSalariesByMonth, 0);
+            double sharedExpensesAndStaffSalariesByMonth =  NumberUtils.round((financeService.calcAllExpensesByMonth(currentDate) / consultantCount) - consultantSalariesByMonth, 0);
 
             //double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);
             //double consultantSalariesByMonth = NumberUtils.round(((statisticsService.calcAllUserExpensesByMonth(currentDate) / consultantCount) - sharedExpensesAndStaffSalariesByMonth) , 0);
-            double revenue = NumberUtils.round(revenuePerMonth.get(currentDate) / consultantCount, 0);
+            double revenue = NumberUtils.round(revenuePerMonth.get(i).getValue() / consultantCount, 0);
 
             if(revenue == 0.0 || sharedExpensesAndStaffSalariesByMonth == 0.0 || consultantSalariesByMonth == 0.0) {
                 count = 1;

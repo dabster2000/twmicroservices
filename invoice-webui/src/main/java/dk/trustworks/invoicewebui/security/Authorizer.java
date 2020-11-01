@@ -28,11 +28,8 @@ public class Authorizer {
 
     private static final Logger log = LoggerFactory.getLogger(Authorizer.class);
 
-    private final UserService userService;
-
     @Autowired
-    public Authorizer(UserService userService) {
-        this.userService = userService;
+    public Authorizer() {
     }
 
     public void authorize(Component component, RoleType roleType) {
@@ -92,18 +89,6 @@ public class Authorizer {
             if (userSession.hasRole(roleType)) return joinPoint.proceed();
         }
         return null;
-    }
-
-    private boolean isCookieAuthorized() {
-        String NAME_COOKIE = "trustworks_login";
-        Cookie cookie = getCookieByName(NAME_COOKIE);
-        if (cookie != null) {
-            User user = userService.findByUUID(cookie.getValue());
-            UserSession userSession = new UserSession(user, null, user.getRoleList());
-            VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
-            return true;
-        }
-        return false;
     }
 
     private Cookie getCookieByName(String name) {

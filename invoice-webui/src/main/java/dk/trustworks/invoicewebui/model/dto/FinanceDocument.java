@@ -2,17 +2,20 @@ package dk.trustworks.invoicewebui.model.dto;
 
 import java.time.LocalDate;
 
-public class ExpenseDocument {
+public class FinanceDocument {
 
-    private final LocalDate month;
-    private final double eSalaries;
-    private final double eEmployee_expenses;
-    private final double eHousing;
-    private final double eSales;
-    private final double eAdministration;
-    private final double eProduktion;
+    private LocalDate month;
+    private double eSalaries;
+    private double eEmployee_expenses;
+    private double eHousing;
+    private double eSales;
+    private double eAdministration;
+    private double eProduktion;
 
-    public ExpenseDocument(LocalDate month, double eSalaries, double eEmployee_expenses, double eHousing, double eSales, double eAdministration, double eProduktion) {
+    public FinanceDocument() {
+    }
+
+    public FinanceDocument(LocalDate month, double eSalaries, double eEmployee_expenses, double eHousing, double eSales, double eAdministration, double eProduktion) {
         this.month = month;
         this.eSalaries = eSalaries;
         this.eEmployee_expenses = eEmployee_expenses;

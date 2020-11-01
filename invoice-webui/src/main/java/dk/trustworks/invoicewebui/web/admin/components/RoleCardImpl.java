@@ -33,7 +33,7 @@ public class RoleCardImpl extends RoleCardDesign {
     @AccessRules(roleTypes = {RoleType.ADMIN})
     public void init(String userUUID) {
         getContainer().removeAllComponents();
-        User user = userService.findByUUID(userUUID);
+        User user = userService.findByUUID(userUUID, false);
         List<RoleType> roleTypes = Arrays.asList(RoleType.values());
 
         RoleType[] currentRoleTypes = new RoleType[user.getRoleList().size()];
@@ -56,8 +56,7 @@ public class RoleCardImpl extends RoleCardDesign {
             userService.deleteRoles(user, roleList);
             for (RoleType roleType : roleTypeSet) {
                 Role role = new Role(roleType);
-                user.getRoleList().add(role);
-                userService.create(user, role);
+                userService.create(user.getUuid(), role);
             }
         });
     }

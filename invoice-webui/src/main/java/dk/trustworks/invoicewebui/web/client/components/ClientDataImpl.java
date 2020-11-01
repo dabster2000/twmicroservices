@@ -44,8 +44,7 @@ public class ClientDataImpl extends ClientDataDesign {
             try {
                 clientDataBinder.writeBean(clientdata);
                 if(clientdata.getUuid()!=null && !clientdata.getUuid().trim().equals("")) {
-                    System.out.println("Update data");
-                    clientdataService.save(clientdata);
+                    clientdataService.update(clientdata);
 
                     getCssHider().setVisible(false);
                     getBtnEdit().setVisible(true);

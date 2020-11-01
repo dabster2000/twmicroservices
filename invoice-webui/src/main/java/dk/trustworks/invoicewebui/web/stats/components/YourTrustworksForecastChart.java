@@ -4,12 +4,15 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
+import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 
 /**
  * Created by hans on 20/09/2017.
@@ -21,9 +24,12 @@ public class YourTrustworksForecastChart {
 
     private final StatisticsService statisticsService;
 
+    private final FinanceService financeService;
+
     @Autowired
-    public YourTrustworksForecastChart(StatisticsService statisticsService) {
+    public YourTrustworksForecastChart(StatisticsService statisticsService, FinanceService financeService) {
         this.statisticsService = statisticsService;
+        this.financeService = financeService;
     }
 
     public Chart createChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -52,14 +58,14 @@ public class YourTrustworksForecastChart {
 
         DataSeries payoutSeries = new DataSeries("Payout Factor");
 
-        Number[] payout = statisticsService.getPayoutsByPeriod(periodStart, periodEnd);
+        GraphKeyValue[] payout = financeService.getPayoutsByPeriod(periodStart, periodEnd);
 
         String[] categories = new String[period];
         for (int i = 0; i < period; i++) {
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
 
-        payoutSeries.setData(categories, payout);
+        payoutSeries.setData(categories, Arrays.stream(payout).map(graphKeyValue -> (Number)graphKeyValue.getValue()).toArray(Number[]::new));
 
         chart.getConfiguration().addSeries(payoutSeries);
 

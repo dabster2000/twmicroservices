@@ -17,13 +17,11 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.exceptions.ContractValidationException;
 import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.repositories.ContractConsultantRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.web.common.Card;
@@ -51,11 +49,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private final ContractService contractService;
 
+    private final ClientService clientService;
+
     private final ProjectService projectService;
 
     private final WorkService workService;
-
-    private final ContractConsultantRepository consultantRepository;
 
     private final PhotoService photoService;
 
@@ -76,12 +74,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private LocalDatePeriod proposedPeriod;
 
     @Autowired
-    public ContractDetailLayout(UserService userService, ContractService contractService, ProjectService projectService, WorkService workService, ContractConsultantRepository consultantRepository, PhotoService photoService, ChartCacheJob chartCache) {
+    public ContractDetailLayout(UserService userService, ContractService contractService, ClientService clientService, ProjectService projectService, WorkService workService, PhotoService photoService, ChartCacheJob chartCache) {
         this.userService = userService;
         this.contractService = contractService;
+        this.clientService = clientService;
         this.projectService = projectService;
         this.workService = workService;
-        this.consultantRepository = consultantRepository;
         this.photoService = photoService;
         this.chartCache = chartCache;
     }
@@ -99,7 +97,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
         System.out.println("time start...");
         long timer = System.currentTimeMillis();
         createNavigationBarCard(navigationBar, 12);
-        System.out.println("createNavigationBarCard " + (timer - System.currentTimeMillis()));
         timer = System.currentTimeMillis();
         createUsedBudgetCard(contract, 6);
         System.out.println("createUsedBudgetCard " + (timer - System.currentTimeMillis()));
@@ -141,7 +138,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                             .withStyleName("flat", "borderless")
                             .withFullHeight()
             );
-            if(contract.getContractProjects().size()>0 && contract.getContractConsultants().size()>0) createBurndownChart(contract);
+            if(contractService.findProjectsByContractuuid(contract.getUuid()).size()>0 && contract.getContractConsultants().size()>0) createBurndownChart(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(burndownChartCard);
@@ -163,7 +160,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
             burnrateChartCard.getHlTitleBar().addComponent(mButton);
 
-            if(contract.getContractProjects().size()>0 && contract.getContractConsultants().size()>0) createBurnrateChart(contract);
+            if(contractService.findProjectsByContractuuid(contract.getUuid()).size()>0 && contract.getContractConsultants().size()>0) createBurnrateChart(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(burnrateChartCard);
@@ -208,7 +205,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             fileDownloader.extend(mButton);
 
             usedBudgetChartCard.getHlTitleBar().addComponent(mButton);
-            if(contract.getContractProjects().size()>0 && contract.getContractConsultants().size()>0) createUsedBudgetChartCard(contract);
+            if(contractService.findProjectsByContractuuid(contract.getUuid()).size()>0 && contract.getContractConsultants().size()>0) createUsedBudgetChartCard(contract);
             contractRow.addColumn()
                     .withDisplayRules(12, 12, width, width)
                     .withComponent(usedBudgetChartCard);
@@ -218,7 +215,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private StreamResource createResource(Contract contract) {
         return new StreamResource((StreamResource.StreamSource) () -> {
             StringBuilder result = new StringBuilder("consultant;project;task;date;hours\n");
-            for (Work work : workService.getWorkOnContractByUser(contract)) {
+            for (Work work : workService.findWorkOnContract(contract.getUuid())) {
                 result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(NumberFormat.getInstance(new Locale("da", "DK")).format(work.getWorkduration())).append("\n");
             }
             return IOUtils.toInputStream(result.toString());
@@ -296,7 +293,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
         VerticalLayout subContent = new VerticalLayout();
         subWindow.setContent(subContent);
 
-        for (Clientdata clientdata : contract.getClient().getClientdata()) {
+
+        for (Clientdata clientdata : clientService.findOne(contract.getClientuuid()).getClientdata()) {
             CompactContactInformationRowDesign contactInformationRow = new CompactContactInformationRowDesign();
             contactInformationRow.setStyleName("bg-grey");
             contactInformationRow.getLblName().setValue(clientdata.getClientname());
@@ -309,14 +307,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
             contactInformationRow.getLblOther().setValue(clientdata.getOtheraddressinfo());
             contactInformationRow.getBtnAdd().addClickListener(event1 -> {
                 contract.setClientdatauuid(clientdata.getUuid());
-                Contract newContract = null;
-                try {
-                    newContract = contractService.updateContract(contract);
-                } catch (ContractValidationException e) {
-                    Notification.show("Contract period not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-                }
+                contractService.updateContract(contract);
                 subWindow.close();
-                updateData(newContract);
+                updateData(contract);
             });
             subContent.addComponent(contactInformationRow);
         }
@@ -357,8 +350,6 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 updateData(contract);
             } catch (ValidationException e) {
                 Notification.show("Errors in form", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            } catch (ContractValidationException e) {
-                Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
             }
         });
     }
@@ -497,7 +488,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         plotOptions.setMarker(marker);
         conf.setPlotOptions(plotOptions);
 
-        Map<User, Map<LocalDate, Double>> userMapMap = new HashMap<>();
+        Map<String, Map<LocalDate, Double>> userMapMap = new HashMap<>();
         String unit = "weeks";
         TemporalAdjuster temporalAdjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
         if(between > 26) {
@@ -508,17 +499,17 @@ public class ContractDetailLayout extends ResponsiveLayout {
             unit = "quarters";
             temporalAdjuster = new FirstDayOfQuarter();
         }
-        List<Work> workList = workService.getWorkOnContractByUser(contract).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList());
+        List<Work> workList = workService.findWorkOnContract(contract.getUuid()).stream().sorted(Comparator.comparing(Work::getRegistered)).collect(Collectors.toList());
         for (Work work : workList) {
             if(work.getTask().getType().equals(TaskType.SO)) continue;
-            Optional<ContractConsultant> optionalConsultant = contract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
-            if(!optionalConsultant.isPresent()) continue;
+            //Optional<ContractConsultant> optionalConsultant = contract.getContractConsultants().stream().filter(consultant -> consultant.getUser().getUuid().equals(work.getUser().getUuid())).findFirst();
+            //if(!optionalConsultant.isPresent()) continue;
             LocalDate workDate = work.getRegistered().with(temporalAdjuster);
             Map<LocalDate, Double> runningBudget;
-            if(!userMapMap.containsKey(work.getUser())) {
-                userMapMap.put(work.getUser(), new TreeMap<>());
+            if(!userMapMap.containsKey(work.getUseruuid())) {
+                userMapMap.put(work.getUseruuid(), new TreeMap<>());
             }
-            runningBudget = userMapMap.get(work.getUser());
+            runningBudget = userMapMap.get(work.getUseruuid());
             double workDuration = 0.0;
             if(!runningBudget.containsKey(workDate)) {
                 runningBudget.put(workDate, workDuration);
@@ -527,8 +518,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             runningBudget.put(workDate, workDuration);
         }
         if(unit.equals("months")) {
-            for (User user : userMapMap.keySet()) {
-                Map<LocalDate, Double> doubleMap = userMapMap.get(user);
+            for (String useruuid : userMapMap.keySet()) {
+                Map<LocalDate, Double> doubleMap = userMapMap.get(useruuid);
                 for (LocalDate localDate : doubleMap.keySet()) {
                     double aDouble = doubleMap.get(localDate);
                     double length = Month.from(localDate).length(true) / 7.0;
@@ -537,8 +528,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             }
         }
         if(unit.equals("quarters")) {
-            for (User user : userMapMap.keySet()) {
-                Map<LocalDate, Double> doubleMap = userMapMap.get(user);
+            for (String useruuid : userMapMap.keySet()) {
+                Map<LocalDate, Double> doubleMap = userMapMap.get(useruuid);
                 for (LocalDate localDate : doubleMap.keySet()) {
                     double aDouble = doubleMap.get(localDate);
                     double length = (Month.from(localDate).length(true)
@@ -549,8 +540,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
             }
         }
 
-        for (User user : userMapMap.keySet()) {
-            Map<LocalDate, Double> runningBudget = userMapMap.get(user);
+        for (String useruuid : userMapMap.keySet()) {
+            Map<LocalDate, Double> runningBudget = userMapMap.get(useruuid);
+            User user = userService.findByUUID(useruuid, true);
             DataSeries ls = new DataSeries(user.getFirstname()+" "+user.getLastname());
             for (LocalDate localDate : runningBudget.keySet()) {
                 DataSeriesItem item = new DataSeriesItem(localDate.atStartOfDay().toInstant(ZoneOffset.UTC),runningBudget.get(localDate));
@@ -565,18 +557,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
     private void createProjectList(Contract contract) {
         projectsLayout.removeAllComponents();
 
-        for (ContractProject contractProject : contract.getContractProjects()) {
-            Project project = projectService.findOne(contractProject.getProjectuuid());
+        for (Project project : contractService.findProjectsByContractuuid(contract.getUuid())) {
             ProjectRowDesign projectRowDesign = new ProjectRowDesign();
             projectRowDesign.getLblName().setValue(project.getName());
             projectRowDesign.getBtnIcon().setIcon(MaterialIcons.DATE_RANGE);
             projectRowDesign.getBtnDelete().setIcon(MaterialIcons.DELETE);
             projectRowDesign.getBtnDelete().addClickListener(event -> {
-                try {
-                    removeProject(contract, project);
-                } catch (ContractValidationException e) {
-                    Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-                }
+                removeProject(contract, project);
+                updateData(contract);
             });
             projectsLayout.addComponent(projectRowDesign);
         }
@@ -616,7 +604,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 .withStyleName("huge icon-only friendly")
         );
     }
-
+    // TODO: REINTRODUCE
+    /*
     private void createProposedProjects(Contract contract) {
         List<Project> deltaProjects = projectService.findByClientuuidOrderByNameAsc(contract.getClientuuid());
         Map<String, Project> projectsWithUserWorkButNoContract = new HashMap<>();
@@ -651,6 +640,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
         }
     }
 
+
+
     private void createProposedProjectRow(Contract Contract, Project project) {
             ProjectRowDesign projectRowDesign = new ProjectRowDesign();
             projectRowDesign.getLblName().setValue(project.getName());
@@ -662,6 +653,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
         projectsLayout.addComponent(projectRowDesign);
     }
 
+     */
+
     private void createConsultantList(final Contract contract) {
         consultantsLayout.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ContainerType.FLUID);
@@ -669,14 +662,15 @@ public class ContractDetailLayout extends ResponsiveLayout {
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
 
         for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+            User user = contractConsultant.getUser();
             ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
-            consultantRowDesign.getLblName().setValue(contractConsultant.getUser().getFirstname() + " " + contractConsultant.getUser().getLastname());
+            consultantRowDesign.getLblName().setValue(user.getFirstname() + " " + user.getLastname());
             consultantRowDesign.getLblMargin().setValue("Margin: "+MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.floor(contractConsultant.getRate()))+"%");
             consultantRowDesign.getLblMargin().setVisible(true);
             consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate())+"");
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {
                 contractConsultant.setRate(NumberConverter.parseDouble(event.getValue()));
-                consultantRepository.save(contractConsultant);
+                contractService.updateConsultant(contract, contractConsultant);
                 updateData(contract);
             });
             consultantRowDesign.getTxtRate().setValueChangeMode(ValueChangeMode.BLUR);
@@ -684,11 +678,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours())+"");
             consultantRowDesign.getTxtHours().addValueChangeListener(event -> {
                 contractConsultant.setHours(NumberConverter.parseDouble(event.getValue()));
-                consultantRepository.save(contractConsultant);
+                contractService.updateConsultant(contract, contractConsultant);
                 updateData(contract);
             });
-            consultantRowDesign.getVlHours().setVisible(contractConsultant.getContract().getContractType().equals(ContractType.PERIOD));
-            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUser(), false));
+            consultantRowDesign.getVlHours().setVisible(contract.getContractType().equals(ContractType.PERIOD));
+            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
 
             consultantRowDesign.getBtnDelete().addClickListener(event -> removeConsultant(contract, contractConsultant));
 
@@ -697,8 +691,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     .withDisplayRules(12, 12, 6, 6);
         }
 
-        // TODO: Reintroduce
-        // createProposedConsultants(contract, responsiveLayout.addRow());
+        //createProposedConsultants(contract, responsiveLayout.addRow());
 
         consultantsLayout.addComponent(new MButton(
                 VaadinIcons.PLUS,
@@ -710,17 +703,13 @@ public class ContractDetailLayout extends ResponsiveLayout {
                     // Put some components in it
                     subContent.addComponent(new Label("Add consultant"));
                     ComboBox<User> userComboBox = new ComboBox<>();
-                    userComboBox.setItems(userService.findAll());
+                    userComboBox.setItems(userService.findAll(true));
                     userComboBox.setItemCaptionGenerator(User::getUsername);
                     subContent.addComponent(userComboBox);
                     Button addButton = new Button("Add");
                     addButton.addClickListener(event1 -> userComboBox.getOptionalValue().ifPresent(user -> {
                         //User user = userComboBox.getSelectedItem().get();
-                        try {
-                            createConsultant(contract, user, 0.0, 0.0);
-                        } catch (ContractValidationException e) {
-                            Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-                        }
+                        createConsultant(contract, user, 0.0, 0.0);
                         subWindow.close();
                     }));
                     subContent.addComponent(addButton);
@@ -738,7 +727,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private void createProposedConsultants(Contract contract, ResponsiveRow responsiveRow) {
         HashMap<String, User> proposedUsers = new HashMap<>();
-        for (Project project : contract.getProjects()) {
+        for (Project project : contractService.findProjectsByContractuuid(contract.getUuid())) {
             Set<User> employees = contractService.getEmployeesWorkingOnProjectWithNoContract(project);
             for (User employee : employees) {
                 if(contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(employee.getUuid())))
@@ -753,8 +742,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
             for (User user : proposedUsers.values()) {
                 createConsultantRow(contract, responsiveRow, user);
             }
-        } else if(contract.getProjects().size() == 0) {
-            for (Project project : contract.getClient().getProjects()) {
+        } else if(contractService.findProjectsByContractuuid(contract.getUuid()).size() == 0) {
+            for (Project project : projectService.findByClientAndActiveTrueOrderByNameAsc(contract.getClientuuid())) {
                 for (User user : contractService.getEmployeesWorkingOnProjectWithNoContract(project)) {
                     if(contract.getContractConsultants().stream().noneMatch(consultant -> consultant.getUser().getUuid().equals(user.getUuid())))
                     proposedUsers.put(user.getUuid(), user);
@@ -783,15 +772,11 @@ public class ContractDetailLayout extends ResponsiveLayout {
         consultantRowDesign.getImgPhoto().setEnabled(false);
         consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
         consultantRowDesign.getBtnDelete().addClickListener(event -> {
-            try {
-                createConsultant(
-                        Contract,
-                        user,
-                        NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
-                        NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue()));
-            } catch (ContractValidationException e) {
-                Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-            }
+            createConsultant(
+                    Contract,
+                    user,
+                    NumberConverter.parseDouble(consultantRowDesign.getTxtHours().getValue()),
+                    NumberConverter.parseDouble(consultantRowDesign.getTxtRate().getValue()));
         });
 
         responsiveRow.addColumn()
@@ -800,20 +785,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createProject(Contract Contract, Project project) {
-        System.out.println("ContractDetailLayout.createProject");
-        System.out.println("Contract = [" + Contract + "], project = [" + project + "]");
-        try {
-            Contract = contractService.addProject(Contract, project);
-        } catch (ContractValidationException e) {
-            Notification.show("Contract not valid. Contract already exists for the selected project and consultant in that period.", Notification.Type.ERROR_MESSAGE);
-        }
+        contractService.addProject(Contract, project);
         updateData(Contract);
     }
 
-    private void removeConsultant(Contract Contract, ContractConsultant contractConsultant) {
-        Contract.getContractConsultants().remove(contractConsultant);
-        consultantRepository.delete(contractConsultant);
-        updateData(Contract);
+    private void removeConsultant(Contract contract, ContractConsultant contractConsultant) {
+        contract.getContractConsultants().remove(contractConsultant);
+        contractService.deleteConsultant(contract, contractConsultant);
+        updateData(contract);
     }
 
     private void updateData(Contract contract) {
@@ -824,7 +803,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         createContactInformation(contract);
         updateProposedPeriod(contract);
         createSubContractCard(contract, 4);
-        if (contract.getProjects().size() > 0 && contract.getContractConsultants().size() > 0) {
+        if (contractService.findProjectsByContractuuid(contract.getUuid()).size() > 0 && contract.getContractConsultants().size() > 0) {
             if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
                 createUsedBudgetChartCard(contract);
                 createBurndownChart(contract);
@@ -842,13 +821,12 @@ public class ContractDetailLayout extends ResponsiveLayout {
         }
     }
 
-    private void removeProject(Contract contract, Project project) throws ContractValidationException {
-        contract = contractService.removeProject(contract, project);
-        updateData(contract);
+    private void removeProject(Contract contract, Project project) {
+        contractService.removeProject(contract, project);
     }
 
-    private void createConsultant(Contract contract, User user, double hours, double rate) throws ContractValidationException {
-        ContractConsultant contractConsultant = new ContractConsultant(contract, user, rate, 0.0, hours);
+    private void createConsultant(Contract contract, User user, double hours, double rate) {
+        ContractConsultant contractConsultant = new ContractConsultant(contract.getUuid(), user.getUuid(), rate, 0.0, hours);
         contractService.addConsultant(contract, contractConsultant);
         updateData(contract);
     }

@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -14,14 +15,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Created by hans on 08/07/2017.
- */
-@Entity
-@Table(name = "invoices")
 public class Invoice {
 
-    @Id
     public String uuid;
     public String contractuuid;
     public String projectuuid;
@@ -36,7 +31,6 @@ public class Invoice {
     public String cvr;
     public String ean;
     public String attention;
-    @Column(name = "invoice_ref")
     public int invoiceref;
     public int invoicenumber;
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -48,22 +42,16 @@ public class Invoice {
     public String projectref;
     public String contractref;
     public String specificdescription;
-    @OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.ALL})
-    @JoinColumn(name="invoiceuuid")
     public Set<InvoiceItem> invoiceitems;
-    @Transient
-    public boolean errors;
     public InvoiceType type;
-    @Enumerated(EnumType.STRING)
     public InvoiceStatus status;
-    @Lob @JsonIgnore public byte[] pdf;
+    public byte[] pdf;
 
-    @JsonIgnore @Transient private double sumNoTax;
-    @JsonIgnore @Transient private double sumWithTax;
+    @JsonIgnore private double sumNoTax;
+    @JsonIgnore private double sumWithTax;
 
     public Invoice() {
         this.invoiceitems = new HashSet<>();
-        this.errors = false;
     }
 
     public Invoice(InvoiceType type, String contractuuid, String projectuuid, String projectname, double discount, int year, int month, String clientname, String clientaddresse, String otheraddressinfo, String zipcity, String ean, String cvr, String attention, LocalDate invoicedate, String projectref, String contractref, String specificdescription) {
@@ -252,20 +240,14 @@ public class Invoice {
         this.specificdescription = specificdescription;
     }
 
+    @JsonProperty
     public Set<InvoiceItem> getInvoiceitems() {
         return invoiceitems;
     }
 
+    @JsonProperty
     public void setInvoiceitems(Set<InvoiceItem> invoiceitems) {
         this.invoiceitems = invoiceitems;
-    }
-
-    public boolean isErrors() {
-        return errors;
-    }
-
-    public void setErrors(boolean errors) {
-        this.errors = errors;
     }
 
     public InvoiceType getType() {
@@ -346,7 +328,6 @@ public class Invoice {
                 ", contractref='" + contractref + '\'' +
                 ", specificdescription='" + specificdescription + '\'' +
                 ", invoiceitems=" + invoiceitems +
-                ", errors=" + errors +
                 ", type=" + type +
                 ", status=" + status +
                 ", sumNoTax=" + sumNoTax +

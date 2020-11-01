@@ -1,42 +1,15 @@
 package dk.trustworks.invoicewebui.services.cached;
 
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.dto.*;
-import dk.trustworks.invoicewebui.model.enums.*;
-import dk.trustworks.invoicewebui.services.*;
-import dk.trustworks.invoicewebui.utils.DateUtils;
-import dk.trustworks.invoicewebui.utils.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static dk.trustworks.invoicewebui.services.ContractService.getContractsByDate;
-import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 @Service
 public class StatisticsCachedService {
 
-    private final static Logger log = LoggerFactory.getLogger(StatisticsCachedService.class.getName());
+    public StatisticsCachedService() {
 
-    private final ContractService contractService;
-    private final WorkService workService;
-    private final UserService userService;
-    private final InvoiceService invoiceService;
-    private final ExpenseService expenseService;
-
-    public StatisticsCachedService(ContractService contractService, WorkService workService, UserService userService, InvoiceService invoiceService, ExpenseService expenseService) {
-        this.contractService = contractService;
-        this.workService = workService;
-        this.userService = userService;
-        this.invoiceService = invoiceService;
-        this.expenseService = expenseService;
     }
 
+    /*
     private List<BudgetDocument> cachedBudgetData = new ArrayList<>();
 
     public List<BudgetDocument> getBudgetData() {
@@ -44,12 +17,17 @@ public class StatisticsCachedService {
         return cachedBudgetData;
     }
 
+     */
+
+    /*
     private List<AvailabilityDocument> cachedAvailabilityData = new ArrayList<>();
 
     public List<AvailabilityDocument> getAvailabilityData() {
         if(cachedAvailabilityData.isEmpty()) cachedAvailabilityData = createAvailabilityData();
         return cachedAvailabilityData;
     }
+
+
 
     private List<UserExpenseDocument> cachedUserExpenseData = new ArrayList<>();
 
@@ -64,14 +42,8 @@ public class StatisticsCachedService {
         if(cachedExpenseData.isEmpty()) cachedExpenseData = createExpenseData();
         return cachedExpenseData;
     }
-
-    private List<WorkDocument> cachedIncomeData = new ArrayList<>();
-
-    public List<WorkDocument> getIncomeData() {
-        if(cachedIncomeData.isEmpty()) cachedIncomeData = createIncomeData();
-        return cachedIncomeData;
-    }
-
+    */
+/*
     private List<InvoicedDocument> cachedInvoiceData = new ArrayList<>();
 
     public List<InvoicedDocument> getInvoiceData() {
@@ -79,22 +51,25 @@ public class StatisticsCachedService {
         return cachedInvoiceData;
     }
 
-    public void refreshCache() {
-        cachedBudgetData = new ArrayList<>();
-        cachedAvailabilityData = new ArrayList<>();
-        cachedUserExpenseData = new ArrayList<>();
-        cachedIncomeData = new ArrayList<>();
-        cachedInvoiceData = new ArrayList<>();
-        cachedExpenseData = new ArrayList<>();
+ */
 
-        cachedBudgetData = createBudgetData();
-        cachedAvailabilityData = createAvailabilityData();
-        cachedUserExpenseData = createUserExpenseData();
-        cachedIncomeData = createIncomeData();
-        cachedInvoiceData = createInvoiceData();
-        cachedExpenseData = createExpenseData();
+    public void refreshCache() {
+        //cachedBudgetData = new ArrayList<>();
+        // cachedAvailabilityData = new ArrayList<>();
+        //cachedUserExpenseData = new ArrayList<>();
+        // cachedIncomeData = new ArrayList<>();
+        //cachedInvoiceData = new ArrayList<>();
+        //cachedExpenseData = new ArrayList<>();
+
+        //cachedBudgetData = createBudgetData();
+        // cachedAvailabilityData = createAvailabilityData();
+        //cachedUserExpenseData = createUserExpenseData();
+        // cachedIncomeData = createIncomeData();
+        //cachedInvoiceData = createInvoiceData();
+        //cachedExpenseData = createExpenseData();
     }
 
+    /*
     private List<BudgetDocument> createBudgetData() {
         List<BudgetDocument> budgetDocumentList = new ArrayList<>();
 
@@ -161,6 +136,8 @@ public class StatisticsCachedService {
         return budgetDocumentList;
     }
 
+
+
     BudgetDocument createBudgetDocument(User user, LocalDate startDate, Contract contract, ContractConsultant userContract) {
         BudgetDocument result = null;
         double budget = userContract.getHours(); // (f.eks. 35 timer)
@@ -171,6 +148,15 @@ public class StatisticsCachedService {
         }
 
         return result;
+    }
+
+     */
+/*
+    private List<WorkDocument> cachedIncomeData = new ArrayList<>();
+
+    public List<WorkDocument> getIncomeData() {
+        if(cachedIncomeData.isEmpty()) cachedIncomeData = createIncomeData();
+        return cachedIncomeData;
     }
 
     private List<WorkDocument> createIncomeData() {
@@ -196,6 +182,8 @@ public class StatisticsCachedService {
         return workDocumentList;
     }
 
+ */
+/*
     private List<InvoicedDocument> createInvoiceData() {
         List<Invoice> invoices = invoiceService.findByStatuses(InvoiceStatus.CREATED, InvoiceStatus.CREDIT_NOTE, InvoiceStatus.SUBMITTED, InvoiceStatus.PAID);
         List<InvoicedDocument> invoicedDocumentList = new ArrayList<>();
@@ -211,6 +199,10 @@ public class StatisticsCachedService {
         }
         return invoicedDocumentList;
     }
+
+ */
+
+    /*
 
     private List<AvailabilityDocument> createAvailabilityData() {
         List<AvailabilityDocument> availabilityDocumentList = new ArrayList<>();
@@ -255,7 +247,9 @@ public class StatisticsCachedService {
         return availabilityDocumentList;
     }
 
+     */
 
+/*
     private List<UserExpenseDocument> createUserExpenseData() {
         List<UserExpenseDocument> userExpenseDocumentList = new ArrayList<>();
         LocalDate startDate = LocalDate.of(2014, 7, 1);
@@ -375,6 +369,8 @@ public class StatisticsCachedService {
                 .count();
     }
 
+
+
     public double getConsultantRevenueByMonth(User user, LocalDate month) {
         List<WorkDocument> incomeData = getIncomeData();
         return incomeData.stream()
@@ -400,12 +396,16 @@ public class StatisticsCachedService {
         List<WorkDocument> incomeData = getIncomeData();
         return incomeData.stream().filter(workDocument -> workDocument.getMonth().isEqual(month.withDayOfMonth(1))).mapToDouble(WorkDocument::getWorkHours).sum();
     }
-
+    */
+/*
     public double getTotalInvoiceSumByMonth(LocalDate month) {
         return getInvoiceData().stream()
                 .filter(invoicedDocument -> invoicedDocument.getMonth().withDayOfMonth(1).isEqual(month.withDayOfMonth(1)))
                 .mapToDouble(value -> value.getInvoiceType().equals(InvoiceType.CREDIT_NOTE)?(-value.getInvoiced()):value.getInvoiced()).sum();
     }
+
+ */
+    /*
 
     public double getConsultantBudgetByMonth(User user, LocalDate month) {
         List<BudgetDocument> budgetData = getBudgetData();
@@ -436,6 +436,8 @@ public class StatisticsCachedService {
                                 availabilityDocument.getMonth().isEqual(month.withDayOfMonth(1)))
                 .findAny().orElse(null);
     }
+
+
 
     public double calcAllUserExpensesByMonth(LocalDate month) {
         List<UserExpenseDocument> userExpenseData = getUserExpenseData();
@@ -479,8 +481,10 @@ public class StatisticsCachedService {
         return expenceData.stream()
                 .filter(expenseDocument -> expenseDocument.getMonth().isEqual(month.withDayOfMonth(1))).collect(Collectors.toList());
     }
+    */
 
     // u.uuid uuid, concat(u.firstname, ' ', u.lastname) description, ROUND(SUM(w.workduration)
+    /*
     public List<GraphKeyValue> findConsultantBillableHoursByPeriod(LocalDate fromDate, LocalDate toDate) {
         List<Work> workList = workService.findByPeriod(fromDate, toDate);
         Map<String, GraphKeyValue> result = new HashMap<>();
@@ -491,4 +495,6 @@ public class StatisticsCachedService {
         }
         return new ArrayList<>(result.values());
     }
+
+     */
 }

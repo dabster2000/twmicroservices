@@ -6,8 +6,8 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.BudgetService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -25,14 +25,14 @@ import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 @SpringUI
 public class BillableConsultantHoursPerMonthChart {
 
-    private final StatisticsService statisticsService;
+    private final RevenueService revenueService;
 
-    private final UserService userService;
+    private final BudgetService budgetService;
 
     @Autowired
-    public BillableConsultantHoursPerMonthChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
-        this.userService = userService;
+    public BillableConsultantHoursPerMonthChart(RevenueService revenueService, BudgetService budgetService) {
+        this.revenueService = revenueService;
+        this.budgetService = budgetService;
     }
 
     @Cacheable("revenueChart")
@@ -61,8 +61,8 @@ public class BillableConsultantHoursPerMonthChart {
         DataSeries budgetSeries = new DataSeries("Budgeted hours");
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), statisticsService.getConsultantRevenueHoursByMonth(user, currentDate)));
-            budgetSeries.add(new DataSeriesItem(stringIt(currentDate,"MMM-yyyy"), statisticsService.getConsultantBudgetHoursByMonth(user, currentDate)));
+            revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), currentDate)));
+            budgetSeries.add(new DataSeriesItem(stringIt(currentDate,"MMM-yyyy"), budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), currentDate)));
 
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }

@@ -1,24 +1,10 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.*;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.UserService;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by hans on 20/09/2017.
@@ -38,7 +24,7 @@ public class ConsultantHoursPerMonthChart {
         this.contractService = contractService;
         this.userRepository = userRepository;
     }
-
+/*
     public Chart createTopGrossingConsultantsChart(LocalDate periodStart, LocalDate periodEnd) {
         System.out.println("ConsultantHoursPerMonthChart.createTopGrossingConsultantsChart");
         System.out.println("periodStart = [" + periodStart + "], periodEnd = [" + periodEnd + "]");
@@ -86,5 +72,7 @@ public class ConsultantHoursPerMonthChart {
         chart.getConfiguration().setCredits(c);
         return chart;
     }
+
+ */
 
 }

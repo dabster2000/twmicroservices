@@ -5,7 +5,9 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 public class AllRevenuePerMonthChart {
 
     @Autowired
-    private StatisticsService statisticsService;
+    private RevenueService revenueService;
 
     @Autowired
     private UserService userService;
@@ -53,7 +55,7 @@ public class AllRevenuePerMonthChart {
 
         DataSeries dataSeries = new DataSeries("Actual Revenue");
         dataSeries.setId("Revenue");
-        Map<LocalDate, Double> revenuePerMonth = statisticsService.calcActualRevenuePerMonth(periodStart, periodEnd);
+        Map<LocalDate, Double> revenuePerMonth = revenueService.getInvoicedOrRegisteredRevenueByPeriod(periodStart, periodEnd).stream().collect(Collectors.toMap(graphKeyValue -> DateUtils.dateIt(graphKeyValue.getDescription()), GraphKeyValue::getValue));
         for (LocalDate localDate : revenuePerMonth.keySet().stream().sorted(LocalDate::compareTo).collect(Collectors.toList())) {
             DataSeriesItem item = new DataSeriesItem();
             item.setX(DateUtils.convertLocalDateToDate(localDate));
@@ -65,7 +67,7 @@ public class AllRevenuePerMonthChart {
         //expensesDataSeries.getConfiguration().setTooltip(tooltip);
         LocalDate currentDate = periodStart;
         do {
-            double allExpensesByMonth = statisticsService.calcAllUserExpensesByMonth(currentDate);
+            double allExpensesByMonth = 0.0; // TODO statisticsService.calcAllUserExpensesByMonth(currentDate);
             DataSeriesItem item = new DataSeriesItem();
             item.setX(DateUtils.convertLocalDateToDate(currentDate));
             item.setY(Math.round(allExpensesByMonth));
@@ -78,7 +80,7 @@ public class AllRevenuePerMonthChart {
         PlotOptionsFlags plotOptionsFlags = new PlotOptionsFlags();
         plotOptionsFlags.setOnSeries("Revenue");
         usersEmployedSeries.setPlotOptions(plotOptionsFlags);
-        for (User user : userService.findAll()) {
+        for (User user : userService.findAll(true)) {
             Optional<LocalDate> employedDate = userService.findEmployedDate(user);
             if(!employedDate.isPresent()) continue;
             if(!employedDate.get().isBefore(LocalDate.now().withDayOfMonth(1))) continue; // Spring over, hvis personen er ansat i denne måned eller senere

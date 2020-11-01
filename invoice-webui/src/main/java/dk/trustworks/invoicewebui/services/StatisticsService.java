@@ -1,59 +1,23 @@
 package dk.trustworks.invoicewebui.services;
 
-import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
-import com.vaadin.addon.charts.model.PlotOptionsAreaspline;
-import com.vaadin.addon.charts.model.style.SolidColor;
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.dto.ExpenseDocument;
-import dk.trustworks.invoicewebui.model.dto.UserBooking;
-import dk.trustworks.invoicewebui.model.dto.UserProjectBooking;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
-import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
-import dk.trustworks.invoicewebui.repositories.BudgetNewRepository;
 import dk.trustworks.invoicewebui.services.cached.StatisticsCachedService;
-import dk.trustworks.invoicewebui.utils.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static dk.trustworks.invoicewebui.utils.DateUtils.*;
 
 @Service
 public class StatisticsService extends StatisticsCachedService {
 
-    private final static Logger log = LoggerFactory.getLogger(StatisticsService.class.getName());
-
-    private final ContractService contractService;
-
-    private final BudgetNewRepository budgetNewRepository;
-
-    private final WorkService workService;
-
-    private final UserService userService;
-
-    private final ExpenseService expenseService;
+    private final RevenueService revenueService;
 
     @Autowired
-    public StatisticsService(ContractService contractService, BudgetNewRepository budgetNewRepository, WorkService workService, InvoiceService invoiceService, UserService userService, ExpenseService expenseService) {
-        super(contractService, workService, userService, invoiceService, expenseService);
-        this.contractService = contractService;
-        this.budgetNewRepository = budgetNewRepository;
-        this.workService = workService;
-        this.userService = userService;
-        this.expenseService = expenseService;
+    public StatisticsService(RevenueService revenueService) {
+        this.revenueService = revenueService;
     }
-
+/*
     public double getMonthRevenue(LocalDate month) {
         double result = 0.0;
         for (User user : userService.findAll()) {
@@ -61,6 +25,8 @@ public class StatisticsService extends StatisticsCachedService {
         }
         return result;
     }
+
+
 
     public double getMonthBudget(LocalDate month) {
         double result = 0.0;
@@ -70,11 +36,13 @@ public class StatisticsService extends StatisticsCachedService {
         return result;
     }
 
-    public double getInvoicedOrRegisteredRevenueByMonth(LocalDate month) {
-        double invoicedAmountByMonth = getTotalInvoiceSumByMonth(month);
-        return (invoicedAmountByMonth > 0.0)?invoicedAmountByMonth:getRegisteredRevenueByMonth(month);
-    }
+ */
 
+    public double getInvoicedOrRegisteredRevenueByMonth(LocalDate month) {
+        double invoicedAmountByMonth = revenueService.getInvoicedRevenueForSingleMonth(month);
+        return (invoicedAmountByMonth > 0.0)?invoicedAmountByMonth:revenueService.getRegisteredRevenueForSingleMonth(month);
+    }
+/*
     public Number[] getPayoutsByPeriod(LocalDate periodStart, LocalDate periodEnd) {
         double forecastedExpenses = 43000;
         double forecastedSalaries = 64000;
@@ -97,12 +65,15 @@ public class StatisticsService extends StatisticsCachedService {
         return payout;
     }
 
+ */
+
     /**
      * Calculates actual invoiced revenue per month. Uses registered hours if no invoices exists.
      * @param periodStart
      * @param periodEnd
      * @return
      */
+    /*
     public Map<LocalDate, Double> calcActualRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
         Map<LocalDate, Double> result = new HashMap<>();
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -118,6 +89,8 @@ public class StatisticsService extends StatisticsCachedService {
         return result;
     }
 
+     */
+/*
     // w.id as uuid, DATE_FORMAT(w.registered, '%Y-%m-%d') as description, ROUND(SUM(w.workduration*cc.rate
     public List<GraphKeyValue> findRevenueByMonthByPeriod(LocalDate periodStart, LocalDate periodEnd) {
         Map<LocalDate, Double> revenuePerMonth = calcActualRevenuePerMonth(periodStart, periodEnd);
@@ -135,6 +108,7 @@ public class StatisticsService extends StatisticsCachedService {
      * @param periodEnd
      * @return
      */
+    /*
     public DataSeries calcRegisteredHoursRevenuePerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries revenueSeries = new DataSeries("Registered Hours Revenue");
 
@@ -150,6 +124,8 @@ public class StatisticsService extends StatisticsCachedService {
         return revenueSeries;
     }
 
+     */
+/*
     public DataSeries calcBudgetPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries budgetSeries = new DataSeries("Budget Revenue");
 
@@ -166,6 +142,8 @@ public class StatisticsService extends StatisticsCachedService {
         return budgetSeries;
     }
 
+ */
+/*
     public DataSeries calcEarningsPerMonth(LocalDate periodStart, LocalDate periodEnd) {
         DataSeries earningsSeries = new DataSeries("Gross Profit");
 
@@ -179,12 +157,14 @@ public class StatisticsService extends StatisticsCachedService {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             double invoicedAmountByMonth = getTotalInvoiceSumByMonth(currentDate);
-            double expense = calcAllExpensesByMonth(currentDate.withDayOfMonth(1));// getAllUserExpensesByMonth(currentDate.withDayOfMonth(1));
+            double expense = financeService.calcAllExpensesByMonth(currentDate.withDayOfMonth(1));// getAllUserExpensesByMonth(currentDate.withDayOfMonth(1));
             earningsSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), invoicedAmountByMonth-expense));
         }
         return earningsSeries;
     }
 
+ */
+/*
     public List<UserBooking> getUserBooking(int monthsInPast, int monthsInFuture) {
         List<UserBooking> userBookings = new ArrayList<>();
         Map<String, UserProjectBooking> userProjectBookingMap = new HashMap<>();
@@ -207,7 +187,7 @@ public class StatisticsService extends StatisticsCachedService {
                             }
                             UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
                             log.info("currentDate = " + currentDate);
-                            double workDaysInMonth = workService.getWorkDaysInMonth(contractConsultant.getUser().getUuid(), currentDate);
+                            double workDaysInMonth = availabilityService.getWorkdaysInMonth(contractConsultant.getUser().getUuid(), currentDate);
                             double weeks = (workDaysInMonth / 5.0);
                             double preBooking = 0.0;
                             double budget = 0.0;
@@ -244,7 +224,7 @@ public class StatisticsService extends StatisticsCachedService {
                     }
                     UserProjectBooking userProjectBooking = userProjectBookingMap.get(key);
 
-                    double workDaysInMonth = workService.getWorkDaysInMonth(user.getUuid(), currentDate);
+                    double workDaysInMonth = workService.getWorkdaysInMonth(user.getUuid(), currentDate);
                     double preBooking = 0.0;
                     double hourBudget = 0.0;
                     double booking;
@@ -281,7 +261,7 @@ public class StatisticsService extends StatisticsCachedService {
                     if(debug) log.info("i = " + i);
                     userBooking.addAmountItemsPerProjects(subProject.getAmountItemsPerProjects(i), i);
                     userBooking.addAmountItemsPerPrebooking(subProject.getAmountItemsPerPrebooking(i), i);
-                    int workDaysInMonth = workService.getWorkDaysInMonth(userService.findByUsername(userBooking.getUsername()).getUuid(), currentDate);
+                    int workDaysInMonth = workService.getWorkdaysInMonth(userService.findByUsername(userBooking.getUsername()).getUuid(), currentDate);
                     userBooking.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
                     subProject.setMonthNorm(NumberUtils.round(workDaysInMonth * 7, 2), i);
                     currentDate = currentDate.plusMonths(1);
@@ -300,18 +280,19 @@ public class StatisticsService extends StatisticsCachedService {
         return userBookings;
     }
 
+
     public Map<LocalDate, Double> calculateConsultantRevenue(User user, LocalDate periodStart, LocalDate periodEnd, int interval) {
         int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
         double revenueSum = 0.0;
         int count = 1;
         Map<LocalDate, Double> resultMap = new HashMap<>();
-        List<Expense> expenseList = expenseService.findByAccountAndPeriod(ExcelExpenseType.LØNNINGER, periodStart, periodEnd);
+        List<CompanyExpense> companyExpenseList = financeService.findByAccountAndPeriod(ExcelExpenseType.LØNNINGER, periodStart, periodEnd);
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
             if(userService.isActive(user, currentDate, ConsultantType.CONSULTANT)) {
                 double consultantCount = userService.findWorkingUsersByDate(currentDate, ConsultantType.CONSULTANT).size();
-                double expense = expenseList.stream().filter(e -> e.getPeriod().withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1))).mapToDouble(Expense::getAmount).sum() / consultantCount;
+                double expense = companyExpenseList.stream().filter(e -> e.getPeriod().withDayOfMonth(1).isEqual(currentDate.withDayOfMonth(1))).mapToDouble(CompanyExpense::getAmount).sum() / consultantCount;
 
                 if (expense == 0) {
                     count = 1;
@@ -341,6 +322,8 @@ public class StatisticsService extends StatisticsCachedService {
         }
         return resultMap;
     }
+
+ */
 
     public String[] getMonthCategories(LocalDate periodStart, LocalDate periodEnd) {
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);

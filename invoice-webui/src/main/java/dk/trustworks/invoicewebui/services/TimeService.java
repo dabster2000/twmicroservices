@@ -2,10 +2,9 @@ package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Week;
-import dk.trustworks.invoicewebui.repositories.WeekRepository;
+import dk.trustworks.invoicewebui.network.rest.WeekRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
@@ -21,24 +20,15 @@ import java.util.UUID;
 public class TimeService {
 
     @Autowired
-    WeekRepository weekRepository;
+    WeekRestService weekRestService;
 
     public TimeService() {
     }
 
-    @Transactional
-    public void cloneTaskToWeek(int weekNumber, int year, User user) {
-        //currentDate.getWeekOfWeekyear(), currentDate.getYear(), getSelActiveUser().getSelectedItem().get()
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(weekNumber - 1, year, user.getUuid());
-        for (Week week : weeks) {
-            weekRepository.save(new Week(UUID.randomUUID().toString(), weekNumber, year, week.getUser(), week.getTask()));
-        }
-    }
-
     public void cloneTaskToWeek(LocalDate currentDate, User user) {
-        List<Week> weeks = weekRepository.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user.getUuid());
+        List<Week> weeks = weekRestService.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.minusWeeks(1).get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user.getUuid());
         for (Week week : weeks) {
-            weekRepository.save(new Week(UUID.randomUUID().toString(), currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), week.getUser(), week.getTask(), week.getWorkasUser()));
+            weekRestService.save(new Week(UUID.randomUUID().toString(), currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), week.getUseruuid(), week.getTaskuuid(), week.getWorkas()));
         }
     }
 }

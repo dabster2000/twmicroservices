@@ -39,14 +39,6 @@ public class KeyPurpose {
         this.id = id;
     }
 
-    public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
-    }
-
-    public void setUser(User user) {
-        this.useruuid = user.getUuid();
-    }
-
     public int getNum() {
         return num;
     }

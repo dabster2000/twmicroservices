@@ -4,8 +4,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.WorkRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.WorkService;
 import dk.trustworks.invoicewebui.web.time.model.UserHourItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +21,17 @@ import java.util.List;
 @SpringComponent
 public class MonthReportImpl extends MonthReportDesign {
 
+    private final WorkService workService;
+
     @Autowired
-    private WorkRepository workRepository;
-
-    public MonthReportImpl() {
-
+    public MonthReportImpl(WorkService workService) {
+        this.workService = workService;
     }
 
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public void init(String projectUUID, LocalDate localDate) {
-        List<Work> workList = workRepository.findByPeriod(localDate.withDayOfMonth(1).toString(), localDate.withDayOfMonth(localDate.lengthOfMonth()).toString());
+        List<Work> workList = workService.findByPeriod(localDate.withDayOfMonth(1), localDate.withDayOfMonth(localDate.lengthOfMonth()));
         List<UserHourItem> userHourItems = new ArrayList<>();
 
         for (Work work : workList) {

@@ -46,7 +46,7 @@ public class CkoCourseStudent {
     }
 
     public User getMember() {
-        return UserService.get().findByUUID(getUseruuid());
+        return UserService.get().findByUUID(getUseruuid(), true);
     }
 
     public void setMember(User member) {

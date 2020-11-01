@@ -31,8 +31,12 @@ public class ClientdataService implements InitializingBean {
         return clientdataRestService.findByClient(client);
     }
 
-    public void save(Clientdata clientdata) {
-        clientdataRestService.save(clientdata);
+    public Clientdata save(Clientdata clientdata) {
+        return clientdataRestService.save(clientdata);
+    }
+
+    public void update(Clientdata clientdata) {
+        clientdataRestService.update(clientdata);
     }
 
     public void delete(String uuid) {

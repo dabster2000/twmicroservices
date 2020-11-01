@@ -5,9 +5,8 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.TreeGrid;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.BudgetService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -27,13 +26,13 @@ import java.util.Map;
 @SpringUI
 public class BudgetTable {
 
-    private final StatisticsService statisticsService;
+    private final BudgetService budgetService;
 
     private final UserService userService;
 
     @Autowired
-    public BudgetTable(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public BudgetTable(BudgetService budgetService, UserService userService) {
+        this.budgetService = budgetService;
         this.userService = userService;
     }
 
@@ -52,7 +51,9 @@ public class BudgetTable {
                 double budgetHoursSum = 0.0;
                 double budgetAmountSum = 0.0;
 
-                for (BudgetDocument budgetDocument : statisticsService.getConsultantBudgetDataByMonth(user, startDate)) {
+                // TODO: FIX
+                /*
+                for (BudgetDocument budgetDocument : budgetService.getConsultantBudgetDataByMonth(user, startDate)) {
                     double budgetHours = budgetDocument.getGrossBudgetHours();
                     double budgetAmount = budgetDocument.getRate() * budgetHours;
 
@@ -69,6 +70,8 @@ public class BudgetTable {
                     clientHoursArray.getBudgetHours()[countMonths] += NumberUtils.round(budgetHours, 0);
                     clientHoursArray.getBudgetAmount()[countMonths] += NumberUtils.round(budgetAmount, 0);
                 }
+                
+                 */
 
                 userList.get(user.getUsername()).getBudgetAmount()[countMonths] = NumberUtils.round(budgetAmountSum, 0);
                 userList.get(user.getUsername()).getBudgetHours()[countMonths] = NumberUtils.round(budgetHoursSum, 0);

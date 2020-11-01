@@ -1,24 +1,21 @@
 package dk.trustworks.invoicewebui.network.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dk.trustworks.invoicewebui.model.Role;
-import dk.trustworks.invoicewebui.model.Salary;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserStatus;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.Capacity;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.network.dto.IntegerJsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 import static org.springframework.http.HttpMethod.*;
@@ -26,63 +23,52 @@ import static org.springframework.http.HttpMethod.*;
 @Service
 public class UserRestService {
 
-    @Value("#{environment.USERSERVICE_URL}")
-    private String userServiceUrl;
+    @Value("#{environment.APIGATEWAY_URL}")
+    private String apiGatewayUrl;
 
     private final SystemRestService systemRestService;
 
-    private final RestTemplate restTemplate;
-
-    private final Map<String, User> userCache = new HashMap<>();
-
     @Autowired
-    public UserRestService(SystemRestService systemRestService, RestTemplate restTemplate) {
+    public UserRestService(SystemRestService systemRestService) {
         this.systemRestService = systemRestService;
-        this.restTemplate = restTemplate;
     }
 
     public User findByUsername(String username) {
-        String url = userServiceUrl+"/users/search/findByUsername?username="+username;
-        return (User) systemRestService.secureCall(url, GET, User.class).getBody(); //restTemplate.getForObject(url, User.class, createHeaders(systemToken.getToken()));
+        String url = apiGatewayUrl+"/users?username="+username;
+        return ((User[]) systemRestService.secureCall(url, GET, User[].class).getBody())[0]; //restTemplate.getForObject(url, User.class, createHeaders(systemToken.getToken()));
     }
 
     @Cacheable("users")
-    public User findOne(String uuid) {
-        if(userCache.containsKey(uuid)) return userCache.get(uuid);
-        String url = userServiceUrl + "/users/" + uuid;
-        User user = (User) systemRestService.secureCall(url, GET, User.class).getBody(); //restTemplate.getForObject(userServiceUrl + "/users/" + uuid, User.class);
-        userCache.put(user.getUuid(), user);
-        return user;
+    public User findOne(String uuid, boolean shallow) {
+        String url = apiGatewayUrl + "/users/" + uuid + "?shallow="+shallow;
+        return (User) systemRestService.secureCall(url, GET, User.class).getBody();
     }
 
-    @Cacheable("users")
-    public List<User> findByOrderByUsername() {
-        String url = userServiceUrl+"/users";
+    public List<User> findByOrderByUsername(boolean shallow) {
+        String url = apiGatewayUrl+"/users?shallow="+shallow;
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
         return Arrays.asList(result.getBody());
     }
 
     public User[] findBySlackusername(String userId) {
-        ResponseEntity<User[]> result = systemRestService.secureCall(userServiceUrl+"/users/search/findBySlackusername?username="+userId, GET, User[].class);
+        ResponseEntity<User[]> result = systemRestService.secureCall(apiGatewayUrl+"/users/search/findBySlackusername?username="+userId, GET, User[].class);
         return result.getBody();
     }
 
-    @Cacheable("users")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, String... consultantTypes) {
-        String url = userServiceUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes);
+        String url = apiGatewayUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes)+"&shallow=true";
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable("users")
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
-        String url = userServiceUrl+"/users/command/calculateCapacityByMonthByUser?useruuid="+useruuid+"&statusdate="+statusdate;
+        String url = apiGatewayUrl+"/users/command/calculateCapacityByMonthByUser?useruuid="+useruuid+"&statusdate="+statusdate;
         ResponseEntity<IntegerJsonResponse> result = systemRestService.secureCall(url, GET, IntegerJsonResponse.class);
         return result.getBody().getResult(); //restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
     }
 
     public List<Capacity> calculateCapacityByPeriod(LocalDate fromDate, LocalDate toDate) {
-        String url = userServiceUrl+"/users/command/calculateCapacityByPeriod?fromdate="+ stringIt(fromDate) +"&todate="+ stringIt(toDate);
+        String url = apiGatewayUrl+"/users/command/calculateCapacityByPeriod?fromdate="+ stringIt(fromDate) +"&todate="+ stringIt(toDate);
         ResponseEntity<String> responseEntity = systemRestService.secureCall(url, GET, String.class);
         ObjectMapper mapper = new ObjectMapper();
         Capacity[] result = new Capacity[0];
@@ -94,72 +80,85 @@ public class UserRestService {
         return Arrays.asList(result); //restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
     }
 
-    @CacheEvict(value = "users", allEntries = true)
     public User create(User user) {
-        userCache.clear();
-        String url = userServiceUrl+"/users";
-        return (User) systemRestService.secureCall(url, POST, User.class, user).getBody();//restTemplate.postForObject(url, user, User.class);
+        String url = apiGatewayUrl+"/users";
+        return (User) systemRestService.secureCall(url, POST, User.class, user).getBody();
     }
 
-    @CacheEvict(value = "users", allEntries = true)
     public void update(User user) {
-        userCache.clear();
-        String url = userServiceUrl+"/users/"+user.getUuid();
-        systemRestService.secureCall(url, PUT, User.class, user).getBody(); //restTemplate.put(url, user);
+        String url = apiGatewayUrl+"/users/"+user.getUuid();
+        systemRestService.secureCall(url, PUT, User.class, user);
+    }
+
+    public void updateBirthday(User user) {
+        String url = apiGatewayUrl+"/users/"+user.getUuid()+"/birthday";
+        systemRestService.secureCall(url, PUT, User.class, user);
+    }
+
+    public UserContactinfo findUserContactinfo(String useruuid) {
+        String url = apiGatewayUrl + "/users/"+useruuid+"/contactinfo";
+        ResponseEntity<UserContactinfo> result = systemRestService.secureCall(url, GET, UserContactinfo.class);
+        return result.getBody();
+    }
+
+    public void updateUserContactinfo(String useruuid, UserContactinfo userContactinfo) {
+        String url = apiGatewayUrl + "/users/"+useruuid+"/contactinfo";
+        systemRestService.secureCall(url, PUT, Void.class, userContactinfo);
     }
 
     public LoginToken login(String username, String password) {
-        String url = userServiceUrl+"/users/command/login?username="+username+"&password="+password;
-        return restTemplate.getForObject(url, LoginToken.class);
+        return systemRestService.login(username, password);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    public void deleteSalaries(User user, Set<Salary> salaries) {
-        userCache.clear();
+    public void deleteSalaries(String useruuid, Set<Salary> salaries) {
         for (Salary salary : salaries) {
-            String url = userServiceUrl+"/users/"+user.getUuid()+"/salaries/"+salary.getUuid();
-            systemRestService.secureCall(url, DELETE, Salary.class); //restTemplate.delete(url);
+            String url = apiGatewayUrl+"/users/"+useruuid+"/salaries/"+salary.getUuid();
+            systemRestService.secureCall(url, DELETE, Salary.class);
         }
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    public void deleteUserStatuses(User user, Set<UserStatus> userStatuses) {
-        userCache.clear();
+    public List<UserStatus> findUserStatusList(String useruuid) {
+        String url = apiGatewayUrl+"/users/"+useruuid+"/statuses";
+        ResponseEntity<UserStatus[]> result = systemRestService.secureCall(url, GET, UserStatus[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public List<Salary> findUserSalaries(String useruuid) {
+        String url = apiGatewayUrl+"/users/"+useruuid+"/salaries";
+        ResponseEntity<Salary[]> result = systemRestService.secureCall(url, GET, Salary[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public void deleteUserStatuses(String useruuid, Set<UserStatus> userStatuses) {
         for (UserStatus userStatus : userStatuses) {
-            String url = userServiceUrl+"/users/"+user.getUuid()+"/statuses/"+userStatus.getUuid();
+            String url = apiGatewayUrl+"/users/"+useruuid+"/statuses/"+userStatus.getUuid();
             systemRestService.secureCall(url, DELETE, UserStatus.class); //restTemplate.delete(url);
         }
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    public void deleteRoles(User user, List<Role> roles) {
-        userCache.clear();
-        String url = userServiceUrl+"/users/"+user.getUuid()+"/roles";
-        systemRestService.secureCall(url, DELETE, Role.class);
-
+    public List<Role> findUserRoles(String useruuid) {
+        String url = apiGatewayUrl+"/users/"+useruuid+"/roles";
+        ResponseEntity<Role[]> result = systemRestService.secureCall(url, GET, Role[].class);
+        return Arrays.asList(result.getBody());
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    public void create(User user, Salary salary) {
-        userCache.clear();
-        user.getSalaries().add(salary);
-        String url = userServiceUrl+"/users/"+user.getUuid()+"/salaries";
+    public void deleteRoles(User user, List<Role> roles) {
+        String url = apiGatewayUrl+"/users/"+user.getUuid()+"/roles";
+        systemRestService.secureCall(url, DELETE, Role.class);
+    }
+
+    public void create(String useruuid, Salary salary) {
+        String url = apiGatewayUrl+"/users/"+useruuid+"/salaries";
         systemRestService.secureCall(url, POST, String.class, salary); //restTemplate.postForObject(url, salary, String.class);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    public void create(User user, UserStatus userStatus) {
-        userCache.clear();
-        user.getStatuses().add(userStatus);
-        String url = userServiceUrl+"/users/"+user.getUuid()+"/statuses";
+    public void create(String useruuid, UserStatus userStatus) {
+        String url = apiGatewayUrl+"/users/"+useruuid+"/statuses";
         systemRestService.secureCall(url, POST, String.class, userStatus); //restTemplate.postForObject(url, userStatus, String.class);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    public void create(User user, Role role) {
-        userCache.clear();
-        user.getRoleList().add(role);
-        String url = userServiceUrl+"/users/"+user.getUuid()+"/roles";
+    public void create(String useruuid, Role role) {
+        String url = apiGatewayUrl+"/users/"+useruuid+"/roles";
         systemRestService.secureCall(url, POST, String.class, role); //restTemplate.postForObject(url, role, String.class);
     }
 }

@@ -48,16 +48,8 @@ public class TalentPassion {
         this.uuid = uuid;
     }
 
-    public User getUser() {
-        return UserService.get().findByUUID(getUseruuid());
-    }
-
-    public void setUser(User user) {
-        this.useruuid = user.getUuid();
-    }
-
     public User getOwner() {
-        return UserService.get().findByUUID(owner);
+        return UserService.get().findByUUID(owner, true);
     }
 
     public void setOwner(User owner) {

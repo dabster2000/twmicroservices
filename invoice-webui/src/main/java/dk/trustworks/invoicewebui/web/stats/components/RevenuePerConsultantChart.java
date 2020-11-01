@@ -6,12 +6,14 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -28,13 +30,13 @@ import java.util.stream.Collectors;
 @SpringUI
 public class RevenuePerConsultantChart {
 
-    private final StatisticsService statisticsService;
+    private final RevenueService revenueService;
 
     private final UserService userService;
 
     @Autowired
-    public RevenuePerConsultantChart(StatisticsService statisticsService, UserService userService) {
-        this.statisticsService = statisticsService;
+    public RevenuePerConsultantChart(RevenueService revenueService, UserService userService) {
+        this.revenueService = revenueService;
         this.userService = userService;
     }
 
@@ -42,7 +44,7 @@ public class RevenuePerConsultantChart {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-        LocalDate periodStart = userService.findByUUID(user.getUuid()).getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE, LocalDate.now(), 0)).getStatusdate();//LocalDate.of(2017, 07, 01);
+        LocalDate periodStart = userService.findByUUID(user.getUuid(), false).getStatuses().stream().min(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(ConsultantType.CONSULTANT, StatusType.ACTIVE, LocalDate.now(), 0)).getStatusdate();//LocalDate.of(2017, 07, 01);
         LocalDate periodEnd = LocalDate.now().withDayOfMonth(1);
         System.out.println("periodEnd = " + periodEnd);
 
@@ -64,7 +66,7 @@ public class RevenuePerConsultantChart {
         poc3.setColor(new SolidColor("#123375"));
         revenueSeries.setPlotOptions(poc3);
 
-        Map<LocalDate, Double> resultMap = statisticsService.calculateConsultantRevenue(user, periodStart, periodEnd, 3);
+        Map<LocalDate, Double> resultMap = revenueService.getRegisteredProfitsForSingleConsultant(user.getUuid(), periodStart, periodEnd, 3).stream().collect(Collectors.toMap(graphKeyValue -> DateUtils.dateIt(graphKeyValue.getDescription()), GraphKeyValue::getValue));
         for (LocalDate currentDate : resultMap.keySet().stream().sorted().collect(Collectors.toList())) {
             revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")), resultMap.get(currentDate)));
             chart.getConfiguration().getxAxis().addCategory(currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy")));
