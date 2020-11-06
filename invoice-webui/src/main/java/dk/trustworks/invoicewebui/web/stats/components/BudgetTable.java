@@ -40,7 +40,7 @@ public class BudgetTable {
         Map<String, BudgetItem> userList = new HashMap<>();
         LocalDate startDate = LocalDate.of(2014, 7, 1);
         int months = (int) ChronoUnit.MONTHS.between(startDate, LocalDate.now())+2;
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             startDate = LocalDate.of(2014, 7, 1);
             int countMonths = 0;
 

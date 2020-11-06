@@ -72,7 +72,7 @@ public class AverageConsultantAllocationChart {
         Map<User, Map<LocalDate, Double>> averagePerUserPerMonth = new HashMap<>();
         Map<User, Double> averagePerUser = new HashMap<>();
 
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             startDate = LocalDate.of(2014,7,1);//userService.findEmployedDate(user);
             double allocation = 0.0;
             double count = 0.0;

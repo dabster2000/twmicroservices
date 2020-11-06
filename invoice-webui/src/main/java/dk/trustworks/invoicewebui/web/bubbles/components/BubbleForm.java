@@ -112,7 +112,7 @@ public class BubbleForm {
         }
 
         TwinColSelect<User> twinColSelect = new TwinColSelect<>();
-        twinColSelect.setItems(userService.findCurrentlyEmployedUsers());
+        twinColSelect.setItems(userService.findCurrentlyEmployedUsers(true));
         twinColSelect.select(currentUsers);
         twinColSelect.setRows(12);
         twinColSelect.setLeftColumnCaption("Outside bubble");
@@ -125,7 +125,7 @@ public class BubbleForm {
             List<String> currentSlackMembers = channel.getMembers();
             List<BubbleMember> currentBubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
             bubbleMemberRepository.delete(currentBubbleMembers);
-            List<User> userList = userService.findCurrentlyEmployedUsers();
+            List<User> userList = userService.findCurrentlyEmployedUsers(true);
             for (User user : twinColSelect.getSelectedItems()) {
                 bubbleMemberRepository.save(new BubbleMember(user, prevBubble));
                 try {
@@ -179,7 +179,7 @@ public class BubbleForm {
         bubbleBinder.forField(applicationType).bind(Bubble::getApplication, Bubble::setApplication);
         ComboBox<User> bubbleMaster = new ComboBox<>("Bubble master");
         bubbleMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        bubbleMaster.setItems(userService.findCurrentlyEmployedUsers());
+        bubbleMaster.setItems(userService.findCurrentlyEmployedUsers(true));
         bubbleMaster.setEmptySelectionAllowed(false);
         bubbleMaster.setItemCaptionGenerator(User::getUsername);
         bubbleBinder.forField(bubbleMaster).bind(Bubble::getUser, Bubble::setUser);

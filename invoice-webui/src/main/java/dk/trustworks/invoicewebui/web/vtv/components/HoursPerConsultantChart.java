@@ -58,7 +58,7 @@ public class HoursPerConsultantChart {
         plotOptionsColumn.setStacking(Stacking.NORMAL);
         chart.getConfiguration().setPlotOptions(plotOptionsColumn);
 
-        List<User> users = userService.findEmployedUsersByDate(month, ConsultantType.CONSULTANT);
+        List<User> users = userService.findEmployedUsersByDate(month, true, ConsultantType.CONSULTANT);
         String[] categories = new String[users.size()];
         Number[] revenueData = new Number[users.size()];
         Number[] availableHours = new Number[users.size()];

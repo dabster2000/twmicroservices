@@ -84,7 +84,7 @@ public class UtilizationPerYearChart {
             double totalBillableHours = 0.0;
             double totalAvailableHours = 0.0;
             double countEmployees = 0.0;
-            for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
+            for (User user : userService.findEmployedUsersByDate(startDate, true, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
                 double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);

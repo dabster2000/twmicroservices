@@ -94,7 +94,7 @@ public class SalesHeatMap {
         int userNumber = 0;
 
         Map<String, Map<String, double[]>> userAllocationPerAssignmentMap = new HashMap<>();
-        List<User> users = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
+        List<User> users = userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
 
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);

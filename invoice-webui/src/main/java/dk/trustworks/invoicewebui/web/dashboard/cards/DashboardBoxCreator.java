@@ -1,12 +1,9 @@
 package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
-import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -18,8 +15,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class DashboardBoxCreator {
@@ -47,8 +42,8 @@ public class DashboardBoxCreator {
     }
 
     public TopCardContent getGoodPeopleBox() {
-        float goodPeopleNow = userService.findCurrentlyEmployedUsers().size();//.getActiveEmployeeCountByMonth(LocalDate.now()); //userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
-        float goodPeopleLastYear = userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();//userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleNow = userService.findCurrentlyEmployedUsers(true).size();//.getActiveEmployeeCountByMonth(LocalDate.now()); //userService.findEmployedUsersByDate(LocalDate.now(), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
+        float goodPeopleLastYear = userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), true, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();//userService.findEmployedUsersByDate(LocalDate.now().minusYears(1), ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT).size();
         int percent = Math.round((goodPeopleNow / goodPeopleLastYear) * 100) - 100;
         return new TopCardContent("images/icons/trustworks_icon_kollega.svg", "Good People", percent + "% more than last year", Math.round(goodPeopleNow)+"", "dark-blue");
     }
@@ -106,7 +101,7 @@ public class DashboardBoxCreator {
         double count = 0.0;
         do {
             startDate = startDate.plusMonths(1);
-            for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
+            for (User user : userService.findEmployedUsersByDate(startDate, true, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
                 double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);

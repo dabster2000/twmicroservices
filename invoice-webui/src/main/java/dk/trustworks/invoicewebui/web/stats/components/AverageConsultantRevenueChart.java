@@ -63,7 +63,7 @@ public class AverageConsultantRevenueChart {
         revenueSeries.setPlotOptions(plotOptionsColumn);
 
         Map<User, Map<LocalDate, Double>> averagePerUserPerYear = new HashMap<>();
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             LocalDate currentDate = LocalDate.of(2014,7,1);//userService.getStatus(user, true, StatusType.ACTIVE).getStatusdate();
             HashMap<LocalDate, Double> map = new HashMap<>();
             averagePerUserPerYear.put(user, map);

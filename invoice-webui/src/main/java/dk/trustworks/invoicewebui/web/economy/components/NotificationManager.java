@@ -41,7 +41,7 @@ public class NotificationManager {
 
         Button btnAdd = new Button("ADD");
         btnAdd.addClickListener(event -> {
-            for (User user : userService.findCurrentlyEmployedUsers()) {
+            for (User user : userService.findCurrentlyEmployedUsers(true)) {
                 Notification notification = new Notification(user, LocalDate.now(), LocalDate.now().plusMonths(1), "Release note", richTextArea.getValue(), "", "", NotificationType.RELEASENOTE);
                 notificationRepository.save(notification);
             }

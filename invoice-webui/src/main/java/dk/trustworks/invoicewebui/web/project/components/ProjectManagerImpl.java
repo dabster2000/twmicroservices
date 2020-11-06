@@ -66,8 +66,6 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
     private final PhotoService photoService;
 
-    private final NewsRepository newsRepository;
-
     private final AmbitionRepository ambitionRepository;
 
     private final BudgetService budgetService;
@@ -84,14 +82,13 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
 
     @Autowired
-    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, PhotoService photoService, NewsRepository newsRepository, ContractService contractService, AmbitionRepository ambitionRepository, BudgetService budgetService) {
+    public ProjectManagerImpl(UserService userService, ProjectService projectService, ClientService clientService, ClientdataService clientdataService, TaskService taskService, WorkService workService, PhotoService photoService, ContractService contractService, AmbitionRepository ambitionRepository, BudgetService budgetService) {
         this.userService = userService;
         this.projectService = projectService;
         this.clientService = clientService;
         this.taskService = taskService;
         this.workService = workService;
         this.photoService = photoService;
-        this.newsRepository = newsRepository;
         this.contractService = contractService;
         this.ambitionRepository = ambitionRepository;
         this.budgetService = budgetService;
@@ -176,7 +173,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         addComponent(responsiveLayout);
 
         Photo photoResource = photoService.getRelatedPhoto(currentProject.getClient().getUuid());
-        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(true), photoResource, projectService, newsRepository, userService);
+        ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(true), photoResource, projectService, userService);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.update();
             updateTreeGrid(currentProject);

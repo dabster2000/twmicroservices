@@ -133,7 +133,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
             String yearAsString = year + "";
             int budgetPerYear = 0;
             for (int month = 1; month <= 12; month++) {
-                int numberOfEmployedConsultants = userService.findEmployedUsersByDate(LocalDate.of(year, month, 1), ConsultantType.CONSULTANT).size();
+                int numberOfEmployedConsultants = userService.findEmployedUsersByDate(LocalDate.of(year, month, 1), true, ConsultantType.CONSULTANT).size();
                 budgetPerYear += numberOfEmployedConsultants * 2000;
             }
             budgetsPerYear.put(yearAsString, budgetPerYear);
@@ -206,7 +206,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
         availableSeries.setPlotOptions(poc2);
 
         SortedMap<String, Integer> expensesPerConsultant = new TreeMap<>();
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             int totalExpenses = ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid()).stream().filter(ckoExpense -> ckoExpense.getEventdate().getYear() == LocalDate.now().getYear()).mapToInt(CKOExpense::getPrice).sum();
             expensesPerConsultant.put(user.getUsername(), totalExpenses);
         }
@@ -215,7 +215,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
         //x.setTitle("year");
 
         SortedMap<String, Integer> budgetsPerConsultant = new TreeMap<>();
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(false, ConsultantType.CONSULTANT)) {
             Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
             if (!firstStatus.isPresent()) continue;
 

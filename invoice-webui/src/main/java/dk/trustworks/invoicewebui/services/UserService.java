@@ -14,7 +14,6 @@ import lombok.NonNull;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,8 +25,6 @@ import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.ACTIVE;
 import static dk.trustworks.invoicewebui.model.enums.StatusType.NON_PAY_LEAVE;
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.PUT;
 
 @Service
 public class UserService implements InitializingBean {
@@ -66,35 +63,39 @@ public class UserService implements InitializingBean {
         return userRestService.findByOrderByUsername(true);
     }
 
-    public List<User> findCurrentlyEmployedUsers() {
+    public List<User> findCurrentlyEmployedUsers(boolean shallow) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
+                shallow,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
-    public List<User> findEmployedUsersByDate(LocalDate date, ConsultantType... consultantType) {
+    public List<User> findEmployedUsersByDate(LocalDate date, boolean shallow, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
+                shallow,
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
     }
 
-    public List<User> findWorkingUsersByDate(LocalDate date, ConsultantType... consultantType) {
+    public List<User> findWorkingUsersByDate(LocalDate date, boolean shallow, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
+                shallow,
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new));
     }
 
-    public List<User> findCurrentlyEmployedUsers(ConsultantType... consultantType) {
+    public List<User> findCurrentlyEmployedUsers(boolean shallow, ConsultantType... consultantType) {
         String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
         return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
+                shallow,
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new)).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
     }
 
@@ -107,6 +108,7 @@ public class UserService implements InitializingBean {
         return userRestService.findUsersByDateAndStatusListAndTypes(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 statusList,
+                true,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
@@ -129,7 +131,7 @@ public class UserService implements InitializingBean {
 
     public int calcMonthSalaries(LocalDate date, String... consultantTypes) {
         String[] statusList = {ACTIVE.toString()};
-        return userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, consultantTypes)
+        return userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, false, consultantTypes)
                 .stream()
                 .mapToInt(value -> value.getSalaries()
                         .stream()
@@ -189,7 +191,7 @@ public class UserService implements InitializingBean {
 
     public List<User> findByStatus(StatusType statusType) {
         String[] statusTypes = {statusType.toString()};
-        return userRestService.findUsersByDateAndStatusListAndTypes(stringIt(LocalDate.now()), statusTypes, CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
+        return userRestService.findUsersByDateAndStatusListAndTypes(stringIt(LocalDate.now()), statusTypes, true, CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
     }
 
     public List<UserStatus> findUserStatusList(String useruuid) {
@@ -201,11 +203,11 @@ public class UserService implements InitializingBean {
     }
 
     public boolean isEmployed(User user) {
-        return findCurrentlyEmployedUsers().stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
+        return findCurrentlyEmployedUsers(false).stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
     }
 
     public boolean isActive(User user, LocalDate onDate, ConsultantType... consultantTypes) {
-        List<User> currentlyWorkingUsers = findWorkingUsersByDate(onDate, consultantTypes);
+        List<User> currentlyWorkingUsers = findWorkingUsersByDate(onDate, true, consultantTypes);
         return currentlyWorkingUsers.stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
     }
 

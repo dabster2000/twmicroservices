@@ -57,7 +57,7 @@ public class TalentPassionLayout {
 
         List<TalentPassion> talentPassions = talentPassionRepository.findAll();
 
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             TalentPassionScoringDesign scoringDesign = new TalentPassionScoringDesign();
             Image roundMemberImage = photoService.getRoundMemberImage(user, false, 125, PIXELS);
             scoringDesign.getImgUser().addComponent(roundMemberImage);

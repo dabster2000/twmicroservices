@@ -9,8 +9,7 @@ import com.vaadin.data.*;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
@@ -137,9 +136,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             MHorizontalLayout ratingContent = new MHorizontalLayout(
                     new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
                     ratingStars,
-                    new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withDescription("Click to elaborate on your rating").withListener(event -> {
-                        popupView.setPopupVisible(true);
-                    }),
+                    new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withDescription("Click to elaborate on your rating").withListener(event -> popupView.setPopupVisible(true)),
                     popupView
             );
             ratingContent.setWidth(100, Unit.PERCENTAGE);
@@ -207,26 +204,6 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             row.addColumn()
                     .withDisplayRules(12, 12, 6, 4)
                     .withComponent(expenseItem);
-        }
-    }
-
-    private static class PopupTextFieldContent implements PopupView.Content {
-        private final HorizontalLayout layout;
-        private final TextArea textField = new TextArea("Minimized HTML content", "Click to edit");
-
-        private PopupTextFieldContent(String text) {
-            textField.setValue(new String(Base64.getDecoder().decode(text)));
-            layout = new HorizontalLayout(textField);
-        }
-
-        @Override
-        public final Component getPopupComponent() {
-            return layout;
-        }
-
-        @Override
-        public final String getMinimizedValueAsHTML() {
-            return textField.getValue();
         }
     }
 
@@ -311,11 +288,9 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         return chart;
     }
 
-    public class MyConverter implements Converter<String, Double> {
+    public static class MyConverter implements Converter<String, Double> {
         @Override
         public Result<Double> convertToModel(String fieldValue, ValueContext context) {
-            System.out.println("MyConverter.convertToModel");
-            System.out.println("fieldValue = [" + fieldValue + "], context = [" + context + "]");
             // Produces a converted value or an error
             try {
                 // ok is a static helper method that creates a Result

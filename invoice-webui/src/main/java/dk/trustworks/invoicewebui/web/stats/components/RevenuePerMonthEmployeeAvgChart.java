@@ -74,7 +74,7 @@ public class RevenuePerMonthEmployeeAvgChart {
                 LocalDate javaDate = LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd"));
                 if(javaDate.isAfter(LocalDate.now())) continue;
 
-                int consultants = userService.findEmployedUsersByDate(javaDate, ConsultantType.CONSULTANT).size();
+                int consultants = userService.findEmployedUsersByDate(javaDate, true, ConsultantType.CONSULTANT).size();
 
                 revenueSeries.add(new DataSeriesItem(LocalDate.parse(amountPerItem.getDescription(), DateTimeFormatter.ofPattern("yyyy-M-dd")).format(DateTimeFormatter.ofPattern("MMM-yyyy")), (amountPerItem.getValue() / consultants)));
 

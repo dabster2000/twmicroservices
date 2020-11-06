@@ -47,7 +47,7 @@ public class AnniversaryManagerJob {
     // TODO: Microservice
     //@Scheduled(cron = "0 1 1 * * ?")
     public void findAnniversaries() {
-        for (User user : userService.findCurrentlyEmployedUsers()) {
+        for (User user : userService.findCurrentlyEmployedUsers(false)) {
             if(userService.isExternal(user)) continue;
 
             String sha512hex = sha512().hashString(user.getUuid()+LocalDate.now().withDayOfMonth(1), StandardCharsets.UTF_8).toString();

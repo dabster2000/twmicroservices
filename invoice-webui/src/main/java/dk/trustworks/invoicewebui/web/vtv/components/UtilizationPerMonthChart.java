@@ -73,7 +73,7 @@ public class UtilizationPerMonthChart {
 
         for (int m = 0; m < monthPeriod; m++) {
             LocalDate localDate = periodStart.plusMonths(m);
-            for (User user : userService.findWorkingUsersByDate(localDate, ConsultantType.CONSULTANT)) {
+            for (User user : userService.findWorkingUsersByDate(localDate, true, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
                 double budget = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), localDate);
                 monthAvailabilites[m] += budget;
@@ -130,7 +130,7 @@ public class UtilizationPerMonthChart {
             double totalAvailableHours = 0.0;
             double totalAllocation;
             double countEmployees = 0.0;
-            for (User user : userService.findEmployedUsersByDate(startDate, ConsultantType.CONSULTANT)) {
+            for (User user : userService.findEmployedUsersByDate(startDate, true, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
                 double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);

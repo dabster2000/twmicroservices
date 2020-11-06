@@ -41,7 +41,7 @@ public class TalentPassionResultBox {
         Component resultInstance = talentPassionResult.getResultBoard();
         talentPassionResult.showResultDescription();
 
-        for (User user : userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT)) {
+        for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             Map<String, Double> performanceScoreMap = new HashMap<>();
             Map<String, Double> potentialScoreMap = new HashMap<>();
             for (TalentPassion talentPassion : talentPassionRepository.findByUseruuidOrderByRegisteredDesc(user.getUuid())) {

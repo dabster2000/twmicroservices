@@ -65,7 +65,7 @@ public class PurposeLayout {
         userListSelect.setCaption("Select consultant:");
         userListSelect.setWidth(100, Sizeable.Unit.PERCENTAGE);
         userListSelect.setItemCaptionGenerator(User::getUsername);
-        List<User> userList = userService.findCurrentlyEmployedUsers(CONSULTANT);
+        List<User> userList = userService.findCurrentlyEmployedUsers(true, CONSULTANT);
         System.out.println("userList.size() = " + userList.size());
         userListSelect.setItems(userList);
 

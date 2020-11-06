@@ -160,7 +160,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             userComboBox.addStyleName("floating");
             userComboBox.setEmptySelectionAllowed(false);
             userComboBox.setEmptySelectionCaption("Select colleague...");
-            List<User> users = userService.findCurrentlyEmployedUsers();
+            List<User> users = userService.findCurrentlyEmployedUsers(true);
             userComboBox.setItems(users);
             UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
 
@@ -314,7 +314,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         if(userSession == null) return new ResponsiveLayout();
 
-        List<User> users = userService.findCurrentlyEmployedUsers();
+        List<User> users = userService.findCurrentlyEmployedUsers(true);
         dateButtons.getSelActiveUser().setItemCaptionGenerator(User::getUsername);
         dateButtons.getSelActiveUser().setItems(users);
         // find userSession user

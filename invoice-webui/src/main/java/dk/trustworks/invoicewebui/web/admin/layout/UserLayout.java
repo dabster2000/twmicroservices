@@ -75,13 +75,13 @@ public class UserLayout {
 
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Consultants", "The car", userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).size()+"", "medium-blue")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Consultants", "The car", userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT).size()+"", "medium-blue")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Staff", "The engine", userService.findCurrentlyEmployedUsers(ConsultantType.STAFF).size()+"", "dark-green")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Staff", "The engine", userService.findCurrentlyEmployedUsers(true, ConsultantType.STAFF).size()+"", "dark-green")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
-                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Students", "The transmission", userService.findCurrentlyEmployedUsers(ConsultantType.STUDENT).size()+"", "orange")));
+                .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Students", "The transmission", userService.findCurrentlyEmployedUsers(true, ConsultantType.STUDENT).size()+"", "orange")));
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
                 .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Former", "CO2", userService.findByStatus(StatusType.TERMINATED).size()+"", "dark-grey")));
@@ -135,7 +135,7 @@ public class UserLayout {
 
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            List<User> usersByLocalDate = userService.findEmployedUsersByDate(currentDate, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);
+            List<User> usersByLocalDate = userService.findEmployedUsersByDate(currentDate, true, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);
             revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy")), usersByLocalDate.size()));
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy"));
         }

@@ -48,7 +48,7 @@ public class PersonService {
     public java.util.List<List> BirthdayList() {
         //Root root = new Root();
         java.util.List<List> list = new ArrayList<>();// root.getList();
-        for (User currentlyEmployedUser : userService.findCurrentlyEmployedUsers()) {
+        for (User currentlyEmployedUser : userService.findCurrentlyEmployedUsers(true)) {
             list.add(new List(currentlyEmployedUser.getFirstname() + " "+ currentlyEmployedUser.getLastname(), currentlyEmployedUser.getBirthday().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
         }
         return list;

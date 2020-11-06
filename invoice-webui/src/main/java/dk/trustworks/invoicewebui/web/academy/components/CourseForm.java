@@ -100,7 +100,7 @@ public class CourseForm {
         courseBinder.forField(courseName).bind(CkoCourse::getName, CkoCourse::setName);
         ComboBox<User> courseMaster = new ComboBox<>("Course master");
         courseMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        courseMaster.setItems(userService.findCurrentlyEmployedUsers());
+        courseMaster.setItems(userService.findCurrentlyEmployedUsers(true));
         courseMaster.setEmptySelectionAllowed(false);
         courseMaster.setItemCaptionGenerator(User::getUsername);
         courseBinder.forField(courseMaster).bind(CkoCourse::getUser, CkoCourse::setUser);

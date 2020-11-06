@@ -12,6 +12,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
+import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Notification;
 import dk.trustworks.invoicewebui.model.ReminderHistory;
 import dk.trustworks.invoicewebui.model.User;
@@ -43,8 +44,9 @@ import org.vaadin.viritin.label.MLabel;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
 
@@ -98,8 +100,6 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final DashboardBoxCreator dashboardBoxCreator;
 
-    private final EmailSender emailSender;
-
     private final RevenuePerMonthChart revenuePerMonthChart;
 
     private final SpriteSheet spriteSheet;
@@ -111,10 +111,9 @@ public class   DashboardView extends VerticalLayout implements View {
     private final AvailabilityService availabilityService;
 
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, BudgetNewRepository budgetNewRepository, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, EmailSender emailSender, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, BudgetService budgetService, AvailabilityService availabilityService) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
-        this.budgetNewRepository = budgetNewRepository;
         this.contractService = contractService;
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
@@ -125,7 +124,6 @@ public class   DashboardView extends VerticalLayout implements View {
         this.photoService = photoService;
         this.dashboardPreloader = dashboardPreloader;
         this.dashboardBoxCreator = dashboardBoxCreator;
-        this.emailSender = emailSender;
         this.revenuePerMonthChart = revenuePerMonthChart;
         this.spriteSheet = spriteSheet;
         this.knowledgeChart = knowledgeChart;
@@ -144,7 +142,7 @@ public class   DashboardView extends VerticalLayout implements View {
         board.setSizeFull();
         board.setScrollable(true);
 
-        User randomFocusUser = userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(ConsultantType.CONSULTANT).size() - 1));
+        User randomFocusUser = userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT).size() - 1));
 
         BoxImpl knowledgeChartCard = new BoxImpl();
         knowledgeChartCard.getContent().setDefaultComponentAlignment(Alignment.TOP_CENTER);
@@ -164,7 +162,7 @@ public class   DashboardView extends VerticalLayout implements View {
                 hlayout.setSizeFull();
                 knowledgeChartCard.instance(hlayout);
             }
-            Image image = new Image("", photoService.getRelatedPhoto(contract.getClientuuid()));
+            Image image = new Image("", photoService.getRelatedPhotoResource(contract.getClientuuid()));
             image.setWidth(100, Unit.PERCENTAGE);
             hlayout.addComponent(image);
             i++;
@@ -183,15 +181,10 @@ public class   DashboardView extends VerticalLayout implements View {
         PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto((Math.random()<0.5)?"images/cards/knowledge/lifecycle.png":"images/cards/knowledge/pejlemaerker.png");
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
-        //CateringCardImpl cateringCard = new CateringCardImpl(userService.findCurrentlyEmployedUsers(), emailSender,3, 4, "cateringCard");
-        //cateringCard.init();
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
-        VacationCard vacationCard = new VacationCard();
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign");
-        //VacationCard vacationCard = new VacationCard();
-        ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(contractService, budgetNewRepository, 2, 6, "consultantAllocationCardDesign");
 
 
 
@@ -352,80 +345,6 @@ public class   DashboardView extends VerticalLayout implements View {
                 .withComponent(new TopCardImpl(dashboardBoxCreator.createConsultantsPerProjectBox()));
     }
 
-    private void createRows(ResponsiveLayout board, List<Box> boxes) {
-        boxes.sort(Comparator.comparing(Box::getPriority).thenComparing(Box::getBoxWidth, Comparator.reverseOrder()));
-
-        int maxRows = 0;
-        int[] rowSize = new int[10];
-        Map<Box, Integer> boxIntegerMap = new HashMap<>();
-        for (Box box : boxes) {
-            for (int i = 0; i < rowSize.length; i++) {
-                if(rowSize[i] + box.getBoxWidth() <= 12) {
-                    boxIntegerMap.put(box, i);
-                    rowSize[i] += box.getBoxWidth();
-                    if(maxRows < i) maxRows = i;
-                    break;
-                }
-            }
-        }
-
-        ResponsiveRow[] responsiveRows = new ResponsiveRow[maxRows+1];
-        for (int i = 0; i < maxRows + 1; i++) {
-            responsiveRows[i] = board.addRow().withGrow(true);
-        }
-
-        Map<Box, Integer> result = boxIntegerMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-
-
-        for (Box box : result.keySet()) {
-            Integer row = boxIntegerMap.get(box);
-            int[] widths = new int[4];
-            switch (box.getBoxWidth()) {
-                case 3:
-                    widths[0] = 3;
-                    widths[1] = 4;
-                    widths[2] = 6;
-                    widths[3] = 12;
-                    break;
-                case 4:
-                    widths[0] = 4;
-                    widths[1] = 6;
-                    widths[2] = 12;
-                    widths[3] = 12;
-                    break;
-                case 6:
-                    widths[0] = 6;
-                    widths[1] = 6;
-                    widths[2] = 12;
-                    widths[3] = 12;
-                    break;
-                case 8:
-                    widths[0] = 8;
-                    widths[1] = 12;
-                    widths[2] = 12;
-                    widths[3] = 12;
-                    break;
-                case 9:
-                    widths[0] = 9;
-                    widths[1] = 12;
-                    widths[2] = 12;
-                    widths[3] = 12;
-                    break;
-                case 12:
-                    widths[0] = 12;
-                    widths[1] = 12;
-                    widths[2] = 12;
-                    widths[3] = 12;
-                    break;
-            }
-            responsiveRows[0].addColumn()
-                    .withDisplayRules(widths[3], widths[2], widths[1], widths[0])
-                    .withComponent(box.getBoxComponent());
-        }
-    }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {

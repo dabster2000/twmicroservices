@@ -6,6 +6,7 @@ import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -87,24 +88,29 @@ public class ProjectRestService {
         return Double.parseDouble(result.getBody().getValue());
     }
 
+    @CacheEvict(cacheNames = "project")
     public void save(List<Project> projects) {
         projects.forEach(this::save);
     }
 
+    @CacheEvict(cacheNames = "project")
     public Project save(Project project) {
         String url = apiGatewayUrl +"/projects";
         return (Project) systemRestService.secureCall(url, POST, Project.class, project).getBody();//restTemplate.postForObject(url, user, User.class);
     }
 
+    @CacheEvict(cacheNames = "project")
     public void update(Project project) {
         String url = apiGatewayUrl +"/projects";
         systemRestService.secureCall(url, PUT, Project.class, project).getBody(); //restTemplate.put(url, user);
     }
 
+    @CacheEvict(cacheNames = "project")
     public void delete(Project project) {
         delete(project.getUuid());
     }
 
+    @CacheEvict(cacheNames = "project")
     public void delete(String uuid) {
         String url = apiGatewayUrl +"/projects/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);
