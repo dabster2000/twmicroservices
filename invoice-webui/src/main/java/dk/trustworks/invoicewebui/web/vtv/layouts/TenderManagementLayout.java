@@ -52,7 +52,7 @@ public class TenderManagementLayout extends VerticalLayout {
         descriptionColumn.setExpandRatio(1);
         Grid.Column<GridItem, String> dateColumn = grid.addColumn(GridItem::getDate);
         dateColumn.setCaption("Date");
-        dateColumn.setWidth(150);
+        dateColumn.setWidth(200);
         grid.setSizeFull();
         grid.setItems(gridItems);
         column.withComponent(new MVerticalLayout(
