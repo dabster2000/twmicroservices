@@ -26,6 +26,7 @@ import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import javax.transaction.Transactional;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -117,7 +118,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         expenseBoard.removeAllComponents();
 
         ResponsiveRow filterRow = expenseBoard.addRow();
-        Map<CKOExpenseType, BoxImpl> items = new HashMap<>();
+        Map<CKOExpenseType, List<BoxImpl>> items = new HashMap<>();
 
         final boolean[] filterDisabled = {true, true, true, true, true};
 
@@ -129,7 +130,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             } else {
                 btnFilterConferences.removeStyleName("danger");
             }
-            items.get(CONFERENCE).setVisible(filterDisabled[0]);
+            items.get(CONFERENCE).forEach(c -> c.setVisible(filterDisabled[0]));
         });
 
         MButton btnFilterCourses = new MButton("Courses");
@@ -140,7 +141,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             } else {
                 btnFilterCourses.removeStyleName("danger");
             }
-            items.get(COURSE).setVisible(filterDisabled[1]);
+            items.get(COURSE).forEach(c -> c.setVisible(filterDisabled[0]));
         });
 
         MButton btnFilterSubscriptions = new MButton("Subscriptions");
@@ -151,7 +152,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             } else {
                 btnFilterSubscriptions.removeStyleName("danger");
             }
-            items.get(SUBSCRIPTION).setVisible(filterDisabled[2]);
+            items.get(SUBSCRIPTION).forEach(c -> c.setVisible(filterDisabled[0]));
         });
 
         MButton btnFilterMemberships = new MButton("Memberships");
@@ -162,7 +163,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             } else {
                 btnFilterMemberships.removeStyleName("danger");
             }
-            items.get(MEMBERSHIP).setVisible(filterDisabled[3]);
+            items.get(MEMBERSHIP).forEach(c -> c.setVisible(filterDisabled[0]));
         });
 
         MButton btnFilterBooks = new MButton("Books, etc");
@@ -173,7 +174,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             } else {
                 btnFilterBooks.removeStyleName("danger");
             }
-            items.get(BOOKS).setVisible(filterDisabled[4]);
+            items.get(BOOKS).forEach(c -> c.setVisible(filterDisabled[0]));
         });
 
         filterRow.setHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true);
@@ -262,18 +263,6 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             // COLUMN 3.2
             ResponsiveColumn ratingColumn = detailRow.addColumn().withDisplayRules(12, 12, 5, 5);
 
-            RatingStars ratingStars = createRatingStars(user, expense);
-            TextArea reviewTextarea = createReviewTextarea(expense);
-            MVerticalLayout ratingContent = new MVerticalLayout(
-                    new MHorizontalLayout(
-                            new MLabel("Add a rating from 1 to 5, write a short review and let your colleagues learn from your experiences with this " + expense.getType().getCaption().toLowerCase()).withWidth(300, PIXELS),
-                            new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
-                            ratingStars
-                    ),
-                    reviewTextarea
-            );
-            ratingContent.setWidth(300, PIXELS);
-            ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
             ratingColumn.withComponent(new MVerticalLayout(
                         new MLabel(expense.getComment())
                     )
@@ -294,15 +283,32 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             }).withWidth(100, PERCENTAGE);
 
             MButton btnRate = new MButton("Review").withStyleName("border").withListener(event -> {
+                RatingStars ratingStars = createRatingStars(user, expense);
+                TextArea reviewTextarea = createReviewTextarea(expense);
+                MVerticalLayout ratingContent = new MVerticalLayout(
+                        new MLabel("Add a rating from 1 to 5, write a short review and let your colleagues learn from your experiences with this " + expense.getType().getCaption().toLowerCase()).withWidth(300, PIXELS),
+                        new MLabel("Rating: ").withStyleName("dark-grey-font"),
+                        ratingStars,
+                        new MLabel("Review: ").withStyleName("dark-grey-font"),
+                        reviewTextarea
+                );
+                ratingContent.setWidth(300, PIXELS);
+                ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+
                 Window window = new Window("Rate the " + expense.getType().getCaption(), ratingContent);
-                window.setWidth(320.0f, Unit.PIXELS);
-                window.setHeight(320, PIXELS);
+                window.setWidth(320, Unit.PIXELS);
+                window.setHeight(460, PIXELS);
                 window.setModal(true);
                 window.setContent(ratingContent);
                 window.isClosable();
-                window.addCloseListener(event2 -> {
+
+                ratingContent.add(new MButton("Save").withListener(c -> {
+                    expense.setRating(ratingStars.getValue());
+                    expense.setRating_comment(reviewTextarea.getValue());
+                    ckoExpenseRepository.save(expense);
                     window.close();
-                });
+                }).withFullWidth());
+
                 UI.getCurrent().addWindow(window);
             }).withVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED).withWidth(100, PERCENTAGE);
 
@@ -329,22 +335,21 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                     btnEdit, btnDelete, new Label(""), btnRate
             ));
 
-            items.put(expense.getType(), expenseItemBox);
+            items.putIfAbsent(expense.getType(), new ArrayList<>());
+            items.get(expense.getType()).add(expenseItemBox);
             expenseBoardRow.addColumn()
                     .withDisplayRules(12, 12, 12, 12)
                     .withComponent(expenseItemBox);
         }
     }
 
-
-
     private TextArea createReviewTextarea(CKOExpense expense) {
-        TextArea reviewTextarea = new TextArea("Review: ", Optional.ofNullable(expense.getRating_comment()).orElse(""));
+        TextArea reviewTextarea = new TextArea(null, Optional.ofNullable(expense.getRating_comment()).orElse(""));
         reviewTextarea.addFocusListener(event -> {
-            expense.setRating_comment(reviewTextarea.getValue());
-            ckoExpenseRepository.save(expense);
+            //expense.setRating_comment(event.getSource().getValue());
+            //ckoExpenseRepository.save(expense);
         });
-        reviewTextarea.setWidth(300, PIXELS);
+        reviewTextarea.setWidth(100, PERCENTAGE);
         return reviewTextarea;
     }
 
