@@ -123,7 +123,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         final boolean[] filterDisabled = {true, true, true, true, true};
 
         MButton btnFilterConferences = new MButton("Conferences");
-        btnFilterConferences.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+        btnFilterConferences.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
             filterDisabled[0] = !filterDisabled[0];
             if (!filterDisabled[0]) {
                 btnFilterConferences.addStyleName("danger");
@@ -134,7 +134,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         });
 
         MButton btnFilterCourses = new MButton("Courses");
-        btnFilterCourses.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+        btnFilterCourses.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
             filterDisabled[1] = !filterDisabled[1];
             if (!filterDisabled[1]) {
                 btnFilterCourses.addStyleName("danger");
@@ -145,7 +145,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         });
 
         MButton btnFilterSubscriptions = new MButton("Subscriptions");
-        btnFilterSubscriptions.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+        btnFilterSubscriptions.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
             filterDisabled[2] = !filterDisabled[2];
             if (!filterDisabled[2]) {
                 btnFilterSubscriptions.addStyleName("danger");
@@ -156,7 +156,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         });
 
         MButton btnFilterMemberships = new MButton("Memberships");
-        btnFilterMemberships.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+        btnFilterMemberships.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
             filterDisabled[3] = !filterDisabled[3];
             if (!filterDisabled[3]) {
                 btnFilterMemberships.addStyleName("danger");
@@ -167,7 +167,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         });
 
         MButton btnFilterBooks = new MButton("Books, etc");
-        btnFilterBooks.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+        btnFilterBooks.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
             filterDisabled[4] = !filterDisabled[0];
             if (!filterDisabled[4]) {
                 btnFilterBooks.addStyleName("danger");
@@ -178,18 +178,15 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         });
 
         filterRow.setHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true);
-        //filterRow.addColumn().withDisplayRules(1,1,1,1);
         filterRow.addColumn().withComponent(new MLabel("Filter:")).withDisplayRules(2,2,2,2);
         filterRow.addColumn().withComponent(btnFilterConferences).withDisplayRules(2, 2, 2, 2);
         filterRow.addColumn().withComponent(btnFilterCourses).withDisplayRules(2, 2, 2, 2);
         filterRow.addColumn().withComponent(btnFilterSubscriptions).withDisplayRules(2, 2, 2, 2);
         filterRow.addColumn().withComponent(btnFilterMemberships).withDisplayRules(2, 2, 2, 2);
         filterRow.addColumn().withComponent(btnFilterBooks).withDisplayRules(2, 2, 2, 2);
-        //filterRow.addColumn().withDisplayRules(1,1,1,1);
 
         ResponsiveRow expenseBoardRow = expenseBoard.addRow();
-        for (CKOExpense expense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid())) {
-            //CKOExpenseItem expenseItem = new CKOExpenseItem();
+        for (CKOExpense expense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid()).stream().sorted(Comparator.comparing(CKOExpense::getEventdate).reversed()).collect(Collectors.toList())) {
 
             ResponsiveLayout expenseItemLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
             BoxImpl expenseItemBox = new BoxImpl().instance(expenseItemLayout);
