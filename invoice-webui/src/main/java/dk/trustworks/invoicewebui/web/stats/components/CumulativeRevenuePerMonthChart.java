@@ -14,10 +14,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Created by hans on 20/09/2017.
- */
-
 @SpringComponent
 @SpringUI
 public class CumulativeRevenuePerMonthChart {
@@ -95,13 +91,11 @@ public class CumulativeRevenuePerMonthChart {
             double invoicedAmountByMonth = revenueService.getInvoicedRevenueForSingleMonth(currentDate);
             if(invoicedAmountByMonth > 0.0) {
                 cumulativeRevenuePerMonth += invoicedAmountByMonth;
-                expense = financeService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
-                cumulativeExpensePerMonth += expense;
             } else {
                 cumulativeRevenuePerMonth += revenueService.getRegisteredRevenueForSingleMonth(currentDate);
-                expense = financeService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
-                cumulativeExpensePerMonth += expense;
             }
+            expense = financeService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
+            cumulativeExpensePerMonth += expense;
 
             registeredRevenueSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeRevenuePerMonth)));
             if(currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) earningsSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeRevenuePerMonth-cumulativeExpensePerMonth)));
@@ -109,7 +103,7 @@ public class CumulativeRevenuePerMonthChart {
 
             cumulativeBudgetPerMonth += budgetService.getMonthBudget(periodStart.plusMonths(i).withDayOfMonth(1));
 
-            expensesSeries.add(new DataSeriesItem(periodStart.plusMonths(1).format(DateTimeFormatter.ofPattern("MMM-YYY")), Math.round(cumulativeExpensePerMonth)));
+            expensesSeries.add(new DataSeriesItem(periodStart.plusMonths(1).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeExpensePerMonth)));
             budgetSeries.add(new DataSeriesItem(periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy")), Math.round(cumulativeBudgetPerMonth)));
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }

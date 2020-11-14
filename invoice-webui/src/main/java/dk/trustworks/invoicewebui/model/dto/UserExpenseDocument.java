@@ -1,5 +1,9 @@
 package dk.trustworks.invoicewebui.model.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.User;
 
 import java.time.LocalDate;
@@ -7,6 +11,8 @@ import java.time.LocalDate;
 
 public class UserExpenseDocument {
 
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private final LocalDate month;
     private final User user;
     private final double sharedExpense;

@@ -286,8 +286,11 @@
             <artifactId>vaadinClipboard</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>autocomplete</artifactId>
+            <version>0.2.4</version>
+        </dependency>
 
         <!-- Data types -->
         <dependency>

@@ -21,6 +21,7 @@ import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
+import dk.trustworks.invoicewebui.web.vtv.layouts.TenderManagementLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -41,7 +42,11 @@ public class CkoAdministrationLayout extends VerticalLayout {
     @Autowired
     private MicroCourseRepository microCourseRepository;
 
-    @Autowired UserService userService;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private TenderManagementLayout tenderManagementLayout;
 
     public CkoAdministrationLayout init() {
         this.removeAllComponents();
@@ -64,6 +69,9 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
         leftRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(enlistedBox);
         leftRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(graduatedBox);
+        Box box = new Box();
+        box.getContent().addComponent(tenderManagementLayout.init());
+        leftRow.addColumn().withDisplayRules(12,12,12,12).withComponent(box);
         rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(getTotalYearlyBudgetChart());
         rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(getBudgetPerConsultantChart());
 

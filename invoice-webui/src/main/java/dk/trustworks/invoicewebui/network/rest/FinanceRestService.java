@@ -64,7 +64,7 @@ public class FinanceRestService {
     }
 
     public List<FinanceDocument> findExpensesPeriod(LocalDate fromdate, LocalDate todate) {
-        String url = apiGatewayUrl +"/company/expensedocuments?fromdate="+fromdate+"&todate="+todate;
+        String url = apiGatewayUrl +"/company/expensedocuments?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
         ResponseEntity<FinanceDocument[]> result = systemRestService.secureCall(url, GET, FinanceDocument[].class);
         return Arrays.asList(result.getBody());
     }

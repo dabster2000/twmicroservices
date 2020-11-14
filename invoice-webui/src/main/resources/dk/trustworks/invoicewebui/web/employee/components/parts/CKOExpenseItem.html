@@ -8,77 +8,79 @@
  <body>
   <vaadin-vertical-layout>
    <vaadin-vertical-layout style-name="card-3 card-no-padding" spacing="false" margin="false" _id="cardHolder">
-    <vaadin-vertical-layout :middle :center>
-     <vaadin-absolute-layout width="200px" height="200px" :center>
-      <vaadin-image width="200px" height="200px" _id="imgIcon"></vaadin-image>
-      <vaadin-image visible="false" width="200px" height="200px" _id="imgAmortized"></vaadin-image>
-     </vaadin-absolute-layout>
-     <vaadin-css-layout :center>
-      <vaadin-label style-name="small dark-grey-font" plain-text _id="lblDate">
-        21. september 2018 
-      </vaadin-label>
-      <vaadin-label style-name="align-center" width="15px" plain-text>
-        / 
-      </vaadin-label>
-      <vaadin-css-layout>
-       <vaadin-label plain-text _id="lblDays">
-         Label 
-       </vaadin-label>
-       <vaadin-label width="6px" plain-text></vaadin-label>
-       <vaadin-label plain-text>
-         days 
-       </vaadin-label>
-      </vaadin-css-layout>
-     </vaadin-css-layout>
-     <vaadin-label style-name="align-center large bold" width-full plain-text _id="lblDescription">
-       iPhone 8 Plus (256mb) 
-     </vaadin-label>
-     <vaadin-horizontal-layout :center>
-      <!--
-      <vaadin-label style-name="dark-grey-font" height="24px" plain-text>
-        Status: 
-      </vaadin-label>
-      -->
-      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblStatus">
-        Label 
-      </vaadin-label>
-      <vaadin-vertical-layout :center _id="vlStatus">
-      </vaadin-vertical-layout>
-     </vaadin-horizontal-layout>
-     <vaadin-horizontal-layout :center>
-      <vaadin-label style-name="dark-grey-font" height="24px" plain-text>
-        Purpose: 
-      </vaadin-label>
-      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblPurpose">
-        Label 
-      </vaadin-label>
-     </vaadin-horizontal-layout>
-     <vaadin-horizontal-layout :center>
-      <vaadin-label style-name="dark-grey-font" plain-text>
-        Amount (w/o tax): 
-      </vaadin-label>
-      <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblAmount">
-        Label 
-      </vaadin-label>
-     </vaadin-horizontal-layout>
-     <vaadin-button style-name="borderless" plain-text _id="btnMore" :center>
-       details... 
-     </vaadin-button>
-     <vaadin-vertical-layout margin="false" _id="vlExtra" :center>
-      <vaadin-label style-name="align-center dark-grey-font" width-full plain-text _id="lblComments" :center>
-        Label 
-      </vaadin-label>
-      <vaadin-css-layout _id="vlButtonLayout" :center>
-       <vaadin-button style-name="border round" plain-text _id="btnEdit">
-         Edit 
-       </vaadin-button>
-       <vaadin-label width="5px" plain-text></vaadin-label>
-       <vaadin-button style-name="border round danger" plain-text _id="btnDelete">
-         Delete 
-       </vaadin-button>
-      </vaadin-css-layout>
+    <vaadin-horizontal-layout _id="content">
+     <!-- COLUMN 1 -->
+     <vaadin-vertical-layout _id="col1">
+      <vaadin-absolute-layout width="200px" height="200px" :center>
+       <vaadin-image width="125px" height="125px" _id="imgIcon"></vaadin-image>
+       <vaadin-image visible="false" width="125px" height="125px" _id="imgAmortized"></vaadin-image>
+      </vaadin-absolute-layout>
      </vaadin-vertical-layout>
-    </vaadin-vertical-layout>
+
+     <vaadin-vertical-layout>
+      <vaadin-label style-name="large bold" width-full plain-text _id="lblDescription">
+       iPhone 8 Plus (256mb)
+      </vaadin-label>
+
+      <vaadin-horizontal-layout>
+       <!-- COLUMN 2 -->
+       <vaadin-vertical-layout _id="col2">
+        <vaadin-css-layout>
+         <vaadin-label style-name="small dark-grey-font" plain-text _id="lblDate">
+          21. september 2018
+         </vaadin-label>
+         <vaadin-label  width="15px" plain-text>
+          /
+         </vaadin-label>
+         <vaadin-css-layout>
+          <vaadin-label plain-text _id="lblDays">
+           Label
+          </vaadin-label>
+          <vaadin-label width="6px" plain-text></vaadin-label>
+          <vaadin-label plain-text>
+           days
+          </vaadin-label>
+         </vaadin-css-layout>
+        </vaadin-css-layout>
+        <vaadin-vertical-layout _id="vlStatus">
+        </vaadin-vertical-layout>
+       </vaadin-vertical-layout>
+
+       <!-- COLUMN 3 -->
+       <vaadin-vertical-layout _id="col3">
+        <vaadin-horizontal-layout>
+         <vaadin-label style-name="dark-grey-font" height="24px" plain-text>
+          Purpose:
+         </vaadin-label>
+         <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblPurpose">
+          Label
+         </vaadin-label>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+         <vaadin-label style-name="dark-grey-font" plain-text>
+          Amount (w/o tax):
+         </vaadin-label>
+         <vaadin-label style-name="bold dark-grey-font" plain-text _id="lblAmount">
+          Label
+         </vaadin-label>
+        </vaadin-horizontal-layout>
+       </vaadin-vertical-layout>
+
+       <!-- COLUMN 4 -->
+       <vaadin-vertical-layout _id="col4">
+        <vaadin-css-layout _id="vlButtonLayout" :center>
+         <vaadin-button style-name="border round" plain-text _id="btnEdit">
+          Edit
+         </vaadin-button>
+         <vaadin-label width="5px" plain-text></vaadin-label>
+         <vaadin-button style-name="border round danger" plain-text _id="btnDelete">
+          Delete
+         </vaadin-button>
+        </vaadin-css-layout>
+       </vaadin-vertical-layout>
+      </vaadin-horizontal-layout>
+     </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
    </vaadin-vertical-layout>
   </vaadin-vertical-layout>
  </body>

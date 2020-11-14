@@ -18,21 +18,22 @@ import com.vaadin.ui.declarative.Design;
 @SuppressWarnings("serial")
 public class CKOExpenseItem extends VerticalLayout {
     private VerticalLayout cardHolder;
+    private HorizontalLayout content;
     private Image imgIcon;
     private Image imgAmortized;
     private Label lblDate;
     private Label lblDays;
     private Label lblDescription;
-    private Label lblStatus;
     private Label lblPurpose;
     private Label lblAmount;
-    private Button btnMore;
-    private VerticalLayout vlExtra;
-    private Label lblComments;
     private CssLayout vlButtonLayout;
     private Button btnEdit;
     private Button btnDelete;
     private VerticalLayout vlStatus;
+    private VerticalLayout col1;
+    private VerticalLayout col2;
+    private VerticalLayout col3;
+    private VerticalLayout col4;
 
     public CKOExpenseItem() {
         Design.read(this);
@@ -62,9 +63,6 @@ public class CKOExpenseItem extends VerticalLayout {
         return lblDescription;
     }
 
-    public Label getLblStatus() {
-        return lblStatus;
-    }
 
     public Label getLblPurpose() {
         return lblPurpose;
@@ -76,18 +74,6 @@ public class CKOExpenseItem extends VerticalLayout {
 
     public VerticalLayout getVLStatus() {
         return vlStatus;
-    }
-
-    public Button getBtnMore() {
-        return btnMore;
-    }
-
-    public VerticalLayout getVlExtra() {
-        return vlExtra;
-    }
-
-    public Label getLblComments() {
-        return lblComments;
     }
 
     public CssLayout getVlButtonLayout() {
@@ -102,4 +88,24 @@ public class CKOExpenseItem extends VerticalLayout {
         return btnDelete;
     }
 
+
+    public VerticalLayout getCol1() {
+        return col1;
+    }
+
+    public VerticalLayout getCol2() {
+        return col2;
+    }
+
+    public VerticalLayout getCol3() {
+        return col3;
+    }
+
+    public VerticalLayout getCol4() {
+        return col4;
+    }
+
+    public HorizontalLayout getContent() {
+        return content;
+    }
 }

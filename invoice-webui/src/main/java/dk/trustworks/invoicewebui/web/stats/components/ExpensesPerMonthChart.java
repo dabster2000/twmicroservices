@@ -10,7 +10,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ExpenseDetails;
-import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.dto.FinanceDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.network.clients.EconomicsAPI;
@@ -125,21 +124,23 @@ public class ExpensesPerMonthChart {
         String[] monthNames = new String[months];
 
         List<FinanceDocument> expensesPeriod = financeService.findExpensesPeriod(periodStart, periodEnd);
-        personaleExpensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteEmployee_expenses).collect(Collectors.toList()));
-        lokaleExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteHousing).collect(Collectors.toList()));
-        salgExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteSales).collect(Collectors.toList()));
-        productionExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteProduktion).collect(Collectors.toList()));
-        administrationExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::geteAdministration).collect(Collectors.toList()));
+        for (FinanceDocument financeDocument : expensesPeriod) {
+            System.out.println("financeDocument = " + financeDocument);
+        }
+
+        personaleExpensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::getEEmployee_expenses).collect(Collectors.toList()));
+        lokaleExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::getEHousing).collect(Collectors.toList()));
+        salgExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::getESales).collect(Collectors.toList()));
+        productionExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::getEProduktion).collect(Collectors.toList()));
+        administrationExensesSeries.setData(expensesPeriod.stream().sorted(Comparator.comparing(FinanceDocument::getMonth)).map(FinanceDocument::getEAdministration).collect(Collectors.toList()));
 
         for (int i = 0; i < months; i++) {
-            LocalDate currentDate = periodStart.plusMonths(i);
-
-            //List<FinanceDocument> allExpensesByMonth = financeService.getAllExpensesByMonth(currentDate); //new ArrayList<>(); //statisticsService.getAllExpensesByMonth(currentDate);
+            final LocalDate currentDate = periodStart.plusMonths(i);
 
             double consultantNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
             double staffNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.STAFF.toString());
 
-            double totalSalaries = Math.round(expensesPeriod.stream().filter(financeDocument -> financeDocument.getMonth().isAfter(currentDate)).mapToDouble(FinanceDocument::geteSalaries).sum());
+            double totalSalaries = Math.round(expensesPeriod.stream().filter(financeDocument -> financeDocument.getMonth().isEqual(currentDate)).mapToDouble(FinanceDocument::getESalaries).sum());
             
             double forholdstal = totalSalaries / (consultantNetSalaries + staffNetSalaries);
 

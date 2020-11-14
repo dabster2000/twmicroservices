@@ -129,7 +129,6 @@ public class RevenuePerMonthChart {
     }
 
     public Grid<Invoice> createExpenseDetailGrid(List<Invoice> invoiceList) {
-
         Grid<Invoice> treeGrid = new Grid<>();
         treeGrid.setWidth(100, Sizeable.Unit.PERCENTAGE);
         treeGrid.addColumn(Invoice::getInvoicenumber).setCaption("#").setId("invoicenumber-column");
@@ -139,9 +138,7 @@ public class RevenuePerMonthChart {
         treeGrid.addColumn(Invoice::getType).setCaption("Type").setId("type-column");
         treeGrid.addColumn(Invoice::getSumNoTax).setCaption("Amount").setId("sum-column");
         treeGrid.sort("client-column", SortDirection.ASCENDING);
-
         treeGrid.setItems(invoiceList);
-
         return treeGrid;
     }
 }

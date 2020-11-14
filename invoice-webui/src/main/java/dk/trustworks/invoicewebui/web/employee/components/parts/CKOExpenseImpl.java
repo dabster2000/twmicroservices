@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.employee.components.parts;
 
+import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
@@ -9,17 +10,16 @@ import com.vaadin.data.*;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
-import dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose;
-import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
-import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
-import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.model.enums.*;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import org.vaadin.alump.materialicons.MaterialIcons;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
+import org.vaadin.addons.autocomplete.AutocompleteExtension;
 import org.vaadin.teemu.ratingstars.RatingStars;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
@@ -31,6 +31,11 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
+import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static dk.trustworks.invoicewebui.model.enums.CKOExpenseType.*;
 
 /**
  * Created by hans on 09/09/2017.
@@ -57,6 +62,9 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         binder.forField(getTxtDescription()).withValidator(new StringLengthValidator(
                 "Name must be between 0 and 250 characters long",
                 0, 250)).bind(CKOExpense::getDescription, CKOExpense::setDescription);
+        AutocompleteExtension<String> descriptionExtension = new AutocompleteExtension<>(getTxtDescription());
+        descriptionExtension.setSuggestionGenerator(this::suggestDescription);
+
         binder.forField(getTxtPrice()).withConverter(new StringToIntegerConverter("Must enter a number")).bind(CKOExpense::getPrice, CKOExpense::setPrice);
         binder.forField(getTxtComments()).bind(CKOExpense::getComment, CKOExpense::setComment);
         binder.forField(getTxtDays()).withConverter(new MyConverter()).bind(CKOExpense::getDays, CKOExpense::setDays);
@@ -98,68 +106,127 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         this.setVisible(true);
     }
 
+    private List<String> suggestDescription(String query, int cap) {
+        //return ckoExpenseRepository.findAll().stream().map(CKOExpense::getDescription).distinct().collect(Collectors.toList());
+        return ckoExpenseRepository.findAll().stream().map(CKOExpense::getDescription)
+                .distinct().filter(p -> p.contains(query))
+                .limit(cap).collect(Collectors.toList());
+    }
+
     private void refreshExpenseCards(User user, ResponsiveLayout expenseBoard) {
         expenseBoard.removeAllComponents();
-        ResponsiveRow row = expenseBoard.addRow();
 
+        ResponsiveRow filterRow = expenseBoard.addRow();
+        Map<CKOExpenseType, BoxImpl> items = new HashMap<>();
+
+        final boolean[] filterDisabled = {true, true, true, true, true};
+
+        MButton btnFilterConferences = new MButton("Conferences");
+        btnFilterConferences.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+            filterDisabled[0] = !filterDisabled[0];
+            if (!filterDisabled[0]) {
+                btnFilterConferences.addStyleName("danger");
+            } else {
+                btnFilterConferences.removeStyleName("danger");
+            }
+            items.get(CONFERENCE).setVisible(filterDisabled[0]);
+        });
+
+        MButton btnFilterCourses = new MButton("Courses");
+        btnFilterCourses.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+            filterDisabled[1] = !filterDisabled[1];
+            if (!filterDisabled[1]) {
+                btnFilterCourses.addStyleName("danger");
+            } else {
+                btnFilterCourses.removeStyleName("danger");
+            }
+            items.get(COURSE).setVisible(filterDisabled[1]);
+        });
+
+        MButton btnFilterSubscriptions = new MButton("Subscriptions");
+        btnFilterSubscriptions.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+            filterDisabled[2] = !filterDisabled[2];
+            if (!filterDisabled[2]) {
+                btnFilterSubscriptions.addStyleName("danger");
+            } else {
+                btnFilterSubscriptions.removeStyleName("danger");
+            }
+            items.get(SUBSCRIPTION).setVisible(filterDisabled[2]);
+        });
+
+        MButton btnFilterMemberships = new MButton("Memberships");
+        btnFilterMemberships.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+            filterDisabled[3] = !filterDisabled[3];
+            if (!filterDisabled[3]) {
+                btnFilterMemberships.addStyleName("danger");
+            } else {
+                btnFilterMemberships.removeStyleName("danger");
+            }
+            items.get(MEMBERSHIP).setVisible(filterDisabled[3]);
+        });
+
+        MButton btnFilterBooks = new MButton("Books, etc");
+        btnFilterBooks.withWidth(100, PERCENTAGE).withStyleName("border").withListener(event -> {
+            filterDisabled[4] = !filterDisabled[0];
+            if (!filterDisabled[4]) {
+                btnFilterBooks.addStyleName("danger");
+            } else {
+                btnFilterBooks.removeStyleName("danger");
+            }
+            items.get(BOOKS).setVisible(filterDisabled[4]);
+        });
+
+        filterRow.setHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true);
+        //filterRow.addColumn().withDisplayRules(1,1,1,1);
+        filterRow.addColumn().withComponent(new MLabel("Filter:")).withDisplayRules(2,2,2,2);
+        filterRow.addColumn().withComponent(btnFilterConferences).withDisplayRules(2, 2, 2, 2);
+        filterRow.addColumn().withComponent(btnFilterCourses).withDisplayRules(2, 2, 2, 2);
+        filterRow.addColumn().withComponent(btnFilterSubscriptions).withDisplayRules(2, 2, 2, 2);
+        filterRow.addColumn().withComponent(btnFilterMemberships).withDisplayRules(2, 2, 2, 2);
+        filterRow.addColumn().withComponent(btnFilterBooks).withDisplayRules(2, 2, 2, 2);
+        //filterRow.addColumn().withDisplayRules(1,1,1,1);
+
+        ResponsiveRow expenseBoardRow = expenseBoard.addRow();
         for (CKOExpense expense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid())) {
-            CKOExpenseItem expenseItem = new CKOExpenseItem();
-            expenseItem.getImgIcon().setSource(new ThemeResource("images/icons/"+expense.getType().name().toLowerCase()+"-icon.png"));
-            expenseItem.getLblDate().setValue(expense.getEventdate().format(DateTimeFormatter.ofPattern("dd. MMMM yyyy")));
-            expenseItem.getLblDays().setValue(expense.getDays()+"");
-            expenseItem.getLblDescription().setValue(expense.getDescription());
-            expenseItem.getLblAmount().setValue(expense.getPrice()+"");
+            //CKOExpenseItem expenseItem = new CKOExpenseItem();
 
-            expenseItem.getLblStatus().setValue(expense.getStatus().getCaption());
-            expenseItem.getLblStatus().setVisible(false);
+            ResponsiveLayout expenseItemLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+            BoxImpl expenseItemBox = new BoxImpl().instance(expenseItemLayout);
 
-            MButton button = new MButton(expense.getStatus().getCaption()).withStyleName("friendly").withFullWidth();
+            // ROW 1
+            ResponsiveRow expenseItemRow = expenseItemLayout.addRow();
 
-            RatingStars ratingStars = new RatingStars();
-            ratingStars.setMaxValue(5);
-            ratingStars.setValue(expense.getRating());
-            ratingStars.addValueChangeListener(event -> {
-                expense.setRating(event.getValue());
-                ckoExpenseRepository.save(expense);
-                binder.readBean(ckoExpense = new CKOExpense(user));
-                getBtnAddSalary().setCaption("CREATE");
-                button.setCaption(expense.getStatus().getCaption());
-            });
+            // COLUMN 1.1
+            ResponsiveColumn leftColumn = expenseItemRow.addColumn().withDisplayRules(12, 12, 2, 2);
+            ResponsiveLayout leftContentLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+            leftColumn.withComponent(leftContentLayout);
 
-            TextArea textField = new TextArea(expense.getRating_comment());
-            PopupView popupView = new PopupView(null, new MHorizontalLayout(textField));
-            popupView.addPopupVisibilityListener(event1 -> {
-                expense.setRating_comment(textField.getValue());
-                ckoExpenseRepository.save(expense);
-            });
+            // COLUMN 2.1
+            Image icon = new Image("", new ThemeResource("images/icons/" + expense.getType().name().toLowerCase() + "-icon.png"));
+            icon.setWidth(100, PERCENTAGE);
+            icon.setHeight(100, PERCENTAGE);
+            leftContentLayout.addRow().addColumn().withComponent(icon).setAlignment(ResponsiveColumn.ColumnComponentAlignment.CENTER);
 
-            MHorizontalLayout ratingContent = new MHorizontalLayout(
-                    new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
-                    ratingStars,
-                    new MButton(MaterialIcons.FEEDBACK).withStyleName("icon-only flat").withDescription("Click to elaborate on your rating").withListener(event -> popupView.setPopupVisible(true)),
-                    popupView
-            );
-            ratingContent.setWidth(100, Unit.PERCENTAGE);
-            ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+
+            // COLUMN 1.2
+            ResponsiveColumn rightContentColumn = expenseItemRow.addColumn().withDisplayRules(12, 12, 10, 10);
+            ResponsiveLayout rightContentLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+            rightContentColumn.withComponent(rightContentLayout);
+
+            // ROW 2
+            ResponsiveRow titleRow = rightContentLayout.addRow();
+
+            // COLUMN 2.1
+            titleRow.addColumn().withComponent(new MLabel(expense.getDescription()).withStyleName("large bold")).withDisplayRules(12, 12, 12, 12);
+
+            // ROW 3
+            ResponsiveRow detailRow = rightContentLayout.addRow();
+
+            // COLUMN 3.1
+            ResponsiveColumn dateColumn = detailRow.addColumn().withDisplayRules(12, 12, 4, 4);
 
             CheckBox its_a_certification = new CheckBox("Its a certification", expense.getCertification() == 1);
             CheckBox i_passed = new CheckBox("I passed", expense.getCertified() == 1);
-
-            button.addClickListener(event -> {
-                if (expense.getStatus().equals(CKOExpenseStatus.WISHLIST))
-                    expense.setStatus(CKOExpenseStatus.BOOKED);
-                else if (expense.getStatus().equals(CKOExpenseStatus.BOOKED))
-                    expense.setStatus(CKOExpenseStatus.COMPLETED);
-                else if (expense.getStatus().equals(CKOExpenseStatus.COMPLETED))
-                    expense.setStatus(CKOExpenseStatus.WISHLIST);
-                ckoExpenseRepository.save(expense);
-                ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
-                i_passed.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
-                binder.readBean(ckoExpense = new CKOExpense(user));
-                getBtnAddSalary().setCaption("CREATE");
-                button.setCaption(expense.getStatus().getCaption());
-                expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-            });
 
             its_a_certification.addValueChangeListener(event -> {
                 expense.setCertification(its_a_certification.getValue()?1:0);
@@ -176,40 +243,127 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                     its_a_certification,
                     i_passed
             );
-            certificateContent.setVisible(expense.getType().equals(CKOExpenseType.COURSE));
+            certificateContent.setVisible(expense.getType().equals(COURSE));
 
-            expenseItem.getVLStatus().addComponents(
-                    new MHorizontalLayout(button).withFullWidth().alignAll(Alignment.MIDDLE_CENTER),
-                    ratingContent.alignAll(Alignment.MIDDLE_CENTER),
+            dateColumn.withComponent(new MVerticalLayout(
+                    new MLabel(expense.getEventdate().format(DateTimeFormatter.ofPattern("dd. MMMM yyyy")) + " / " + expense.getDays() + " days"),
+                    new MHorizontalLayout(
+                            new MLabel("Purpose: ").withStyleName("dark-grey-font"),
+                            new MLabel(expense.getPurpose().getCaption()).withStyleName("bold dark-grey-font")
+                    ),
+                    new MHorizontalLayout(
+                            new MLabel("Amount (w/o tax): ").withStyleName("dark-grey-font"),
+                            new MLabel(expense.getPrice() + "").withStyleName("bold dark-grey-font")
+                    ),
                     certificateContent
-                    );
-            expenseItem.getVLStatus().setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-            expenseItem.getLblPurpose().setValue(expense.getPurpose().getCaption());
-            expenseItem.getVlExtra().setVisible(false);
-            expenseItem.getLblComments().setValue(expense.getComment());
-            expenseItem.getBtnEdit().addClickListener(event -> {
+
+            ));
+
+            // COLUMN 3.2
+            ResponsiveColumn ratingColumn = detailRow.addColumn().withDisplayRules(12, 12, 5, 5);
+
+            RatingStars ratingStars = createRatingStars(user, expense);
+            TextArea reviewTextarea = createReviewTextarea(expense);
+            MVerticalLayout ratingContent = new MVerticalLayout(
+                    new MHorizontalLayout(
+                            new MLabel("Add a rating from 1 to 5, write a short review and let your colleagues learn from your experiences with this " + expense.getType().getCaption().toLowerCase()).withWidth(300, PIXELS),
+                            new MLabel("Rating: ").withStyleName("dark-grey-font").withHeight(24, Unit.PIXELS),
+                            ratingStars
+                    ),
+                    reviewTextarea
+            );
+            ratingContent.setWidth(300, PIXELS);
+            ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+            ratingColumn.withComponent(new MVerticalLayout(
+                        new MLabel(expense.getComment())
+                    )
+            );
+
+            // COLUMN 3.3
+            ResponsiveColumn buttonColumn = detailRow.addColumn().withDisplayRules(12, 12, 3, 3);
+
+            MButton btnEdit = new MButton("Edit").withStyleName("border").withListener(event -> {
                 getBtnAddSalary().setCaption("UPDATE");
                 ckoExpense = expense;
                 binder.readBean(ckoExpense);
-            });
+            }).withWidth(100, PERCENTAGE);
 
-            expenseItem.getBtnDelete().addClickListener(event -> {
+            MButton btnDelete = new MButton("Delete").withStyleName("border danger").withListener(event -> {
                 ckoExpenseRepository.delete(expense);
                 refreshExpenseCards(user, expenseBoard);
+            }).withWidth(100, PERCENTAGE);
+
+            MButton btnRate = new MButton("Review").withStyleName("border").withListener(event -> {
+                Window window = new Window("Rate the " + expense.getType().getCaption(), ratingContent);
+                window.setWidth(320.0f, Unit.PIXELS);
+                window.setHeight(320, PIXELS);
+                window.setModal(true);
+                window.setContent(ratingContent);
+                window.isClosable();
+                window.addCloseListener(event2 -> {
+                    window.close();
+                });
+                UI.getCurrent().addWindow(window);
+            }).withVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED).withWidth(100, PERCENTAGE);
+
+            MButton statusButton = new MButton(expense.getStatus().getCaption()).withStyleName("friendly").withWidth(100, PERCENTAGE);
+            statusButton.withListener(event -> {
+                if (expense.getStatus().equals(CKOExpenseStatus.WISHLIST))
+                    expense.setStatus(CKOExpenseStatus.BOOKED);
+                else if (expense.getStatus().equals(CKOExpenseStatus.BOOKED))
+                    expense.setStatus(CKOExpenseStatus.COMPLETED);
+                else if (expense.getStatus().equals(CKOExpenseStatus.COMPLETED))
+                    expense.setStatus(CKOExpenseStatus.WISHLIST);
+                ckoExpenseRepository.save(expense);
+                btnRate.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                //ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                i_passed.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                binder.readBean(ckoExpense = new CKOExpense(user));
+                getBtnAddSalary().setCaption("CREATE");
+                statusButton.setCaption(expense.getStatus().getCaption());
             });
-            expenseItem.getBtnMore().addClickListener(event -> {
-                expenseItem.getVlExtra().setVisible(true);
-                expenseItem.getBtnMore().setVisible(false);
-            });
-            row.addColumn()
-                    .withDisplayRules(12, 12, 6, 4)
-                    .withComponent(expenseItem);
+
+            leftContentLayout.addRow().addColumn().withComponent(new MVerticalLayout(statusButton).withWidth(100, PERCENTAGE)).setAlignment(ResponsiveColumn.ColumnComponentAlignment.CENTER);
+
+            buttonColumn.withComponent(new MVerticalLayout(
+                    btnEdit, btnDelete, new Label(""), btnRate
+            ));
+
+            items.put(expense.getType(), expenseItemBox);
+            expenseBoardRow.addColumn()
+                    .withDisplayRules(12, 12, 12, 12)
+                    .withComponent(expenseItemBox);
         }
+    }
+
+
+
+    private TextArea createReviewTextarea(CKOExpense expense) {
+        TextArea reviewTextarea = new TextArea("Review: ", Optional.ofNullable(expense.getRating_comment()).orElse(""));
+        reviewTextarea.addFocusListener(event -> {
+            expense.setRating_comment(reviewTextarea.getValue());
+            ckoExpenseRepository.save(expense);
+        });
+        reviewTextarea.setWidth(300, PIXELS);
+        return reviewTextarea;
+    }
+
+    private RatingStars createRatingStars(User user, CKOExpense expense) {
+        RatingStars ratingStars = new RatingStars();
+        ratingStars.setMaxValue(5);
+        ratingStars.setValue(expense.getRating());
+        ratingStars.addValueChangeListener(event -> {
+            expense.setRating(event.getValue());
+            ckoExpenseRepository.save(expense);
+            binder.readBean(ckoExpense = new CKOExpense(user));
+            getBtnAddSalary().setCaption("CREATE");
+        });
+        return ratingStars;
     }
 
     private Chart getChart(User user) {
         Chart chart = new Chart(ChartType.COLUMN);
-        chart.setWidth(100, Unit.PERCENTAGE);
+        chart.setWidth(100, PERCENTAGE);
 
         Configuration conf = chart.getConfiguration();
 
@@ -305,10 +459,6 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
         @Override
         public String convertToPresentation(Double aDouble, ValueContext context) {
-            System.out.println("MyConverter.convertToPresentation");
-            System.out.println("aDouble = [" + aDouble + "], context = [" + context + "]");
-            // Converting to the field type should always succeed,
-            // so there is no support for returning an error Result.
             NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
             formatter.setMaximumFractionDigits(2);
             formatter.setMinimumFractionDigits(2);

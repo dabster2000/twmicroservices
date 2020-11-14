@@ -1,5 +1,9 @@
 package dk.trustworks.invoicewebui.model.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.User;
@@ -12,6 +16,8 @@ import java.time.LocalDate;
 @NonNull
 public class WorkDocument {
 
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private final LocalDate month;
     private final Client client;
     private final User user;

@@ -30,6 +30,7 @@ import dk.trustworks.invoicewebui.web.time.ReportView;
 import dk.trustworks.invoicewebui.web.time.TimeManagerViewSecond;
 import dk.trustworks.invoicewebui.web.trips.TripsView;
 import dk.trustworks.invoicewebui.web.vtv.SalesView;
+import dk.trustworks.invoicewebui.web.vtv.TenderManagementView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -149,6 +150,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("CoOps", coOps);
         MenuItemContainer sales = new MenuItemContainer(order++).createItem(SalesView.MENU_NAME, false, SalesView.VIEW_ICON, SalesView.VIEW_NAME, false, RoleType.VTV);
         menuItems.put(SalesView.VIEW_NAME, sales);
+        MenuItemContainer tendermanagement = new MenuItemContainer(order++).createItem(TenderManagementView.MENU_NAME, false, TenderManagementView.VIEW_ICON, TenderManagementView.VIEW_NAME, false, RoleType.VTV);
+        menuItems.put(TenderManagementView.VIEW_NAME, tendermanagement);
 
         //MenuItemContainer stats = new MenuItemContainer(order++).createItem("Statistics ---", true, null, null, false, RoleType.ADMIN);
         //menuItems.put("Stats", stats);

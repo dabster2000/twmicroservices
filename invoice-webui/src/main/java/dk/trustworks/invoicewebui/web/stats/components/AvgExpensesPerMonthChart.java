@@ -111,7 +111,7 @@ public class AvgExpensesPerMonthChart {
             double consultantNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.CONSULTANT.toString());
             double staffNetSalaries = userService.calcMonthSalaries(currentDate, ConsultantType.STAFF.toString());
 
-            double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSalaries).sum());
+            double totalSalaries = Math.round(allExpensesByMonth.stream().mapToDouble(FinanceDocument::getESalaries).sum());
 
             long numberOfConsultants = Math.round(availabilityService.countActiveConsultantsByMonth(currentDate));
 
@@ -122,11 +122,11 @@ public class AvgExpensesPerMonthChart {
 
             consultantSalarySeries.addData(consultantSalaries);
             staffSalarySeries.addData(staffSalaries);
-            addSeries(personaleExpensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteEmployee_expenses));
-            addSeries(lokaleExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteHousing));
-            addSeries(salgExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteSales));
-            addSeries(productionExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteProduktion));
-            addSeries(administrationExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::geteAdministration));
+            addSeries(personaleExpensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::getEEmployee_expenses));
+            addSeries(lokaleExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::getEHousing));
+            addSeries(salgExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::getESales));
+            addSeries(productionExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::getEProduktion));
+            addSeries(administrationExensesSeries, numberOfConsultants, allExpensesByMonth.stream().mapToDouble(FinanceDocument::getEAdministration));
 
             monthNames[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
