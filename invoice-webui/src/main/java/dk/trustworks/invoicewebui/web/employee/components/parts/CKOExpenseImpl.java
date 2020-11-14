@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus.*;
 import static dk.trustworks.invoicewebui.model.enums.CKOExpenseType.*;
 
 /**
@@ -123,7 +124,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         final boolean[] filterDisabled = {true, true, true, true, true};
 
         MButton btnFilterConferences = new MButton("Conferences");
-        btnFilterConferences.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
+        btnFilterConferences.withWidth(100, PERCENTAGE).withStyleName("border","tiny").withListener(event -> {
             filterDisabled[0] = !filterDisabled[0];
             if (!filterDisabled[0]) {
                 btnFilterConferences.addStyleName("danger");
@@ -134,56 +135,68 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         });
 
         MButton btnFilterCourses = new MButton("Courses");
-        btnFilterCourses.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
+        btnFilterCourses.withWidth(100, PERCENTAGE).withStyleName("border","tiny").withListener(event -> {
             filterDisabled[1] = !filterDisabled[1];
             if (!filterDisabled[1]) {
                 btnFilterCourses.addStyleName("danger");
             } else {
                 btnFilterCourses.removeStyleName("danger");
             }
-            items.get(COURSE).forEach(c -> c.setVisible(filterDisabled[0]));
+            items.get(COURSE).forEach(c -> c.setVisible(filterDisabled[1]));
         });
 
         MButton btnFilterSubscriptions = new MButton("Subscriptions");
-        btnFilterSubscriptions.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
+        btnFilterSubscriptions.withWidth(100, PERCENTAGE).withStyleName("border","tiny").withListener(event -> {
             filterDisabled[2] = !filterDisabled[2];
             if (!filterDisabled[2]) {
                 btnFilterSubscriptions.addStyleName("danger");
             } else {
                 btnFilterSubscriptions.removeStyleName("danger");
             }
-            items.get(SUBSCRIPTION).forEach(c -> c.setVisible(filterDisabled[0]));
+            items.get(SUBSCRIPTION).forEach(c -> c.setVisible(filterDisabled[2]));
         });
 
         MButton btnFilterMemberships = new MButton("Memberships");
-        btnFilterMemberships.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
+        btnFilterMemberships.withWidth(100, PERCENTAGE).withStyleName("border","tiny").withListener(event -> {
             filterDisabled[3] = !filterDisabled[3];
             if (!filterDisabled[3]) {
                 btnFilterMemberships.addStyleName("danger");
             } else {
                 btnFilterMemberships.removeStyleName("danger");
             }
-            items.get(MEMBERSHIP).forEach(c -> c.setVisible(filterDisabled[0]));
+            items.get(MEMBERSHIP).forEach(c -> c.setVisible(filterDisabled[3]));
         });
 
-        MButton btnFilterBooks = new MButton("Books, etc");
-        btnFilterBooks.withWidth(100, PERCENTAGE).withStyleName("border small").withListener(event -> {
-            filterDisabled[4] = !filterDisabled[0];
+        MButton btnFilterBooks = new MButton("Books");
+        btnFilterBooks.withWidth(100, PERCENTAGE).withStyleName("border","tiny").withListener(event -> {
+            filterDisabled[4] = !filterDisabled[4];
             if (!filterDisabled[4]) {
                 btnFilterBooks.addStyleName("danger");
             } else {
                 btnFilterBooks.removeStyleName("danger");
             }
-            items.get(BOOKS).forEach(c -> c.setVisible(filterDisabled[0]));
+            items.get(BOOKS).forEach(c -> c.setVisible(filterDisabled[4]));
+        });
+
+        MButton btnFilterCompleted = new MButton("");
+        btnFilterCompleted.withWidth(100, PERCENTAGE).withStyleName("border","tiny").withListener(event -> {
+            filterDisabled[5] = !filterDisabled[5];
+            if (!filterDisabled[5]) {
+                btnFilterBooks.addStyleName("danger");
+            } else {
+                btnFilterBooks.removeStyleName("danger");
+            }
+            //items.get(null).forEach(c -> c.setVisible(filterDisabled[5]));
         });
 
         filterRow.setHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true);
-        filterRow.addColumn().withComponent(new MLabel("Filter:")).withDisplayRules(2,2,2,2);
-        filterRow.addColumn().withComponent(btnFilterConferences).withDisplayRules(2, 2, 2, 2);
-        filterRow.addColumn().withComponent(btnFilterCourses).withDisplayRules(2, 2, 2, 2);
-        filterRow.addColumn().withComponent(btnFilterSubscriptions).withDisplayRules(2, 2, 2, 2);
-        filterRow.addColumn().withComponent(btnFilterMemberships).withDisplayRules(2, 2, 2, 2);
-        filterRow.addColumn().withComponent(btnFilterBooks).withDisplayRules(2, 2, 2, 2);
+        filterRow.addColumn().withComponent(new MLabel("Filter:")).withDisplayRules(12,12,12,12);
+        filterRow.addColumn().withComponent(btnFilterConferences).withDisplayRules(4,4,4,4);
+        filterRow.addColumn().withComponent(btnFilterCourses).withDisplayRules(4,4,4,4);
+        filterRow.addColumn().withComponent(btnFilterSubscriptions).withDisplayRules(4,4,4,4);
+        filterRow.addColumn().withComponent(btnFilterMemberships).withDisplayRules(4,4,4,4);
+        filterRow.addColumn().withComponent(btnFilterBooks).withDisplayRules(4,4,4,4);
+        filterRow.addColumn().withComponent(btnFilterCompleted).withDisplayRules(4,4,4,4);
 
         ResponsiveRow expenseBoardRow = expenseBoard.addRow();
         for (CKOExpense expense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid()).stream().sorted(Comparator.comparing(CKOExpense::getEventdate).reversed()).collect(Collectors.toList())) {
@@ -228,7 +241,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
             its_a_certification.addValueChangeListener(event -> {
                 expense.setCertification(its_a_certification.getValue()?1:0);
-                i_passed.setVisible(its_a_certification.getValue() && expense.getStatus().equals(CKOExpenseStatus.COMPLETED));
+                i_passed.setVisible(its_a_certification.getValue() && expense.getStatus().equals(COMPLETED));
                 ckoExpenseRepository.save(expense);
             });
             i_passed.setVisible(expense.getCertified()==1);
@@ -290,7 +303,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                         reviewTextarea
                 );
                 ratingContent.setWidth(300, PIXELS);
-                ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                ratingContent.setVisible(expense.getStatus()== COMPLETED);
 
                 Window window = new Window("Rate the " + expense.getType().getCaption(), ratingContent);
                 window.setWidth(320, Unit.PIXELS);
@@ -307,20 +320,24 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 }).withFullWidth());
 
                 UI.getCurrent().addWindow(window);
-            }).withVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED).withWidth(100, PERCENTAGE);
+            }).withVisible(expense.getStatus()== COMPLETED).withWidth(100, PERCENTAGE);
 
             MButton statusButton = new MButton(expense.getStatus().getCaption()).withStyleName("friendly").withWidth(100, PERCENTAGE);
             statusButton.withListener(event -> {
-                if (expense.getStatus().equals(CKOExpenseStatus.WISHLIST))
-                    expense.setStatus(CKOExpenseStatus.BOOKED);
-                else if (expense.getStatus().equals(CKOExpenseStatus.BOOKED))
-                    expense.setStatus(CKOExpenseStatus.COMPLETED);
-                else if (expense.getStatus().equals(CKOExpenseStatus.COMPLETED))
-                    expense.setStatus(CKOExpenseStatus.WISHLIST);
+                if (expense.getStatus().equals(WISHLIST))
+                    expense.setStatus(BOOKED);
+                else if (expense.getStatus().equals(BOOKED))
+                    expense.setStatus(COMPLETED);
+                else if (expense.getStatus().equals(COMPLETED))
+                    expense.setStatus(WISHLIST);
+                if(!expense.getStatus().equals(COMPLETED)) {
+                    expense.setCertified(0);
+                    i_passed.setValue(expense.getCertified()==1);
+                }
                 ckoExpenseRepository.save(expense);
-                btnRate.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                btnRate.setVisible(expense.getStatus()== COMPLETED);
                 //ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
-                i_passed.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
+                i_passed.setVisible(expense.getStatus()== COMPLETED);
                 binder.readBean(ckoExpense = new CKOExpense(user));
                 getBtnAddSalary().setCaption("CREATE");
                 statusButton.setCaption(expense.getStatus().getCaption());
@@ -373,7 +390,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
         SortedMap<String, Integer> expenses = new TreeMap<>();
         for (CKOExpense ckoExpense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid())) {
-            if(ckoExpense.getStatus()!=null && ckoExpense.getStatus().equals(CKOExpenseStatus.WISHLIST)) continue;
+            if(ckoExpense.getStatus()!=null && ckoExpense.getStatus().equals(WISHLIST)) continue;
             expenses.putIfAbsent(ckoExpense.getEventdate().getYear()+"", 0);
             Integer integer = expenses.get(ckoExpense.getEventdate().getYear() + "");
             expenses.replace(ckoExpense.getEventdate().getYear()+"", (integer+ckoExpense.getPrice()));

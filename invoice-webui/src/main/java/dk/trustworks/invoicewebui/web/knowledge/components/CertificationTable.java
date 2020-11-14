@@ -6,16 +6,11 @@ import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CertificationTable {
 
@@ -29,7 +24,7 @@ public class CertificationTable {
 
     public VerticalLayout createCertificationsTable() {
         final boolean[] usernameIsRoot = {true};
-        final TreeGrid[] gridItems = new TreeGrid[]{createGridItems(true)};
+        final TreeGrid<GridItem>[] gridItems = new TreeGrid[]{createGridItems(true)};
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.addComponents(
                 new MLabel("Consultant certifications").withStyleName("H2"),
@@ -76,9 +71,10 @@ public class CertificationTable {
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 class GridItem {
-    List<GridItem> gridItems = new ArrayList<>();
-    String text;
-    String date;
+    private String id = UUID.randomUUID().toString();
+    @NonNull private List<GridItem> gridItems;
+    @NonNull private String text;
+    @NonNull private String date;
 }

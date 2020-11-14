@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.knowledge.layout;
 
+import com.google.gwt.user.client.ui.TreeItem;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
@@ -23,15 +24,16 @@ import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
 import dk.trustworks.invoicewebui.web.knowledge.components.CertificationTable;
 import dk.trustworks.invoicewebui.web.vtv.layouts.TenderManagementLayout;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @SpringComponent
 @SpringUI
@@ -81,14 +83,14 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
     private Component createCourseQueueBox(String type, String caption) {
         Box box = new Box();
-        Tree<String> tree = new Tree<>();
-        TreeData<String> data = new TreeData<>();
-        int number = 1;
+        Tree<CkoTreeItem> tree = new Tree<>();
+        TreeData<CkoTreeItem> data = new TreeData<>();
+        tree.setItemDescriptionGenerator(CkoTreeItem::getDescription);
+        tree.setItemCaptionGenerator(CkoTreeItem::getDescription);
         for (CkoCourse ckoCourse : microCourseRepository.findByActiveTrue()) {
-            data.addItem(null, ckoCourse.getName());
-            int finalNumber = number;
-            ckoCourse.getStudents().stream().filter(ckoCourseStudent -> ckoCourseStudent.getStatus().equals(type)).sorted(Comparator.comparing(CkoCourseStudent::getApplication)).forEach(ckoCourseStudent -> data.addItem(ckoCourse.getName(), (finalNumber +") "+ ckoCourseStudent.getMember().getUsername()+" ("+ DateUtils.stringIt(ckoCourseStudent.getApplication())+")")));
-            number++;
+            CkoTreeItem ckoParentTreeItem = new CkoTreeItem(ckoCourse.getName());
+            data.addItem(null, ckoParentTreeItem);
+            ckoCourse.getStudents().stream().filter(ckoCourseStudent -> ckoCourseStudent.getStatus().equals(type)).sorted(Comparator.comparing(CkoCourseStudent::getApplication)).forEach(ckoCourseStudent -> data.addItem(ckoParentTreeItem, new CkoTreeItem(ckoCourseStudent.getMember().getUsername()+" ("+ DateUtils.stringIt(ckoCourseStudent.getApplication())+")")));
         }
 
         tree.setDataProvider(new TreeDataProvider<>(data));
@@ -281,4 +283,12 @@ public class CkoAdministrationLayout extends VerticalLayout {
         );
         return box;
     }
+}
+
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
+class CkoTreeItem {
+    String id = UUID.randomUUID().toString();
+    @NonNull String description;
 }

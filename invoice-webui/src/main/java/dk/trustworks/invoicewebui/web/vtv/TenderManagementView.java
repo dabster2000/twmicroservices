@@ -32,9 +32,9 @@ public class TenderManagementView extends VerticalLayout implements View {
     @Autowired
     private TenderManagementLayout layout;
 
-    public static final String VIEW_NAME = "tendermanagement";
-    public static final String MENU_NAME = "Tender Management";
-    public static final String VIEW_BREADCRUMB = "Tender Management";
+    public static final String VIEW_NAME = "certifications";
+    public static final String MENU_NAME = "Certifications";
+    public static final String VIEW_BREADCRUMB = "Team Certifications";
     public static final FontIcon VIEW_ICON = MaterialIcons.MOOD_BAD;
 
 
