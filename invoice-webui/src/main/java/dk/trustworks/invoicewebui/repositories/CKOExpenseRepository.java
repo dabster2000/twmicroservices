@@ -14,5 +14,5 @@ public interface CKOExpenseRepository extends CrudRepository<CKOExpense, Integer
 
     List<CKOExpense> findAll();
     List<CKOExpense> findCKOExpenseByUseruuid(@Param("user") String useruuid);
-
+    List<CKOExpense> findByDescription(String description);
 }

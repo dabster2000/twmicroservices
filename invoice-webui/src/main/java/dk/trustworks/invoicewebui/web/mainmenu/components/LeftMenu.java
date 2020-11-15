@@ -20,6 +20,7 @@ import dk.trustworks.invoicewebui.web.faq.FaqView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.knowledge.BusinessArchitectureView;
 import dk.trustworks.invoicewebui.web.knowledge.CkoAdminView;
+import dk.trustworks.invoicewebui.web.knowledge.ConferencesView;
 import dk.trustworks.invoicewebui.web.knowledge.KnowledgeView;
 import dk.trustworks.invoicewebui.web.profile.ProfileView;
 import dk.trustworks.invoicewebui.web.project.views.ProjectManagerView;
@@ -112,6 +113,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(BusinessArchitectureView.VIEW_NAME, businessArchitecture);
         MenuItemContainer bubbles = new MenuItemContainer(order++).createItem(BubblesView.MENU_NAME, false, BubblesView.VIEW_ICON, BubblesView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(BubblesView.VIEW_NAME, bubbles);
+        MenuItemContainer conferences = new MenuItemContainer(order++).createItem(ConferencesView.MENU_NAME, false, ConferencesView.VIEW_ICON, ConferencesView.VIEW_NAME, false, RoleType.USER);
+        menuItems.put(ConferencesView.VIEW_NAME, conferences);
         MenuItemContainer keynotes = new MenuItemContainer(order++).createItem(KnowledgeView.MENU_NAME, false, KnowledgeView.VIEW_ICON, KnowledgeView.VIEW_NAME, false, RoleType.USER);
         menuItems.put(KnowledgeView.VIEW_NAME, keynotes);
         MenuItemContainer projectdescriptions = new MenuItemContainer(order++).createItem(ProjectDescriptionView.MENU_NAME, false, ProjectDescriptionView.VIEW_ICON, ProjectDescriptionView.VIEW_NAME, false, RoleType.USER);
