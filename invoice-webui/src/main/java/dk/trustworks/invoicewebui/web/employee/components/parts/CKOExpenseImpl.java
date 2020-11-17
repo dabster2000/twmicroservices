@@ -12,10 +12,12 @@ import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.*;
+import dk.trustworks.invoicewebui.model.CKOCertification;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.enums.*;
+import dk.trustworks.invoicewebui.repositories.CKOCertificationsRepository;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
@@ -26,7 +28,6 @@ import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import javax.transaction.Transactional;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -48,11 +49,14 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
     private final CKOExpenseRepository ckoExpenseRepository;
 
+    private final CKOCertificationsRepository ckoCertificationsRepository;
+
     private CKOExpense ckoExpense;
     private final Binder<CKOExpense> binder;
 
-    public CKOExpenseImpl(CKOExpenseRepository ckoExpenseRepository, User user) {
+    public CKOExpenseImpl(CKOExpenseRepository ckoExpenseRepository, CKOCertificationsRepository ckoCertificationsRepository, User user) {
         this.ckoExpenseRepository = ckoExpenseRepository;
+        this.ckoCertificationsRepository = ckoCertificationsRepository;
         this.setVisible(false);
 
         getCbPurpose().setItems(CKOExpensePurpose.values());
@@ -109,8 +113,9 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
     }
 
     private List<String> suggestDescription(String query, int cap) {
-        //return ckoExpenseRepository.findAll().stream().map(CKOExpense::getDescription).distinct().collect(Collectors.toList());
-        return ckoExpenseRepository.findAll().stream().map(CKOExpense::getDescription)
+        List<String> strings = ckoCertificationsRepository.findAll().stream().map(CKOCertification::getName).collect(Collectors.toList());
+        strings.addAll(ckoExpenseRepository.findAll().stream().map(CKOExpense::getDescription).collect(Collectors.toList()));
+        return strings.stream()
                 .distinct().filter(p -> p.contains(query))
                 .limit(cap).collect(Collectors.toList());
     }
@@ -274,8 +279,8 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             ResponsiveColumn ratingColumn = detailRow.addColumn().withDisplayRules(12, 12, 5, 5);
 
             ratingColumn.withComponent(new MVerticalLayout(
-                        new MLabel(expense.getComment())
-                    )
+                        new MLabel(expense.getComment()).withFullWidth()
+                    ).withFullWidth()
             );
 
             // COLUMN 3.3

@@ -87,10 +87,18 @@ public class CkoAdministrationLayout extends VerticalLayout {
         TreeData<CkoTreeItem> data = new TreeData<>();
         tree.setItemDescriptionGenerator(CkoTreeItem::getDescription);
         tree.setItemCaptionGenerator(CkoTreeItem::getDescription);
+        List<User> currentlyEmployedUsers = userService.findCurrentlyEmployedUsers(true);
         for (CkoCourse ckoCourse : microCourseRepository.findByActiveTrue()) {
             CkoTreeItem ckoParentTreeItem = new CkoTreeItem(ckoCourse.getName());
             data.addItem(null, ckoParentTreeItem);
-            ckoCourse.getStudents().stream().filter(ckoCourseStudent -> ckoCourseStudent.getStatus().equals(type)).sorted(Comparator.comparing(CkoCourseStudent::getApplication)).forEach(ckoCourseStudent -> data.addItem(ckoParentTreeItem, new CkoTreeItem(ckoCourseStudent.getMember().getUsername()+" ("+ DateUtils.stringIt(ckoCourseStudent.getApplication())+")")));
+            ckoCourse.getStudents().stream()
+                    .filter(ckoCourseStudent -> ckoCourseStudent.getStatus().equals(type) &&
+                            currentlyEmployedUsers.stream().anyMatch(user -> user.getUuid().equals(ckoCourseStudent.getUseruuid())))
+                    .sorted(Comparator.comparing(CkoCourseStudent::getApplication))
+                    .forEach(ckoCourseStudent ->
+                            data.addItem(ckoParentTreeItem, new CkoTreeItem(ckoCourseStudent.getMember().getUsername() +
+                                    " (" + DateUtils.stringIt(ckoCourseStudent.getApplication()) +
+                                    ")")));
         }
 
         tree.setDataProvider(new TreeDataProvider<>(data));

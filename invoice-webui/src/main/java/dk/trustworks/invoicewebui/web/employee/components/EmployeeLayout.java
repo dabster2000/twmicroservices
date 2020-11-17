@@ -73,6 +73,8 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final ReminderHistoryRepository reminderHistoryRepository;
 
+    private final CKOCertificationsRepository ckoCertificationsRepository;
+
     private final ReminderRepository reminderRepository;
 
     private final AmbitionSpiderChart ambitionSpiderChart;
@@ -107,7 +109,7 @@ public class EmployeeLayout extends VerticalLayout {
     private final UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, CKOCertificationsRepository ckoCertificationsRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.userService = userService;
         this.availabilityService = availabilityService;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
@@ -117,6 +119,7 @@ public class EmployeeLayout extends VerticalLayout {
         this.bubbleRepository = bubbleRepository;
         this.bubbleMemberRepository = bubbleMemberRepository;
         this.reminderHistoryRepository = reminderHistoryRepository;
+        this.ckoCertificationsRepository = ckoCertificationsRepository;
         this.reminderRepository = reminderRepository;
         this.ambitionSpiderChart = ambitionSpiderChart;
         this.ambitionCategoryRepository = ambitionCategoryRepository;
@@ -223,7 +226,7 @@ public class EmployeeLayout extends VerticalLayout {
             skillContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, ambitionCategory));
         }
 
-        knowContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new CKOExpenseImpl(ckoExpenseRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
+        knowContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new CKOExpenseImpl(ckoExpenseRepository, ckoCertificationsRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
 
         BubblesCardImpl bubblesCard = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.of(user));
         bubblesCard.getContentHolder().setHeight(200, Unit.PIXELS);

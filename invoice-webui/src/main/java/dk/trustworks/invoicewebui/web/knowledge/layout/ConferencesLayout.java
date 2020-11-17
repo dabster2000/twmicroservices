@@ -6,28 +6,32 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.LocalDateRenderer;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
 import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.teemu.ratingstars.RatingStars;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -44,26 +48,23 @@ public class ConferencesLayout extends VerticalLayout {
     private CKOExpenseRepository ckoExpenseRepository;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private PhotoService photoService;
 
-    private static Double getR(ConferenceGridItem conferenceGridItem) {
-        return conferenceGridItem.rating;
-    }
+    private ResponsiveRow detailViewRow;
+    private ResponsiveRow masterViewRow;
+    private MButton backButton;
 
     public ConferencesLayout init() {
         this.removeAllComponents();
 
-        MButton backButton = new MButton("Back").withVisible(false);
+        backButton = new MButton("Back").withVisible(false);
         this.addComponent(backButton);
 
         ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         this.addComponent(new BoxImpl().instance(mainLayout));
 
-        ResponsiveRow detailViewRow = mainLayout.addRow();
-        ResponsiveRow masterViewRow = mainLayout.addRow();
+        detailViewRow = mainLayout.addRow();
+        masterViewRow = mainLayout.addRow();
         ResponsiveColumn masterViewColumn = masterViewRow.addColumn().withDisplayRules(12, 12, 12, 12);
 
         Grid<ConferenceGridItem> grid = createGrid();
@@ -76,11 +77,7 @@ public class ConferencesLayout extends VerticalLayout {
         });
 
         grid.addItemClickListener(event -> {
-            if(!event.getMouseEventDetails().isDoubleClick()) return;
-            masterViewRow.setVisible(false);
-            detailViewRow.setVisible(true);
-            backButton.setVisible(true);
-            createDetailRow(detailViewRow, event.getItem());
+            selectDetailView(backButton, detailViewRow, masterViewRow, event);
         });
 
         masterViewColumn.withComponent(grid);
@@ -194,9 +191,8 @@ public class ConferencesLayout extends VerticalLayout {
             gridItemList.add(conferenceGridItem);
         });
 
-        Grid<ConferenceGridItem> grid = new Grid<>("", gridItemList.stream().sorted(Comparator.comparing(ConferenceGridItem::getName)).collect(Collectors.toList()));
+        Grid<ConferenceGridItem> grid = new Grid<>("", gridItemList.stream().sorted(Comparator.comparing(ConferenceGridItem::getName, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList()));
         grid.setWidth(100, PERCENTAGE);
-
 
         Grid.Column<ConferenceGridItem, String> itemNameGridCol = grid.addColumn(ConferenceGridItem::getName);
         itemNameGridCol.setCaption("Name");
@@ -204,15 +200,33 @@ public class ConferencesLayout extends VerticalLayout {
         Grid.Column<ConferenceGridItem, String> itemTypeGridCol = grid.addColumn(ckoExpense -> ckoExpense.getType().getCaption());
         itemTypeGridCol.setCaption("Type");
 
-        //Grid.Column<ConferenceGridItem, Integer> itemCertificationGridCol = grid.addColumn(ConferenceGridItem::getCertification);
-        //itemCertificationGridCol.setCaption("Certification");
         grid.addComponentColumn(this::getCertificationImage).setStyleGenerator(item -> "center-label").setCaption("Certification").setSortable(false);
 
         grid.addComponentColumn(this::getRatingStars).setCaption("Rating");
 
         Grid.Column<ConferenceGridItem, LocalDate> itemDateGridCol = grid.addColumn(ConferenceGridItem::getDate, new LocalDateRenderer("dd. MMM yyyy"));
         itemDateGridCol.setCaption("Date");
+
+        grid.addComponentColumn(this::detailButton).setStyleGenerator(item -> "center-label").setCaption("Details");
+
         return grid;
+    }
+
+    private Button detailButton(ConferenceGridItem conferenceGridItem) {
+        return new MButton("details...").withListener(event -> {
+            masterViewRow.setVisible(false);
+            detailViewRow.setVisible(true);
+            backButton.setVisible(true);
+            createDetailRow(detailViewRow, conferenceGridItem);
+        }).withStyleName("flat");
+    }
+
+    private void selectDetailView(MButton backButton, ResponsiveRow detailViewRow, ResponsiveRow masterViewRow, Grid.ItemClick<ConferenceGridItem> event) {
+        if(!event.getMouseEventDetails().isDoubleClick()) return;
+        masterViewRow.setVisible(false);
+        detailViewRow.setVisible(true);
+        backButton.setVisible(true);
+        createDetailRow(detailViewRow, event.getItem());
     }
 
     private Image getCertificationImage(ConferenceGridItem conferenceGridItem) {
