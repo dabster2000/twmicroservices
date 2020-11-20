@@ -682,7 +682,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
                 updateData(contract);
             });
             consultantRowDesign.getVlHours().setVisible(contract.getContractType().equals(ContractType.PERIOD));
-            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
+            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user.getUuid(), false));
 
             consultantRowDesign.getBtnDelete().addClickListener(event -> removeConsultant(contract, contractConsultant));
 
@@ -768,7 +768,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         consultantRowDesign.getTxtRate().setValue("0");
         consultantRowDesign.getTxtHours().setValue("0");
         consultantRowDesign.getVlHours().setVisible(Contract.getContractType().equals(ContractType.PERIOD));
-        consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user, false));
+        consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user.getUuid(), false));
         consultantRowDesign.getImgPhoto().setEnabled(false);
         consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
         consultantRowDesign.getBtnDelete().addClickListener(event -> {

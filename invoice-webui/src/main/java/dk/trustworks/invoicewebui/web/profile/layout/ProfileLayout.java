@@ -71,7 +71,7 @@ public class ProfileLayout extends VerticalLayout {
 
     private void createDefaultViewRow() {
         for (User employee : userService.findCurrentlyEmployedUsers(true, CONSULTANT, STAFF, STUDENT)) {
-            Image memberImage = photoService.getRoundMemberImage(employee, false, 100, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), false, 100, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 createUserViewRow(employee);
             });

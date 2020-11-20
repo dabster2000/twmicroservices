@@ -51,6 +51,10 @@ public class UserService implements InitializingBean {
         return userRestService.findOne(uuid, shallow);
     }
 
+    public static User GetUserFromUUID(String useruuid, List<User> users) {
+        return users.stream().filter(u -> u.getUuid().equals(useruuid)).findFirst().orElse(new User());
+    }
+
     public User findByUsername(String username) {
         return userRestService.findByUsername(username);
     }
@@ -202,8 +206,8 @@ public class UserService implements InitializingBean {
         return userRestService.findUserSalaries(useruuid);
     }
 
-    public boolean isEmployed(User user) {
-        return findCurrentlyEmployedUsers(false).stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
+    public boolean isEmployed(String useruuid) {
+        return findCurrentlyEmployedUsers(false).stream().anyMatch(employedUser -> employedUser.getUuid().equals(useruuid));
     }
 
     public boolean isActive(User user, LocalDate onDate, ConsultantType... consultantTypes) {

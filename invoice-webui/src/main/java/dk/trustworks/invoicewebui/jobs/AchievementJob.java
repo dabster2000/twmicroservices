@@ -37,14 +37,12 @@ public class AchievementJob {
     private final LogEventRepository logEventRepository;
     private final AmbitionRepository ambitionRepository;
     private final UserAmbitionDTORepository userAmbitionDTORepository;
-    private final BubbleMemberRepository bubbleMemberRepository;
-    private final BubbleRepository bubbleRepository;
     private final BudgetService budgetService;
     private final RevenueService revenueService;
 
 
     @Autowired
-    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, BubbleMemberRepository bubbleMemberRepository, BubbleRepository bubbleRepository, BudgetService budgetService, RevenueService revenueService) {
+    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, BudgetService budgetService, RevenueService revenueService) {
         this.achievementRepository = achievementRepository;
         this.userService = userService;
         this.workService = workService;
@@ -55,8 +53,6 @@ public class AchievementJob {
         this.ambitionRepository = ambitionRepository;
         this.userAmbitionDTORepository = userAmbitionDTORepository;
         this.revenueService = revenueService;
-        this.bubbleMemberRepository = bubbleMemberRepository;
-        this.bubbleRepository = bubbleRepository;
         this.budgetService = budgetService;
     }
 
@@ -168,6 +164,7 @@ public class AchievementJob {
     }
 
     private boolean isWorthyOfBubbleMemberAchievement(User user, int minBubbles) {
+        /*
         int bubbleCount = 0;
         for (BubbleMember bubbleMember : bubbleMemberRepository.findByUseruuid(user.getUuid())) {
             if(bubbleMember.getBubble().isActive()) {
@@ -175,12 +172,17 @@ public class AchievementJob {
             }
         }
         return (bubbleCount>=minBubbles);
+
+         */
+        return false;
     }
 
     private boolean isWorthyOfBubbleLeaderAchievement(User user) {
+        /*
         for (Bubble bubble : bubbleRepository.findBubblesByActiveTrue()) {
             if(bubble.getUser().getUuid().equals(user.getUuid())) return true;
         }
+         */
         return false;
     }
 

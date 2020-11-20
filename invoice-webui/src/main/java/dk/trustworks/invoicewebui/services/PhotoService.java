@@ -19,20 +19,20 @@ public class PhotoService {
     @Autowired
     private PhotoRestService photoRestService;
 
-    public Image getRoundMemberImage(User member, boolean isOwner) {
-        return getRoundMemberImage(member, isOwner, 75, Sizeable.Unit.PIXELS);
+    public Image getRoundMemberImage(String useruuid, boolean isOwner) {
+        return getRoundMemberImage(useruuid, isOwner, 75, Sizeable.Unit.PIXELS);
     }
 
-    public Image getRoundMemberImage(User member, boolean isOwner, int width, Sizeable.Unit unit) {
-        Photo photo = photoRestService.findPhotoByRelateduuid(member.getUuid());
+    public Image getRoundMemberImage(String useruuid, boolean isOwner, int width, Sizeable.Unit unit) {
+        Photo photo = photoRestService.findPhotoByRelateduuid(useruuid);
 
         Image image = new Image();
-        image.setDescription(member.getFirstname()+" "+member.getLastname());
+        //image.setDescription(member.getFirstname()+" "+member.getLastname());
         if(photo!=null && photo.getPhoto()!=null && photo.getPhoto()!=null) {
             image.setSource(
                     new StreamResource((StreamResource.StreamSource) () ->
                             new ByteArrayInputStream(photo.getPhoto()),
-                            member.getUsername() + System.currentTimeMillis() + ".jpg"));
+                            useruuid + System.currentTimeMillis() + ".jpg"));
         } else {
             image.setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }

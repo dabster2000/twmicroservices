@@ -367,7 +367,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         AtomicReference<Image> selectedEmployeeImage = new AtomicReference<>(null);
 
         for (User employee : userService.findCurrentlyEmployedUsers(true, CONSULTANT)) {
-            Image memberImage = photoService.getRoundMemberImage(employee, false, 60, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), false, 60, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 chartRow.removeAllComponents();
                 if(selectedEmployeeImage.get() != null) {

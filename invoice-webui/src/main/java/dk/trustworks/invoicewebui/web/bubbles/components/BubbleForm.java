@@ -15,8 +15,7 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
-import dk.trustworks.invoicewebui.repositories.BubbleRepository;
+import dk.trustworks.invoicewebui.services.BubbleService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
@@ -29,22 +28,20 @@ import java.util.stream.Collectors;
 public class BubbleForm {
 
     private final UserService userService;
-    private final BubbleRepository bubbleRepository;
-    private final BubbleMemberRepository bubbleMemberRepository;
+    private final BubbleService bubbleService;
     private final PhotoService photoService;
 
-    private SlackWebApiClient motherWebApiClient;
+    private final SlackWebApiClient motherWebApiClient;
 
     private final ResponsiveRow newBubbleDialogRow;
 
     private final ResponsiveLayout newBubbleResponsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
 
-    private Binder<Bubble> bubbleBinder = new Binder<>();
+    private final Binder<Bubble> bubbleBinder = new Binder<>();
 
-    public BubbleForm(UserService userService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService, SlackWebApiClient motherWebApiClient) {
+    public BubbleForm(UserService userService, BubbleService bubbleService, PhotoService photoService, SlackWebApiClient motherWebApiClient) {
         this.userService = userService;
-        this.bubbleRepository = bubbleRepository;
-        this.bubbleMemberRepository = bubbleMemberRepository;
+        this.bubbleService = bubbleService;
         this.photoService = photoService;
         System.out.println("motherWebApiClient = " + motherWebApiClient);
         this.motherWebApiClient = motherWebApiClient;
@@ -104,11 +101,11 @@ public class BubbleForm {
         bubbleBinder.readBean(new Bubble());
         ResponsiveRow membersRow = newBubbleResponsiveLayout.addRow().withHorizontalSpacing(true).withVerticalSpacing(true);
 
-        List<BubbleMember> bubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
+        List<BubbleMember> bubbleMembers = prevBubble.getBubbleMembers(); //bubbleMemberRepository.findByBubble(prevBubble);
         User[] currentUsers = new User[bubbleMembers.size()];
         int i = 0;
         for (BubbleMember bubbleMember : bubbleMembers) {
-            currentUsers[i++] = bubbleMember.getMember();
+            currentUsers[i++] = userService.findByUUID(bubbleMember.getUseruuid(), true);
         }
 
         TwinColSelect<User> twinColSelect = new TwinColSelect<>();
@@ -123,11 +120,11 @@ public class BubbleForm {
         MButton doneButton = new MButton("Done").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
             Group channel = motherWebApiClient.getGroupInfo(prevBubble.getSlackchannel());
             List<String> currentSlackMembers = channel.getMembers();
-            List<BubbleMember> currentBubbleMembers = bubbleMemberRepository.findByBubble(prevBubble);
-            bubbleMemberRepository.delete(currentBubbleMembers);
+            //List<BubbleMember> currentBubbleMembers = prevBubble.getBubbleMembers();//bubbleMemberRepository.findByBubble(prevBubble);
+            bubbleService.removeAllMembers(prevBubble.getUuid());
             List<User> userList = userService.findCurrentlyEmployedUsers(true);
             for (User user : twinColSelect.getSelectedItems()) {
-                bubbleMemberRepository.save(new BubbleMember(user, prevBubble));
+                bubbleService.addBubbleMember(prevBubble.getUuid(), user.getUuid());
                 try {
                     if (!currentSlackMembers.contains(user.getSlackusername()))
                         motherWebApiClient.inviteUserToGroup(channel.getId(), user.getSlackusername());
@@ -158,7 +155,6 @@ public class BubbleForm {
     }
 
     private void createFormRow(final Bubble prevBubble, Next next) {
-        System.out.println("BubbleForm.createFormRow");
         newBubbleResponsiveLayout.removeAllComponents();
         final Bubble bubble = (prevBubble != null)?prevBubble:new Bubble();
 
@@ -167,7 +163,7 @@ public class BubbleForm {
         TextField bubbleName = new TextField("Bubble name");
         bubbleName.setWidth(100, Sizeable.Unit.PERCENTAGE);
         bubbleBinder.forField(bubbleName).bind(Bubble::getName, Bubble::setName);
-        ComboBox<String> applicationType = new ComboBox("Application type");
+        ComboBox<String> applicationType = new ComboBox<>("Application type");
         applicationType.setWidth(100, Sizeable.Unit.PERCENTAGE);
         applicationType.setEmptySelectionAllowed(false);
         applicationType.setItems("Open", "Invitation");
@@ -179,10 +175,11 @@ public class BubbleForm {
         bubbleBinder.forField(applicationType).bind(Bubble::getApplication, Bubble::setApplication);
         ComboBox<User> bubbleMaster = new ComboBox<>("Bubble master");
         bubbleMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        bubbleMaster.setItems(userService.findCurrentlyEmployedUsers(true));
+        List<User> currentlyEmployedUsers = userService.findCurrentlyEmployedUsers(true);
+        bubbleMaster.setItems();
         bubbleMaster.setEmptySelectionAllowed(false);
         bubbleMaster.setItemCaptionGenerator(User::getUsername);
-        bubbleBinder.forField(bubbleMaster).bind(Bubble::getUser, Bubble::setUser);
+        bubbleBinder.forField(bubbleMaster).bind(b -> UserService.GetUserFromUUID(b.getOwner(), currentlyEmployedUsers), (b, u) -> b.setOwner(u.getUuid()));
         RichTextArea description = new RichTextArea("Description");
         description.setWidth(100, Sizeable.Unit.PERCENTAGE);
         description.setHeight(300, Sizeable.Unit.PIXELS);
@@ -203,26 +200,6 @@ public class BubbleForm {
         slackChannelName.setDescription("The name of the Slack channel, which is created along with the bubble. Remember: No spaces, maximum 19 characters and all lowercase characters");
 
         MButton createButton = new MButton((prevBubble==null)?"Blow new bubble!":"Update bubble").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
-            /*
-            boolean error = false;
-            if(!bubbleName.isEmpty() || bubbleName.getValue().trim().equals("")) {
-                bubbleMaster.setComponentError(new UserError("Give the Bubble a name!!"));
-                error = true;
-            }
-            if(!applicationType.getSelectedItem().isPresent()) {
-                applicationType.setComponentError(new UserError("You need to choose an application type!"));
-                error = true;
-            }
-            if(!bubbleMaster.getSelectedItem().isPresent()) {
-                bubbleMaster.setComponentError(new UserError("You need to choose a Bubble Master!"));
-                error = true;
-            }
-            if(!slackChannelName.isEmpty() || slackChannelName.getValue().trim().equals("")) {
-                slackChannelName.setComponentError(new UserError("Give the Slack channel a name!!"));
-                error = true;
-            }
-            if(error) return;
-            */
             try {
                 bubbleBinder.writeBean(bubble);
             } catch (ValidationException e) {
@@ -236,7 +213,8 @@ public class BubbleForm {
                 motherWebApiClient.archiveGroup(prevBubble.getSlackchannel());
             }
 
-            bubbleRepository.save(bubble);
+            if(prevBubble==null) bubbleService.saveBubble(bubble);
+            else bubbleService.updateBubble(bubble);
             newBubbleResponsiveLayout.removeAllComponents();
             if(next!=null) next.next(bubble);
         });

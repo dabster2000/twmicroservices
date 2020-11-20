@@ -82,9 +82,7 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final ContractService contractService;
 
-    private final BubbleRepository bubbleRepository;
-
-    private final BubbleMemberRepository bubbleMemberRepository;
+    private final BubbleService bubbleService;
 
     private final NewsRepository newsRepository;
 
@@ -111,12 +109,11 @@ public class   DashboardView extends VerticalLayout implements View {
     private final AvailabilityService availabilityService;
 
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, BudgetService budgetService, AvailabilityService availabilityService) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleService bubbleService, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, BudgetService budgetService, AvailabilityService availabilityService) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.contractService = contractService;
-        this.bubbleRepository = bubbleRepository;
-        this.bubbleMemberRepository = bubbleMemberRepository;
+        this.bubbleService = bubbleService;
         this.newsRepository = newsRepository;
         this.reminderHistoryRepository = reminderHistoryRepository;
         this.notificationRepository = notificationRepository;
@@ -183,7 +180,7 @@ public class   DashboardView extends VerticalLayout implements View {
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
         VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
-        BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.empty());
+        BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleService, photoService, Optional.empty());
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign");
 
 

@@ -30,7 +30,7 @@ public class TalentPassionResultImpl {
     @Autowired
     private PhotoService photoService;
 
-    private Map<String, Image> userImages = new HashMap<>();
+    private final Map<String, Image> userImages = new HashMap<>();
 
     private AbsoluteLayout boardLayout;
 
@@ -109,7 +109,7 @@ public class TalentPassionResultImpl {
         int fieldSize = 200;
         int spriteSize = 50;
 
-        userImages.putIfAbsent(user.getUuid(), photoService.getRoundMemberImage(user, false, spriteSize, PIXELS));
+        userImages.putIfAbsent(user.getUuid(), photoService.getRoundMemberImage(user.getUuid(), false, spriteSize, PIXELS));
         Image image = userImages.get(user.getUuid());
         image.addClickListener(event -> {
             if(!descriptionLayout.isVisible()) return;

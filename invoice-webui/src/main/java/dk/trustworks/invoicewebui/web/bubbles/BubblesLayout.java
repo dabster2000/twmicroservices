@@ -19,9 +19,8 @@ import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.repositories.BubbleMemberRepository;
-import dk.trustworks.invoicewebui.repositories.BubbleRepository;
 import dk.trustworks.invoicewebui.security.AccessRules;
+import dk.trustworks.invoicewebui.services.BubbleService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.bubbles.components.ActivityGauge;
@@ -36,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -45,10 +45,9 @@ public class BubblesLayout extends VerticalLayout {
 
     private final UserService userService;
     private final PhotoService photoService;
-    private final BubbleRepository bubbleRepository;
-    private final BubbleMemberRepository bubbleMemberRepository;
+    private final BubbleService bubbleService;
 
-    private ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+    private final ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
     private ResponsiveRow bubblesRow;
 
     private BubbleForm bubbleForm;
@@ -64,11 +63,10 @@ public class BubblesLayout extends VerticalLayout {
     private SlackWebApiClient bubbleUserBotClient;
 
     @Autowired
-    public BubblesLayout(UserService userService, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, PhotoService photoService) {
+    public BubblesLayout(UserService userService, PhotoService photoService, BubbleService bubbleService) {
         this.userService = userService;
-        this.bubbleRepository = bubbleRepository;
-        this.bubbleMemberRepository = bubbleMemberRepository;
         this.photoService = photoService;
+        this.bubbleService = bubbleService;
     }
 
     @Transactional
@@ -76,7 +74,7 @@ public class BubblesLayout extends VerticalLayout {
     public BubblesLayout init() {
         bubbleWebApiClient = SlackClientFactory.createWebApiClient(bubbleSlackToken);
         bubbleUserBotClient = SlackClientFactory.createWebApiClient(bubbleBotUserSlackToken);
-        bubbleForm = new BubbleForm(userService, bubbleRepository, bubbleMemberRepository, photoService, bubbleWebApiClient);
+        bubbleForm = new BubbleForm(userService, bubbleService, photoService, bubbleWebApiClient);
 
         responsiveLayout.removeAllComponents();
         responsiveLayout.addRow(bubbleForm.getNewBubbleButton());
@@ -94,7 +92,7 @@ public class BubblesLayout extends VerticalLayout {
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
         //User user = userRepository.findByUsername("hans.lassen");
 
-        for (Bubble bubble : bubbleRepository.findBubblesByActiveTrueOrderByCreatedDesc()) {
+        for (Bubble bubble : bubbleService.findBubblesByActiveTrueOrderByCreatedDesc()) {
             BubblesDesign bubblesDesign = new BubblesDesign();
 
             bubblesDesign.getLblHeading().setValue(bubble.getName());
@@ -120,14 +118,15 @@ public class BubblesLayout extends VerticalLayout {
 
             bubblesDesign.getBtnEdit().addClickListener(event -> bubbleForm.editFormAction(bubble));
             bubblesDesign.getBtnApply().addClickListener(event -> {
-                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(bubble.getUser().getSlackusername(), "Hi "+bubble.getUser().getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
+                User owner = userService.findByUUID(bubble.getOwner(), true);
+                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(owner.getSlackusername(), "Hi "+owner.getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
                 applyMessage.setAs_user(true);
                 bubbleUserBotClient.postMessage(applyMessage);
                 Notification.show("You have now applied for membership. The bubble owner will get back to you soon!", Notification.Type.ASSISTIVE_NOTIFICATION);
             });
 
             bubblesDesign.getBtnJoin().addClickListener(event -> {
-                bubbleMemberRepository.save(new BubbleMember(user, bubble));
+                bubbleService.addBubbleMember(bubble.getUuid(), user.getUuid());
                 try {
                     bubbleWebApiClient.inviteUserToGroup(bubbleWebApiClient.getGroupInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
                 } catch (Exception e) {
@@ -137,7 +136,7 @@ public class BubblesLayout extends VerticalLayout {
             });
 
             bubblesDesign.getBtnLeave().addClickListener(event -> {
-                bubbleMemberRepository.delete(bubbleMemberRepository.findByBubbleAndUseruuid(bubble, user.getUuid()));
+                bubbleService.removeFromBubble(bubble.getUuid(), user.getUuid());
                 try {
                     bubbleWebApiClient.kickUserFromGroup(bubbleWebApiClient.getGroupInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
                 } catch (Exception e) {
@@ -146,23 +145,24 @@ public class BubblesLayout extends VerticalLayout {
                 Page.getCurrent().reload();
             });
 
-            if(bubbleMemberRepository.findByBubbleAndUseruuid(bubble, user.getUuid()) != null) {
+            if(bubble.getBubbleMembers().stream().anyMatch(bubbleMember -> bubbleMember.getUseruuid().equals(user.getUuid()))) {
                 bubblesDesign.getBtnLeave().setVisible(true);
                 bubblesDesign.getBtnApply().setVisible(false);
                 bubblesDesign.getBtnJoin().setVisible(false);
             }
-            if(bubble.getUser().getUuid().equals(user.getUuid())) {
+            if(bubble.getOwner().equals(user.getUuid())) {
                 bubblesDesign.getBtnEdit().setVisible(true);
                 bubblesDesign.getBtnApply().setVisible(false);
                 bubblesDesign.getBtnJoin().setVisible(false);
                 bubblesDesign.getBtnLeave().setVisible(false);
             }
 
-            bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getUser(), true));
-            for (BubbleMember member : bubbleMemberRepository.findByBubble(bubble)) {
-                if(member.getMember().getUuid().equals(bubble.getUser().getUuid())) continue;
-                if(userService.isEmployed(member.getMember())) {
-                    Image image = photoService.getRoundMemberImage(member.getMember(), false);
+            List<User> users = userService.findAll(true);
+            bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getOwner(), true));
+            for (BubbleMember member : bubble.getBubbleMembers()) {
+                if(member.getUseruuid().equals(bubble.getOwner())) continue;
+                if(userService.isEmployed(member.getUseruuid())) {
+                    Image image = photoService.getRoundMemberImage(bubble.getOwner(), false);
                     bubblesDesign.getPhotoContainer().addComponent(image);
                 }
             }
@@ -170,7 +170,7 @@ public class BubblesLayout extends VerticalLayout {
             Resource resource = photoService.getRelatedPhotoResource(relatedUUID);
 
             bubblesDesign.getImgTop().setSource(resource);
-            if(bubble.getUser().getUuid().equals(user.getUuid()) || user.getUsername().equals("hans.lassen")) {
+            if(bubble.getOwner().equals(user.getUuid()) || user.getUsername().equals("hans.lassen")) {
                 bubblesDesign.getImgTop().addClickListener(event -> bubbleForm.editPhotoAction(bubble));
             }
 

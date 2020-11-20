@@ -10,15 +10,18 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.List;
-
+/*
 @RepositoryRestResource(collectionResourceRel = "bubbles", path="bubbles")
 public interface BubbleRepository extends CrudRepository<Bubble, String> {
 
-    List<Bubble> findBubblesByActiveTrue();
+   List<Bubble> findBubblesByActiveTrue();
     List<Bubble> findBubblesByActiveTrueOrderByCreatedDesc();
 
-    @Override @RestResource(exported = false) void delete(String id);
-    @Override @RestResource(exported = false) void delete(Bubble entity);
+   @Override @RestResource(exported = false) void delete(String id);
+   @Override @RestResource(exported = false) void delete(Bubble entity);
 
 
 }
+
+
+ */

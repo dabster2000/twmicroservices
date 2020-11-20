@@ -69,7 +69,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
     @Autowired
     private DropboxAPI dropboxAPI;
 
-    private ResponsiveLayout mainLayout;
     private ResponsiveRow gridRow;
     private Box mainBox;
     private Button backButton;
@@ -81,7 +80,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
         this.removeAllComponents();
 
-        mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         mainBox = new Box();
         mainBox.getContent().addComponent(mainLayout);
         mainBox.getContent().setMargin(false);
@@ -303,7 +302,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
                 for (String author : cardFile.getAuthors().split(",")) {
                     if(author.length()<2) continue;
-                    architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(userService.findByUUID(author, true), false, 50, Unit.PIXELS));
+                    architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(author, false, 50, Unit.PIXELS));
                 }
                 architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhotoResource(cardFile.getCustomeruuid()));
                 architectureCell1.getImgCustomer().setHeight(50, Unit.PIXELS);

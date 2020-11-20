@@ -15,10 +15,7 @@ import dk.trustworks.invoicewebui.model.CkoCourseStudent;
 import dk.trustworks.invoicewebui.model.Note;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.*;
-import dk.trustworks.invoicewebui.services.AvailabilityService;
-import dk.trustworks.invoicewebui.services.BudgetService;
-import dk.trustworks.invoicewebui.services.PhotoService;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import dk.trustworks.invoicewebui.web.common.ImageListItem;
@@ -67,9 +64,7 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final NotesRepository notesRepository;
 
-    private final BubbleRepository bubbleRepository;
-
-    private final BubbleMemberRepository bubbleMemberRepository;
+    private final BubbleService bubbleService;
 
     private final ReminderHistoryRepository reminderHistoryRepository;
 
@@ -109,15 +104,14 @@ public class EmployeeLayout extends VerticalLayout {
     private final UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleRepository bubbleRepository, BubbleMemberRepository bubbleMemberRepository, ReminderHistoryRepository reminderHistoryRepository, CKOCertificationsRepository ckoCertificationsRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleService bubbleService, ReminderHistoryRepository reminderHistoryRepository, CKOCertificationsRepository ckoCertificationsRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.userService = userService;
         this.availabilityService = availabilityService;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
         this.achievementCardController = achievementCardController;
         this.ckoExpenseRepository = ckoExpenseRepository;
         this.notesRepository = notesRepository;
-        this.bubbleRepository = bubbleRepository;
-        this.bubbleMemberRepository = bubbleMemberRepository;
+        this.bubbleService = bubbleService;
         this.reminderHistoryRepository = reminderHistoryRepository;
         this.ckoCertificationsRepository = ckoCertificationsRepository;
         this.reminderRepository = reminderRepository;
@@ -228,7 +222,7 @@ public class EmployeeLayout extends VerticalLayout {
 
         knowContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new CKOExpenseImpl(ckoExpenseRepository, ckoCertificationsRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
 
-        BubblesCardImpl bubblesCard = new BubblesCardImpl(bubbleRepository, bubbleMemberRepository, photoService, Optional.of(user));
+        BubblesCardImpl bubblesCard = new BubblesCardImpl(bubbleService, photoService, Optional.of(user));
         bubblesCard.getContentHolder().setHeight(200, Unit.PIXELS);
 
         knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(bubblesCard);
