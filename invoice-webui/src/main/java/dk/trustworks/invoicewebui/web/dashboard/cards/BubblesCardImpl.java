@@ -19,12 +19,15 @@ public class BubblesCardImpl extends BubblesCardDesign {
         List<Bubble> bubbles;
 
         if(user.isPresent()) {
-            bubbles = bubbleService.findByUseruuid(user.get().getUuid());//.stream().map(BubbleMember::getBubble).filter(Bubble::isActive).collect(Collectors.toList());
+            bubbles = bubbleService.findByUseruuid(user.get().getUuid());
         } else {
             bubbles = bubbleService.findBubblesByActiveTrueOrderByCreatedDesc();
         }
 
         for (Bubble bubble : bubbles) {
+            System.out.println("bubble.getName() = " + bubble.getName());
+            System.out.println("bubble.getBubbleMembers() = " + bubble.getBubbleMembers());
+            System.out.println("bubble.getBubbleMembers().size() = " + bubble.getBubbleMembers().size());
             BubbleRowDesign bubbleRow = new BubbleRowDesign();
             bubbleRow.setWidth(100, Unit.PERCENTAGE);
             bubbleRow.getLblName().setValue(bubble.getName());

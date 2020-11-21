@@ -64,17 +64,17 @@ public class BubbleRestService {
     }
 
     public void addBubbleMember(String bubbleuuid, String useruuid) {
-        String url = apiGatewayUrl +"/bubbles/"+bubbleuuid+"/useruuid/"+useruuid;
+        String url = apiGatewayUrl +"/bubbles/"+bubbleuuid+"/users/"+useruuid;
         systemRestService.secureCall(url, POST, Void.class);
     }
 
     public void removeBubbleMember(String bubbleuuid, String useruuid) {
-        String url = apiGatewayUrl +"/bubbles/"+bubbleuuid+"/useruuid/"+useruuid;
+        String url = apiGatewayUrl +"/bubbles/"+bubbleuuid+"/users/"+useruuid;
         systemRestService.secureCall(url, DELETE, Void.class);
     }
 
     public void removeAllMembers(String bubbleuuid) {
-        String url = apiGatewayUrl +"/bubbles/"+bubbleuuid+"/members";
+        String url = apiGatewayUrl +"/bubbles/"+bubbleuuid+"/users";
         systemRestService.secureCall(url, DELETE, Void.class);
     }
 }

@@ -35,7 +35,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -157,12 +156,12 @@ public class BubblesLayout extends VerticalLayout {
                 bubblesDesign.getBtnLeave().setVisible(false);
             }
 
-            List<User> users = userService.findAll(true);
+            //List<User> users = userService.findAll(true);
             bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getOwner(), true));
             for (BubbleMember member : bubble.getBubbleMembers()) {
                 if(member.getUseruuid().equals(bubble.getOwner())) continue;
                 if(userService.isEmployed(member.getUseruuid())) {
-                    Image image = photoService.getRoundMemberImage(bubble.getOwner(), false);
+                    Image image = photoService.getRoundMemberImage(member.getUseruuid(), false);
                     bubblesDesign.getPhotoContainer().addComponent(image);
                 }
             }

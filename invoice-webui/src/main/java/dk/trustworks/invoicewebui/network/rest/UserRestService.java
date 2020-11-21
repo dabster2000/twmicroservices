@@ -44,6 +44,7 @@ public class UserRestService {
         return (User) systemRestService.secureCall(url, GET, User.class).getBody();
     }
 
+    @Cacheable("users")
     public List<User> findByOrderByUsername(boolean shallow) {
         String url = apiGatewayUrl+"/users?shallow="+shallow;
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
@@ -55,6 +56,7 @@ public class UserRestService {
         return result.getBody();
     }
 
+    @Cacheable("users")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, boolean shallow, String... consultantTypes) {
         String url = apiGatewayUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes)+"&shallow="+shallow;
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
