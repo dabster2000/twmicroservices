@@ -5,19 +5,20 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
+import dk.trustworks.invoicewebui.model.dto.FinanceDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.services.AvailabilityService;
 import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
@@ -68,28 +69,41 @@ public class AverageConsultantAllocationChart {
         plotOptionsColumn.setColorByPoint(true);
         revenueSeries.setPlotOptions(plotOptionsColumn);
 
-        LocalDate startDate;
+        LocalDate startDate = LocalDate.of(2014,7,1);
         Map<User, Map<LocalDate, Double>> averagePerUserPerMonth = new HashMap<>();
         Map<User, Double> averagePerUser = new HashMap<>();
+
+        // preload data
+        List<AvailabilityDocument> availabilityDocuments = availabilityService.getConsultantAvailabilityByPeriod(startDate, LocalDate.now());
+
+        List<GraphKeyValue> registeredHoursPerConsultant = new ArrayList<>();
+        do {
+            registeredHoursPerConsultant.addAll(revenueService.getRegisteredHoursPerConsultantForSingleMonth(startDate));
+            startDate = startDate.plusMonths(1);
+        } while (startDate.isBefore(LocalDate.now().withDayOfMonth(1).minusMonths(1)));
+        // done preloading
 
         for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             startDate = LocalDate.of(2014,7,1);//userService.findEmployedDate(user);
             double allocation = 0.0;
             double count = 0.0;
             do {
-                double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
-                AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
-                if(availability==null) {
-                    //startDate = startDate.plusMonths(1);
-                    //continue;
-                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
-                }
+                LocalDate finalStartDate = startDate;
+                double billableWorkHours = registeredHoursPerConsultant.parallelStream().filter(g ->
+                        g.getUuid().equals(user.getUuid()) && DateUtils.dateIt(g.getDescription()).isEqual(finalStartDate))
+                        .mapToDouble(GraphKeyValue::getValue).sum();
+                //double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
+                //AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
+                AvailabilityDocument availabilityDocument = availabilityDocuments.stream().filter(ad ->
+                        ad.getMonth().isEqual(finalStartDate) && ad.getUser().getUuid().equals(user.getUuid())).findAny().orElse(
+                        new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED)
+                );
+
                 double monthAllocation = 0.0;
-                if(billableWorkHours>0.0 && availability.getNetAvailableHours()>0.0) {
-                    monthAllocation = (billableWorkHours / availability.getNetAvailableHours()) * 100.0;
+                if(billableWorkHours>0.0 && availabilityDocument.getNetAvailableHours()>0.0) {
+                    monthAllocation = (billableWorkHours / availabilityDocument.getNetAvailableHours()) * 100.0;
                     count++;
                 }
-
                 allocation += monthAllocation;
 
                 Map<LocalDate, Double> averagePerYearMap = averagePerUserPerMonth.getOrDefault(user, new HashMap<>());

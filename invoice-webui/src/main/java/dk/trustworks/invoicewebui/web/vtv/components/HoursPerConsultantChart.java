@@ -6,18 +6,24 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
+import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
+import dk.trustworks.invoicewebui.model.dto.WorkDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.services.AvailabilityService;
 import dk.trustworks.invoicewebui.services.BudgetService;
 import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by hans on 20/09/2017.
@@ -68,20 +74,32 @@ public class HoursPerConsultantChart {
         Number[] maternityLeaveHours = new Number[users.size()];
 
         int i = 0;
+        List<BudgetDocument> budgetDocuments = budgetService.getConsultantBudgetHoursByPeriodDocuments(month.withDayOfMonth(1), month.withDayOfMonth(1).plusMonths(1));
+        List<AvailabilityDocument> availabilityDocuments = availabilityService.getConsultantAvailabilityByPeriod(month.withDayOfMonth(1), month.withDayOfMonth(1).plusMonths(1));
+        List<GraphKeyValue> registeredHoursPerConsultant = revenueService.getRegisteredHoursPerConsultantForSingleMonth(month);
+
         for (User user : users) {
-            double revenueHoursByMonth = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), month); // 59
-            double budgetHoursByMonth = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), month); // 117
+            //double revenueHoursByMonth = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), month); // 59
+            double revenueHoursByMonth = registeredHoursPerConsultant.stream().filter(g ->
+                    g.getUuid().equals(user.getUuid()) && g.getDescription().equals(DateUtils.stringIt(month))).mapToDouble(GraphKeyValue::getValue).sum();;
+            //double revenueHoursByMonth = registeredHours.map(GraphKeyValue::getValue).orElse(0.0);
+            //double budgetHoursByMonth = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), month); // 117
+            double budgetHoursByMonth = budgetDocuments.stream().filter(b -> b.getUser().getUuid().equals(user.getUuid()) && b.getMonth().isEqual(month.withDayOfMonth(1)))
+                    .mapToDouble(BudgetDocument::getGrossBudgetHours).sum();
             budgetHoursByMonth -= revenueHoursByMonth; // 58
             if(budgetHoursByMonth < 0) budgetHoursByMonth = 0;
 
-            AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), month);
-            double availableHoursByMonth = availability.getNetAvailableHours(); // 147
+            //AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), month);
+            AvailabilityDocument availabilityDocument = availabilityDocuments.stream().filter(a -> a.getUser().getUuid().equals(user.getUuid()) && a.getMonth().isEqual(month)).findAny().orElse(new AvailabilityDocument(user, month, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED));
+            double availableHoursByMonth = availabilityDocument.getNetAvailableHours();
+
+            //double availableHoursByMonth = availability.getNetAvailableHours(); // 147
             availableHoursByMonth -= revenueHoursByMonth + budgetHoursByMonth; // 147 - 59 - 58 = 30
             if(availableHoursByMonth < 0) availableHoursByMonth = 0;
 
-            double vacationHoursByMonth = availability.getNetVacation();  // 44
-            double sickHoursByMonth = availability.getNetSickdays(); // 15
-            double maternityLeaveHoursByMonth = availability.getNetMaternityLeave();
+            double vacationHoursByMonth = availabilityDocument.getNetVacation();  // 44
+            double sickHoursByMonth = availabilityDocument.getNetSickdays(); // 15
+            double maternityLeaveHoursByMonth = availabilityDocument.getNetMaternityLeave();
 
             if(availableHoursByMonth < 0) {
                 budgetHoursByMonth += availableHoursByMonth; // 58 + (-14) = 44

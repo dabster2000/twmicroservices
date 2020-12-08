@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.web.knowledge.layout;
 
-import com.google.gwt.user.client.ui.TreeItem;
+import com.google.common.hash.Hashing;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
@@ -11,14 +11,16 @@ import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
+import dk.trustworks.invoicewebui.network.rest.KnowledgeRestService;
 import dk.trustworks.invoicewebui.repositories.MicroCourseRepository;
+import dk.trustworks.invoicewebui.repositories.NewsRepository;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.Box;
@@ -32,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -40,10 +43,13 @@ import java.util.*;
 public class CkoAdministrationLayout extends VerticalLayout {
 
     @Autowired
-    private CKOExpenseRepository ckoExpenseRepository;
+    private KnowledgeRestService knowledgeRestService;
 
     @Autowired
     private MicroCourseRepository microCourseRepository;
+
+    @Autowired
+    private NewsRepository newsRepository;
 
     @Autowired
     private UserService userService;
@@ -70,15 +76,44 @@ public class CkoAdministrationLayout extends VerticalLayout {
         ResponsiveRow leftRow = responsiveColumn1Layout.addRow();
         ResponsiveRow rightRow = responsiveColumn2Layout.addRow();
 
+        leftRow.addColumn().withDisplayRules(12,12,12,12).withComponent(createNewsEditBox());
+
         leftRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(enlistedBox);
         leftRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(graduatedBox);
         Box box = new Box();
-        box.getContent().addComponent(new CertificationTable(ckoExpenseRepository, userService).createCertificationsTable());
+        box.getContent().addComponent(new CertificationTable(knowledgeRestService, userService).createCertificationsTable());
         leftRow.addColumn().withDisplayRules(12,12,12,12).withComponent(box);
         rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(getTotalYearlyBudgetChart());
         rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(getBudgetPerConsultantChart());
 
         return this;
+    }
+
+    private Component createNewsEditBox() {
+        Box box = new Box();
+
+        List<News> newsList = newsRepository.findByNewstypeIn("CKO_DASHBOARD");
+        if(newsList.size()==0) {
+            newsList.add(newsRepository.save(new News("", LocalDate.of(2014,1,1), "CKO_DASHBOARD", "", Hashing.sha512().hashString("cko1", StandardCharsets.UTF_8).toString())));
+            newsList.add(newsRepository.save(new News("", LocalDate.of(2015,1,1), "CKO_DASHBOARD", "", Hashing.sha512().hashString("cko2", StandardCharsets.UTF_8).toString())));
+            newsList.add(newsRepository.save(new News("", LocalDate.of(2016,1,1), "CKO_DASHBOARD", "", Hashing.sha512().hashString("cko3", StandardCharsets.UTF_8).toString())));
+        }
+
+        VerticalLayout newsItems = new VerticalLayout();
+        box.getContent().addComponent(newsItems);
+        for (News news : newsList) {
+            TextArea textArea = new TextArea("Dashboard news text", news.getDescription());
+            textArea.setWidth(100, Unit.PERCENTAGE);
+            textArea.addBlurListener(event -> {
+                news.setDescription(textArea.getValue());
+                newsRepository.save(news);
+            });
+            newsItems.addComponent(textArea);
+        }
+
+
+
+        return box;
     }
 
     private Component createCourseQueueBox(String type, String caption) {
@@ -135,7 +170,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
         availableSeries.setPlotOptions(poc2);
 
         SortedMap<String, Integer> expensesPerYear = new TreeMap<>();
-        for (CKOExpense ckoExpense : ckoExpenseRepository.findAll()) {
+        for (CKOExpense ckoExpense : knowledgeRestService.findAll()) {
             if(ckoExpense.getStatus()!=null && ckoExpense.getStatus().equals(CKOExpenseStatus.WISHLIST)) continue;
             expensesPerYear.putIfAbsent(ckoExpense.getEventdate().getYear()+"", 0);
             Integer integer = expensesPerYear.get(ckoExpense.getEventdate().getYear() + "");
@@ -226,7 +261,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
 
         SortedMap<String, Integer> expensesPerConsultant = new TreeMap<>();
         for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
-            int totalExpenses = ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid()).stream().filter(ckoExpense -> ckoExpense.getEventdate().getYear() == LocalDate.now().getYear()).mapToInt(CKOExpense::getPrice).sum();
+            int totalExpenses = knowledgeRestService.findCKOExpenseByUseruuid(user.getUuid()).stream().filter(ckoExpense -> ckoExpense.getEventdate().getYear() == LocalDate.now().getYear()).mapToInt(CKOExpense::getPrice).sum();
             expensesPerConsultant.put(user.getUsername(), totalExpenses);
         }
 

@@ -18,4 +18,9 @@ public class BoxImpl extends Box {
         this.getContent().setHeight(height, unit);
         return this;
     }
+
+    public BoxImpl withBgStyle(String style) {
+        this.getContent().addStyleName(style);
+        return this;
+    }
 }

@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -24,5 +25,10 @@ public class FinanceDocument {
     private double eSales;
     private double eAdministration;
     private double eProduktion;
+
+    @JsonIgnore
+    public double sum() {
+        return eSalaries+eEmployee_expenses+eHousing+eSales+eAdministration+eProduktion;
+    }
 
 }

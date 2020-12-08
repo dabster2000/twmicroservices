@@ -16,9 +16,12 @@ import dk.trustworks.invoicewebui.model.CKOCertification;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
-import dk.trustworks.invoicewebui.model.enums.*;
+import dk.trustworks.invoicewebui.model.enums.CKOExpensePurpose;
+import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
+import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.network.rest.KnowledgeRestService;
 import dk.trustworks.invoicewebui.repositories.CKOCertificationsRepository;
-import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import org.vaadin.addons.autocomplete.AutocompleteExtension;
@@ -47,15 +50,15 @@ import static dk.trustworks.invoicewebui.model.enums.CKOExpenseType.*;
 
 public class CKOExpenseImpl extends CKOExpenseDesign {
 
-    private final CKOExpenseRepository ckoExpenseRepository;
+    private final KnowledgeRestService knowledgeRestService;
 
     private final CKOCertificationsRepository ckoCertificationsRepository;
 
     private CKOExpense ckoExpense;
     private final Binder<CKOExpense> binder;
 
-    public CKOExpenseImpl(CKOExpenseRepository ckoExpenseRepository, CKOCertificationsRepository ckoCertificationsRepository, User user) {
-        this.ckoExpenseRepository = ckoExpenseRepository;
+    public CKOExpenseImpl(KnowledgeRestService knowledgeRestService, CKOCertificationsRepository ckoCertificationsRepository, User user) {
+        this.knowledgeRestService = knowledgeRestService;
         this.ckoCertificationsRepository = ckoCertificationsRepository;
         this.setVisible(false);
 
@@ -100,7 +103,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         getBtnAddSalary().addClickListener(event -> {
             try {
                 binder.writeBean(ckoExpense);
-                ckoExpenseRepository.save(ckoExpense);
+                knowledgeRestService.saveExpense(ckoExpense);
                 binder.readBean(ckoExpense = new CKOExpense(user));
                 getBtnAddSalary().setCaption("CREATE");
             } catch (ValidationException e) {
@@ -114,7 +117,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
     private List<String> suggestDescription(String query, int cap) {
         List<String> strings = ckoCertificationsRepository.findAll().stream().map(CKOCertification::getName).collect(Collectors.toList());
-        strings.addAll(ckoExpenseRepository.findAll().stream().map(CKOExpense::getDescription).collect(Collectors.toList()));
+        strings.addAll(knowledgeRestService.findAll().stream().map(CKOExpense::getDescription).collect(Collectors.toList()));
         return strings.stream()
                 .distinct().filter(p -> p.contains(query))
                 .limit(cap).collect(Collectors.toList());
@@ -204,7 +207,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         filterRow.addColumn().withComponent(btnFilterCompleted).withDisplayRules(4,4,4,4);
 
         ResponsiveRow expenseBoardRow = expenseBoard.addRow();
-        for (CKOExpense expense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid()).stream().sorted(Comparator.comparing(CKOExpense::getEventdate).reversed()).collect(Collectors.toList())) {
+        for (CKOExpense expense : knowledgeRestService.findCKOExpenseByUseruuid(user.getUuid()).stream().sorted(Comparator.comparing(CKOExpense::getEventdate).reversed()).collect(Collectors.toList())) {
 
             ResponsiveLayout expenseItemLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
             BoxImpl expenseItemBox = new BoxImpl().instance(expenseItemLayout);
@@ -247,12 +250,12 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             its_a_certification.addValueChangeListener(event -> {
                 expense.setCertification(its_a_certification.getValue()?1:0);
                 i_passed.setVisible(its_a_certification.getValue() && expense.getStatus().equals(COMPLETED));
-                ckoExpenseRepository.save(expense);
+                knowledgeRestService.updateExpense(expense);
             });
             i_passed.setVisible(expense.getCertified()==1);
             i_passed.addValueChangeListener(event -> {
                 expense.setCertified(i_passed.getValue()?1:0);
-                ckoExpenseRepository.save(expense);
+                knowledgeRestService.updateExpense(expense);
             });
 
             MVerticalLayout certificateContent = new MVerticalLayout(
@@ -293,7 +296,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
             }).withWidth(100, PERCENTAGE);
 
             MButton btnDelete = new MButton("Delete").withStyleName("border danger").withListener(event -> {
-                ckoExpenseRepository.delete(expense);
+                knowledgeRestService.deleteExpense(expense.getUuid());
                 refreshExpenseCards(user, expenseBoard);
             }).withWidth(100, PERCENTAGE);
 
@@ -320,7 +323,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 ratingContent.add(new MButton("Save").withListener(c -> {
                     expense.setRating(ratingStars.getValue());
                     expense.setRating_comment(reviewTextarea.getValue());
-                    ckoExpenseRepository.save(expense);
+                    knowledgeRestService.updateExpense(expense);
                     window.close();
                 }).withFullWidth());
 
@@ -339,7 +342,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                     expense.setCertified(0);
                     i_passed.setValue(expense.getCertified()==1);
                 }
-                ckoExpenseRepository.save(expense);
+                knowledgeRestService.updateExpense(expense);
                 btnRate.setVisible(expense.getStatus()== COMPLETED);
                 //ratingContent.setVisible(expense.getStatus()==CKOExpenseStatus.COMPLETED);
                 i_passed.setVisible(expense.getStatus()== COMPLETED);
@@ -378,7 +381,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         ratingStars.setValue(expense.getRating());
         ratingStars.addValueChangeListener(event -> {
             expense.setRating(event.getValue());
-            ckoExpenseRepository.save(expense);
+            knowledgeRestService.updateExpense(expense);
             binder.readBean(ckoExpense = new CKOExpense(user));
             getBtnAddSalary().setCaption("CREATE");
         });
@@ -393,14 +396,6 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
 
         conf.setTitle("Knowledge Budget");
 
-        SortedMap<String, Integer> expenses = new TreeMap<>();
-        for (CKOExpense ckoExpense : ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid())) {
-            if(ckoExpense.getStatus()!=null && ckoExpense.getStatus().equals(WISHLIST)) continue;
-            expenses.putIfAbsent(ckoExpense.getEventdate().getYear()+"", 0);
-            Integer integer = expenses.get(ckoExpense.getEventdate().getYear() + "");
-            expenses.replace(ckoExpense.getEventdate().getYear()+"", (integer+ckoExpense.getPrice()));
-        }
-
         XAxis x = new XAxis();
         x.setTitle("year");
 
@@ -412,8 +407,17 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         Optional<UserStatus> firstStatus = user.getStatuses().stream().filter(userStatus -> userStatus.getStatus().equals(StatusType.ACTIVE)).min(Comparator.comparing(UserStatus::getStatusdate));
         if(!firstStatus.isPresent()) return chart;
 
-        if(DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) < 12)
-            maxBudgetFirstYear = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now()) * 2000;
+        SortedMap<String, Integer> expenses = new TreeMap<>();
+        for (CKOExpense ckoExpense : knowledgeRestService.findCKOExpenseByUseruuid(user.getUuid())) {
+            if(ckoExpense.getEventdate().isBefore(firstStatus.get().getStatusdate())) continue;
+            if(ckoExpense.getStatus()!=null && ckoExpense.getStatus().equals(WISHLIST)) continue;
+            expenses.putIfAbsent(ckoExpense.getEventdate().getYear()+"", 0);
+            Integer integer = expenses.get(ckoExpense.getEventdate().getYear() + "");
+            expenses.replace(ckoExpense.getEventdate().getYear()+"", (integer+ckoExpense.getPrice()));
+        }
+
+        if(DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now().withDayOfYear(1).plusYears(1)) < 12)
+            maxBudgetFirstYear = DateUtils.countMonthsBetween(firstStatus.get().getStatusdate(), LocalDate.now().withDayOfYear(1).plusYears(1)) * 2000;
 
         if(expenses.keySet().size() == 0) {
             x.addCategory(LocalDate.now().getYear()+"");

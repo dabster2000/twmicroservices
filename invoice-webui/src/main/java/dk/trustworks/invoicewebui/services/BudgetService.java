@@ -40,12 +40,12 @@ public class BudgetService {
         return budgetRestService.getConsultantBudgetHoursByMonthDocuments(useruuid, month);
     }
 
-    public List<BudgetNew> findByConsultantAndProject(String projectUuid, String contractConsultantUuid) {
-        return budgetRestService.findByConsultantAndProject(projectUuid, contractConsultantUuid);
+    public List<BudgetDocument> getConsultantBudgetHoursByPeriodDocuments(LocalDate fromDate, LocalDate toDate) {
+        return budgetRestService.getConsultantBudgetHoursByPeriodDocuments(fromDate, toDate);
     }
 
-    public BudgetNew findByMonthAndYearAndContractConsultantAndProjectuuid(int month, int year, String contractconsultantuuid, String projectuuid) {
-        return budgetRestService.findByMonthAndYearAndContractConsultantAndProjectuuid(month, year, contractconsultantuuid, projectuuid);
+    public List<BudgetNew> findByConsultantAndProject(String projectUuid, String contractConsultantUuid) {
+        return budgetRestService.findByConsultantAndProject(projectUuid, contractConsultantUuid);
     }
 
     /*

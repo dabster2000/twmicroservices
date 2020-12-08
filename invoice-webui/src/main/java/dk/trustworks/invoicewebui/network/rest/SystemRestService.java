@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -66,6 +67,10 @@ public class SystemRestService {
             loginToken = new LoginToken();
         }
         return loginToken;
+    }
+
+    public void unsafeCall(String url) {
+        restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(new HttpHeaders()), Void.class);
     }
 
     public ResponseEntity secureCall(String url, HttpMethod method, Class c) {

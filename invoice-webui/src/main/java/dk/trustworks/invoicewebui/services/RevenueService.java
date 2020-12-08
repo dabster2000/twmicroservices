@@ -50,6 +50,10 @@ public class RevenueService implements InitializingBean {
         return revenueRestService.getRegisteredRevenueForSingleMonthAndSingleConsultant(useruuid, month).getValue();
     }
 
+    public List<GraphKeyValue> getRegisteredHoursPerConsultantForSingleMonth(LocalDate month) {
+        return revenueRestService.getRegisteredHoursPerConsultantForSingleMonth(month);
+    }
+
     public double getRegisteredHoursForSingleMonthAndSingleConsultant(String useruuid, LocalDate month) {
         return revenueRestService.getRegisteredHoursForSingleMonthAndSingleConsultant(useruuid, month).getValue();
     }

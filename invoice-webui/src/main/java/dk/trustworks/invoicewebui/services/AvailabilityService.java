@@ -1,7 +1,6 @@
 package dk.trustworks.invoicewebui.services;
 
 
-import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.network.rest.AvailabilityRestService;
@@ -33,6 +32,9 @@ public class AvailabilityService implements InitializingBean {
         return instance;
     }
 
+    public List<AvailabilityDocument> getConsultantAvailabilityByPeriod(LocalDate fromdate, LocalDate todate) {
+        return availabilityRestService.getConsultantAvailabilityByPeriod(fromdate, todate);
+    }
 
     public double getWorkdaysInMonth(String uuid, LocalDate currentDate) {
         return availabilityRestService.getWorkdaysInMonth(uuid, currentDate);

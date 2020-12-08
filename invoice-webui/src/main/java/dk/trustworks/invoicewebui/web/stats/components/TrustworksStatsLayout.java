@@ -127,18 +127,29 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createMonthReportCard() {
+
+        System.out.println("--- Start Dashboard Boxes ---");
+
+        long l = System.currentTimeMillis();
+
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getGoodPeopleBox()));
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getCumulativeGrossRevenue()));
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getPayout()));
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getUserAllocationBox()));
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+
+        System.out.println("--- Done Dashboard Boxes ---");
 
         final Button btnCompany = new MButton(MaterialIcons.BUSINESS, "trustworks", event -> {
         }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
@@ -224,17 +235,29 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd) {
+        System.out.println("--- Start company charts ---");
+        long l = System.currentTimeMillis();
         Box revenuePerMonthCard = new Box();
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
+
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
 
         Box expensesPerMonthCard = new Box();
         expensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+
         Box cumulativeRevenuePerMonthCard = new Box();
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
 
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+
         Box utilizationPerMonthCard = new Box();
         utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
+
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+
+        System.out.println("--- Done company charts ---");
 
         Box forecastRevenuePerMonthCard = new Box();
 

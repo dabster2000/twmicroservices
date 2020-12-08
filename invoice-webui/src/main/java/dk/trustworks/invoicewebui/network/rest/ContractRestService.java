@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 import static org.springframework.http.HttpMethod.*;
 
 @Service
@@ -77,21 +78,21 @@ public class ContractRestService {
 
     @Cacheable(cacheNames = "contracts")
     public List<Contract> findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList) {
-        String url = apiGatewayUrl + "/contracts?fromdate=" + activeFrom + "&todate=" + activeTo + "&statuslist=" + Arrays.stream(statusList).map(Enum::toString).collect(Collectors.joining(","));
+        String url = apiGatewayUrl + "/contracts?fromdate=" + stringIt(activeFrom.withDayOfMonth(1)) + "&todate=" + stringIt(activeTo.withDayOfMonth(1)) + "&statuslist=" + Arrays.stream(statusList).map(Enum::toString).collect(Collectors.joining(","));
         logger.info(url);
         ResponseEntity<Contract[]> result = systemRestService.secureCall(url, GET, Contract[].class);
         return Arrays.asList(result.getBody());
     }
 
     public List<Contract> findTimeActiveConsultantContracts(String useruuid, LocalDate activeOn) {
-        String url = apiGatewayUrl + "/users/"+useruuid+"/contracts?activedate="+DateUtils.stringIt(activeOn);
+        String url = apiGatewayUrl + "/users/"+useruuid+"/contracts?activedate="+ stringIt(activeOn);
         logger.info(url);
         ResponseEntity<Contract[]> result = systemRestService.secureCall(url, GET, Contract[].class);
         return Arrays.asList(result.getBody());
     }
 
     public Double findRateByProjectuuidAndUseruuidAndDate(String projectuuid, String useruuid, LocalDate date) {
-        String url = apiGatewayUrl + "/contracts/search/findRateByProjectuuidAndUseruuidAndDate?projectuuid="+projectuuid+"&useruuid="+useruuid+"&date="+DateUtils.stringIt(date);
+        String url = apiGatewayUrl + "/contracts/search/findRateByProjectuuidAndUseruuidAndDate?projectuuid="+projectuuid+"&useruuid="+useruuid+"&date="+ stringIt(date);
         logger.info(url);
         ResponseEntity<KeyValueDTO> result = systemRestService.secureCall(url, GET, KeyValueDTO.class);
         return Double.parseDouble(result.getBody().getValue());

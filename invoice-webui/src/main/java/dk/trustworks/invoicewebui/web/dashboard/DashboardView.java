@@ -12,10 +12,8 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
-import dk.trustworks.invoicewebui.model.Contract;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.model.ReminderHistory;
-import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.NotificationType;
 import dk.trustworks.invoicewebui.model.enums.ReminderType;
@@ -47,6 +45,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
 
@@ -183,8 +183,6 @@ public class   DashboardView extends VerticalLayout implements View {
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleService, photoService, Optional.empty());
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign");
 
-
-
         monthNewsCardDesign.setWidth("100%");
         BrowserFrame browser2 = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrustworksStatus()));
         browser2.setHeight("300px");
@@ -223,6 +221,15 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID).withFlexible();
         mainComponentColumn.withComponent(mainLayout);
         ResponsiveRow row0 = mainLayout.addRow();
+
+        List<News> ckoDashboardNewsList = newsRepository.findByNewstypeIn("CKO_DASHBOARD");
+        Random r = new Random();
+        ckoDashboardNewsList = ckoDashboardNewsList.stream().filter(news -> news.getDescription().length() > 0).collect(Collectors.toList());
+        if(ckoDashboardNewsList.size()>0) {
+            News ckoNews = ckoDashboardNewsList.get(r.nextInt(ckoDashboardNewsList.size()));
+            row0.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new BoxImpl().withBgStyle("dark-blue").instance(new MLabel(ckoNews.getDescription()).withStyleName("white-font", "center-label", "huge").withFullWidth()));
+        }
+
         row0.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(consultantAllocationCard);
 
         ResponsiveRow row1 = mainLayout.addRow();

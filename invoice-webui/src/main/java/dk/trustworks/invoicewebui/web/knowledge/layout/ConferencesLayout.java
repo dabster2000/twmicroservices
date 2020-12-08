@@ -14,7 +14,7 @@ import com.vaadin.ui.renderers.LocalDateRenderer;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseType;
-import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
+import dk.trustworks.invoicewebui.network.rest.KnowledgeRestService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
@@ -45,7 +45,7 @@ import static com.vaadin.server.Sizeable.Unit.PIXELS;
 public class ConferencesLayout extends VerticalLayout {
 
     @Autowired
-    private CKOExpenseRepository ckoExpenseRepository;
+    private KnowledgeRestService knowledgeRestService;
 
     @Autowired
     private PhotoService photoService;
@@ -130,7 +130,7 @@ public class ConferencesLayout extends VerticalLayout {
     }
 
     private List<CKOExpense> getSimilarCkoExpenses(String description) {
-        return ckoExpenseRepository.findByDescription(description);
+        return knowledgeRestService.findByDescription(description);
     }
 
     private void createConsultantDetailsColumn(ResponsiveRow detailViewRow, CKOExpense ckoExpense) {
@@ -173,12 +173,12 @@ public class ConferencesLayout extends VerticalLayout {
         detailRow.addColumn().withDisplayRules(12,12,3,3).withComponent(new MLabel(ckoExpense.getPrice()+" kr"));
         if(ckoExpense.getRating_comment()!=null && !ckoExpense.getRating_comment().isEmpty()) {
             detailRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new MLabel("Review:").withStyleName("bold"));
-            detailRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new MLabel(ckoExpense.getRating_comment()));
+            detailRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new MLabel(ckoExpense.getRating_comment()).withFullWidth());
         }
     }
 
     private Grid<ConferenceGridItem> createGrid() {
-        List<CKOExpense> ckoExpenses = ckoExpenseRepository.findAll().stream().filter(ckoExpense -> ckoExpense.getStatus().equals(CKOExpenseStatus.COMPLETED) &&
+        List<CKOExpense> ckoExpenses = knowledgeRestService.findAll().stream().filter(ckoExpense -> ckoExpense.getStatus().equals(CKOExpenseStatus.COMPLETED) &&
                 (ckoExpense.getType().equals(CKOExpenseType.CONFERENCE) || ckoExpense.getType().equals(CKOExpenseType.COURSE))).collect(Collectors.toList());
 
         Set<String> strings = ckoExpenses.stream().map(CKOExpense::getDescription).collect(Collectors.toSet());

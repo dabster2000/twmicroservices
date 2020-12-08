@@ -1,6 +1,8 @@
 package dk.trustworks.invoicewebui.web.time.layouts;
 
 
+import com.gs.collections.impl.block.factory.HashingStrategies;
+import com.gs.collections.impl.utility.ListIterate;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
@@ -26,6 +28,7 @@ import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
+import dk.trustworks.invoicewebui.utils.StringUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
@@ -47,13 +50,18 @@ import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
 import static dk.trustworks.invoicewebui.utils.DateUtils.lastDayOfMonth;
+import static dk.trustworks.invoicewebui.utils.StringUtils.distinctByKey;
 
 @SpringComponent
 @SpringUI
@@ -300,13 +308,20 @@ public class TimeManagerLayout extends ResponsiveLayout {
     }
 
     private List<Client> getClients(List<Contract> activeConsultantContracts) {
-        List<Client> clientList = activeConsultantContracts.stream().map(contract -> clientService.findOne(contract.getClientuuid())).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+        List<Client> clientList = activeConsultantContracts.stream().filter(StringUtils.distinctByKey(Contract::getClientuuid)).map(contract -> clientService.findOne(contract.getClientuuid())).sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
         clientList.add(clientService.findOne("40c93307-1dfa-405a-8211-37cbda75318b"));
         return clientList;
     }
 
     private List<Contract> getMainContracts(ContractService contractService, User user) {
-        return contractService.findTimeActiveConsultantContracts(user, LocalDate.of(currentDate.getYear(), currentDate.getMonthValue(), 1));
+        LocalDate contractDate = currentDate.with(DayOfWeek.MONDAY);
+        List<Contract> timeActiveConsultantContracts = new ArrayList<>(contractService.findTimeActiveConsultantContracts(user, contractDate.withDayOfMonth(1)));
+        if(contractDate.getMonthValue()!=currentDate.with(DayOfWeek.SUNDAY).getMonthValue()) {
+            // If week spans two months
+            timeActiveConsultantContracts.addAll(contractService.findTimeActiveConsultantContracts(user, contractDate.plusMonths(1).withDayOfMonth(1)));
+        }
+        // Remove duplicates
+        return timeActiveConsultantContracts.stream().filter(distinctByKey(Contract::getUuid)).collect(Collectors.toList());
     }
 
     public ResponsiveLayout init() {

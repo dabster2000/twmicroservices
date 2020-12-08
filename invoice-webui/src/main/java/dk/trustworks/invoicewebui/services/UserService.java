@@ -146,6 +146,39 @@ public class UserService implements InitializingBean {
                 ).sum();
     }
 
+    public static int calcMonthSalaries(List<User> users, LocalDate date, String... consultantTypes) {
+        return users.stream()
+                .filter(user -> user.getStatuses().stream()
+                        .anyMatch(
+                                userStatus -> !userStatus.getStatusdate().isAfter(date) &&
+                                userStatus.getStatus().equals(ACTIVE) &&
+                                Arrays.stream(consultantTypes).anyMatch(s -> s.equals(userStatus.getType().name())))
+                )
+                .map( // Extract salary
+                        user -> user.getSalaries().stream() // Walk through all salaries
+                                .sorted(Comparator.comparing(Salary::getActivefrom).reversed()) // Make the latest salary come first in the list
+                                .filter(salary -> !salary.getActivefrom().isAfter(date)) // Remove salaries after date
+                                .findFirst().orElse(new Salary(date, 0)) // Find the latest salary or return default
+                ).mapToInt(Salary::getSalary).sum();
+
+        /*
+        return //userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, false, consultantTypes)
+
+            users.stream()
+                    .map(user ->
+                            user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate).reversed())
+                                    .filter(userStatus -> userStatus.getStatusdate().isBefore(date))).findFirst().orElse(new UserStatus(CONSULTANT, StatusType.TERMINATED, date, 0)));
+                    .mapToInt(value -> value.getSalaries()
+                            .stream()
+                            .filter(salary -> salary.getActivefrom().isBefore(date))
+                            .max(Comparator.comparing(Salary::getActivefrom))
+                            .orElse(new Salary(date, 0))
+                            .getSalary()
+                    ).sum();
+
+         */
+    }
+
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
         return userRestService.calculateCapacityByMonthByUser(useruuid, statusdate);
     }

@@ -5,6 +5,7 @@ import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,13 @@ public class AvailabilityRestService {
     @Autowired
     public AvailabilityRestService(SystemRestService systemRestService) {
         this.systemRestService = systemRestService;
+    }
+
+    @Cacheable("availability")
+    public List<AvailabilityDocument> getConsultantAvailabilityByPeriod(LocalDate fromdate, LocalDate todate) {
+        String url = apiGatewayUrl +"/cached/availabilities?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
+        ResponseEntity<AvailabilityDocument[]> result = systemRestService.secureCall(url, GET, AvailabilityDocument[].class);
+        return Arrays.asList(result.getBody());
     }
 
     public double getWorkdaysInMonth(String useruuid, LocalDate currentDate) {

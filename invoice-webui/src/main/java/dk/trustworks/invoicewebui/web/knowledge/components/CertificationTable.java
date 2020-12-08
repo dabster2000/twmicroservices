@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.web.knowledge.components;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.repositories.CKOExpenseRepository;
+import dk.trustworks.invoicewebui.network.rest.KnowledgeRestService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import lombok.*;
@@ -14,11 +14,11 @@ import java.util.*;
 
 public class CertificationTable {
 
-    private final CKOExpenseRepository ckoExpenseRepository;
+    private final KnowledgeRestService knowledgeRestService;
     private final UserService userService;
 
-    public CertificationTable(CKOExpenseRepository ckoExpenseRepository, UserService userService) {
-        this.ckoExpenseRepository = ckoExpenseRepository;
+    public CertificationTable(KnowledgeRestService knowledgeRestService, UserService userService) {
+        this.knowledgeRestService = knowledgeRestService;
         this.userService = userService;
     }
 
@@ -51,7 +51,7 @@ public class CertificationTable {
         grid.setSizeFull();
 
         Map<String, List<GridItem>> ckoExpenseMap = new HashMap<>();
-        ckoExpenseRepository.findAll().stream().filter(ckoExpense -> ckoExpense.getCertified() == 1).forEach(ckoExpense -> {
+        knowledgeRestService.findAll().stream().filter(ckoExpense -> ckoExpense.getCertified() == 1).forEach(ckoExpense -> {
             String username = userService.findByUUID(ckoExpense.getUseruuid(), true).getUsername();
             String description = ckoExpense.getDescription();
             GridItem gridItem = new GridItem(new ArrayList<>(), !usernameIsRoot?username:description, DateUtils.stringIt(ckoExpense.getEventdate()));

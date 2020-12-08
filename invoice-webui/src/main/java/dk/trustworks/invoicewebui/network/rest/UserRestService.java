@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -110,6 +111,12 @@ public class UserRestService {
 
     public LoginToken login(String username, String password) {
         return systemRestService.login(username, password);
+    }
+
+
+    public void confirmPasswordChange(@PathParam("key") String key) {
+        String url = apiGatewayUrl + "/users/command/confirmpasswordchange/"+key;
+        systemRestService.unsafeCall(url);
     }
 
     public void deleteSalaries(String useruuid, Set<Salary> salaries) {

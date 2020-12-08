@@ -5,15 +5,11 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
-import dk.trustworks.invoicewebui.model.*;
-import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
-import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.model.enums.ContractType;
 import dk.trustworks.invoicewebui.services.AvailabilityService;
 import dk.trustworks.invoicewebui.services.BudgetService;
-import dk.trustworks.invoicewebui.services.ClientService;
-import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 
@@ -99,10 +95,14 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
 
         }*/
 
+        List<BudgetDocument> budgetDocumentList = budgetService.getConsultantBudgetHoursByPeriodDocuments(localDateStart, localDateEnd);
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);
 
-            List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
+            //List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
+            List<BudgetDocument> budgets = budgetDocumentList.stream().filter(budgetDocument ->
+                    budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(currentDate.withDayOfMonth(1)))
+                    .collect(Collectors.toList());
             for (BudgetDocument budget : budgets) {
                 budgetRowList.putIfAbsent(budget.getClient().getName(), new double[12]);
                 budgetRowList.get(budget.getClient().getName())[i] +=  (budget.getGrossBudgetHours());

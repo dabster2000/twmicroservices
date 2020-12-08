@@ -5,14 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import dk.trustworks.invoicewebui.TrustworksConfiguration;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,35 +25,35 @@ public class AvailabilityDocument {
     @JsonProperty("user")
     private User user;
     @JsonProperty("availableHours")
-    private Double availableHours;
+    private double availableHours;
     @JsonProperty("vacation")
-    private Double vacation;
+    private double vacation;
     @JsonProperty("sickdays")
-    private Double sickdays;
+    private double sickdays;
     @JsonProperty("maternityLeave")
-    private Double maternityLeave;
+    private double maternityLeave;
     @JsonProperty("weeks")
-    private Double weeks;
+    private double weeks;
     @JsonProperty("weekdaysInPeriod")
-    private Double weekdaysInPeriod;
+    private double weekdaysInPeriod;
     @JsonProperty("consultantType")
     private ConsultantType consultantType;
     @JsonProperty("statusType")
     private StatusType statusType;
     @JsonProperty("grossAvailableHours")
-    private Double grossAvailableHours;
+    private double grossAvailableHours;
     @JsonProperty("netAvailableHours")
-    private Double netAvailableHours;
+    private double netAvailableHours;
     @JsonProperty("grossVacation")
-    private Double grossVacation;
+    private double grossVacation;
     @JsonProperty("netVacation")
-    private Double netVacation;
+    private double netVacation;
     @JsonProperty("grossSickdays")
-    private Double grossSickdays;
+    private double grossSickdays;
     @JsonProperty("netSickdays")
-    private Double netSickdays;
+    private double netSickdays;
     @JsonProperty("netMaternityLeave")
-    private Double netMaternityLeave;
+    private double netMaternityLeave;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -101,62 +99,62 @@ public class AvailabilityDocument {
     }
 
     @JsonProperty("availableHours")
-    public Double getAvailableHours() {
+    public double getAvailableHours() {
         return availableHours;
     }
 
     @JsonProperty("availableHours")
-    public void setAvailableHours(Double availableHours) {
+    public void setAvailableHours(double availableHours) {
         this.availableHours = availableHours;
     }
 
     @JsonProperty("vacation")
-    public Double getVacation() {
+    public double getVacation() {
         return vacation;
     }
 
     @JsonProperty("vacation")
-    public void setVacation(Double vacation) {
+    public void setVacation(double vacation) {
         this.vacation = vacation;
     }
 
     @JsonProperty("sickdays")
-    public Double getSickdays() {
+    public double getSickdays() {
         return sickdays;
     }
 
     @JsonProperty("sickdays")
-    public void setSickdays(Double sickdays) {
+    public void setSickdays(double sickdays) {
         this.sickdays = sickdays;
     }
 
     @JsonProperty("maternityLeave")
-    public Double getMaternityLeave() {
+    public double getMaternityLeave() {
         return maternityLeave;
     }
 
     @JsonProperty("maternityLeave")
-    public void setMaternityLeave(Double maternityLeave) {
+    public void setMaternityLeave(double maternityLeave) {
         this.maternityLeave = maternityLeave;
     }
 
     @JsonProperty("weeks")
-    public Double getWeeks() {
+    public double getWeeks() {
         return weeks;
     }
 
     @JsonProperty("weeks")
-    public void setWeeks(Double weeks) {
+    public void setWeeks(double weeks) {
         this.weeks = weeks;
     }
 
     @JsonProperty("weekdaysInPeriod")
-    public Double getWeekdaysInPeriod() {
+    public double getWeekdaysInPeriod() {
         return weekdaysInPeriod;
     }
 
     @JsonProperty("weekdaysInPeriod")
-    public void setWeekdaysInPeriod(Double weekdaysInPeriod) {
+    public void setWeekdaysInPeriod(double weekdaysInPeriod) {
         this.weekdaysInPeriod = weekdaysInPeriod;
     }
 
@@ -181,72 +179,72 @@ public class AvailabilityDocument {
     }
 
     @JsonProperty("grossAvailableHours")
-    public Double getGrossAvailableHours() {
+    public double getGrossAvailableHours() {
         return grossAvailableHours;
     }
 
     @JsonProperty("grossAvailableHours")
-    public void setGrossAvailableHours(Double grossAvailableHours) {
+    public void setGrossAvailableHours(double grossAvailableHours) {
         this.grossAvailableHours = grossAvailableHours;
     }
 
     @JsonProperty("netAvailableHours")
-    public Double getNetAvailableHours() {
+    public double getNetAvailableHours() {
         return netAvailableHours;
     }
 
     @JsonProperty("netAvailableHours")
-    public void setNetAvailableHours(Double netAvailableHours) {
+    public void setNetAvailableHours(double netAvailableHours) {
         this.netAvailableHours = netAvailableHours;
     }
 
     @JsonProperty("grossVacation")
-    public Double getGrossVacation() {
+    public double getGrossVacation() {
         return grossVacation;
     }
 
     @JsonProperty("grossVacation")
-    public void setGrossVacation(Double grossVacation) {
+    public void setGrossVacation(double grossVacation) {
         this.grossVacation = grossVacation;
     }
 
     @JsonProperty("netVacation")
-    public Double getNetVacation() {
+    public double getNetVacation() {
         return netVacation;
     }
 
     @JsonProperty("netVacation")
-    public void setNetVacation(Double netVacation) {
+    public void setNetVacation(double netVacation) {
         this.netVacation = netVacation;
     }
 
     @JsonProperty("grossSickdays")
-    public Double getGrossSickdays() {
+    public double getGrossSickdays() {
         return grossSickdays;
     }
 
     @JsonProperty("grossSickdays")
-    public void setGrossSickdays(Double grossSickdays) {
+    public void setGrossSickdays(double grossSickdays) {
         this.grossSickdays = grossSickdays;
     }
 
     @JsonProperty("netSickdays")
-    public Double getNetSickdays() {
+    public double getNetSickdays() {
         return netSickdays;
     }
 
     @JsonProperty("netSickdays")
-    public void setNetSickdays(Double netSickdays) {
+    public void setNetSickdays(double netSickdays) {
         this.netSickdays = netSickdays;
     }
 
     @JsonProperty("netMaternityLeave")
-    public Double getNetMaternityLeave() {
+    public double getNetMaternityLeave() {
         return netMaternityLeave;
     }
 
     @JsonProperty("netMaternityLeave")
-    public void setNetMaternityLeave(Double netMaternityLeave) {
+    public void setNetMaternityLeave(double netMaternityLeave) {
         this.netMaternityLeave = netMaternityLeave;
     }
 

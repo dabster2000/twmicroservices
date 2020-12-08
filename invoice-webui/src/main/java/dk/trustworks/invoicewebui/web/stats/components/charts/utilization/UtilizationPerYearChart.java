@@ -5,6 +5,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
@@ -13,6 +14,7 @@ import dk.trustworks.invoicewebui.services.AvailabilityService;
 import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by hans on 20/09/2017.
@@ -80,19 +83,31 @@ public class UtilizationPerYearChart {
         List<DataSeriesItem> dataSeriesItemList = new ArrayList<>();
         int count = 0;
         double tempSum = 0.0;
+
+        List<AvailabilityDocument> availabilityDocuments = availabilityService.getConsultantAvailabilityByPeriod(startDate, LocalDate.now().withDayOfMonth(1));
+
         do {
             double totalBillableHours = 0.0;
             double totalAvailableHours = 0.0;
             double countEmployees = 0.0;
+            List<GraphKeyValue> registeredHoursPerConsultant = revenueService.getRegisteredHoursPerConsultantForSingleMonth(startDate);
             for (User user : userService.findEmployedUsersByDate(startDate, true, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
-                AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
-                if (availability == null || !availability.getStatusType().equals(StatusType.ACTIVE)) {
+                LocalDate finalStartDate = startDate;
+
+                double billableWorkHours = registeredHoursPerConsultant.stream().filter(g ->
+                        g.getUuid().equals(user.getUuid()) && g.getDescription().equals(DateUtils.stringIt(finalStartDate))).mapToDouble(GraphKeyValue::getValue).sum();
+                //double billableWorkHours = registeredHours.map(GraphKeyValue::getValue).orElse(0.0);
+
+                //AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
+                Optional<AvailabilityDocument> availabilityDocument = availabilityDocuments.stream().filter(ad ->
+                        ad.getMonth().isEqual(finalStartDate) && ad.getUser().getUuid().equals(user.getUuid())).findAny();
+
+                if (!availabilityDocument.isPresent() || !availabilityDocument.get().getStatusType().equals(StatusType.ACTIVE)) {
                     continue;
                 }
-                totalAvailableHours += availability.getNetAvailableHours();
+                totalAvailableHours += availabilityDocument.get().getNetAvailableHours();
                 totalBillableHours += billableWorkHours;
                 countEmployees++;
             }

@@ -15,6 +15,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class DashboardBoxCreator {
@@ -55,11 +57,12 @@ public class DashboardBoxCreator {
         SimpleRegression regression = new SimpleRegression();
 
         LocalDate periodStart = DateUtils.getCurrentFiscalStartDate();
+
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             if(!currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) break;
 
-            double revenueByMonth = statisticsService.getInvoicedOrRegisteredRevenueByMonth(currentDate);
+            double revenueByMonth = revenueService.getInvoicedRevenueForSingleMonth(currentDate);
             cumulativeRevenuePerMonth += revenueByMonth;
             double expense = financeService.calcAllExpensesByMonth(periodStart.plusMonths(i).withDayOfMonth(1));
             cumulativeExpensePerMonth += expense;
@@ -99,16 +102,29 @@ public class DashboardBoxCreator {
     private double getAverageAllocationByYear(LocalDate startDate) {
         double allocation = 0.0;
         double count = 0.0;
+
+        List<AvailabilityDocument> availabilityDocuments = availabilityService.getConsultantAvailabilityByPeriod(startDate, LocalDate.now());
+
         do {
             startDate = startDate.plusMonths(1);
+            List<GraphKeyValue> registeredHoursPerConsultant = revenueService.getRegisteredHoursPerConsultantForSingleMonth(startDate);
+
             for (User user : userService.findEmployedUsersByDate(startDate, true, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
-                AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
-                if (availability == null) {
-                    availability = new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED);
-                }
+                LocalDate finalStartDate = startDate;
+
+                double billableWorkHours = registeredHoursPerConsultant.stream().filter(g ->
+                        g.getUuid().equals(user.getUuid()) && g.getDescription().equals(DateUtils.stringIt(finalStartDate)))
+                        .mapToDouble(GraphKeyValue::getValue).sum();
+                //double billableWorkHours = registeredHours.map(GraphKeyValue::getValue).orElse(0.0);
+
+                //double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
+                //AvailabilityDocument availability = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), startDate);
+                AvailabilityDocument availability = availabilityDocuments.stream().filter(ad ->
+                        ad.getMonth().isEqual(finalStartDate) && ad.getUser().getUuid().equals(user.getUuid())).findAny().orElse(
+                        new AvailabilityDocument(user, startDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED)
+                );
                 double monthAllocation = 0.0;
                 if (billableWorkHours > 0.0 && availability.getNetAvailableHours() > 0.0) {
                     monthAllocation = (billableWorkHours / availability.getNetAvailableHours()) * 100.0;

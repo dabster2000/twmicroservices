@@ -14,6 +14,7 @@ import dk.trustworks.invoicewebui.model.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.CkoCourseStudent;
 import dk.trustworks.invoicewebui.model.Note;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.network.rest.KnowledgeRestService;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
@@ -60,7 +61,7 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final AchievementCardController achievementCardController;
 
-    private final CKOExpenseRepository ckoExpenseRepository;
+    private final KnowledgeRestService knowledgeRestService;
 
     private final NotesRepository notesRepository;
 
@@ -104,12 +105,12 @@ public class EmployeeLayout extends VerticalLayout {
     private final UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, CKOExpenseRepository ckoExpenseRepository, NotesRepository notesRepository, BubbleService bubbleService, ReminderHistoryRepository reminderHistoryRepository, CKOCertificationsRepository ckoCertificationsRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, KnowledgeRestService knowledgeRestService, NotesRepository notesRepository, BubbleService bubbleService, ReminderHistoryRepository reminderHistoryRepository, CKOCertificationsRepository ckoCertificationsRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.userService = userService;
         this.availabilityService = availabilityService;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
         this.achievementCardController = achievementCardController;
-        this.ckoExpenseRepository = ckoExpenseRepository;
+        this.knowledgeRestService = knowledgeRestService;
         this.notesRepository = notesRepository;
         this.bubbleService = bubbleService;
         this.reminderHistoryRepository = reminderHistoryRepository;
@@ -220,7 +221,7 @@ public class EmployeeLayout extends VerticalLayout {
             skillContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(ambitionSpiderChart.getOrganisationChart(user, ambitionCategory));
         }
 
-        knowContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new CKOExpenseImpl(ckoExpenseRepository, ckoCertificationsRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
+        knowContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new CKOExpenseImpl(knowledgeRestService, ckoCertificationsRepository, VaadinSession.getCurrent().getAttribute(UserSession.class).getUser()));
 
         BubblesCardImpl bubblesCard = new BubblesCardImpl(bubbleService, photoService, Optional.of(user));
         bubblesCard.getContentHolder().setHeight(200, Unit.PIXELS);

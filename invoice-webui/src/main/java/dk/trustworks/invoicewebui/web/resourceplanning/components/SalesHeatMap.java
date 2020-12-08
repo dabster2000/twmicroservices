@@ -14,6 +14,7 @@ import dk.trustworks.invoicewebui.model.dto.AvailabilityDocument;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.dto.UserBooking;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -59,8 +60,6 @@ public class SalesHeatMap {
     }
 
     public Component getChart(LocalDate localDateStart, LocalDate localDateEnd) {
-        //LocalDate localDateStart = localDateStart2.minusMonths(9);
-        //localDateEnd = localDateEnd.minusMonths(9);
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         monthTotalAvailabilites = new double[monthPeriod];
         monthAvailabilites = new double[monthPeriod];
@@ -96,10 +95,14 @@ public class SalesHeatMap {
         Map<String, Map<String, double[]>> userAllocationPerAssignmentMap = new HashMap<>();
         List<User> users = userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
 
+        List<BudgetDocument> budgetDocumentList = budgetService.getConsultantBudgetHoursByPeriodDocuments(localDateStart, localDateEnd);
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = localDateStart.withDayOfMonth(1).plusMonths(i);
             for (User user : users) {
-                List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
+                //List<BudgetDocument> budgets = budgetService.getConsultantBudgetHoursByMonthDocuments(user.getUuid(), currentDate.withDayOfMonth(1));
+                List<BudgetDocument> budgets = budgetDocumentList.stream().filter(budgetDocument ->
+                        budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(currentDate.withDayOfMonth(1)))
+                        .collect(Collectors.toList());
                 for (BudgetDocument budget : budgets) {
                     userAllocationPerAssignmentMap.putIfAbsent(user.getUuid(), new HashMap<>());
                     userAllocationPerAssignmentMap.get(user.getUuid()).putIfAbsent(budget.getClient().getUuid(), new double[12]);
@@ -108,15 +111,24 @@ public class SalesHeatMap {
             }
         }
 
+        List<AvailabilityDocument> availabilityDocuments = availabilityService.getConsultantAvailabilityByPeriod(localDateStart, localDateEnd);
         for (User user : users) {
             LocalDate localDate = localDateStart;
             int m = 0;
             while(localDate.isBefore(localDateEnd) || localDate.isEqual(localDateEnd)) {
-                double budget = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), localDate.withDayOfMonth(1));
+                //double budget = budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), localDate.withDayOfMonth(1));
+
+                LocalDate finalLocalDate = localDate;
+
+                double budget = budgetDocumentList.stream()
+                        .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(finalLocalDate.withDayOfMonth(1)))
+                        .mapToDouble(BudgetDocument::getGrossBudgetHours).sum();
                 monthAvailabilites[m] += budget;
 
-                // TODO: FIX
-                AvailabilityDocument availabilityDocument = availabilityService.getConsultantAvailabilityByMonth(user.getUuid(), localDate.withDayOfMonth(1));
+                AvailabilityDocument availabilityDocument = availabilityDocuments.stream().filter(ad ->
+                        ad.getMonth().isEqual(finalLocalDate) && ad.getUser().getUuid().equals(user.getUuid())).findAny().orElse(
+                        new AvailabilityDocument(user, localDate, 0.0, 0.0, 0.0, 0.0, ConsultantType.CONSULTANT, StatusType.TERMINATED)
+                );
                 double availability = availabilityDocument.getNetAvailableHours();
                 monthTotalAvailabilites[m] += availability;
                 rs.addHeatPoint(m, userNumber, Math.round((budget / availability)*100.0));
@@ -192,7 +204,6 @@ public class SalesHeatMap {
         chart.drawChart(config);
         chart.setHeight("700px");
 
-        System.out.println("----------------------------------------------------");
         return chart;
     }
 

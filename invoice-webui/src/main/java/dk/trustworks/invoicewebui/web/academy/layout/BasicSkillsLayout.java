@@ -19,11 +19,13 @@ import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.academy.components.CourseForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.PhotosCardImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
+import org.vaadin.viritin.label.MLabel;
 
 @SpringComponent
 @SpringUI
@@ -57,6 +59,13 @@ public class BasicSkillsLayout extends VerticalLayout {
         //responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(new BoxImpl().instance(new Label("<p>Her kan jeg læse om de obligatoriske kurser</p><p>AC1: Når som Trustworker står på siden 'Basis TW Info' under Knowledge har jeg som Trustworker mulighed for at læse om de obligatoriske TW 'kurser'</p>")));
         responsiveLayout.addRow(courseForm.getNewCourseButton());
         responsiveLayout.addRow(courseForm.getDialogRow());
+
+        responsiveLayout.addRow().addColumn().withDisplayRules(12,12,12,12).withComponent(
+                new BoxImpl().instance(
+                        new MLabel("Basic skills er både til dig der er helt ny i konsulentverdenen, " +
+                                "men i særdeleshed til dig der tillidsfuldt skal evne at samarbejde og håndtere " +
+                                "relationer, derfor prioriterer vi alle konsulenter deltager i Basic Skills")
+                                .withWidth(80, Unit.PERCENTAGE).withStyleName("large").withStyleName("center-label")));
 
         coursesRow = responsiveLayout.addRow();
         this.addComponent(responsiveLayout);

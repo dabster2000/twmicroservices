@@ -56,6 +56,12 @@ public class RevenueRestService {
         return result.getBody();
     }
 
+    public List<GraphKeyValue> getRegisteredHoursPerConsultantForSingleMonth(LocalDate month) {
+        String url = apiGatewayUrl + "/revenue/registered/consultants/hours?month="+stringIt(month);
+        ResponseEntity<GraphKeyValue[]> result = systemRestService.secureCall(url, GET, GraphKeyValue[].class);
+        return Arrays.asList(result.getBody());
+    }
+
     public GraphKeyValue getRegisteredHoursForSingleMonthAndSingleConsultant(String useruuid, LocalDate month) {
         String url = apiGatewayUrl + "/revenue/registered/consultants/"+useruuid+"/hours?month="+stringIt(month);
         ResponseEntity<GraphKeyValue> result = systemRestService.secureCall(url, GET, GraphKeyValue.class);

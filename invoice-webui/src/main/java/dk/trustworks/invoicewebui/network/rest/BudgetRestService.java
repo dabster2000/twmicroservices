@@ -6,6 +6,7 @@ import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class BudgetRestService {
         this.systemRestService = systemRestService;
     }
 
+    @Cacheable("budgets")
     public List<GraphKeyValue> getBudgetsByPeriod(LocalDate fromdate, LocalDate todate) {
         String url = apiGatewayUrl +"/cached/budgets/datemonths?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
         List<GraphKeyValue> graphKeyValues;
@@ -57,6 +59,13 @@ public class BudgetRestService {
         return Arrays.asList(result.getBody());
     }
 
+    @Cacheable("budgetdocuments")
+    public List<BudgetDocument> getConsultantBudgetHoursByPeriodDocuments(LocalDate fromDate, LocalDate toDate) {
+        String url = apiGatewayUrl +"/cached/budgets?fromdate="+stringIt(fromDate)+"&todate="+stringIt(toDate);
+        ResponseEntity<BudgetDocument[]> result = systemRestService.secureCall(url, GET, BudgetDocument[].class);
+        return Arrays.asList(result.getBody());
+    }
+
     public GraphKeyValue getMonthBudget(LocalDate month) {
         String url = apiGatewayUrl +"/cached/budgets/datemonths/"+stringIt(month);
         ResponseEntity<GraphKeyValue> result = systemRestService.secureCall(url, GET, GraphKeyValue.class);
@@ -74,12 +83,6 @@ public class BudgetRestService {
             budgetNewList = new ArrayList<>();
         }
         return budgetNewList;
-    }
-
-    public BudgetNew findByMonthAndYearAndContractConsultantAndProjectuuid(int month, int year, String contractconsultantuuid, String projectuuid) {
-        String url = apiGatewayUrl +"/projects/"+projectuuid+"/budgets?consultantuuid=";
-
-        return null;
     }
 
     public void save(BudgetNew budget) {

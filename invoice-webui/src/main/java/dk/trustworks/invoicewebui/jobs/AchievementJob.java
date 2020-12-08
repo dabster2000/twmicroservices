@@ -23,16 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class AchievementJob {
 
     private static final Logger log = LoggerFactory.getLogger(AchievementJob.class);
 
-    private final AchievementRepository achievementRepository;
     private final UserService userService;
     private final WorkService workService;
     private final ReminderHistoryRepository reminderHistoryRepository;
-    private final CKOExpenseRepository ckoExpenseRepository;
     private final NotificationRepository notificationRepository;
     private final LogEventRepository logEventRepository;
     private final AmbitionRepository ambitionRepository;
@@ -41,13 +39,11 @@ public class AchievementJob {
     private final RevenueService revenueService;
 
 
-    @Autowired
-    public AchievementJob(AchievementRepository achievementRepository, UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, CKOExpenseRepository ckoExpenseRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, BudgetService budgetService, RevenueService revenueService) {
-        this.achievementRepository = achievementRepository;
+    //@Autowired
+    public AchievementJob(UserService userService, WorkService workService, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, LogEventRepository logEventRepository, AmbitionRepository ambitionRepository, UserAmbitionDTORepository userAmbitionDTORepository, BudgetService budgetService, RevenueService revenueService) {
         this.userService = userService;
         this.workService = workService;
         this.reminderHistoryRepository = reminderHistoryRepository;
-        this.ckoExpenseRepository = ckoExpenseRepository;
         this.notificationRepository = notificationRepository;
         this.logEventRepository = logEventRepository;
         this.ambitionRepository = ambitionRepository;
@@ -70,7 +66,7 @@ public class AchievementJob {
         for (User user : userService.findCurrentlyEmployedUsers(false, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT)) {
             if(userService.isExternal(user)) continue;
 
-            List<Achievement> achievementList = achievementRepository.findByUseruuid(user.getUuid());
+            List<Achievement> achievementList = null;//achievementRepository.findByUseruuid(user.getUuid());
             /**
              * Disabled
              */
@@ -100,10 +96,13 @@ public class AchievementJob {
             testAchievement(user, achievementList, AchievementType.AMBITIONENTERED, isWorthyOfAmbitionCompleted(user));
             System.out.println("4");
 
+            /*
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE1, isWorthyOfCkoExpenseAchievement(user, 1));
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE2, isWorthyOfCkoExpenseAchievement(user, 2));
             testAchievement(user, achievementList, AchievementType.CKOEXPENSE3, isWorthyOfCkoExpenseAchievement(user, 3));
             System.out.println("5");
+
+             */
 
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY3, isWorthyOfAnniversary(user, 3));
             testAchievement(user, achievementList, AchievementType.ANNIVERSARY5, isWorthyOfAnniversary(user, 5));
@@ -130,11 +129,12 @@ public class AchievementJob {
             if (worthyOfVacationAchievement) {
                 log.info("user = " + user.getUsername() + ", achivement = " + achievementType, user.getUuid());
                 notificationRepository.save(new Notification(user, LocalDate.now(), LocalDate.now().plusMonths(3), "New Achievement", "You've made it: "+achievementType.toString(), achievementType.getDescription(), achievementType.getNumber()+"", NotificationType.ACHIEVEMENT));
-                achievementRepository.save(new Achievement(user, LocalDate.now(), achievementType));
+                //achievementRepository.save(new Achievement(user, LocalDate.now(), achievementType));
             }
         }
     }
 
+    /*
     private boolean isWorthyOfCkoExpenseAchievement(User user, int years) {
         List<CKOExpense> ckoExpenseList = ckoExpenseRepository.findCKOExpenseByUseruuid(user.getUuid());
         Map<String, Double> expensePerYearMap = new HashMap<>();
@@ -162,6 +162,8 @@ public class AchievementJob {
 
         return found;
     }
+
+     */
 
     private boolean isWorthyOfBubbleMemberAchievement(User user, int minBubbles) {
         /*
