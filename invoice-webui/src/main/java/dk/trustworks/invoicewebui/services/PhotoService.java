@@ -62,7 +62,12 @@ public class PhotoService {
     }
 
     public Resource getRelatedPhotoResource(String relatedUUID) {
-        Photo photo = photoRestService.findPhotoByRelateduuid(relatedUUID);
+        Photo photo;
+        try {
+            photo = photoRestService.findPhotoByRelateduuid(relatedUUID);
+        } catch (Exception e) {
+            return new ThemeResource("images/clients/missing-logo.jpg");
+        }
         if(photo!=null && photo.getPhoto()!=null && photo.getPhoto().length > 0) {
             return new StreamResource((StreamResource.StreamSource) () ->
                     new ByteArrayInputStream(photo.getPhoto()), System.currentTimeMillis() + ".jpg");

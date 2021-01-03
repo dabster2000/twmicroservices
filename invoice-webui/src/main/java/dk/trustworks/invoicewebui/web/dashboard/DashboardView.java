@@ -269,10 +269,7 @@ public class   DashboardView extends VerticalLayout implements View {
             rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeChartCard);
         }
         // rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(cateringCard);
-        // rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(vacationCard);
-
-
-
+        rightRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new VacationCard());
 
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
 

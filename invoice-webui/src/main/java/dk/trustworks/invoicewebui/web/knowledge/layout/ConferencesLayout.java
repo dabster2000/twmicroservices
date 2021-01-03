@@ -3,13 +3,14 @@ package dk.trustworks.invoicewebui.web.knowledge.layout;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.LocalDateRenderer;
 import dk.trustworks.invoicewebui.model.CKOExpense;
 import dk.trustworks.invoicewebui.model.enums.CKOExpenseStatus;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.teemu.ratingstars.RatingStars;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
@@ -37,6 +39,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.vaadin.data.HasValue.*;
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
 
@@ -53,6 +56,10 @@ public class ConferencesLayout extends VerticalLayout {
     private ResponsiveRow detailViewRow;
     private ResponsiveRow masterViewRow;
     private MButton backButton;
+
+    private TextField nameFilter;
+
+    private ListDataProvider<ConferenceGridItem> dataProvider;
 
     public ConferencesLayout init() {
         this.removeAllComponents();
@@ -191,8 +198,14 @@ public class ConferencesLayout extends VerticalLayout {
             gridItemList.add(conferenceGridItem);
         });
 
-        Grid<ConferenceGridItem> grid = new Grid<>("", gridItemList.stream().sorted(Comparator.comparing(ConferenceGridItem::getName, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList()));
+        List<ConferenceGridItem> gridItems = gridItemList.stream().sorted(Comparator.comparing(ConferenceGridItem::getName, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
+        //ListDataProvider<ConferenceGridItem> dataProvider = new ListDataProvider<>(gridItems);
+
+        Grid<ConferenceGridItem> grid = new Grid<>("", gridItems);
+        dataProvider = (ListDataProvider<ConferenceGridItem>) grid.getDataProvider();
+
         grid.setWidth(100, PERCENTAGE);
+        grid.setHeightByRows(gridItemList.size());
 
         Grid.Column<ConferenceGridItem, String> itemNameGridCol = grid.addColumn(ConferenceGridItem::getName);
         itemNameGridCol.setCaption("Name");
@@ -209,7 +222,23 @@ public class ConferencesLayout extends VerticalLayout {
 
         grid.addComponentColumn(this::detailButton).setStyleGenerator(item -> "center-label").setCaption("Details");
 
+        HeaderRow filterRow = grid.appendHeaderRow();
+        nameFilter = singleFilterTextField(itemNameGridCol, filterRow);
+
         return grid;
+    }
+
+    private TextField singleFilterTextField(Grid.Column<ConferenceGridItem, String> column, HeaderRow filterRow){
+        TextField filterField = new TextField();
+        filterField.setValueChangeMode(ValueChangeMode.EAGER);
+        filterField.setWidth("100%");
+        filterField.addValueChangeListener(this::onFilterChange);
+        filterRow.getCell(column).setComponent(new MHorizontalLayout(new MLabel("filter: "), filterField));
+        return filterField;
+    }
+
+    private void onFilterChange(ValueChangeEvent event){
+        dataProvider.setFilter((item) -> item.getName().toLowerCase().contains(nameFilter.getValue().toLowerCase()));
     }
 
     private Button detailButton(ConferenceGridItem conferenceGridItem) {

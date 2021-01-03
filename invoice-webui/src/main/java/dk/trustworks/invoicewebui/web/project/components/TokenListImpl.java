@@ -10,8 +10,7 @@ public class TokenListImpl extends TokenList {
 
     private final List<String> selectableValues;
     private final List<String> tokens;
-    private List<TokenEventListener> listeners = new ArrayList<>();
-
+    private final List<TokenEventListener> listeners = new ArrayList<>();
     private String placeholder = "add offering";
 
     public TokenListImpl() {
@@ -70,7 +69,7 @@ public class TokenListImpl extends TokenList {
         comboBox.setItems(selectableValues);
         comboBox.addStyleName("floating");
         comboBox.addStyleName("tiny");
-        comboBox.setPlaceholder("add offering");
+        comboBox.setPlaceholder(placeholder);
         comboBox.setTextInputAllowed(true);
         comboBox.addValueChangeListener(event -> {
             addToken(event.getValue());

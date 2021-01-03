@@ -46,20 +46,24 @@ public class ClientRestService {
         return Arrays.asList(result.getBody());
     }
 
+    @CacheEvict(cacheNames = "client", allEntries = true)
     public Client save(Client client) {
         String url = apiGatewayUrl +"/clients";
         return (Client) systemRestService.secureCall(url, POST, Client.class, client).getBody();//restTemplate.postForObject(url, user, User.class);
     }
 
+    @CacheEvict(cacheNames = "client", allEntries = true)
     public void update(Client client) {
         String url = apiGatewayUrl +"/clients";
         systemRestService.secureCall(url, PUT, Client.class, client).getBody(); //restTemplate.put(url, user);
     }
 
+    @CacheEvict(cacheNames = "client", allEntries = true)
     public void delete(Client client) {
         delete(client.getUuid());
     }
 
+    @CacheEvict(cacheNames = "client", allEntries = true)
     public void delete(String uuid) {
         String url = apiGatewayUrl +"/clients/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);

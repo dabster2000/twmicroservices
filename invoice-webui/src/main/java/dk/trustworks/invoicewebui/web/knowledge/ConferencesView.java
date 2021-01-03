@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.MANAGER})
+@AccessRules(roleTypes = {RoleType.USER})
 @SpringView(name = ConferencesView.VIEW_NAME)
 public class ConferencesView extends VerticalLayout implements View {
 

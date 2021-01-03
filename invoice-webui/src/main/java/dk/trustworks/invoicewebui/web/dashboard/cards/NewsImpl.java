@@ -70,7 +70,7 @@ public class NewsImpl extends NewsDesign implements Box {
             newsList.add(news);
         }
 
-        for (News news : newsRepository.findAll()) {
+        for (News news : newsRepository.findAll().stream().filter(news -> !news.getNewstype().equalsIgnoreCase("CKO_DASHBOARD")).collect(Collectors.toList())) {
             newsList.add(news);
             if(news.getNewstype().equalsIgnoreCase("project")) news.setNewsdate(java.time.LocalDate.now().plusMonths(12));
         }

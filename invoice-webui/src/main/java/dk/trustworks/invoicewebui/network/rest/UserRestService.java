@@ -7,6 +7,7 @@ import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.network.dto.IntegerJsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -39,13 +40,13 @@ public class UserRestService {
         return ((User[]) systemRestService.secureCall(url, GET, User[].class).getBody())[0]; //restTemplate.getForObject(url, User.class, createHeaders(systemToken.getToken()));
     }
 
-    @Cacheable("users")
+    @Cacheable("user")
     public User findOne(String uuid, boolean shallow) {
         String url = apiGatewayUrl + "/users/" + uuid + "?shallow="+shallow;
         return (User) systemRestService.secureCall(url, GET, User.class).getBody();
     }
 
-    @Cacheable("users")
+    @Cacheable("user")
     public List<User> findByOrderByUsername(boolean shallow) {
         String url = apiGatewayUrl+"/users?shallow="+shallow;
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
@@ -57,7 +58,7 @@ public class UserRestService {
         return result.getBody();
     }
 
-    @Cacheable("users")
+    @Cacheable("user")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, boolean shallow, String... consultantTypes) {
         String url = apiGatewayUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes)+"&shallow="+shallow;
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
@@ -83,16 +84,19 @@ public class UserRestService {
         return Arrays.asList(result); //restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public User create(User user) {
         String url = apiGatewayUrl+"/users";
         return (User) systemRestService.secureCall(url, POST, User.class, user).getBody();
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void update(User user) {
         String url = apiGatewayUrl+"/users/"+user.getUuid();
         systemRestService.secureCall(url, PUT, User.class, user);
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void updateBirthday(User user) {
         String url = apiGatewayUrl+"/users/"+user.getUuid()+"/birthday";
         systemRestService.secureCall(url, PUT, User.class, user);
@@ -113,12 +117,12 @@ public class UserRestService {
         return systemRestService.login(username, password);
     }
 
-
     public void confirmPasswordChange(@PathParam("key") String key) {
         String url = apiGatewayUrl + "/users/command/confirmpasswordchange/"+key;
         systemRestService.unsafeCall(url);
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void deleteSalaries(String useruuid, Set<Salary> salaries) {
         for (Salary salary : salaries) {
             String url = apiGatewayUrl+"/users/"+useruuid+"/salaries/"+salary.getUuid();
@@ -138,6 +142,7 @@ public class UserRestService {
         return Arrays.asList(result.getBody());
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void deleteUserStatuses(String useruuid, Set<UserStatus> userStatuses) {
         for (UserStatus userStatus : userStatuses) {
             String url = apiGatewayUrl+"/users/"+useruuid+"/statuses/"+userStatus.getUuid();
@@ -151,21 +156,25 @@ public class UserRestService {
         return Arrays.asList(result.getBody());
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void deleteRoles(User user, List<Role> roles) {
         String url = apiGatewayUrl+"/users/"+user.getUuid()+"/roles";
         systemRestService.secureCall(url, DELETE, Role.class);
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void create(String useruuid, Salary salary) {
         String url = apiGatewayUrl+"/users/"+useruuid+"/salaries";
         systemRestService.secureCall(url, POST, String.class, salary); //restTemplate.postForObject(url, salary, String.class);
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void create(String useruuid, UserStatus userStatus) {
         String url = apiGatewayUrl+"/users/"+useruuid+"/statuses";
         systemRestService.secureCall(url, POST, String.class, userStatus); //restTemplate.postForObject(url, userStatus, String.class);
     }
 
+    @CacheEvict(cacheNames = "user", allEntries = true)
     public void create(String useruuid, Role role) {
         String url = apiGatewayUrl+"/users/"+useruuid+"/roles";
         systemRestService.secureCall(url, POST, String.class, role); //restTemplate.postForObject(url, role, String.class);

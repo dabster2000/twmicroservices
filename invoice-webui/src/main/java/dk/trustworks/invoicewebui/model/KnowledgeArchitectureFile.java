@@ -31,4 +31,13 @@ public class KnowledgeArchitectureFile {
     @JoinColumn(name="card_id")
     private KnowledgeArchitectureCard knowledgeArchitectureCard;
 
+    public KnowledgeArchitectureFile(String headline, String filetype, String preview, String filename, String description, String authors, LocalDate date) {
+        this.headline = headline;
+        this.filetype = filetype;
+        this.preview = preview;
+        this.filename = filename;
+        this.description = description;
+        this.authors = authors;
+        this.date = date;
+    }
 }

@@ -34,25 +34,19 @@ public class InvoiceRestService {
     }
 
     public List<Invoice> findByPeriod(LocalDate fromdate, LocalDate todate) {
-        System.out.println("InvoiceRestService.findByPeriod");
         String url = apiGatewayUrl + "/invoices?fromdate="+fromdate+"&todate="+todate;
-        System.out.println("url = " + url);
         ResponseEntity<Invoice[]> result = systemRestService.secureCall(url, GET, Invoice[].class);
         return Arrays.asList(result.getBody());
     }
 
     public List<Invoice> getInvoicesForSingleMonth(LocalDate month) {
-        System.out.println("InvoiceRestService.getInvoicesForSingleMonth");
         String url = apiGatewayUrl + "/invoices/months/"+ DateUtils.stringIt(month.withDayOfMonth(1));
-        System.out.println("url = " + url);
         ResponseEntity<Invoice[]> result = systemRestService.secureCall(url, GET, Invoice[].class);
         return Arrays.asList(result.getBody());
     }
 
     public List<ProjectSummary> loadProjectSummaryByYearAndMonth(LocalDate month) {
-        System.out.println("InvoiceRestService.loadProjectSummaryByYearAndMonth");
         String url = apiGatewayUrl + "/invoices/candidates/months/"+DateUtils.stringIt(month);
-        System.out.println("url = " + url);
         ResponseEntity<ProjectSummary[]> result = systemRestService.secureCall(url, GET, ProjectSummary[].class);
         return Arrays.asList(result.getBody());
     }
@@ -63,14 +57,11 @@ public class InvoiceRestService {
                 "&projectuuid="+projectSummary.getProjectuuid()+
                 "&type="+projectSummary.getProjectSummaryType()+
                 "&month="+DateUtils.stringIt(month.withDayOfMonth(1));
-        System.out.println("url = " + url);
         ResponseEntity<Invoice> result = systemRestService.secureCall(url, POST, Invoice.class, projectSummary);
         return result.getBody();
     }
 
     public void updateDraftInvoice(Invoice invoice) {
-        System.out.println("InvoiceRestService.updateDraftInvoice");
-        System.out.println("invoice = " + invoice);
         String url = apiGatewayUrl + "/invoices/drafts";
         systemRestService.secureCall(url, PUT, Invoice.class, invoice);
     }

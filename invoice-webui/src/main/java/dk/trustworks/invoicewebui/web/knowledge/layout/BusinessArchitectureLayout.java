@@ -183,6 +183,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                                         new MButton("Save", clickEvent1 -> {
                                             knowArchiColumnRepository.save(archiColumn);
                                             window.close();
+                                            drawDetailPage(archiColumn, item);
                                         }));
                                 window.setContent(vl);
                                 window.setModal(true);
@@ -218,6 +219,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                 item.setName(title.getValue());
                 knowArchiColumnRepository.save(archiColumn);
                 window.close();
+                drawDetailPage(archiColumn, item);
             })));
             window.setModal(true);
             window.setDraggable(false);
@@ -237,6 +239,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                 item.setDescription(title.getValue());
                 knowArchiColumnRepository.save(archiColumn);
                 window.close();
+                drawDetailPage(archiColumn, item);
             })));
             window.setModal(true);
             window.setDraggable(false);
@@ -315,7 +318,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                 if(isEditor()) {
                     architectureCell1.getVlAdminButtons().setVisible(true);
 
-                    architectureCell1.getBtnAddFile().getListeners(Button.ClickListener.class);
+                    //architectureCell1.getBtnAddFile().getListeners(Button.ClickListener.class);
                     registrationList.add(architectureCell1.getBtnAddFile().addClickListener(clickEvent -> {
                         KnowledgeArchitectureFile knowledgeArchitectureFile = new KnowledgeArchitectureFile();
                         knowledgeArchitectureFile.setHeadline("new file");
@@ -323,7 +326,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                         card.getFiles().add(knowledgeArchitectureFile);
                         knowledgeArchitectureFile.setKnowledgeArchitectureCard(card);
                         knowArchiColumnRepository.save(archiColumn);
-                        init();
+                        drawDetailPage(archiColumn, item);
                     }));
 
                     registrationList.add(architectureCell1.getBtnImgFile().addClickListener(clickEvent -> {
@@ -351,7 +354,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                         TokenListImpl tokenList = new TokenListImpl(
                                 allUsers.stream().map(User::getUsername).sorted().collect(Collectors.toList()),
                                 selectedUsers.stream().map(User::getUsername).sorted().collect(Collectors.toList()),
-                                "select author"
+                                "add consultant"
                         );
 
                         tokenList.addTokenListener(new TokenEventListener() {
@@ -407,6 +410,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                                     cardFile.setProjectuuid(projectComboBox.getSelectedItem().get().getUuid());
                                     knowArchiColumnRepository.save(archiColumn);
                                     window.close();
+                                    drawDetailPage(archiColumn, item);
                                 }));
                         window.setContent(vl);
                         window.setModal(true);
@@ -435,25 +439,21 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                 Window window = new Window();
                 KnowledgeArchitectureCard newCard = new KnowledgeArchitectureCard();
                 MVerticalLayout vl = new MVerticalLayout(
-                        new MTextField("Name", "", valueChangeEvent -> {
-                            newCard.setName(valueChangeEvent.getValue());
-                        }).withValueChangeMode(ValueChangeMode.BLUR),
-                        new MTextField("Folder", "", valueChangeEvent -> {
-                            newCard.setFolder(valueChangeEvent.getValue());
-                        }),
+                        new MTextField("Name", "", valueChangeEvent -> newCard.setName(valueChangeEvent.getValue())).withValueChangeMode(ValueChangeMode.BLUR),
+                        new MTextField("Folder", "", valueChangeEvent -> newCard.setFolder(valueChangeEvent.getValue())).withVisible(false),
                         new MButton("Save", clickEvent1 -> {
-                            KnowledgeArchitectureFile file = new KnowledgeArchitectureFile();
-                            file.setAuthors("");
+                            KnowledgeArchitectureFile file = new KnowledgeArchitectureFile("Temp headline", "PDF", "", "", "", "", LocalDate.now());
                             newCard.getFiles().add(file);
                             file.setKnowledgeArchitectureCard(newCard);
                             item.getCards().add(newCard);
                             knowArchiColumnRepository.save(archiColumn);
                             window.close();
+                            drawDetailPage(archiColumn, item);
                         }));
                 window.setContent(vl);
                 window.setModal(true);
                 window.setDraggable(false);
-                window.setClosable(false);
+                window.setClosable(true);
                 window.setResizable(false);
                 UI.getCurrent().addWindow(window);
             });

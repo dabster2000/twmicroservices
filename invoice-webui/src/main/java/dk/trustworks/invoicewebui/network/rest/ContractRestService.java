@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -76,7 +77,7 @@ public class ContractRestService {
         return Arrays.asList(result.getBody());
     }
 
-    @Cacheable(cacheNames = "contracts")
+    @Cacheable(cacheNames = "contract")
     public List<Contract> findByActiveFromLessThanEqualAndActiveToGreaterThanEqualAndStatusIn(LocalDate activeTo, LocalDate activeFrom, ContractStatus... statusList) {
         String url = apiGatewayUrl + "/contracts?fromdate=" + stringIt(activeFrom.withDayOfMonth(1)) + "&todate=" + stringIt(activeTo.withDayOfMonth(1)) + "&statuslist=" + Arrays.stream(statusList).map(Enum::toString).collect(Collectors.joining(","));
         logger.info(url);
@@ -98,6 +99,7 @@ public class ContractRestService {
         return Double.parseDouble(result.getBody().getValue());
     }
 
+    @CacheEvict(cacheNames = "contract", allEntries = true)
     public Contract save(Contract contract) {
         String url = apiGatewayUrl +"/contracts";
         logger.debug(url);
@@ -105,24 +107,27 @@ public class ContractRestService {
         return savedContract.getBody();
     }
 
+    @CacheEvict(cacheNames = "contract", allEntries = true)
     public void update(Contract contract) {
         String url = apiGatewayUrl +"/contracts";
         systemRestService.secureCall(url, PUT, Void.class, contract);
     }
 
+    @CacheEvict(cacheNames = "contract", allEntries = true)
     public void delete(String uuid) {
         String url = apiGatewayUrl +"/contracts/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);
     }
 
     // *** PROJECT OPERATIONS ***
-
+    @CacheEvict(cacheNames = {"contract","project"}, allEntries = true)
     public void addProjectToContract(Contract contract, Project project) {
         String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/projects/"+project.getUuid();
         logger.debug(url);
         systemRestService.secureCall(url, POST, Project.class, project);
     }
 
+    @CacheEvict(cacheNames = {"contract","project"}, allEntries = true)
     public void removeProjectFromContract(Contract contract, Project project) {
         String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/projects/"+project.getUuid();
         logger.debug(url);
@@ -131,18 +136,21 @@ public class ContractRestService {
 
     // *** CONSULTANT OPERATIONS ***
 
+    @CacheEvict(cacheNames = {"contract","project"}, allEntries = true)
     public void addConsultant(Contract contract, ContractConsultant contractConsultant) {
         String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/consultants/"+contractConsultant.getUuid();
         logger.info(url);
         systemRestService.secureCall(url, POST, Void.class, contractConsultant);
     }
 
+    @CacheEvict(cacheNames = {"contract","project"}, allEntries = true)
     public void updateConsultant(Contract contract, ContractConsultant contractConsultant) {
         String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/consultants/"+contractConsultant.getUuid();
         logger.info(url);
         systemRestService.secureCall(url, PUT, Void.class, contractConsultant);
     }
 
+    @CacheEvict(cacheNames = {"contract","project"}, allEntries = true)
     public void removeConsultant(Contract contract, ContractConsultant contractConsultant) {
         String url = apiGatewayUrl +"/contracts/"+contract.getUuid()+"/consultants/"+contractConsultant.getUuid();
         logger.debug(url);

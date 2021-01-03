@@ -88,29 +88,29 @@ public class ProjectRestService {
         return Double.parseDouble(result.getBody().getValue());
     }
 
-    @CacheEvict(cacheNames = "project")
+    @CacheEvict(cacheNames = "project", allEntries = true)
     public void save(List<Project> projects) {
         projects.forEach(this::save);
     }
 
-    @CacheEvict(cacheNames = "project")
+    @CacheEvict(cacheNames = "project", allEntries = true)
     public Project save(Project project) {
         String url = apiGatewayUrl +"/projects";
         return (Project) systemRestService.secureCall(url, POST, Project.class, project).getBody();//restTemplate.postForObject(url, user, User.class);
     }
 
-    @CacheEvict(cacheNames = "project")
+    @CacheEvict(cacheNames = "project", allEntries = true)
     public void update(Project project) {
         String url = apiGatewayUrl +"/projects";
         systemRestService.secureCall(url, PUT, Project.class, project).getBody(); //restTemplate.put(url, user);
     }
 
-    @CacheEvict(cacheNames = "project")
+    @CacheEvict(cacheNames = "project", allEntries = true)
     public void delete(Project project) {
         delete(project.getUuid());
     }
 
-    @CacheEvict(cacheNames = "project")
+    @CacheEvict(cacheNames = "project", allEntries = true)
     public void delete(String uuid) {
         String url = apiGatewayUrl +"/projects/"+uuid;
         systemRestService.secureCall(url, DELETE, Void.class);
