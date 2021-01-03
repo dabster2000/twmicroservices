@@ -47,7 +47,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
     private final String rootFilePath = "/Shared/Administration/Intra/knowledge_architecture/";
 
-    private static final Map<String, ThemeResource> icons = new HashMap();
+    private static final Map<String, ThemeResource> icons = new HashMap<>();
 
     private static boolean isEditor = false;
 
@@ -85,16 +85,14 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         mainBox.getContent().addComponent(mainLayout);
         mainBox.getContent().setMargin(false);
 
-        backButton = new MButton("back").withStyleName("floating").withListener(clickEvent -> {
-            init();
-        }).withVisible(false);
+        backButton = new MButton("back").withStyleName("floating").withListener(clickEvent -> init()).withVisible(false);
 
         Button editButton = new MButton("edit").withStyleName("floating").withVisible(false).withListener(clickEvent -> {
             isEditor = !isEditor;
             init();
         });
 
-        if(userService.getLoggedInUser().get().getUsername().equals("simon.gomez") ||
+        if(userService.getLoggedInUser().isPresent() && userService.getLoggedInUser().get().getUsername().equals("simon.gomez") ||
                 userService.getLoggedInUser().get().getUsername().equals("hans.lassen") ||
                 userService.getLoggedInUser().get().getUsername().equals("elvi.nissen") ||
                 userService.getLoggedInUser().get().getUsername().equals("regitze.carneiro") ||
@@ -148,9 +146,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         if(archiColumn.getCells().size()<=i) return new ImageCardDesign();
         KnowledgeArchitectureCell item = archiColumn.getCells().get(i);
         ImageCardDesign box = new ImageCardDesign();
-        box.addLayoutClickListener(event -> {
-            drawDetailPage(archiColumn, item);
-        });
+        box.addLayoutClickListener(event -> drawDetailPage(archiColumn, item));
 
         box.addStyleName("semi-white-bg");
 
@@ -174,12 +170,8 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                             new MButton(MaterialIcons.EDIT).withStyleName("icon-only tiny").withListener(clickEvent -> {
                                 Window window = new Window();
                                 MVerticalLayout vl = new MVerticalLayout(
-                                        new MTextField("Name", item.getName(), valueChangeEvent -> {
-                                            item.setName(valueChangeEvent.getValue());
-                                        }).withValueChangeMode(ValueChangeMode.BLUR),
-                                        new RichTextArea("Content", item.getContent(), valueChangeEvent -> {
-                                            item.setContent(valueChangeEvent.getValue());
-                                        }),
+                                        new MTextField("Name", item.getName(), valueChangeEvent -> item.setName(valueChangeEvent.getValue())).withValueChangeMode(ValueChangeMode.BLUR),
+                                        new RichTextArea("Content", item.getContent(), valueChangeEvent -> item.setContent(valueChangeEvent.getValue())),
                                         new MButton("Save", clickEvent1 -> {
                                             knowArchiColumnRepository.save(archiColumn);
                                             window.close();
@@ -287,9 +279,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
             if(isEditor()) {
                 architectureCell1.getBtnEditName().setVisible(true);
                 architectureCell1.getBtnEditName().setCaption("");
-                architectureCell1.getBtnEditName().addClickListener(clickEvent -> {
-                    editNameWindow(archiColumn, card);
-                });
+                architectureCell1.getBtnEditName().addClickListener(clickEvent -> editNameWindow(archiColumn, card));
             }
 
             List<Registration> registrationList = new ArrayList<>();
@@ -335,14 +325,6 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                         new PhotoUploader(cardFile.getPreview(), 800, 400, "upload logo", PhotoUploader.Step.UPLOAD, photoService).getUploader();
                     }));
 
-                    /*
-                    architectureCell1.getVlAdminButtons().addComponent(new MButton("", event2 -> {
-                        cardFile.getKnowledgeArchitectureCard().getFiles().remove(cardFile);
-                        cardFile.setKnowledgeArchitectureCard(null);
-                        knowArchiColumnRepository.save(archiColumn);
-                        init();
-                    }).withStyleName("icon-only tiny").withIcon(MaterialIcons.DELETE_FOREVER));
-                    */
                     registrationList.add(architectureCell1.getBtnEditFile().addClickListener(clickEvent -> {
                         List<User> allUsers = userService.findAll(true);
                         List<User> selectedUsers = new ArrayList<>();
@@ -386,28 +368,18 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
                         Window window = new Window();
                         MVerticalLayout vl = new MVerticalLayout(
-                                new MTextField("Headline", (cardFile.getHeadline()!=null)?cardFile.getHeadline():"", valueChangeEvent -> {
-                                    cardFile.setHeadline(valueChangeEvent.getValue());
-                                }).withValueChangeMode(ValueChangeMode.BLUR),
-                                new MTextField("Filetype", (cardFile.getFiletype()!=null)?cardFile.getFiletype():"", valueChangeEvent -> {
-                                    cardFile.setFiletype(valueChangeEvent.getValue());
-                                }).withValueChangeMode(ValueChangeMode.BLUR),
-                                new MTextField("Filename", (cardFile.getFilename()!=null)?cardFile.getFilename():"", valueChangeEvent -> {
-                                    cardFile.setFilename(valueChangeEvent.getValue());
-                                }).withValueChangeMode(ValueChangeMode.BLUR),
-                                new RichTextArea("Description", (cardFile.getDescription()!=null)?cardFile.getDescription():"", valueChangeEvent -> {
-                                    cardFile.setDescription(valueChangeEvent.getValue());
-                                }),
+                                new MTextField("Headline", (cardFile.getHeadline()!=null)?cardFile.getHeadline():"", valueChangeEvent -> cardFile.setHeadline(valueChangeEvent.getValue())).withValueChangeMode(ValueChangeMode.BLUR),
+                                new MTextField("Filetype", (cardFile.getFiletype()!=null)?cardFile.getFiletype():"", valueChangeEvent -> cardFile.setFiletype(valueChangeEvent.getValue())).withValueChangeMode(ValueChangeMode.BLUR),
+                                new MTextField("Filename", (cardFile.getFilename()!=null)?cardFile.getFilename():"", valueChangeEvent -> cardFile.setFilename(valueChangeEvent.getValue())).withValueChangeMode(ValueChangeMode.BLUR),
+                                new RichTextArea("Description", (cardFile.getDescription()!=null)?cardFile.getDescription():"", valueChangeEvent -> cardFile.setDescription(valueChangeEvent.getValue())),
                                 clientComboBox,
                                 projectComboBox,
-                                new DateField("Date", (cardFile.getDate()!=null)?cardFile.getDate(): LocalDate.now(), valueChangeEvent -> {
-                                    cardFile.setDate(valueChangeEvent.getValue());
-                                }),
+                                new DateField("Date", (cardFile.getDate()!=null)?cardFile.getDate(): LocalDate.now(), valueChangeEvent -> cardFile.setDate(valueChangeEvent.getValue())),
                                 tokenList,
                                 new MButton("Save", clickEvent1 -> {
                                     cardFile.setAuthors(selectedUsers.stream().map(User::getUuid).collect(Collectors.joining(",")));
-                                    cardFile.setCustomeruuid(clientComboBox.getSelectedItem().get().getUuid());
-                                    cardFile.setProjectuuid(projectComboBox.getSelectedItem().get().getUuid());
+                                    cardFile.setCustomeruuid(clientComboBox.getSelectedItem().orElseThrow(() -> new RuntimeException("Please choose a client")).getUuid());
+                                    cardFile.setProjectuuid(projectComboBox.getSelectedItem().orElseThrow(() -> new RuntimeException("Please choose a project")).getUuid());
                                     knowArchiColumnRepository.save(archiColumn);
                                     window.close();
                                     drawDetailPage(archiColumn, item);
