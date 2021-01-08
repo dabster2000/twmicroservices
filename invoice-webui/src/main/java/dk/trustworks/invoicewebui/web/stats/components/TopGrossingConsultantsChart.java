@@ -10,11 +10,13 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,8 +59,9 @@ public class TopGrossingConsultantsChart {
         for (User user : userService.findAll(true)) {
             LocalDate currentDate = periodStart;
             GraphKeyValue gkv = new GraphKeyValue(user.getUuid(), user.getInitials(), 0);
+            HashMap<String, Double> revenueMap = revenueService.getRegisteredRevenueByPeriodAndSingleConsultant(user.getUuid(), periodStart, periodEnd);
             do {
-                double revenue = revenueService.getRegisteredRevenueForSingleMonthAndSingleConsultant(user.getUuid(), currentDate);
+                double revenue = revenueMap.getOrDefault(DateUtils.stringIt(currentDate), 0.0); //revenueService.getRegisteredRevenueForSingleMonthAndSingleConsultant(user.getUuid(), currentDate);
                 gkv.addValue((int) Math.round(revenue));
                 currentDate = currentDate.plusMonths(1);
             } while (currentDate.isBefore(periodEnd.plusMonths(1)));

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
@@ -51,8 +52,14 @@ public class RevenueRestService {
     }
 
     public GraphKeyValue getRegisteredRevenueForSingleMonthAndSingleConsultant(String useruuid, LocalDate month) {
-        String url = apiGatewayUrl + "/revenue/registered/consultants/"+useruuid+"?month="+stringIt(month);
+        String url = apiGatewayUrl + "/revenue/registered/consultants/"+useruuid+"/months/"+stringIt(month);
         ResponseEntity<GraphKeyValue> result = systemRestService.secureCall(url, GET, GraphKeyValue.class);
+        return result.getBody();
+    }
+
+    public HashMap<String, Double> getRegisteredRevenueByPeriodAndSingleConsultant(String useruuid, LocalDate periodFrom, LocalDate periodTo) {
+        String url = apiGatewayUrl + "/revenue/registered/consultants/"+useruuid+"?periodFrom="+stringIt(periodFrom)+"&periodTo="+stringIt(periodTo);
+        ResponseEntity<HashMap<String, Double>> result = systemRestService.secureCall(url, GET, HashMap.class);
         return result.getBody();
     }
 

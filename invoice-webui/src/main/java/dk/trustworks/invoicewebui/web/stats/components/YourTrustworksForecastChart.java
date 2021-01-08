@@ -65,7 +65,7 @@ public class YourTrustworksForecastChart {
             categories[i] = periodStart.plusMonths(i).format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }
 
-        payoutSeries.setData(categories, Arrays.stream(payout).map(graphKeyValue -> (Number)graphKeyValue.getValue()).toArray(Number[]::new));
+        if(payout.length>0) payoutSeries.setData(categories, Arrays.stream(payout).map(graphKeyValue -> graphKeyValue==null?0:(Number) graphKeyValue.getValue()).toArray(Number[]::new));
 
         chart.getConfiguration().addSeries(payoutSeries);
 

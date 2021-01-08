@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -48,6 +49,10 @@ public class RevenueService implements InitializingBean {
 
     public double getRegisteredRevenueForSingleMonthAndSingleConsultant(String useruuid, LocalDate month) {
         return revenueRestService.getRegisteredRevenueForSingleMonthAndSingleConsultant(useruuid, month).getValue();
+    }
+
+    public HashMap<String, Double> getRegisteredRevenueByPeriodAndSingleConsultant(String useruuid, LocalDate periodFrom, LocalDate periodTo) {
+        return revenueRestService.getRegisteredRevenueByPeriodAndSingleConsultant(useruuid, periodFrom, periodTo);
     }
 
     public List<GraphKeyValue> getRegisteredHoursPerConsultantForSingleMonth(LocalDate month) {

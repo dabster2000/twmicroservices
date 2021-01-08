@@ -188,7 +188,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnIndividuals);
 
         addCompanyCharts();
-        //addConsultantCharts();
+        addConsultantCharts();
         //addHistoryCharts();
         //addIndividualCharts();
     }
@@ -317,20 +317,35 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createConsultantCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd) {
+        System.out.println("--- Start consultant charts ---");
+        long l = System.currentTimeMillis();
+
         Box topGrossingConsultantsBox = new Box();
         topGrossingConsultantsBox.getContent().addComponent(topGrossingConsultantsChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
+
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
 
         Box avgExpensesPerMonthCard = new Box();
         avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
 
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+
         Box yourTrustworksForecastCard = new Box();
         yourTrustworksForecastCard.getContent().addComponent(yourTrustworksForecastChart.createChart(localDateStart, localDateEnd));
+
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
 
         Box revenuePerMonthEmployeeAvgCard = new Box();
         revenuePerMonthEmployeeAvgCard.getContent().addComponent(revenuePerMonthEmployeeAvgChart.createRevenuePerMonthChart(localDateStart, localDateEnd.withDayOfMonth(1).minusMonths(1)));
 
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+
         Box talentPassionCard = new Box();
         talentPassionCard.getContent().addComponent(talentPassionResultBox.create());
+
+        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+
+        System.out.println("--- Done consultant charts ---");
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)

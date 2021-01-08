@@ -57,7 +57,7 @@ public class DashboardBoxCreator {
         SimpleRegression regression = new SimpleRegression();
 
         LocalDate periodStart = DateUtils.getCurrentFiscalStartDate();
-
+        
         for (int i = 0; i < 12; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             if(!currentDate.isBefore(LocalDate.now().withDayOfMonth(1))) break;

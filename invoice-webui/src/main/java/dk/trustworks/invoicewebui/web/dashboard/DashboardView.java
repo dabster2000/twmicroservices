@@ -175,7 +175,8 @@ public class   DashboardView extends VerticalLayout implements View {
         knowledgeChartCard.instance(knowledgeChart.getChart(randomFocusUser));
 
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
-        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto((Math.random()<0.5)?"images/cards/knowledge/lifecycle.png":"images/cards/knowledge/pejlemaerker.png");
+        String[] knowledgePhotoArray = {"images/cards/knowledge/lifecycle.png", "images/cards/knowledge/pejlemaerker.png", "images/cards/knowledge/team-goals.png"};
+        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto(knowledgePhotoArray[new Random().nextInt(2)]);
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
