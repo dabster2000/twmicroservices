@@ -167,7 +167,7 @@ public class UserLayout {
             employees.add(employee);
         }
 
-        ListDataProvider dataProvider = new ListDataProvider(employees);
+        ListDataProvider<Employee> dataProvider = new ListDataProvider<>(employees);
         grid.setDataProvider(dataProvider);
 
         // Set the selection mode

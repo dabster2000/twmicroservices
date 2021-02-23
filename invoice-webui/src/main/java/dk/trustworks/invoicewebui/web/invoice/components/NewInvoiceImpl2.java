@@ -223,18 +223,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 downloader.download();
             });
             invoiceEditDesign.btnDropbox.addClickListener(event -> {
-                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-                final StreamResource resource = new StreamResource(() ->
-                        new ByteArrayInputStream(invoice.getPdf()),
-                        StringUtils.convertInvoiceNumberToString(invoice.invoicenumber) +
-                                "_" + invoice.type +
-                                "-" + invoice.clientname +
-                                "-" + dateTimeFormatter.format(invoice.invoicedate) +
-                                ".pdf"
-                );
-
-                dropboxAPI.uploadInvoice(resource, invoice.invoicedate);
+                uploadToDropbox(invoice);
             });
             invoiceEditDesign.btnCreateCreditNote.addClickListener(event -> {
                 if(invoice.uuid == null && invoice.uuid.trim().length() == 0) return;
@@ -254,25 +243,14 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
             invoiceEditDesign.btnCreateInvoice.addClickListener(event -> {
                 Invoice savedInvoice = invoiceEditDesign.saveInvoice();
                 savedInvoice = invoiceService.createInvoice(savedInvoice);
-                /*
-                invoice.setStatus(InvoiceStatus.CREATED);
-                invoice.invoicenumber = invoiceService.getMaxInvoiceNumber() + 1;
-                invoice.pdf = invoiceService.createInvoicePdf(invoice);
-                Invoice savedInvoice = invoiceService.save(invoice);
-                 */
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);
+                uploadToDropbox(savedInvoice);
                 refreshTabs(tabSheet, projectSummary);
             });
             invoiceEditDesign.btnCreatePhantom.addClickListener(event -> {
                 Invoice savedInvoice = invoiceEditDesign.saveInvoice();
                 savedInvoice = invoiceService.createPhantomInvoice(savedInvoice);
-                /*
-                savedInvoice.setStatus(InvoiceStatus.CREATED);
-                savedInvoice.invoicenumber = 0;
-                savedInvoice.setType(InvoiceType.INVOICE);
-                savedInvoice.pdf = invoiceService.createInvoicePdf(savedInvoice);
-                 */
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);
                 refreshTabs(tabSheet, projectSummary);
@@ -296,6 +274,21 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                         })
                 ), "NEW"
         );
+    }
+
+    private void uploadToDropbox(Invoice invoice) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        final StreamResource resource = new StreamResource(() ->
+                new ByteArrayInputStream(invoice.getPdf()),
+                StringUtils.convertInvoiceNumberToString(invoice.invoicenumber) +
+                        "_" + invoice.type +
+                        "-" + invoice.clientname +
+                        "-" + dateTimeFormatter.format(invoice.invoicedate) +
+                        ".pdf"
+        );
+
+        dropboxAPI.uploadInvoice(resource, invoice.invoicedate);
     }
 
     private void createStatCards(int value1, int value2, int value3, int value4) {

@@ -43,6 +43,7 @@ public class UserRestService {
     @Cacheable("user")
     public User findOne(String uuid, boolean shallow) {
         String url = apiGatewayUrl + "/users/" + uuid + "?shallow="+shallow;
+        System.out.println("url = " + url);
         return (User) systemRestService.secureCall(url, GET, User.class).getBody();
     }
 

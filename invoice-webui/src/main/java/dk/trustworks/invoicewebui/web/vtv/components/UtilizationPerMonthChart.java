@@ -125,7 +125,7 @@ public class UtilizationPerMonthChart {
         actualDataSeries.setData(getAverageAllocationByYear(periodStart, periodEnd));
         chart.getConfiguration().addSeries(actualDataSeries);
 
-        chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, periodEnd));
+        chart.getConfiguration().getxAxis().setCategories(StatisticsService.getMonthCategories(periodStart, periodEnd));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
         return chart;

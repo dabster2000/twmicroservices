@@ -147,7 +147,7 @@ public class ContractListLayout extends VerticalLayout {
             contractFormDesign.getDfTo().setDescription("Not included selected month...");
             contractFormDesign.getBtnCreate().setCaption("Create Contract");
             contractFormDesign.getCbType().addValueChangeListener(event2 -> {
-                contractFormDesign.getTxtAmount().setVisible(contractFormDesign.getCbType().getValue().equals(ContractType.AMOUNT) || contractFormDesign.getCbType().getValue().equals(ContractType.SKI));
+                contractFormDesign.getTxtAmount().setVisible(contractFormDesign.getCbType().getValue().equals(ContractType.AMOUNT) || contractFormDesign.getCbType().getValue().equals(ContractType.SKI2016));
                 contractFormDesign.getBtnCreate().setVisible(true);
                 contractFormDesign.getBtnUpdate().setVisible(false);
 
@@ -222,7 +222,7 @@ public class ContractListLayout extends VerticalLayout {
 
             contractDesign.getLblPeriod().setValue(contractPeriodFrom + " - " + contractPeriodTo);
 
-            if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
+            if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI2016)) {
                 contractDesign.getLblAmount().setValue(contract.getAmount()+" kr.");
             } else {
                 contractDesign.getLblAmount().setValue("");

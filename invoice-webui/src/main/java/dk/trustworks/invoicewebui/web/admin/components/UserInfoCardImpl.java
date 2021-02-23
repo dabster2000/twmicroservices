@@ -7,8 +7,10 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.Team;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.network.rest.TeamRestService;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
     @Autowired
     private UserService userRepository;
 
+    @Autowired
+    private TeamRestService teamRestService;
+
     private Binder<User> binder;
     private User user;
 
@@ -50,6 +55,10 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
         user = userRepository.findByUUID(userUUID, false);
         binder = new Binder<>();
 
+        List<Team> teamList = teamRestService.getAllTeams();
+        getCbTeam().setItems(teamList);
+        binder.forField(getCbTeam()).bind(value -> teamList.stream().filter(team -> team.getUuid().equals(value.getTeamuuid())).findFirst().orElse(null), (user, team) -> user.setTeamuuid(team.getUuid()));
+
         SlackWebApiClient slackWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
 
         try {
@@ -60,6 +69,7 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
             e.printStackTrace();
         }
         getCbSlackID().setItemCaptionGenerator(allbegray.slack.type.User::getName);
+        getCbTeam().setItemCaptionGenerator(dk.trustworks.invoicewebui.model.Team::getName);
 
         binder.forField(getTxtFirstname()).bind(User::getFirstname, User::setFirstname);
         binder.forField(getTxtLastname()).bind(User::getLastname, User::setLastname);

@@ -17,6 +17,7 @@ import dk.trustworks.invoicewebui.web.dashboard.DashboardView;
 import dk.trustworks.invoicewebui.web.economy.ExpenseView;
 import dk.trustworks.invoicewebui.web.employee.EmployeeView;
 import dk.trustworks.invoicewebui.web.faq.FaqView;
+import dk.trustworks.invoicewebui.web.invoice.views.InvoiceListView;
 import dk.trustworks.invoicewebui.web.invoice.views.NewInvoiceView;
 import dk.trustworks.invoicewebui.web.knowledge.BusinessArchitectureView;
 import dk.trustworks.invoicewebui.web.knowledge.CkoAdminView;

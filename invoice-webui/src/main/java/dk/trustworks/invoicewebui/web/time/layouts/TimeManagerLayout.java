@@ -32,6 +32,7 @@ import dk.trustworks.invoicewebui.utils.StringUtils;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
+import dk.trustworks.invoicewebui.web.time.LessonFramedView;
 import dk.trustworks.invoicewebui.web.time.components.*;
 import dk.trustworks.invoicewebui.web.time.model.WeekItem;
 import org.hibernate.Hibernate;
@@ -676,6 +677,20 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void createTimeline(WeekItem weekItem) {
         weekDaySums.addWeekItem(weekItem);
+/*
+        ResponsiveRow lessonFramedButtonRow = responsiveLayout.addRow()
+                .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
+                .withVerticalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
+                .withMargin(true)
+                .withMargin(ResponsiveRow.MarginSize.SMALL)
+                .withAlignment(Alignment.MIDDLE_CENTER);
+        lessonFramedButtonRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new MButton("Click to evaluate project").withFullWidth().withListener(event -> {
+            UI.getCurrent().getNavigator().navigateTo(LessonFramedView.VIEW_NAME+"/"+weekItem.getTask().getProjectuuid());
+        }));
+
+ */
+
+
         ResponsiveRow time1Row = responsiveLayout.addRow()
                 .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL,true)
                 .withVerticalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
@@ -732,98 +747,106 @@ public class TimeManagerLayout extends ResponsiveLayout {
         time1Row.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(taskTitle, ResponsiveColumn.ColumnComponentAlignment.LEFT);
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(checkIfDisabled(1, weekItem, workingAs, task,
-                        new MTextField(null, weekItem.getMon(), event -> {
-                            double delta = updateTimefield(weekItem, 0, event);
-                            weekDaySums.mon += delta;
-                            weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
-                            updateSums();
-                        }).withValueChangeMode(ValueChangeMode.BLUR)
-                                .withWidth(100, PERCENTAGE)
-                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                .withStyleName("floating")));
 
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(checkIfDisabled(2, weekItem, workingAs, task,
-                        new MTextField(null, weekItem.getTue(), event -> {
-                            double delta = updateTimefield(weekItem, 1, event);
-                            weekDaySums.tue += delta;
-                            weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
-                    updateSums();
-                }).withValueChangeMode(ValueChangeMode.BLUR)
-                        .withWidth(100, PERCENTAGE)
-                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating")));
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(checkIfDisabled(3, weekItem, workingAs, task,
-                        new MTextField(null, weekItem.getWed(), event -> {
-                            double delta = updateTimefield(weekItem, 2, event);
-                            weekDaySums.wed += delta;
-                            weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
-                    updateSums();
-                }).withValueChangeMode(ValueChangeMode.BLUR)
-                        .withWidth(100, PERCENTAGE)
-                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating")));
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(checkIfDisabled(4, weekItem, workingAs, task,
-                        new MTextField(null, weekItem.getThu(), event -> {
-                            double delta = updateTimefield(weekItem, 3, event);
-                            weekDaySums.thu += delta;
-                            weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
-                            updateSums();
-                }).withValueChangeMode(ValueChangeMode.BLUR)
-                        .withWidth(100, PERCENTAGE)
-                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating")));
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(checkIfDisabled(5, weekItem, workingAs, task,
-                        new MTextField(null, weekItem.getFri(), event -> {
-                            double delta = updateTimefield(weekItem, 4, event);
-                            weekDaySums.fri += delta;
-                            weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
-                            updateSums();
-                }).withValueChangeMode(ValueChangeMode.BLUR)
-                        .withWidth(100, PERCENTAGE)
-                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating")));
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(checkIfDisabled(6, weekItem, workingAs, task,
-                        new MTextField(null, weekItem.getSat(), event -> {
-                            double delta = updateTimefield(weekItem, 5, event);
-                            weekDaySums.sat += delta;
-                            weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
-                            updateSums();
-                }).withValueChangeMode(ValueChangeMode.BLUR)
-                        .withWidth(100, PERCENTAGE)
-                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating")));
-        time1Row.addColumn()
-                .withDisplayRules(12, 12, 1,1)
-                .withComponent(checkIfDisabled(7, weekItem, workingAs, task,
-                        new MTextField(null, weekItem.getSun(), event -> {
-                            double delta = updateTimefield(weekItem, 6, event);
-                            weekDaySums.sun += delta;
-                            weekItem.addBudget(delta);
-                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(),2)+"");
-                            updateSums();
-                }).withValueChangeMode(ValueChangeMode.BLUR)
-                        .withWidth(100, PERCENTAGE)
-                        .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                        .withStyleName("floating")));
+        if(false) {
+            time1Row.addColumn().withDisplayRules(12,12,7,7).withComponent(new MButton("Click to evaluate project").withFullWidth().withListener(event -> {
+                UI.getCurrent().getNavigator().navigateTo(LessonFramedView.VIEW_NAME+"/"+weekItem.getTask().getProjectuuid());
+            }));
+        } else {
+
+            time1Row.addColumn()
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(checkIfDisabled(1, weekItem, workingAs, task,
+                            new MTextField(null, weekItem.getMon(), event -> {
+                                double delta = updateTimefield(weekItem, 0, event);
+                                weekDaySums.mon += delta;
+                                weekItem.addBudget(delta);
+                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                                updateSums();
+                            }).withValueChangeMode(ValueChangeMode.BLUR)
+                                    .withWidth(100, PERCENTAGE)
+                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                    .withStyleName("floating")));
+
+            time1Row.addColumn()
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(checkIfDisabled(2, weekItem, workingAs, task,
+                            new MTextField(null, weekItem.getTue(), event -> {
+                                double delta = updateTimefield(weekItem, 1, event);
+                                weekDaySums.tue += delta;
+                                weekItem.addBudget(delta);
+                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                                updateSums();
+                            }).withValueChangeMode(ValueChangeMode.BLUR)
+                                    .withWidth(100, PERCENTAGE)
+                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                    .withStyleName("floating")));
+            time1Row.addColumn()
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(checkIfDisabled(3, weekItem, workingAs, task,
+                            new MTextField(null, weekItem.getWed(), event -> {
+                                double delta = updateTimefield(weekItem, 2, event);
+                                weekDaySums.wed += delta;
+                                weekItem.addBudget(delta);
+                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                                updateSums();
+                            }).withValueChangeMode(ValueChangeMode.BLUR)
+                                    .withWidth(100, PERCENTAGE)
+                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                    .withStyleName("floating")));
+            time1Row.addColumn()
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(checkIfDisabled(4, weekItem, workingAs, task,
+                            new MTextField(null, weekItem.getThu(), event -> {
+                                double delta = updateTimefield(weekItem, 3, event);
+                                weekDaySums.thu += delta;
+                                weekItem.addBudget(delta);
+                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                                updateSums();
+                            }).withValueChangeMode(ValueChangeMode.BLUR)
+                                    .withWidth(100, PERCENTAGE)
+                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                    .withStyleName("floating")));
+            time1Row.addColumn()
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(checkIfDisabled(5, weekItem, workingAs, task,
+                            new MTextField(null, weekItem.getFri(), event -> {
+                                double delta = updateTimefield(weekItem, 4, event);
+                                weekDaySums.fri += delta;
+                                weekItem.addBudget(delta);
+                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                                updateSums();
+                            }).withValueChangeMode(ValueChangeMode.BLUR)
+                                    .withWidth(100, PERCENTAGE)
+                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                    .withStyleName("floating")));
+            time1Row.addColumn()
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(checkIfDisabled(6, weekItem, workingAs, task,
+                            new MTextField(null, weekItem.getSat(), event -> {
+                                double delta = updateTimefield(weekItem, 5, event);
+                                weekDaySums.sat += delta;
+                                weekItem.addBudget(delta);
+                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                                updateSums();
+                            }).withValueChangeMode(ValueChangeMode.BLUR)
+                                    .withWidth(100, PERCENTAGE)
+                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                    .withStyleName("floating")));
+            time1Row.addColumn()
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(checkIfDisabled(7, weekItem, workingAs, task,
+                            new MTextField(null, weekItem.getSun(), event -> {
+                                double delta = updateTimefield(weekItem, 6, event);
+                                weekDaySums.sun += delta;
+                                weekItem.addBudget(delta);
+                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                                updateSums();
+                            }).withValueChangeMode(ValueChangeMode.BLUR)
+                                    .withWidth(100, PERCENTAGE)
+                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                    .withStyleName("floating")));
+        }
 
         time1Row.addColumn()
                 .withVisibilityRules(false, false, true, true)

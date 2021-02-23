@@ -566,7 +566,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
 
         for (Contract mainContract : currentProject.getContracts()) {
             if(mainContract.getActiveTo().isBefore(startDate)) continue;
-            if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI)) continue;
+            if(!mainContract.getContractType().equals(ContractType.AMOUNT) || mainContract.getContractType().equals(ContractType.SKI2016)) continue;
             for (ContractConsultant contractConsultant : mainContract.getContractConsultants()) {
                 BudgetRow budgetRow = new BudgetRow(contractConsultant, mainContract, (int)(monthsBetween+1));
                 LocalDate budgetDate = startDate;

@@ -39,9 +39,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -144,7 +146,15 @@ public class   DashboardView extends VerticalLayout implements View {
         BoxImpl knowledgeChartCard = new BoxImpl();
         knowledgeChartCard.getContent().setDefaultComponentAlignment(Alignment.TOP_CENTER);
 
-        knowledgeChartCard.instance(photoService.getRoundImage(randomFocusUser.getUuid(), false, 25, Unit.PERCENTAGE));
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveRow responsiveRow = responsiveLayout.addRow();
+        responsiveRow.addColumn().withDisplayRules(4,4,4,4).withComponent(photoService.getRoundImage(randomFocusUser.getUuid(), false, 100, Unit.PERCENTAGE));
+        if(randomFocusUser.getTeamuuid()!=null) {
+            Image teamImage = new Image(null, photoService.getRelatedPhotoResource(randomFocusUser.getTeamuuid()));
+            teamImage.setWidth(100, Unit.PERCENTAGE);
+            responsiveRow.addColumn().withComponent(teamImage).withDisplayRules(8,8,8,8);
+        }
+        knowledgeChartCard.instance(responsiveLayout);
 
         knowledgeChartCard.instance(
                 new MLabel(randomFocusUser.getFirstname()+" "+randomFocusUser.getLastname()+" is working at...")
@@ -152,8 +162,11 @@ public class   DashboardView extends VerticalLayout implements View {
 
         List<Contract> contractList = contractService.findTimeActiveConsultantContracts(randomFocusUser, LocalDate.now());
         int i = 0;
+        List<String> clients = new ArrayList<>();
         HorizontalLayout hlayout = null;
         for (Contract contract : contractList) {
+            if(clients.contains(contract.clientuuid)) continue;
+            else clients.add(contract.clientuuid);
             if(i==0) {
                 hlayout = new HorizontalLayout();
                 hlayout.setSizeFull();
@@ -176,7 +189,7 @@ public class   DashboardView extends VerticalLayout implements View {
 
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         String[] knowledgePhotoArray = {"images/cards/knowledge/lifecycle.png", "images/cards/knowledge/pejlemaerker.png", "images/cards/knowledge/team-goals.png"};
-        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto(knowledgePhotoArray[new Random().nextInt(2)]);
+        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto(knowledgePhotoArray[new Random().nextInt(3)]);
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");

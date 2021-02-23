@@ -325,7 +325,7 @@ public class StatisticsService extends StatisticsCachedService {
 
  */
 
-    public String[] getMonthCategories(LocalDate periodStart, LocalDate periodEnd) {
+    public static String[] getMonthCategories(LocalDate periodStart, LocalDate periodEnd) {
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
         String[] categories = new String[months];
         for (int i = 0; i < months; i++) {

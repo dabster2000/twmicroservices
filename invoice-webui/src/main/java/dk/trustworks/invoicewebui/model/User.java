@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import dk.trustworks.invoicewebui.services.UserService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.text.WordUtils;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,12 +27,14 @@ public class User {
     private String lastname;
     private String password;
     private String username;
+    private String teamuuid;
     private String slackusername;
     private LocalDate birthday;
     private List<Salary> salaries;
     private List<UserStatus> statuses;
     private List<Role> roleList;
     private UserContactinfo userContactinfo;
+    private Team team;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -192,7 +192,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", slackusername='" + slackusername + '\'' +
                 ", birthday=" + birthday +
-                ", statusses=" + ArrayUtils.toString(getStatuses().stream().map(UserStatus::toString).toArray()) +
+                //", statusses=" + ArrayUtils.toString(getStatuses().stream().map(UserStatus::toString).toArray()) +
                 '}';
     }
 
@@ -210,4 +210,15 @@ public class User {
     }
 
 
+    public String getTeamuuid() {
+        return teamuuid;
+    }
+
+    public void setTeamuuid(String teamuuid) {
+        this.teamuuid = teamuuid;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
 }

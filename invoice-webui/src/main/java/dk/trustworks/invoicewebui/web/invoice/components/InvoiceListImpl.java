@@ -1,5 +1,18 @@
 package dk.trustworks.invoicewebui.web.invoice.components;
 
+import com.vaadin.annotations.Push;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.SpringUI;
+import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.security.Authorizer;
+import dk.trustworks.invoicewebui.services.InvoiceService;
+import dk.trustworks.invoicewebui.web.Broadcaster;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
 /**
  * Created by hans on 13/07/2017.
  */
@@ -10,8 +23,6 @@ package dk.trustworks.invoicewebui.web.invoice.components;
 public class InvoiceListImpl extends InvoiceListDesign
         implements Broadcaster.BroadcastListener {
 
-    private final InvoiceRepository invoiceRepository;
-
     private final InvoiceService invoiceService;
 
     private ListDataProvider<Invoice> dataProvider;
@@ -19,16 +30,15 @@ public class InvoiceListImpl extends InvoiceListDesign
     private List<Invoice> invoices;
 
     @Autowired
-    public InvoiceListImpl(InvoiceRepository invoiceRepository, InvoiceService invoiceService, Authorizer authorizer) {
-        this.invoiceRepository = invoiceRepository;
+    public InvoiceListImpl(InvoiceService invoiceService, Authorizer authorizer) {
         this.invoiceService = invoiceService;
 
         if(!authorizer.hasAccess(RoleType.ADMIN)) btnRecreateInvoice.setVisible(false);
 
         btnRecreateInvoice.addClickListener(event -> {
             Invoice invoice = gridInvoiceList.getSelectionModel().getFirstSelectedItem().get();
-            invoice.pdf = invoiceService.createInvoicePdf(invoice);
-            invoiceRepository.save(invoice);
+            invoice.pdf = invoiceService.cre.createInvoicePdf(invoice);
+            //invoiceService.save(invoice);
         });
 
         Broadcaster.register(this);
@@ -376,5 +386,6 @@ public class InvoiceListImpl extends InvoiceListDesign
                 .build();
     }
 }
+
 
  */

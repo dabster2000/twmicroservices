@@ -21,7 +21,7 @@ public class EconomicsJob {
     @Autowired
     private FinanceService financeService;
 
-    @Scheduled(cron = "0 0 22 * * ?")
+    //@Scheduled(cron = "0 0 22 * * ?")
     public void synchronizeInvoices() {
         List<ExpenseDetails> expenseList = financeService.findExpenseDetailsByGroup(EconomicAccountGroup.OMSAETNING_ACCOUNTS);
 

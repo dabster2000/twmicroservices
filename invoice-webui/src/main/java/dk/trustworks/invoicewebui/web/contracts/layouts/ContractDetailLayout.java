@@ -125,7 +125,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createBurndownCard(Contract contract, int width) {
-        if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
+        if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI2016)) {
             burndownChartCard = new Card();
             burndownChartCard.getLblTitle().setValue("Burndown");
             burndownChartCard.getContent().setHeight(350, Unit.PIXELS);
@@ -192,7 +192,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createUsedBudgetCard(Contract contract, int width) {
-        if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
+        if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI2016)) {
             usedBudgetChartCard = new Card();
             usedBudgetChartCard.getLblTitle().setValue("Used Budget");
             usedBudgetChartCard.getContent().setHeight(350, Unit.PIXELS);
@@ -329,7 +329,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractForm.getBtnCreate().setVisible(false);
         contractForm.getTxtAmount().setVisible(
                 contract.getContractType().equals(ContractType.AMOUNT) ||
-                contract.getContractType().equals(ContractType.SKI));
+                contract.getContractType().equals(ContractType.SKI2016));
         contractForm.getTxtAmount().setValue(NumberConverter.formatDouble(contract.getAmount()));
         contractBinder.forField(contractForm.getDfFrom()).bind(Contract::getActiveFrom, Contract::setActiveFrom);
         contractBinder.forField(contractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
@@ -804,7 +804,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         updateProposedPeriod(contract);
         createSubContractCard(contract, 4);
         if (contractService.findProjectsByContractuuid(contract.getUuid()).size() > 0 && contract.getContractConsultants().size() > 0) {
-            if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI)) {
+            if(contract.getContractType().equals(ContractType.AMOUNT) || contract.getContractType().equals(ContractType.SKI2016)) {
                 createUsedBudgetChartCard(contract);
                 createBurndownChart(contract);
             } else {

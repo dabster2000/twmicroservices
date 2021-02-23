@@ -10,20 +10,19 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.dto.MonthRevenueData;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
-import dk.trustworks.invoicewebui.services.BudgetService;
+import dk.trustworks.invoicewebui.services.BiService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
-import dk.trustworks.invoicewebui.services.RevenueService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static dk.trustworks.invoicewebui.utils.ChartUtils.createDataSeries;
 
 /**
  * Created by hans on 20/09/2017.
@@ -37,16 +36,13 @@ public class RevenuePerMonthChart {
 
     private final InvoiceService invoiceService;
 
-    private final BudgetService budgetService;
-
-    private final RevenueService revenueService;
+    private final BiService biService;
 
     @Autowired
-    public RevenuePerMonthChart(StatisticsService statisticsService, InvoiceService invoiceService, BudgetService budgetService, RevenueService revenueService) {
+    public RevenuePerMonthChart(StatisticsService statisticsService, InvoiceService invoiceService, BiService biService) {
         this.statisticsService = statisticsService;
         this.invoiceService = invoiceService;
-        this.budgetService = budgetService;
-        this.revenueService = revenueService;
+        this.biService = biService;
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd) {
@@ -71,43 +67,45 @@ public class RevenuePerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
+        List<MonthRevenueData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
+
         DataSeries budgetSeries = new DataSeries("Budget Revenue");
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();
         plotOptionsArea.setColor(new SolidColor("#123375"));
         budgetSeries.setPlotOptions(plotOptionsArea);
-        for (GraphKeyValue graphKeyValue : budgetService.getBudgetsByPeriod(periodStart, periodEnd)) {
-            budgetSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
-        }
-        chart.getConfiguration().addSeries(budgetSeries);
 
         DataSeries revenueSeries = new DataSeries("Registered Hours Revenue");
         PlotOptionsAreaspline plotOptionsArea2 = new PlotOptionsAreaspline();
         plotOptionsArea2.setColor(new SolidColor("#7084AC"));
         revenueSeries.setPlotOptions(plotOptionsArea2);
-        for (GraphKeyValue graphKeyValue : revenueService.getRegisteredRevenueByPeriod(periodStart, periodEnd)) {
-            revenueSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
-        }
+
+        DataSeries revenueOrInvoiceSeries = new DataSeries("Invoiced Revenue");
+        PlotOptionsAreaspline plotOptionsArea4 = new PlotOptionsAreaspline();
+        plotOptionsArea4.setColor(new SolidColor("#CFD6E3"));
+        revenueOrInvoiceSeries.setPlotOptions(plotOptionsArea4);
+
+        DataSeries earningsSeries = new DataSeries("Gross Profit");
+        PlotOptionsAreaspline plotOptionsArea3 = new PlotOptionsAreaspline();
+        plotOptionsArea3.setColor(new SolidColor("#54D69E"));
+        plotOptionsArea3.setNegativeColor(new SolidColor("#FD5F5B"));
+        earningsSeries.setPlotOptions(plotOptionsArea3);
+
+        data.forEach(m -> {
+            String name = DateUtils.stringIt(m.getMonth(), "MMM-yyyy");
+            budgetSeries.add(new DataSeriesItem(name, m.getBudgetAmount()));
+            revenueSeries.add(new DataSeriesItem(name, m.getRegisteredAmount()));
+            revenueOrInvoiceSeries.add(new DataSeriesItem(name, m.getInvoicedAmount()>0?m.getInvoicedAmount():m.getRegisteredAmount()));
+            earningsSeries.add(new DataSeriesItem(name, m.getInvoicedAmount()>0?m.getInvoicedAmount()-m.calcExpensesSum():0.0));
+        });
+
+        chart.getConfiguration().addSeries(budgetSeries);
         chart.getConfiguration().addSeries(revenueSeries);
-
-        if(showEarnings) chart.getConfiguration().addSeries(createDataSeries(
-                revenueService.getInvoicedOrRegisteredRevenueByPeriod(periodStart, (periodEnd.isBefore(LocalDate.now())) ? periodEnd : LocalDate.now().plusMonths(1).withDayOfMonth(1)),
-                "Invoiced Revenue",
-                "#CFD6E3"));
-
         if(showEarnings) {
-            DataSeries earningsSeries = new DataSeries("Gross Profit");
-
-            PlotOptionsAreaspline plotOptionsArea3 = new PlotOptionsAreaspline();
-            plotOptionsArea3.setColor(new SolidColor("#54D69E"));
-            plotOptionsArea3.setNegativeColor(new SolidColor("#FD5F5B"));
-            earningsSeries.setPlotOptions(plotOptionsArea3);
-            for (GraphKeyValue graphKeyValue : revenueService.getProfitsByPeriod(periodStart, (periodEnd.isBefore(LocalDate.now())) ? periodEnd : LocalDate.now().withDayOfMonth(1))) {
-                earningsSeries.add(new DataSeriesItem(graphKeyValue.getDescription(), graphKeyValue.getValue()));
-            }
+            chart.getConfiguration().addSeries(revenueOrInvoiceSeries);
             chart.getConfiguration().addSeries(earningsSeries);
         }
 
-        chart.getConfiguration().getxAxis().setCategories(statisticsService.getMonthCategories(periodStart, periodEnd));
+        chart.getConfiguration().getxAxis().setCategories(StatisticsService.getMonthCategories(periodStart, periodEnd));
 
         chart.addPointClickListener(event -> {
             if(!event.getSeries().getName().equals("Invoiced Revenue")) return;
