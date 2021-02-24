@@ -76,8 +76,8 @@ flyway:
 
 management.security.enabled: false
 
-opentracing:
-  jaeger:
-    udp-sender:
-      host: ${JAEGERHOST:localhost}
-      port: ${JAEGERPORT:6831}
+#opentracing:
+#  jaeger:
+#    udp-sender:
+#      host: ${JAEGERHOST:localhost}
+#      port: ${JAEGERPORT:6831}

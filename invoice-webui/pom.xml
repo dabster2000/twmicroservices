@@ -85,6 +85,7 @@
             <artifactId>spring-boot-admin-starter-client</artifactId>
             <version>1.5.2</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>io.opentracing.contrib</groupId>
             <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
@@ -95,6 +96,7 @@
             <artifactId>feign-opentracing</artifactId>
             <version>0.3.0</version>
         </dependency>
+        -->
 
         <!-- Spring / Vaadin -->
         <dependency>
