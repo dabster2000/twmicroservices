@@ -1,11 +1,8 @@
 package dk.trustworks.invoicewebui.jobs;
 
 import dk.trustworks.invoicewebui.model.Contract;
-import dk.trustworks.invoicewebui.model.ContractConsultant;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.Work;
-import dk.trustworks.invoicewebui.model.enums.TaskType;
-import dk.trustworks.invoicewebui.network.clients.SlackAPI;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -15,7 +12,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,16 +29,13 @@ public class ChartCacheJob {
 
     private final StatisticsService statisticsService;
 
-    private final SlackAPI slackAPI;
-
     private final UserService userService;
 
     @Autowired
-    public ChartCacheJob(WorkService workService, ContractService contractService, StatisticsService statisticsService, SlackAPI slackAPI, UserService userService) {
+    public ChartCacheJob(WorkService workService, ContractService contractService, StatisticsService statisticsService, UserService userService) {
         this.workService = workService;
         this.contractService = contractService;
         this.statisticsService = statisticsService;
-        this.slackAPI = slackAPI;
         this.userService = userService;
         burndownCache = new HashMap<>();
     }
@@ -46,10 +43,10 @@ public class ChartCacheJob {
     //@Scheduled(cron = "0 0 6,12,20 * * *")
     private void loadCachedData() {
         User user = userService.findByUsername("hans.lassen");
-        slackAPI.sendSlackMessage(user, "Reloading cached data...");
+        //slackAPI.sendSlackMessage(user, "Reloading cached data...");
         long start = System.currentTimeMillis();
         statisticsService.refreshCache();
-        slackAPI.sendSlackMessage(user, "...done! ("+(System.currentTimeMillis()-start)+" ms)");
+        //slackAPI.sendSlackMessage(user, "...done! ("+(System.currentTimeMillis()-start)+" ms)");
     }
 
     public void refreshBurndownRateForSingleContract(Contract mainContract) {

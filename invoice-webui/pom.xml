@@ -388,17 +388,12 @@
             <artifactId>dropbox-core-sdk</artifactId>
             <version>3.1.3</version>
         </dependency>
-        <dependency>
-            <groupId>me.ramswaroop.jbot</groupId>
-            <artifactId>jbot</artifactId>
-            <version>4.1.0</version>
-        </dependency>
 
         <!-- group -->
         <dependency>
-            <groupId>com.github.seratch</groupId>
-            <artifactId>jslack</artifactId>
-            <version>1.7.4</version>
+            <groupId>com.slack.api</groupId>
+            <artifactId>slack-api-client</artifactId>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>javax.websocket</groupId>
@@ -412,11 +407,13 @@
         </dependency>
         <!-- /group -->
 
+        <!--
         <dependency>
             <groupId>com.github.allbegray</groupId>
             <artifactId>slack-api</artifactId>
             <version>v1.6.0.RELEASE</version>
         </dependency>
+        -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>

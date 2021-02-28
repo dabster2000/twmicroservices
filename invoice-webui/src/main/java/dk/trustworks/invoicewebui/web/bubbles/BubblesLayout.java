@@ -1,12 +1,15 @@
 package dk.trustworks.invoicewebui.web.bubbles;
 
-import allbegray.slack.SlackClientFactory;
-import allbegray.slack.exception.SlackResponseErrorException;
-import allbegray.slack.type.Message;
-import allbegray.slack.webapi.SlackWebApiClient;
-import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.slack.api.Slack;
+import com.slack.api.methods.MethodsClient;
+import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.request.chat.ChatPostMessageRequest;
+import com.slack.api.methods.request.conversations.ConversationsHistoryRequest;
+import com.slack.api.methods.request.conversations.ConversationsInviteRequest;
+import com.slack.api.methods.request.conversations.ConversationsKickRequest;
+import com.slack.api.model.Message;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
@@ -31,10 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -57,9 +62,9 @@ public class BubblesLayout extends VerticalLayout {
     @Value("${bubbleSlackBotUserToken}")
     private String bubbleBotUserSlackToken;
 
-    private SlackWebApiClient bubbleWebApiClient;
+    private MethodsClient bubbleWebApiClient;
 
-    private SlackWebApiClient bubbleUserBotClient;
+    private MethodsClient bubbleUserBotClient;
 
     @Autowired
     public BubblesLayout(UserService userService, PhotoService photoService, BubbleService bubbleService) {
@@ -71,8 +76,8 @@ public class BubblesLayout extends VerticalLayout {
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public BubblesLayout init() {
-        bubbleWebApiClient = SlackClientFactory.createWebApiClient(bubbleSlackToken);
-        bubbleUserBotClient = SlackClientFactory.createWebApiClient(bubbleBotUserSlackToken);
+        bubbleWebApiClient = Slack.getInstance().methods(bubbleSlackToken);
+        bubbleUserBotClient = Slack.getInstance().methods(bubbleBotUserSlackToken);
         bubbleForm = new BubbleForm(userService, bubbleService, photoService, bubbleWebApiClient);
 
         responsiveLayout.removeAllComponents();
@@ -118,16 +123,27 @@ public class BubblesLayout extends VerticalLayout {
             bubblesDesign.getBtnEdit().addClickListener(event -> bubbleForm.editFormAction(bubble));
             bubblesDesign.getBtnApply().addClickListener(event -> {
                 User owner = userService.findByUUID(bubble.getOwner(), true);
-                ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(owner.getSlackusername(), "Hi "+owner.getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
-                applyMessage.setAs_user(true);
-                bubbleUserBotClient.postMessage(applyMessage);
+                ChatPostMessageRequest request = ChatPostMessageRequest.builder()
+                        .channel(owner.getSlackusername()) // Use a channel ID `C1234567` is preferrable
+                        .text("Hi "+owner.getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!")
+                        .build();
+
+                //ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(owner.getSlackusername(), "Hi "+owner.getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
+                //applyMessage.setAs_user(true);
+                try {
+                    bubbleUserBotClient.chatPostMessage(request);
+                } catch (IOException | SlackApiException e) {
+                    e.printStackTrace();
+                }
+                //bubbleUserBotClient.chatPostMessage()
+                //bubbleUserBotClient.postMessage(applyMessage);
                 Notification.show("You have now applied for membership. The bubble owner will get back to you soon!", Notification.Type.ASSISTIVE_NOTIFICATION);
             });
 
             bubblesDesign.getBtnJoin().addClickListener(event -> {
                 bubbleService.addBubbleMember(bubble.getUuid(), user.getUuid());
                 try {
-                    bubbleWebApiClient.inviteUserToGroup(bubbleWebApiClient.getGroupInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
+                    bubbleWebApiClient.conversationsInvite(ConversationsInviteRequest.builder().channel(bubble.getSlackchannel()).users(Collections.singletonList(user.getSlackusername())).build());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -137,7 +153,7 @@ public class BubblesLayout extends VerticalLayout {
             bubblesDesign.getBtnLeave().addClickListener(event -> {
                 bubbleService.removeFromBubble(bubble.getUuid(), user.getUuid());
                 try {
-                    bubbleWebApiClient.kickUserFromGroup(bubbleWebApiClient.getGroupInfo(bubble.getSlackchannel()).getId(), user.getSlackusername());
+                    bubbleWebApiClient.conversationsKick(ConversationsKickRequest.builder().channel(bubble.getSlackchannel()).user(user.getSlackusername()).build());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -178,14 +194,14 @@ public class BubblesLayout extends VerticalLayout {
                 activity[i] = 0;
             }
             try {
-                for (Message message : bubbleWebApiClient.getGroupHistory(bubble.getSlackchannel(), 100).getMessages()) {
+                for (Message message : bubbleWebApiClient.conversationsHistory(ConversationsHistoryRequest.builder().channel(bubble.getSlackchannel()).limit(100).build()).getMessages()) {
                     if (message.getSubtype() != null) continue;
                     Instant epochMilli = Instant.ofEpochMilli(Long.parseLong(message.getTs().split("\\.")[0]) * 1000L);
                     LocalDate date = LocalDateTime.ofInstant(epochMilli, ZoneOffset.UTC).toLocalDate();
                     if (DAYS.between(date, LocalDate.now()) > 59) continue;
                     activity[(int) DAYS.between(date, LocalDate.now())] = (activity[(int) DAYS.between(date, LocalDate.now())].intValue() + 1);
                 }
-            }catch (SlackResponseErrorException e) {
+            } catch (SlackApiException | IOException e) {
                 e.printStackTrace();
             }
 

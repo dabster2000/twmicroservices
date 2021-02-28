@@ -1,8 +1,5 @@
 package dk.trustworks.invoicewebui.web.conference.layout;
 
-import allbegray.slack.SlackClientFactory;
-import allbegray.slack.webapi.SlackWebApiClient;
-import allbegray.slack.webapi.method.chats.ChatPostMessageMethod;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
@@ -38,14 +35,14 @@ public class BirthdayEventLayout {
     @Autowired
     private EmailSender emailSender;
 
-    private SlackWebApiClient motherWebApiClient;
+    //private SlackWebApiClient motherWebApiClient;
 
     public BirthdayEventLayout() {
 
     }
 
     public Component init() {
-        motherWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
+        //motherWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
 
         ResponsiveLayout mainResponsiveLayout = new ResponsiveLayout(FLUID);
         ResponsiveLayout cardResponsiveLayout = new ResponsiveLayout(FLUID);
@@ -140,7 +137,7 @@ public class BirthdayEventLayout {
                     cardDesign.getVlContent().addComponent(new MLabel(""));
 
                     emailSender.sendBirthdayInvitation(birthdayFormData.getEmail(), birthdayFormData.getName(), birthdayFormData.getCompany(), birthdayFormData.getBirthdayApplicationType().isGoing());
-
+/*
                     ChatPostMessageMethod textMessage1 = new ChatPostMessageMethod("@hans", birthdayFormData.getName() + " fra " + birthdayFormData.getCompany() + ", har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
                     textMessage1.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage1);
@@ -152,6 +149,8 @@ public class BirthdayEventLayout {
                     ChatPostMessageMethod textMessage4 = new ChatPostMessageMethod("@elvi", birthdayFormData.getName() + " fra " + birthdayFormData.getCompany() + ", har " + (birthdayFormData.getBirthdayApplicationType().isGoing()?"tilmeldt":"afmeldt") + " sig med " + birthdayFormData.getEmail());
                     textMessage4.setAs_user(true);
                     motherWebApiClient.postMessage(textMessage4);
+                    
+ */
                 } catch (ValidationException e) {
                     e.printStackTrace();
                 }

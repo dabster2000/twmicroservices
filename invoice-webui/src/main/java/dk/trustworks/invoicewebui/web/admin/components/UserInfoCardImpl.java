@@ -1,8 +1,9 @@
 package dk.trustworks.invoicewebui.web.admin.components;
 
-import allbegray.slack.SlackClientFactory;
-import allbegray.slack.exception.SlackResponseErrorException;
-import allbegray.slack.webapi.SlackWebApiClient;
+import com.slack.api.Slack;
+import com.slack.api.methods.MethodsClient;
+import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.request.users.UsersListRequest;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -59,17 +61,18 @@ public class UserInfoCardImpl extends UserInfoCardDesign {
         getCbTeam().setItems(teamList);
         binder.forField(getCbTeam()).bind(value -> teamList.stream().filter(team -> team.getUuid().equals(value.getTeamuuid())).findFirst().orElse(null), (user, team) -> user.setTeamuuid(team.getUuid()));
 
-        SlackWebApiClient slackWebApiClient = SlackClientFactory.createWebApiClient(motherSlackToken);
+        Slack slack = Slack.getInstance();
+        MethodsClient methods = slack.methods(motherSlackToken);
 
         try {
-            List<allbegray.slack.type.User> slackUserList = slackWebApiClient.getUserList();
-            getCbSlackID().setItems(slackUserList);
-            binder.forField(getCbSlackID()).bind(value -> slackUserList.stream().filter(p -> p.getId().equals(value.getSlackusername())).findFirst().orElse(null), (user, slackUser) -> user.setSlackusername(slackUser.getId()));
-        } catch (SlackResponseErrorException e) {
+            List<com.slack.api.model.User> members = methods.usersList(UsersListRequest.builder().build()).getMembers();
+            getCbSlackID().setItems(members);
+            binder.forField(getCbSlackID()).bind(value -> members.stream().filter(p -> p.getId().equals(value.getSlackusername())).findFirst().orElse(null), (user, slackUser) -> user.setSlackusername(slackUser.getId()));
+        } catch (SlackApiException | IOException e) {
             e.printStackTrace();
         }
-        getCbSlackID().setItemCaptionGenerator(allbegray.slack.type.User::getName);
-        getCbTeam().setItemCaptionGenerator(dk.trustworks.invoicewebui.model.Team::getName);
+        getCbSlackID().setItemCaptionGenerator(com.slack.api.model.User::getName);
+        getCbTeam().setItemCaptionGenerator(Team::getName);
 
         binder.forField(getTxtFirstname()).bind(User::getFirstname, User::setFirstname);
         binder.forField(getTxtLastname()).bind(User::getLastname, User::setLastname);

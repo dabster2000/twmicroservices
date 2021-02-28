@@ -1,10 +1,12 @@
 package dk.trustworks.invoicewebui.web.bubbles.components;
 
-import allbegray.slack.type.Group;
-import allbegray.slack.webapi.SlackWebApiClient;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.slack.api.methods.MethodsClient;
+import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.request.conversations.*;
+import com.slack.api.methods.response.conversations.ConversationsCreateResponse;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
@@ -22,6 +24,8 @@ import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +35,7 @@ public class BubbleForm {
     private final BubbleService bubbleService;
     private final PhotoService photoService;
 
-    private final SlackWebApiClient motherWebApiClient;
+    private final MethodsClient motherWebApiClient;
 
     private final ResponsiveRow newBubbleDialogRow;
 
@@ -39,7 +43,7 @@ public class BubbleForm {
 
     private final Binder<Bubble> bubbleBinder = new Binder<>();
 
-    public BubbleForm(UserService userService, BubbleService bubbleService, PhotoService photoService, SlackWebApiClient motherWebApiClient) {
+    public BubbleForm(UserService userService, BubbleService bubbleService, PhotoService photoService, MethodsClient motherWebApiClient) {
         this.userService = userService;
         this.bubbleService = bubbleService;
         this.photoService = photoService;
@@ -63,7 +67,8 @@ public class BubbleForm {
                 .withComponent(new MButton("blow bubble", event -> {
                     newBubbleDialogRow.setVisible(true);
                     UI.getCurrent().scrollIntoView(newBubbleDialogRow);
-                    createFormRow(null, newBubble -> createUploadRow(newBubble, newBubble2 -> createMembersRow(newBubble2, newBubble3 -> closeDialogRow())));
+                    //createFormRow(null, newBubble -> createUploadRow(newBubble, newBubble2 -> createMembersRow(newBubble2, newBubble3 -> closeDialogRow())));
+                    createFormRow(null, newBubble3 -> closeDialogRow());
                 }).withWidth(100, Sizeable.Unit.PERCENTAGE));
         return row;
     }
@@ -118,29 +123,35 @@ public class BubbleForm {
         twinColSelect.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
         MButton doneButton = new MButton("Done").withWidth(100, Sizeable.Unit.PERCENTAGE).withListener(event -> {
-            Group channel = motherWebApiClient.getGroupInfo(prevBubble.getSlackchannel());
-            List<String> currentSlackMembers = channel.getMembers();
-            //List<BubbleMember> currentBubbleMembers = prevBubble.getBubbleMembers();//bubbleMemberRepository.findByBubble(prevBubble);
-            bubbleService.removeAllMembers(prevBubble.getUuid());
-            List<User> userList = userService.findCurrentlyEmployedUsers(true);
-            for (User user : twinColSelect.getSelectedItems()) {
-                bubbleService.addBubbleMember(prevBubble.getUuid(), user.getUuid());
-                try {
-                    if (!currentSlackMembers.contains(user.getSlackusername()))
-                        motherWebApiClient.inviteUserToGroup(channel.getId(), user.getSlackusername());
-                } catch (Exception e) {
-                    System.out.println("failed join user.getUsername() = " + user.getUsername());
-                    e.printStackTrace();
+            try {
+                //Conversation channel = motherWebApiClient.conversationsInfo(ConversationsInfoRequest.builder().channel(prevBubble.getSlackchannel()).build()).getChannel();
+                List<String> members = motherWebApiClient.conversationsMembers(ConversationsMembersRequest.builder().channel(prevBubble.getSlackchannel()).build()).getMembers();
+                //List<String> currentSlackMembers = channel.;
+                //List<BubbleMember> currentBubbleMembers = prevBubble.getBubbleMembers();//bubbleMemberRepository.findByBubble(prevBubble);
+                bubbleService.removeAllMembers(prevBubble.getUuid());
+                List<User> userList = userService.findCurrentlyEmployedUsers(true);
+                for (User user : twinColSelect.getSelectedItems()) {
+                    bubbleService.addBubbleMember(prevBubble.getUuid(), user.getUuid());
+                    try {
+                        if (!members.contains(user.getSlackusername()))
+                            motherWebApiClient.conversationsInvite(ConversationsInviteRequest.builder().channel(prevBubble.getSlackchannel()).users(Collections.singletonList(user.getSlackusername())).build());
+                    //.inviteUserToGroup(channel.getId(), user.getSlackusername());
+                    } catch (Exception e) {
+                        System.out.println("failed join user.getUsername() = " + user.getUsername());
+                        e.printStackTrace();
+                    }
+                    userList = userList.stream().filter(user2 -> !user2.getUuid().equals(user.getUuid())).collect(Collectors.toList());
                 }
-                userList = userList.stream().filter(user2 -> !user2.getUuid().equals(user.getUuid())).collect(Collectors.toList());
-            }
-            for (User user : userList) {
-                try {
-                    if(currentSlackMembers.contains(user.getSlackusername())) motherWebApiClient.kickUserFromGroup(channel.getId(), user.getSlackusername());
-                } catch (Exception e) {
-                    System.out.println("failed kick user.getUsername() = " + user.getUsername());
-                    e.printStackTrace();
+                for (User user : userList) {
+                    try {
+                        if(members.contains(user.getSlackusername())) motherWebApiClient.conversationsKick(ConversationsKickRequest.builder().channel(prevBubble.getSlackchannel()).user(user.getSlackusername()).build());
+                    } catch (Exception e) {
+                        System.out.println("failed kick user.getUsername() = " + user.getUsername());
+                        e.printStackTrace();
+                    }
                 }
+            } catch (IOException | SlackApiException e) {
+                e.printStackTrace();
             }
 
             newBubbleResponsiveLayout.removeAllComponents();
@@ -176,7 +187,7 @@ public class BubbleForm {
         ComboBox<User> bubbleMaster = new ComboBox<>("Bubble master");
         bubbleMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
         List<User> currentlyEmployedUsers = userService.findCurrentlyEmployedUsers(true);
-        bubbleMaster.setItems();
+        bubbleMaster.setItems(currentlyEmployedUsers);
         bubbleMaster.setEmptySelectionAllowed(false);
         bubbleMaster.setItemCaptionGenerator(User::getUsername);
         bubbleBinder.forField(bubbleMaster).bind(b -> UserService.GetUserFromUUID(b.getOwner(), currentlyEmployedUsers), (b, u) -> b.setOwner(u.getUuid()));
@@ -187,13 +198,6 @@ public class BubbleForm {
         OnOffSwitch active = new OnOffSwitch();
         active.setCaption("Active");
         bubbleBinder.forField(active).bind(Bubble::isActive, Bubble::setActive);
-        /*
-        ComboBox<Group> cbSlackChannel = new ComboBox<>();
-        cbSlackChannel.setItems(motherWebApiClient.getGroupList(true));
-        cbSlackChannel.setItemCaptionGenerator(Group::getName);
-        cbSlackChannel.setEmptySelectionAllowed(true);
-        cbSlackChannel.setEmptySelectionCaption("new slack channel");
-        */
         TextField slackChannelName = new TextField("Channel name");
         slackChannelName.setWidth(100, Sizeable.Unit.PERCENTAGE);
         slackChannelName.setMaxLength(19);
@@ -207,10 +211,18 @@ public class BubbleForm {
                 Notification.show("Error saving bubble", e.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
             if(prevBubble==null) {
-                Group group = motherWebApiClient.createGroup("b_" + slackChannelName.getValue().trim().toLowerCase().replace(" ", "-"));
-                bubble.setSlackchannel(group.getId());
+                try {
+                    ConversationsCreateResponse group = motherWebApiClient.conversationsCreate(ConversationsCreateRequest.builder().isPrivate(true).name("b_" + slackChannelName.getValue().trim().toLowerCase().replace(" ", "-")).build());
+                    bubble.setSlackchannel(group.getChannel().getId());
+                } catch (IOException | SlackApiException e) {
+                    e.printStackTrace();
+                }
             } else if(!bubble.isActive()) {
-                motherWebApiClient.archiveGroup(prevBubble.getSlackchannel());
+                try {
+                    motherWebApiClient.conversationsArchive(ConversationsArchiveRequest.builder().channel(prevBubble.getSlackchannel()).build());
+                } catch (IOException | SlackApiException e) {
+                    e.printStackTrace();
+                }
             }
 
             if(prevBubble==null) bubbleService.saveBubble(bubble);

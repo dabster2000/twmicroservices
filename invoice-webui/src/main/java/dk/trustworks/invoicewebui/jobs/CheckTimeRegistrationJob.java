@@ -1,6 +1,5 @@
 package dk.trustworks.invoicewebui.jobs;
 
-import allbegray.slack.webapi.SlackWebApiClient;
 import dk.trustworks.invoicewebui.services.ContractService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -38,7 +37,7 @@ public class CheckTimeRegistrationJob {
     @Value("${halBotUserOAuthAccessToken}")
     private String halBotUserOAuthAccessToken;
 
-    private SlackWebApiClient halWebApiClient;
+    //private SlackWebApiClient halWebApiClient;
 
     // TODO: MOVE TO SERVICE
 
