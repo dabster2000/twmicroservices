@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.services;
 
-import dk.trustworks.invoicewebui.model.dto.MonthRevenueData;
+import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.network.rest.BiRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class BiService {
         this.biRestService = biRestService;
     }
 
-    public List<MonthRevenueData> getBudgetsByPeriod(LocalDate periodStart, LocalDate periodEnd) {
-        return biRestService.getMonthRevenueData(periodStart, periodEnd).stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).collect(Collectors.toList());
+    public List<CompanyAggregateData> getBudgetsByPeriod(LocalDate periodStart, LocalDate periodEnd) {
+        return biRestService.getMonthRevenueData(periodStart, periodEnd).stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).collect(Collectors.toList());
     }
 }

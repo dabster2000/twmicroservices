@@ -11,7 +11,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.model.dto.MonthRevenueData;
+import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.services.BiService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
@@ -20,7 +20,6 @@ import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +66,7 @@ public class RevenuePerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        List<MonthRevenueData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
+        List<CompanyAggregateData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
 
         DataSeries budgetSeries = new DataSeries("Budget Revenue");
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();

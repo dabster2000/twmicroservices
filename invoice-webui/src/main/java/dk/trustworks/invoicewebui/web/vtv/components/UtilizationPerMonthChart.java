@@ -146,13 +146,10 @@ public class UtilizationPerMonthChart {
             for (User user : userService.findEmployedUsersByDate(startDate, true, ConsultantType.CONSULTANT)) {
                 if(user.getUsername().equals("hans.lassen") || user.getUsername().equals("tobias.kjoelsen") || user.getUsername().equals("lars.albert") || user.getUsername().equals("thomas.gammelvind")) continue;
 
-                //double billableWorkHours = revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), startDate);
-
                 LocalDate finalStartDate = startDate;
 
                 double billableWorkHours = registeredHoursPerConsultant.stream().filter(g ->
                         g.getUuid().equals(user.getUuid()) && g.getDescription().equals(DateUtils.stringIt(finalStartDate))).mapToDouble(GraphKeyValue::getValue).sum();
-                //double billableWorkHours = registeredHours.map(GraphKeyValue::getValue).orElse(0.0);
 
                 Optional<AvailabilityDocument> availabilityDocument = availabilityDocuments.stream().filter(ad ->
                         ad.getMonth().isEqual(finalStartDate) && ad.getUser().getUuid().equals(user.getUuid())).findAny();

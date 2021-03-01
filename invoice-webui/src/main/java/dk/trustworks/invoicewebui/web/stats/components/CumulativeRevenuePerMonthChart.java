@@ -5,7 +5,7 @@ import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.dto.MonthRevenueData;
+import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.services.BiService;
 import dk.trustworks.invoicewebui.services.BudgetService;
 import dk.trustworks.invoicewebui.services.FinanceService;
@@ -91,14 +91,14 @@ public class CumulativeRevenuePerMonthChart {
         double cumulativeBudgetPerMonth = 0.0;
         double cumulativeExpensePerMonth = 0.0;
 
-        List<MonthRevenueData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
+        List<CompanyAggregateData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
 
         for (int i = 0; i < period; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
 
-            Optional<MonthRevenueData> revenueDataOptional = data.stream().filter(monthRevenueData -> monthRevenueData.getMonth().isEqual(currentDate)).findAny();
+            Optional<CompanyAggregateData> revenueDataOptional = data.stream().filter(monthRevenueData -> monthRevenueData.getMonth().isEqual(currentDate)).findAny();
             if(!revenueDataOptional.isPresent()) continue;
-            MonthRevenueData revenueData = revenueDataOptional.get();
+            CompanyAggregateData revenueData = revenueDataOptional.get();
 
             double expense;
 

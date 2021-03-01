@@ -10,12 +10,11 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ExpenseDetails;
-import dk.trustworks.invoicewebui.model.dto.MonthRevenueData;
+import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.network.clients.EconomicsAPI;
 import dk.trustworks.invoicewebui.services.BiService;
 import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.StatisticsService;
-import dk.trustworks.invoicewebui.services.UserService;
 import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,7 +66,7 @@ public class ExpensesPerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        List<MonthRevenueData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
+        List<CompanyAggregateData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
 
         Map<String, Range<Integer>> listSeriesRangeMap = new HashMap<>();
 
@@ -120,13 +119,13 @@ public class ExpensesPerMonthChart {
         administrationExensesSeries.setPlotOptions(poc8);
         listSeriesRangeMap.put(administrationExensesSeries.getName(), EconomicsAPI.ADMINISTRATION_ACCOUNTS);
 
-        personaleExpensesSeries.setData(data.stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).map(MonthRevenueData::getEmployeeExpenses).collect(Collectors.toList()));
-        lokaleExensesSeries.setData(data.stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).map(MonthRevenueData::getOfficeExpenses).collect(Collectors.toList()));
-        salgExensesSeries.setData(data.stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).map(MonthRevenueData::getSalesExpenses).collect(Collectors.toList()));
-        productionExensesSeries.setData(data.stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).map(MonthRevenueData::getProductionExpenses).collect(Collectors.toList()));
-        administrationExensesSeries.setData(data.stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).map(MonthRevenueData::getAdministrationExpenses).collect(Collectors.toList()));
-        consultantSalarySeries.setData(data.stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).map(MonthRevenueData::getConsultantSalaries).collect(Collectors.toList()));
-        staffSalarySeries.setData(data.stream().sorted(Comparator.comparing(MonthRevenueData::getMonth)).map(MonthRevenueData::getStaffSalaries).collect(Collectors.toList()));
+        personaleExpensesSeries.setData(data.stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).map(CompanyAggregateData::getEmployeeExpenses).collect(Collectors.toList()));
+        lokaleExensesSeries.setData(data.stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).map(CompanyAggregateData::getOfficeExpenses).collect(Collectors.toList()));
+        salgExensesSeries.setData(data.stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).map(CompanyAggregateData::getSalesExpenses).collect(Collectors.toList()));
+        productionExensesSeries.setData(data.stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).map(CompanyAggregateData::getProductionExpenses).collect(Collectors.toList()));
+        administrationExensesSeries.setData(data.stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).map(CompanyAggregateData::getAdministrationExpenses).collect(Collectors.toList()));
+        consultantSalarySeries.setData(data.stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).map(CompanyAggregateData::getConsultantSalaries).collect(Collectors.toList()));
+        staffSalarySeries.setData(data.stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).map(CompanyAggregateData::getStaffSalaries).collect(Collectors.toList()));
 
         chart.addPointClickListener(event -> {
             LocalDate currentDate = periodStart.plusMonths(event.getPointIndex());

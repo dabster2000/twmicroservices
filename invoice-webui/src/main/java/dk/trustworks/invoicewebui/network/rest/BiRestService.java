@@ -1,6 +1,6 @@
 package dk.trustworks.invoicewebui.network.rest;
 
-import dk.trustworks.invoicewebui.model.dto.MonthRevenueData;
+import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,10 +28,10 @@ public class BiRestService {
         this.systemRestService = systemRestService;
     }
 
-    public List<MonthRevenueData> getMonthRevenueData(LocalDate fromdate, LocalDate todate) {
+    public List<CompanyAggregateData> getMonthRevenueData(LocalDate fromdate, LocalDate todate) {
         String url = apiGatewayUrl +"/bi/company?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
         System.out.println("url = " + url);
-        ResponseEntity<MonthRevenueData[]> result = systemRestService.secureCall(url, GET, MonthRevenueData[].class);
+        ResponseEntity<CompanyAggregateData[]> result = systemRestService.secureCall(url, GET, CompanyAggregateData[].class);
         return Arrays.asList(result.getBody());
     }
 

@@ -15,22 +15,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "month",
-        "registeredHours",
-        "budgetAmount",
-        "budgetHours",
-        "registeredAmount",
-        "invoicedAmount",
-        "consultantSalaries",
-        "staffSalaries",
-        "employeeExpenses",
-        "officeExpenses",
-        "salesExpenses",
-        "productionExpenses",
-        "administrationExpenses"
-})
-public class MonthRevenueData {
+public class CompanyAggregateData {
 
     @JsonProperty("month")
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -60,6 +45,20 @@ public class MonthRevenueData {
     public int productionExpenses;
     @JsonProperty("administrationExpenses")
     public int administrationExpenses;
+    @JsonProperty("netAvailableHours")
+    private double netAvailableHours; // done
+    @JsonProperty("grossAvailableHours")
+    private double grossAvailableHours; // done
+    @JsonProperty("netAvailability")
+    private double netAvailability; // done
+    @JsonProperty("grossAvailability")
+    private double grossAvailability; // done
+    @JsonProperty("budgetAvailability")
+    private double budgetAvailability; // done
+    @JsonProperty("numOfEmployees")
+    private int numOfEmployees; // done
+    @JsonProperty("numOfConsultants")
+    private int numOfConsultants; // done
 
     public void addData(int registeredHours, int registeredAmount, int invoicedAmount) {
         this.registeredHours += registeredHours;
