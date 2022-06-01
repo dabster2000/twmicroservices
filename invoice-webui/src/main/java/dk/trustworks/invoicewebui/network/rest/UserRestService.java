@@ -5,6 +5,7 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.Capacity;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.network.dto.IntegerJsonResponse;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,12 +15,16 @@ import org.springframework.stereotype.Service;
 
 import javax.websocket.server.PathParam;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
+import static java.net.URLEncoder.encode;
+import static java.nio.charset.StandardCharsets.*;
 import static org.springframework.http.HttpMethod.*;
 
 @Service
@@ -59,9 +64,17 @@ public class UserRestService {
         return result.getBody();
     }
 
-    @Cacheable("user")
+    //@Cacheable("user")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, boolean shallow, String... consultantTypes) {
         String url = apiGatewayUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes)+"&shallow="+shallow;
+        if(date.equals("2022-03-01")) System.out.println("url = " + url);
+        ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    @Cacheable("user")
+    public List<User> getActiveConsultantsByFiscalYear(int intFiscalYear) {
+        String url = apiGatewayUrl+"/users/consultants/search/findByFiscalYear?fiscalyear="+intFiscalYear;
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
         return Arrays.asList(result.getBody());
     }
@@ -69,7 +82,13 @@ public class UserRestService {
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
         String url = apiGatewayUrl+"/users/command/calculateCapacityByMonthByUser?useruuid="+useruuid+"&statusdate="+statusdate;
         ResponseEntity<IntegerJsonResponse> result = systemRestService.secureCall(url, GET, IntegerJsonResponse.class);
-        return result.getBody().getResult(); //restTemplate.getForObject(url, IntegerJsonResponse.class).getResult();
+        return result.getBody().getResult();
+    }
+
+    public GraphKeyValue calculateAverageRatePerFiscalYear(String useruuid, int fiscalYear) {
+        String url = apiGatewayUrl+"/users/"+useruuid+"/rate/average?fiscalyear="+fiscalYear;
+        ResponseEntity<GraphKeyValue> result = systemRestService.secureCall(url, GET, GraphKeyValue.class);
+        return result.getBody();
     }
 
     public List<Capacity> calculateCapacityByPeriod(LocalDate fromDate, LocalDate toDate) {
@@ -86,9 +105,9 @@ public class UserRestService {
     }
 
     @CacheEvict(cacheNames = "user", allEntries = true)
-    public User create(User user) {
+    public void create(User user) {
         String url = apiGatewayUrl+"/users";
-        return (User) systemRestService.secureCall(url, POST, User.class, user).getBody();
+        systemRestService.secureCall(url, POST, Void.class, user);
     }
 
     @CacheEvict(cacheNames = "user", allEntries = true)
@@ -118,9 +137,15 @@ public class UserRestService {
         return systemRestService.login(username, password);
     }
 
+    @SneakyThrows
+    public void updatePassword(String username, String newPassword) {
+        String url = apiGatewayUrl + "/users/"+username+"/password/"+ encode(newPassword, UTF_8.toString());
+        systemRestService.unsafePutCall(url);
+    }
+
     public void confirmPasswordChange(@PathParam("key") String key) {
         String url = apiGatewayUrl + "/users/command/confirmpasswordchange/"+key;
-        systemRestService.unsafeCall(url);
+        systemRestService.unsafePostCall(url);
     }
 
     @CacheEvict(cacheNames = "user", allEntries = true)

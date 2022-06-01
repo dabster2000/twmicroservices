@@ -64,7 +64,7 @@ public class UserService implements InitializingBean {
     }
 
     public List<User> findAll(boolean shallow) {
-        return userRestService.findByOrderByUsername(true);
+        return userRestService.findByOrderByUsername(shallow);
     }
 
     public List<User> findCurrentlyEmployedUsers(boolean shallow) {
@@ -74,6 +74,15 @@ public class UserService implements InitializingBean {
                 statusList,
                 shallow,
                 CONSULTANT.toString(), STAFF.toString(), STUDENT.toString());
+    }
+
+    public List<User> findCurrentlyEmployedUsersInclExternalConsultants(boolean shallow) {
+        String[] statusList = {ACTIVE.toString(), NON_PAY_LEAVE.toString()};
+        return userRestService.findUsersByDateAndStatusListAndTypes(
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                statusList,
+                shallow,
+                CONSULTANT.toString(), STAFF.toString(), STUDENT.toString(), EXTERNAL.toString());
     }
 
     public List<User> findEmployedUsersByDate(LocalDate date, boolean shallow, ConsultantType... consultantType) {
@@ -101,6 +110,10 @@ public class UserService implements InitializingBean {
                 statusList,
                 shallow,
                 Arrays.stream(consultantType).map(Enum::toString).toArray(String[]::new)).stream().sorted(Comparator.comparing(User::getUsername)).collect(Collectors.toList());
+    }
+
+    public List<User> getActiveConsultantsByFiscalYear(int intFiscalYear) {
+        return userRestService.getActiveConsultantsByFiscalYear(intFiscalYear);
     }
 
     public List<Role> findUserRoles(String useruuid) {
@@ -160,27 +173,14 @@ public class UserService implements InitializingBean {
                                 .filter(salary -> !salary.getActivefrom().isAfter(date)) // Remove salaries after date
                                 .findFirst().orElse(new Salary(date, 0)) // Find the latest salary or return default
                 ).mapToInt(Salary::getSalary).sum();
-
-        /*
-        return //userRestService.findUsersByDateAndStatusListAndTypes(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), statusList, false, consultantTypes)
-
-            users.stream()
-                    .map(user ->
-                            user.getStatuses().stream().sorted(Comparator.comparing(UserStatus::getStatusdate).reversed())
-                                    .filter(userStatus -> userStatus.getStatusdate().isBefore(date))).findFirst().orElse(new UserStatus(CONSULTANT, StatusType.TERMINATED, date, 0)));
-                    .mapToInt(value -> value.getSalaries()
-                            .stream()
-                            .filter(salary -> salary.getActivefrom().isBefore(date))
-                            .max(Comparator.comparing(Salary::getActivefrom))
-                            .orElse(new Salary(date, 0))
-                            .getSalary()
-                    ).sum();
-
-         */
     }
 
     public int calculateCapacityByMonthByUser(String useruuid, String statusdate) {
         return userRestService.calculateCapacityByMonthByUser(useruuid, statusdate);
+    }
+
+    public GraphKeyValue calculateAverageRatePerFiscalYear(String useruuid, int fiscalYear) {
+        return userRestService.calculateAverageRatePerFiscalYear(useruuid, fiscalYear);
     }
 
     public List<Capacity> calculateCapacityByPeriod(LocalDate fromDate, LocalDate toDate) {
@@ -219,9 +219,7 @@ public class UserService implements InitializingBean {
      */
     public UserStatus getStatus(User user, boolean first, StatusType type) {
         List<UserStatus> statuses = user.getStatuses();
-        System.out.println(user.getUsername()+" statuses = " + statuses.size());
         statuses = statuses.stream().filter(userStatus -> userStatus.getStatus().equals(type)).sorted(Comparator.comparing(UserStatus::getStatusdate).reversed()).collect(Collectors.toList());
-        statuses.forEach(System.out::println);
         if(statuses.size()==0) return new UserStatus(CONSULTANT, StatusType.TERMINATED, LocalDate.of(2014,2, 1), 0);
         return first?statuses.get(0):statuses.get(statuses.size()-1);
     }
@@ -248,13 +246,17 @@ public class UserService implements InitializingBean {
         return currentlyWorkingUsers.stream().anyMatch(employedUser -> employedUser.getUuid().equals(user.getUuid()));
     }
 
-    public User create(User user) {
-        return userRestService.create(user);
+    public void create(User user) {
+        userRestService.create(user);
     }
 
     public void update(User user) {
         Validate.notNull(user.getUuid());
         userRestService.update(user);
+    }
+
+    public void updateUserPassword(String username, String newPassword) {
+        userRestService.updatePassword(username, newPassword);
     }
 
     public void updateBirthday(User user) {

@@ -73,7 +73,7 @@ public class ConsultantsBudgetRealizationChart {
                         double weeks = workService.getWorkdaysInMonth(consultant.getUser().getUuid(), currentDate) / 5.0;
                         List<Work> workList = workService.findByPeriodAndUserUUID(
                                 currentDate.withDayOfMonth(1),
-                                currentDate.withDayOfMonth(currentDate.lengthOfMonth()),
+                                currentDate.withDayOfMonth(1).plusMonths(1),
                                 consultant.getUser().getUuid());
                         double notWork = 0.0;
                         for (Work work : workList) {

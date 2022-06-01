@@ -7,7 +7,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.*;
-import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.File;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import org.vaadin.liveimageeditor.LiveImageEditor;
 import server.droporchoose.UploadComponent;
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -133,10 +134,10 @@ public class PhotoUploader {
 
         editedImage.addClickListener(event -> setupUploadStep());
 
-        Photo photo = photoService.getRelatedPhoto(uuid);
-        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto().length > 0 && startStep.equals(Step.PHOTO)) {
+        File photo = photoService.getRelatedPhoto(uuid);
+        if(photo!=null && photo.getFile()!=null && photo.getFile().length > 0 && startStep.equals(Step.PHOTO)) {
             editedImage.setSource(new StreamResource((StreamResource.StreamSource) () ->
-                    new ByteArrayInputStream(photo.getPhoto()),
+                    new ByteArrayInputStream(photo.getFile()),
                     "photo-" + System.currentTimeMillis() + ".jpg"));
             setupFinalStep();
         } else {
@@ -194,11 +195,11 @@ public class PhotoUploader {
             writer.dispose();
 
 
-            Photo photo = photoService.getRelatedPhoto(uuid);
+            File photo = photoService.getRelatedPhoto(uuid);
             if(photo==null) {
-                photo = new Photo(UUID.randomUUID().toString(), uuid, bytes);
+                photo = new File(UUID.randomUUID().toString(), uuid, "PHOTO", "", "", LocalDate.now(), bytes);
             } else {
-                photo.setPhoto(bytes);
+                photo.setFile(bytes);
             }
             StreamResource resource = new StreamResource(() -> new ByteArrayInputStream(bytes), "edited-image-" + System.currentTimeMillis() + ".jpg");
             editedImage.setSource(resource);

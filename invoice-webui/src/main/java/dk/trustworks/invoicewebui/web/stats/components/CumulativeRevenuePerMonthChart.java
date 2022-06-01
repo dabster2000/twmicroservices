@@ -7,9 +7,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.services.BiService;
-import dk.trustworks.invoicewebui.services.BudgetService;
-import dk.trustworks.invoicewebui.services.FinanceService;
-import dk.trustworks.invoicewebui.services.RevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -22,19 +19,10 @@ import java.util.Optional;
 @SpringUI
 public class CumulativeRevenuePerMonthChart {
 
-    private final FinanceService financeService;
-
-    private final RevenueService revenueService;
-
-    private final BudgetService budgetService;
-
     private final BiService biService;
 
     @Autowired
-    public CumulativeRevenuePerMonthChart(FinanceService financeService, RevenueService revenueService, BudgetService budgetService, BiService biService) {
-        this.financeService = financeService;
-        this.revenueService = revenueService;
-        this.budgetService = budgetService;
+    public CumulativeRevenuePerMonthChart(BiService biService) {
         this.biService = biService;
     }
 
@@ -91,7 +79,7 @@ public class CumulativeRevenuePerMonthChart {
         double cumulativeBudgetPerMonth = 0.0;
         double cumulativeExpensePerMonth = 0.0;
 
-        List<CompanyAggregateData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
+        List<CompanyAggregateData> data = biService.getCompanyAggregateDataByPeriod(periodStart, periodEnd);
 
         for (int i = 0; i < period; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);

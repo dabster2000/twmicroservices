@@ -31,15 +31,12 @@ import java.util.stream.Collectors;
 @SpringUI
 public class RevenuePerMonthChart {
 
-    private final StatisticsService statisticsService;
-
     private final InvoiceService invoiceService;
 
     private final BiService biService;
 
     @Autowired
-    public RevenuePerMonthChart(StatisticsService statisticsService, InvoiceService invoiceService, BiService biService) {
-        this.statisticsService = statisticsService;
+    public RevenuePerMonthChart(InvoiceService invoiceService, BiService biService) {
         this.invoiceService = invoiceService;
         this.biService = biService;
     }
@@ -66,7 +63,7 @@ public class RevenuePerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        List<CompanyAggregateData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
+        List<CompanyAggregateData> data = biService.getCompanyAggregateDataByPeriod(periodStart, periodEnd);
 
         DataSeries budgetSeries = new DataSeries("Budget Revenue");
         PlotOptionsAreaspline plotOptionsArea = new PlotOptionsAreaspline();

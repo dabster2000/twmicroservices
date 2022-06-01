@@ -24,7 +24,7 @@ public class SalesVideoCanvas extends VerticalLayout {
         videoCardDesign.setWidth("100%");
         BrowserFrame videoBrowser = new BrowserFrame(null, new ExternalResource("https://vimeopro.com/user71634519/sales-war-stories"));
         videoBrowser.setWidth("100%");
-        videoBrowser.setHeight("700px");
+        videoBrowser.setHeight("850px");
         videoCardDesign.getIframeHolder().addComponent(videoBrowser);
 
         cardRow.addColumn()

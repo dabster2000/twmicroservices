@@ -171,7 +171,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
         responsiveLayout = new ResponsiveLayout();
         addComponent(responsiveLayout);
 
-        Photo photoResource = photoService.getRelatedPhoto(currentProject.getClient().getUuid());
+        File photoResource = photoService.getRelatedPhoto(currentProject.getClient().getUuid());
         ProjectDetailCardImpl projectDetailCard = new ProjectDetailCardImpl(currentProject, userService.findAll(true), photoResource, projectService, userService);
         projectDetailCard.getBtnUpdate().addClickListener(event -> {
             projectDetailCard.update();

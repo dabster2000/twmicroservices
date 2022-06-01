@@ -5,19 +5,26 @@ import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.model.style.Color;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.themes.ValoLightTheme;
+import com.vaadin.addon.onoffswitch.OnOffSwitch;
+import com.vaadin.data.HasValue;
 import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.EmployeeAggregateData;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
-import dk.trustworks.invoicewebui.services.ClientService;
-import dk.trustworks.invoicewebui.services.ContractService;
-import dk.trustworks.invoicewebui.services.MarginService;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
@@ -25,12 +32,16 @@ import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
 import dk.trustworks.invoicewebui.web.vtv.model.MarginRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 21/12/2016.
@@ -38,6 +49,12 @@ import java.util.Random;
 @SpringComponent
 @SpringUI
 public class SalesLayout extends VerticalLayout {
+
+    @Autowired
+    private BiService biService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ClientService clientService;
@@ -54,8 +71,6 @@ public class SalesLayout extends VerticalLayout {
     @Autowired
     private SalesHeatMap salesHeatMap;
 
-    private static Color[] colors = new ValoLightTheme().getColors();
-
     public SalesLayout() {
     }
 
@@ -63,23 +78,46 @@ public class SalesLayout extends VerticalLayout {
     public SalesLayout init() {
         this.removeAllComponents();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        ResponsiveRow row = responsiveLayout.addRow();
+        responsiveLayout.setFlexible();
+
+        ResponsiveRow row = responsiveLayout.addRow().withGrow(true);
 
         LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
 
+        List<EmployeeAggregateData> employeeData = biService.getEmployeeAggregateDataByPeriod(localDateStart, localDateStart.plusMonths(2));
+        for (int month = 0; month < 3; month++) {
+            LocalDate actualDate = localDateStart.plusMonths(month);
+            BoxImpl box = new BoxImpl().instance(new MLabel(DateUtils.stringIt(actualDate, "MMMM yyyy")+ " ( <=80% )").withStyleName("bold"));
+            row.addColumn().withComponent(box).withDisplayRules(12,12,4,4);
+            box.getContent().addComponent(new Label(" "));
+            employeeData.stream().filter(e ->
+                    e.getContractUtilization()<=0.8 &&
+                            e.getStatusType().equals(StatusType.ACTIVE) &&
+                            (e.getConsultantType().equals(ConsultantType.CONSULTANT) || e.getConsultantType().equals(ConsultantType.STUDENT)) &&
+                            e.getMonth().withDayOfMonth(1).isEqual(actualDate))
+                    .collect(Collectors.toList()).forEach(e -> {
+                User user = userService.findByUUID(e.getUseruuid(), true);
+                String teamname = e.getTeamMemberOf().size()>0?e.getTeamMemberOf().get(0).getShortname():"None";
+                box.getContent().addComponent(new Label(user.getFirstname()+" "+user.getLastname()+" ("+teamname+") ("+ NumberUtils.round(e.getContractUtilization()*100, 0)+"%)"));
+            });
+        }
+
         Card hoursPerConsultantCard = new Card();
         hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month");
+        OnOffSwitch onOffSwitch = new OnOffSwitch(true);
         DateTimeField field = new DateTimeField(event -> {
-            LocalDate date = event.getValue().toLocalDate().withDayOfMonth(1);
-            hoursPerConsultantCard.getContent().removeAllComponents();
-            hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(date));
-            hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month (month norm: "+ ((DateUtils.getWeekdaysInPeriod(date, date.plusMonths(1))/5.0)*35.0) +")");
+            reloadChart(event.getValue(), hoursPerConsultantCard, onOffSwitch.getValue());
+        });
+        onOffSwitch.addValueChangeListener(event -> {
+            reloadChart(field.getValue(), hoursPerConsultantCard, event.getValue());
         });
         field.setWidth(150, Unit.PIXELS);
         field.setResolution(DateTimeResolution.MONTH);
         field.setValue(localDateStart.atStartOfDay());
         field.setDateFormat("MMM yyyy");
         field.addStyleName("floating");
+        hoursPerConsultantCard.getHlTitleBar().addComponent(new MHorizontalLayout(new MLabel("Use adjusted budgets:"), onOffSwitch));
+        hoursPerConsultantCard.getHlTitleBar().addComponent(new MLabel(" "));
         hoursPerConsultantCard.getHlTitleBar().addComponent(field);
 
         row.addColumn().withDisplayRules(12, 12, 12, 12)
@@ -87,7 +125,7 @@ public class SalesLayout extends VerticalLayout {
 
         Card allocationChartCard = new Card();
         allocationChartCard.getLblTitle().setValue("Utilization per month");
-        allocationChartCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart.minusMonths(12), LocalDate.now().withDayOfMonth(1).plusMonths(11)));
+        allocationChartCard.getContent().addComponent(utilizationPerMonthChart.createGroupUtilizationPerMonthChart(localDateStart.minusMonths(12), LocalDate.now().withDayOfMonth(1).plusMonths(11)));
 
         row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(allocationChartCard);
 
@@ -127,107 +165,12 @@ public class SalesLayout extends VerticalLayout {
         this.addComponent(responsiveLayout);
         return this;
     }
-    /*
-    private Chart createOfferingChart(int year) {
-        List<Work> workList = workRepository.findBillableWorkByPeriod(
-                LocalDate.of(year, 1, 1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                LocalDate.of(year, 12, 31).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        );
 
-        Map<String, AmbitionCategory> ambitionMap = new HashMap<>();
-        List<Ambition> ambitionList = ambitionRepository.findAmbitionByOfferingIsTrueAndActiveIsTrue();
-        List<AmbitionCategory> ambitionCategoryList = ambitionCategoryRepository.findByActiveTrue();
-        for (Ambition ambition : ambitionList) {
-            AmbitionCategory category = ambitionCategoryList.stream().filter(ambitionCategory -> ambitionCategory.getAmbitionCategoryType().equals(ambition.getCategory())).findFirst().get();
-            ambitionMap.putIfAbsent(ambition.getName(), category);
-        }
-
-
-        Map<String, Double> hoursByOfferingsMap = new HashMap<>();
-        Map<String, Double> hoursByOfferingCategoryMap = new HashMap<>();
-
-
-        for (Work work : workList) {
-            List<TaskOffering> taskOfferingList = work.getTask().getTaskOfferings();
-            for (TaskOffering taskOffering : taskOfferingList) {
-                hoursByOfferingsMap.putIfAbsent(taskOffering.getName(), 0.0);
-                hoursByOfferingCategoryMap.putIfAbsent(ambitionMap.get(taskOffering.getName()).getName(), 0.0);
-                double ambitionHours = hoursByOfferingsMap.get(taskOffering.getName());
-                double categoryHours = hoursByOfferingCategoryMap.get(ambitionMap.get(taskOffering.getName()).getName());
-                ambitionHours += work.getWorkduration() / taskOfferingList.size();
-                categoryHours += work.getWorkduration() / taskOfferingList.size();
-                hoursByOfferingsMap.replace(taskOffering.getName(), ambitionHours);
-                hoursByOfferingCategoryMap.replace(ambitionMap.get(taskOffering.getName()).getName(), categoryHours);
-            }
-        }
-
-        final Chart chart = new Chart(ChartType.COLUMN);
-        chart.setId("chart");
-
-        final Configuration conf = chart.getConfiguration();
-
-        conf.setTitle("Offerings");
-        conf.setSubTitle("Click the columns to view specific offerings. Click again to view offering categories.");
-        conf.getLegend().setEnabled(false);
-
-        XAxis x = new XAxis();
-        x.setType(AxisType.CATEGORY);
-        conf.addxAxis(x);
-
-        YAxis y = new YAxis();
-        y.setTitle("Hours");
-        conf.addyAxis(y);
-
-        PlotOptionsColumn column = new PlotOptionsColumn();
-        column.setCursor(Cursor.POINTER);
-        column.setDataLabels(new DataLabels(true));
-        column.getDataLabels().setFormatter("this.y +' hours'");
-
-        conf.setPlotOptions(column);
-
-        Tooltip tooltip = new Tooltip();
-        tooltip.setHeaderFormat("<span style=\"font-size:11px\">{series.name}</span><br>");
-        tooltip.setPointFormat("<span style=\"color:{point.color}\">{point.name}</span>: <b>{point.y:.2f} hours</b> of total<br/>");
-        conf.setTooltip(tooltip);
-
-        DataSeries series = new DataSeries();
-        series.setName("Offering categories");
-        PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
-        plotOptionsColumn.setColorByPoint(true);
-        series.setPlotOptions(plotOptionsColumn);
-
-        for (AmbitionCategory category : ambitionMap.values()) {
-            DataSeriesItem item = new DataSeriesItem(category.getName(), Math.round(hoursByOfferingCategoryMap.getOrDefault(category.getName(), 0.0)));
-            DataSeries drillSeries = new DataSeries(category.getName());
-            drillSeries.setId(category.getAmbitionCategoryType());
-            String[] ambitionNames = ambitionMap.keySet().stream().filter(s -> ambitionMap.get(s).getAmbitionCategoryType().equals(category.getAmbitionCategoryType())).toArray(String[]::new);
-            List<Number> hoursByAmbition = new ArrayList<>();
-            for (String ambitionName : ambitionNames) {
-                hoursByAmbition.add(Math.round(hoursByOfferingsMap.getOrDefault(ambitionName, 0.0)));
-            }
-
-            drillSeries.setData(ambitionNames, hoursByAmbition.toArray(new Number[0]));
-            series.addItemWithDrilldown(item, drillSeries);
-        }
-
-        conf.addSeries(series);
-
-        return chart;
-    }
-
-     */
-
-    private static SolidColor color(int colorIndex) {
-        SolidColor c = (SolidColor) colors[colorIndex];
-        String cStr = c.toString().substring(1);
-
-        int r = Integer.parseInt(cStr.substring(0, 2), 16);
-        int g = Integer.parseInt(cStr.substring(2, 4), 16);
-        int b = Integer.parseInt(cStr.substring(4, 6), 16);
-
-        double opacity = (50 + new Random(0).nextInt(95 - 50)) / 100.0;
-
-        return new SolidColor(r, g, b, opacity);
+    private void reloadChart(LocalDateTime event, Card hoursPerConsultantCard, Boolean onOffSwitch) {
+        LocalDate date = event.toLocalDate().withDayOfMonth(1);
+        hoursPerConsultantCard.getContent().removeAllComponents();
+        hoursPerConsultantCard.getContent().addComponent(hoursPerConsultantChart.createHoursPerConsultantChart(date, userService.findEmployedUsersByDate(date, true, ConsultantType.CONSULTANT), onOffSwitch));
+        hoursPerConsultantCard.getLblTitle().setValue("Consultant hours per month (month norm: "+ ((DateUtils.getWeekdaysInPeriod(date, date.plusMonths(1))/5.0)*35.0) +")");
     }
 }
 

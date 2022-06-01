@@ -129,7 +129,7 @@ public class DraftEditImpl extends DraftEditDesign {
 
             btnAddInvoiceItem.addClickListener(event -> {
                 int row = gridInvoiceItems.getRows() - 1;
-                InvoiceItem invoiceItem = new InvoiceItem("", "", 0.0, 0);
+                InvoiceItem invoiceItem = new InvoiceItem("", "", 0.0, 0.0);
                 invoiceItem.uuid = UUID.randomUUID().toString();
                 invoiceItems.add(invoiceItem);
                 gridInvoiceItems.insertRow(row);

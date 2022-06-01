@@ -20,7 +20,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.ADMIN, RoleType.PARTNER, RoleType.CXO})
+@AccessRules(roleTypes = {RoleType.ADMIN, RoleType.CXO})
 @SpringView(name = UserManagerView.VIEW_NAME)
 public class UserManagerView extends VerticalLayout implements View {
 

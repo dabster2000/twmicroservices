@@ -1,12 +1,11 @@
 package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Component;
 
 /**
  * Created by hans on 11/08/2017.
  */
-public class DnaCardImpl extends DnaCardDesign implements Box {
+public class DnaCardImpl extends DnaCardDesign implements Component {
 
     private int priority;
     private int boxWidth;
@@ -46,7 +45,7 @@ public class DnaCardImpl extends DnaCardDesign implements Box {
     }
 
     @Override
-    public Component getBoxComponent() {
+    public com.vaadin.ui.Component getBoxComponent() {
         return this;
     }
 

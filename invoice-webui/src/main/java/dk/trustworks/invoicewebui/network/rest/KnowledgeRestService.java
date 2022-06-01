@@ -1,20 +1,14 @@
 package dk.trustworks.invoicewebui.network.rest;
 
 import dk.trustworks.invoicewebui.model.CKOExpense;
-import dk.trustworks.invoicewebui.model.Photo;
-import dk.trustworks.invoicewebui.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.UUID;
 
 import static org.springframework.http.HttpMethod.*;
 

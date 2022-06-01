@@ -3,7 +3,7 @@ package dk.trustworks.invoicewebui.web.client.components;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import dk.trustworks.invoicewebui.model.Client;
-import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.File;
 
 import java.io.ByteArrayInputStream;
 
@@ -14,10 +14,10 @@ import java.io.ByteArrayInputStream;
 
 public class ClientCardImpl extends ClientCardDesign {
 
-    public ClientCardImpl(Client client, Photo photo) {
-        if(photo!=null && photo.getPhoto().length > 0) {
+    public ClientCardImpl(Client client, File photo) {
+        if(photo!=null && photo.getFile() != null && photo.getFile().length > 0) {
             getImgTop().setSource(new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(photo.getPhoto()),
+                            new ByteArrayInputStream(photo.getFile()),
                             "logo.jpg"));
         } else {
             getImgTop().setSource(new ThemeResource("images/clients/missing-logo.jpg"));

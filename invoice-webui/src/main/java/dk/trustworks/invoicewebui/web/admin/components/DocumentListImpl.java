@@ -3,9 +3,9 @@ package dk.trustworks.invoicewebui.web.admin.components;
 import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import dk.trustworks.invoicewebui.model.Document;
-import dk.trustworks.invoicewebui.model.enums.DocumentType;
-import dk.trustworks.invoicewebui.repositories.DocumentRepository;
+import dk.trustworks.invoicewebui.model.File;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.services.DocumentService;
 import dk.trustworks.invoicewebui.web.employee.model.DocumentWithOwner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
@@ -20,7 +20,10 @@ import java.util.Set;
 public class DocumentListImpl extends DocumentList {
 
     @Autowired
-    private DocumentRepository documentRepository;
+    private DocumentService documentService;
+    //private DocumentRepository documentRepository;
+
+    private List<User> users;
 
     public DocumentListImpl() {
         getGridFiles().getColumn("name").setExpandRatio(10);
@@ -39,8 +42,10 @@ public class DocumentListImpl extends DocumentList {
 
         getBtnDownload().addClickListener(event -> {
             if(!getGridFiles().getSelectedItems().stream().findFirst().isPresent()) return;
-            Document document = getGridFiles().getSelectedItems().stream().findFirst().get();
-            final StreamResource resource = new StreamResource(() -> new ByteArrayInputStream(document.getContent()), document.getName()+".pdf");
+            File document = getGridFiles().getSelectedItems().stream().findFirst().get();
+            File documentWithFile = documentService.findDocumentByUUID(document.getUuid());
+            final StreamResource resource = new StreamResource(() -> new ByteArrayInputStream(documentWithFile.getFile()), document.getFilename());
+            //final StreamResource resource = new StreamResource(() -> new ByteArrayInputStream(document.getFile()), document.getName()+".pdf");
 
             SimpleFileDownloader downloader = new SimpleFileDownloader();
             addExtension(downloader);
@@ -51,19 +56,24 @@ public class DocumentListImpl extends DocumentList {
         getBtnDelete().addClickListener(event -> {
             Set<DocumentWithOwner> selectedItems = getGridFiles().getSelectedItems();
             if(selectedItems.size()==0) return;
-            for (Document selectedItem : selectedItems) {
-                documentRepository.delete(selectedItem.getId());
+            for (File selectedItem : selectedItems) {
+                documentService.deleteDocument(selectedItem.getUuid());
             }
-            reload();
+            init(users);
         });
     }
 
-    public void reload() {
-        List<DocumentWithOwner> documents = new ArrayList<>();
-        for (Document document : documentRepository.findByType(DocumentType.CONTRACT)) {
-            documents.add(new DocumentWithOwner(document, document.getUser().getUsername()));
-        }
+    //userService.findByUUID(document.getRelateduuid(), true).getUsername())
 
+    public void init(List<User> users) {
+        this.users = users;
+        List<DocumentWithOwner> documents = new ArrayList<>();
+        for (User user : users) {
+            List<File> docList = documentService.findDocumentsByUserUUID(user.getUuid());
+            for (File file : docList) {
+                documents.add(new DocumentWithOwner(file, user.getUsername()));
+            }
+        }
         getGridFiles().setItems(documents);
     }
 

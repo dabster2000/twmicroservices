@@ -283,7 +283,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 new ByteArrayInputStream(invoice.getPdf()),
                 StringUtils.convertInvoiceNumberToString(invoice.invoicenumber) +
                         "_" + invoice.type +
-                        "-" + invoice.clientname +
+                        "-" + invoice.clientname.replaceAll("\\W+", "") +
                         "-" + dateTimeFormatter.format(invoice.invoicedate) +
                         ".pdf"
         );

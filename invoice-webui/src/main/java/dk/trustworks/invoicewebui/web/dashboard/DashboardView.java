@@ -11,14 +11,13 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.model.enums.ConsultantType;
-import dk.trustworks.invoicewebui.model.enums.NotificationType;
-import dk.trustworks.invoicewebui.model.enums.ReminderType;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
+import dk.trustworks.invoicewebui.model.enums.*;
 import dk.trustworks.invoicewebui.network.clients.VimeoAPI;
+import dk.trustworks.invoicewebui.network.rest.TeamRestService;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.*;
@@ -39,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.label.MLabel;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -47,10 +46,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.STUDENT;
 
 /**
  * Created by hans on 12/08/2017.
@@ -94,6 +94,8 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final UserService userService;
 
+    private final TeamRestService teamRestService;
+
     private final PhotoService photoService;
 
     private final DashboardPreloader dashboardPreloader;
@@ -111,7 +113,7 @@ public class   DashboardView extends VerticalLayout implements View {
     private final AvailabilityService availabilityService;
 
     @Autowired
-    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleService bubbleService, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, BudgetService budgetService, AvailabilityService availabilityService) {
+    public DashboardView(TopMenu topMenu, MainTemplate mainTemplate, ContractService contractService, BubbleService bubbleService, NewsRepository newsRepository, ReminderHistoryRepository reminderHistoryRepository, NotificationRepository notificationRepository, UserService userService, TeamRestService teamRestService, PhotoService photoService, DashboardPreloader dashboardPreloader, DashboardBoxCreator dashboardBoxCreator, RevenuePerMonthChart revenuePerMonthChart, SpriteSheet spriteSheet, KnowledgeChart knowledgeChart, BudgetService budgetService, AvailabilityService availabilityService) {
         this.topMenu = topMenu;
         this.mainTemplate = mainTemplate;
         this.contractService = contractService;
@@ -120,6 +122,7 @@ public class   DashboardView extends VerticalLayout implements View {
         this.reminderHistoryRepository = reminderHistoryRepository;
         this.notificationRepository = notificationRepository;
         this.userService = userService;
+        this.teamRestService = teamRestService;
         this.photoService = photoService;
         this.dashboardPreloader = dashboardPreloader;
         this.dashboardBoxCreator = dashboardBoxCreator;
@@ -141,7 +144,7 @@ public class   DashboardView extends VerticalLayout implements View {
         board.setSizeFull();
         board.setScrollable(true);
 
-        User randomFocusUser = userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT).size() - 1));
+        User randomFocusUser = userService.findCurrentlyEmployedUsers(true, CONSULTANT, STUDENT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(true, CONSULTANT, STUDENT).size() - 1));
 
         BoxImpl knowledgeChartCard = new BoxImpl();
         knowledgeChartCard.getContent().setDefaultComponentAlignment(Alignment.TOP_CENTER);
@@ -149,11 +152,15 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         ResponsiveRow responsiveRow = responsiveLayout.addRow();
         responsiveRow.addColumn().withDisplayRules(4,4,4,4).withComponent(photoService.getRoundImage(randomFocusUser.getUuid(), false, 100, Unit.PERCENTAGE));
-        if(randomFocusUser.getTeamuuid()!=null) {
-            Image teamImage = new Image(null, photoService.getRelatedPhotoResource(randomFocusUser.getTeamuuid()));
+
+        String teamuuid = teamRestService.getTeamuuidsAsMember(randomFocusUser);
+
+        if(teamuuid!=null) {
+            Image teamImage = new Image(null, photoService.getRelatedPhotoResource(teamuuid));
             teamImage.setWidth(100, Unit.PERCENTAGE);
             responsiveRow.addColumn().withComponent(teamImage).withDisplayRules(8,8,8,8);
         }
+
         knowledgeChartCard.instance(responsiveLayout);
 
         knowledgeChartCard.instance(
@@ -188,12 +195,11 @@ public class   DashboardView extends VerticalLayout implements View {
         knowledgeChartCard.instance(knowledgeChart.getChart(randomFocusUser));
 
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
-        String[] knowledgePhotoArray = {"images/cards/knowledge/lifecycle.png", "images/cards/knowledge/pejlemaerker.png", "images/cards/knowledge/team-goals.png"};
-        PhotosCardImpl knowledgeWheelPhoto = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto(knowledgePhotoArray[new Random().nextInt(3)]);
+        Component informationBanner = getInformationBanner();
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
-        VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
+        //VideoCardImpl tripVideosCardDesign = new VideoCardImpl(3, 6, "tripVideosCardDesign");
         BubblesCardImpl bubblesCardDesign = new BubblesCardImpl(bubbleService, photoService, Optional.empty());
         ConsultantAllocationCardImpl consultantAllocationCard = new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign");
 
@@ -203,12 +209,14 @@ public class   DashboardView extends VerticalLayout implements View {
         browser2.setWidth("100%");
         monthNewsCardDesign.getCardHolder().addStyleName("dark-grey");
         monthNewsCardDesign.getIframeHolder().addComponent(browser2);
-
+/*
         tripVideosCardDesign.setWidth("100%");
         BrowserFrame tripVideoBrowser = new BrowserFrame(null, new ExternalResource(dashboardPreloader.getTrips()[0]));
         tripVideoBrowser.setHeight("300px");
         tripVideoBrowser.setWidth("100%");
         tripVideosCardDesign.getIframeHolder().addComponent(tripVideoBrowser);
+
+ */
 
         //dnaCard.getBoxComponent().setHeight("600px");
         //cateringCard.getBoxComponent().setHeight("600px");
@@ -248,7 +256,7 @@ public class   DashboardView extends VerticalLayout implements View {
 
         ResponsiveRow row1 = mainLayout.addRow();
 
-        row1.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(knowledgeWheelPhoto);
+        row1.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(informationBanner);
 
         ResponsiveLayout responsiveColumn1Layout = new ResponsiveLayout();
         ResponsiveLayout responsiveColumn2Layout = new ResponsiveLayout();
@@ -288,6 +296,26 @@ public class   DashboardView extends VerticalLayout implements View {
         mainTemplate.setMainContent(board, DashboardView.VIEW_ICON, DashboardView.MENU_NAME, "World of Trustworks", DashboardView.VIEW_BREADCRUMB);
 
         createNotifications();
+    }
+
+    private Component getInformationBanner() {
+        Component informationBanner = new VerticalLayout();
+        switch (new Random().nextInt(2)) {
+            case 1:
+                informationBanner = new BoxImpl().instance(new MVerticalLayout(
+                        new MLabel("Mål for team Q2/2022").withFullWidth().withStyleName("turquoise-font","h4", "center-label","bold", "wrap-label"),
+                                new MLabel("1-3 individuelle teammål (defineres af team sponsor)").withFullWidth().withStyleName("turquoise-font","h5", "center-label", "wrap-label")
+                                //new MLabel("Styr på butikken - helt ned til de mere lavpraktisk ting").withFullWidth().withStyleName("turquoise-font","h5", "center-label", "wrap-label"),
+                                //new MLabel("Det individuelle team mål (defineres af hvert team)").withFullWidth().withStyleName("turquoise-font","h5", "center-label", "wrap-label")
+                        ).withFullWidth().withDefaultComponentAlignment(Alignment.MIDDLE_CENTER))
+                        .withBgStyle("dark-grey");
+                break;
+            case 0:
+                String[] informationBannerPhotoArray = {"images/cards/knowledge/lifecycle.png", "images/cards/knowledge/pejlemaerker.png"};
+                informationBanner = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto(informationBannerPhotoArray[new Random().nextInt(2)]);
+
+        }
+        return informationBanner;
     }
 
     private void createNotifications() {

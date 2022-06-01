@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.admin.components;
 
+import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.Salary;
@@ -45,6 +46,7 @@ public class UserSalaryCardImpl extends UserSalaryCardDesign {
             userService.create(useruuid, new Salary(getDfDate().getValue(), Integer.parseInt(getTxtSalary().getValue())));
             getGridSalaries().setItems(userService.findUserSalaries(useruuid));
         });
+        getDfDate().setResolution(DateResolution.MONTH);
     }
 
     @Transactional

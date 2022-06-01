@@ -2,14 +2,17 @@ package dk.trustworks.invoicewebui.web.stats.components;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.ChartType;
+import com.vaadin.addon.charts.model.Credits;
+import com.vaadin.addon.charts.model.DataSeries;
+import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -24,9 +27,12 @@ import org.vaadin.viritin.button.MButton;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 
 /**
@@ -61,10 +67,13 @@ public class TrustworksStatsLayout extends VerticalLayout {
     private UtilizationPerYearChart utilizationPerYearChart;
 
     @Autowired
+    private MarginPerClientChart marginPerClientChart;
+
+    @Autowired
     private ExpensesSalariesRevenuePerMonthChart expensesSalariesRevenuePerMonthChart;
 
     @Autowired
-    private RevenuePerConsultantChart revenuePerConsultantChart;
+    private ProfitsPerConsultantChart profitsPerConsultantChart;
 
     @Autowired
     private ExpensesPerMonthChart expensesPerMonthChart;
@@ -189,8 +198,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
 
         addCompanyCharts();
         addConsultantCharts();
-        //addHistoryCharts();
-        //addIndividualCharts();
+        addHistoryCharts();
+        addIndividualCharts();
     }
 
     public void addCompanyCharts() {
@@ -253,7 +262,10 @@ public class TrustworksStatsLayout extends VerticalLayout {
         System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
 
         Box utilizationPerMonthCard = new Box();
-        utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createUtilizationPerMonthChart(localDateStart, localDateEnd));
+        utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createGroupUtilizationPerMonthChart(localDateStart, localDateEnd));
+
+        Box marginPerClientCard = new Box();
+        marginPerClientCard.getContent().addComponent(marginPerClientChart.createMarginPerClientChart(localDateStart.getYear()));
 
         System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
 
@@ -278,6 +290,9 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(forecastRevenuePerMonthCard);
+        chartRow.addColumn()
+                .withDisplayRules(12, 12, 12, 12)
+                .withComponent(marginPerClientCard);
     }
 
     public void addConsultantCharts() {
@@ -439,7 +454,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         System.out.println("TrustworksStatsLayout.createIndividualCharts");
         System.out.println("chartRow = " + chartRow + ", employee = " + employee);
         Box revenuePerEmployee = new Box();
-        revenuePerEmployee.getContent().addComponent(revenuePerConsultantChart.createRevenuePerConsultantChart(employee));
+        revenuePerEmployee.getContent().addComponent(profitsPerConsultantChart.createProfitsPerConsultantChart(employee));
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
@@ -473,6 +488,40 @@ public class TrustworksStatsLayout extends VerticalLayout {
         customersContentRow.setVisible(false);
         administrationContentRow.setVisible(false);
         individualsContentRow.setVisible(false);
+    }
+
+    protected Component getChart() {
+        Chart chart = new Chart();
+        chart.setSizeFull();//.setWidth(100, PERCENTAGE);
+        //chart.setHeight(380, PIXELS);
+        LocalDate periodStart = LocalDate.of(2014, 2, 1);
+        LocalDate periodEnd = LocalDate.now();
+        int months = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
+
+        chart.setCaption("Employee Growth");
+        chart.getConfiguration().setTitle("");
+        chart.getConfiguration().getChart().setType(ChartType.AREASPLINE);
+        chart.getConfiguration().getChart().setAnimation(true);
+        chart.getConfiguration().getxAxis().getLabels().setEnabled(true);
+        chart.getConfiguration().getxAxis().setTickWidth(0);
+        chart.getConfiguration().getyAxis().setTitle("");
+        chart.getConfiguration().getLegend().setEnabled(false);
+
+        String[] categories = new String[months];
+        DataSeries revenueSeries = new DataSeries("Employees");
+
+        for (int i = 0; i < months; i++) {
+            LocalDate currentDate = periodStart.plusMonths(i);
+            List<User> usersByLocalDate = userService.findEmployedUsersByDate(currentDate, true, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);
+            revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy")), usersByLocalDate.size()));
+            categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy"));
+        }
+
+        chart.getConfiguration().getxAxis().setCategories(categories);
+        chart.getConfiguration().addSeries(revenueSeries);
+        Credits c = new Credits("");
+        chart.getConfiguration().setCredits(c);
+        return chart;
     }
 
 }

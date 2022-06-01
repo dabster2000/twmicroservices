@@ -1,10 +1,13 @@
 package dk.trustworks.invoicewebui.services;
 
 
+import dk.trustworks.invoicewebui.network.dto.ClientMarginResult;
 import dk.trustworks.invoicewebui.network.rest.MarginRestService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MarginService implements InitializingBean {
@@ -20,6 +23,10 @@ public class MarginService implements InitializingBean {
 
     public int calculateCapacityByMonthByUser(String useruuid, int rate) {
         return marginRestService.calculateMargin(useruuid, rate);
+    }
+
+    public List<ClientMarginResult> calculateMarginPerCustomer(int fiscalYear) {
+        return marginRestService.calculateMarginPerClient(fiscalYear);
     }
 
     @Override

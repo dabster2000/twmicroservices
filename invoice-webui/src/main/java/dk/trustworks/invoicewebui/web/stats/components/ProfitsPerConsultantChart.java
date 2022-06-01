@@ -28,19 +28,19 @@ import java.util.stream.Collectors;
 
 @SpringComponent
 @SpringUI
-public class RevenuePerConsultantChart {
+public class ProfitsPerConsultantChart {
 
     private final RevenueService revenueService;
 
     private final UserService userService;
 
     @Autowired
-    public RevenuePerConsultantChart(RevenueService revenueService, UserService userService) {
+    public ProfitsPerConsultantChart(RevenueService revenueService, UserService userService) {
         this.revenueService = revenueService;
         this.userService = userService;
     }
 
-    public Chart createRevenuePerConsultantChart(User user) {
+    public Chart createProfitsPerConsultantChart(User user) {
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 

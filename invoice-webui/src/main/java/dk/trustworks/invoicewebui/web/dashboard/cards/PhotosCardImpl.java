@@ -2,7 +2,6 @@ package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.jobs.DashboardPreloader;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +9,7 @@ import java.io.ByteArrayInputStream;
 /**
  * Created by hans on 11/08/2017.
  */
-public class PhotosCardImpl extends PhotosCardDesign implements Box {
+public class PhotosCardImpl extends PhotosCardDesign implements Component {
 
     private DashboardPreloader dashboardPreloader;
     private int priority;
@@ -52,7 +51,7 @@ public class PhotosCardImpl extends PhotosCardDesign implements Box {
     }
 
     @Override
-    public Component getBoxComponent() {
+    public com.vaadin.ui.Component getBoxComponent() {
         return this;
     }
 

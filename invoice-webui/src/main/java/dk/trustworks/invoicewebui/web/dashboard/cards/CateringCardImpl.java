@@ -4,7 +4,6 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.services.EmailSender;
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * Created by hans on 11/08/2017.
  */
-public class CateringCardImpl extends CateringCardDesign implements Box {
+public class CateringCardImpl extends CateringCardDesign implements Component {
 
     private int priority;
     private int boxWidth;
@@ -86,7 +85,7 @@ public class CateringCardImpl extends CateringCardDesign implements Box {
     }
 
     @Override
-    public Component getBoxComponent() {
+    public com.vaadin.ui.Component getBoxComponent() {
         return this;
     }
 

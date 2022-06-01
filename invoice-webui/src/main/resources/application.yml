@@ -41,6 +41,10 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
     DeserializationFeature: ACCEPT_EMPTY_ARRAY_AS_EMPTY_OBJECT
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 
 rtmUrl: https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads

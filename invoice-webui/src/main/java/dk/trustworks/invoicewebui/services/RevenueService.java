@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
+import dk.trustworks.invoicewebui.model.Team;
 import dk.trustworks.invoicewebui.network.rest.RevenueRestService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RevenueService implements InitializingBean {
@@ -24,6 +26,10 @@ public class RevenueService implements InitializingBean {
 
     public List<GraphKeyValue> getSumOfRegisteredRevenueByClient() {
         return revenueRestService.getSumOfRegisteredRevenueByClient();
+    }
+
+    public List<GraphKeyValue> getSumOfRegisteredRevenueByClientByYear(int fiscalYear) {
+        return revenueRestService.getSumOfRegisteredRevenueByClientByFiscalYear(fiscalYear);
     }
 
     @Override
@@ -77,5 +83,13 @@ public class RevenueService implements InitializingBean {
 
     public List<GraphKeyValue> getProfitsByPeriod(LocalDate fromdate, LocalDate todate) {
         return revenueRestService.getProfitsByPeriod(fromdate, todate);
+    }
+
+    public GraphKeyValue getTotalTeamProfits(int fiscalYear, List<Team> teams) {
+        return revenueRestService.getTotalTeamProfits(fiscalYear, teams.stream().map(Team::getUuid).collect(Collectors.toList()));
+    }
+
+    public GraphKeyValue getTotalTeamProfitsByPeriod(LocalDate fromdate, LocalDate todate, List<Team> teams) {
+        return revenueRestService.getTotalTeamProfitsByPeriod(fromdate, todate, teams.stream().map(Team::getUuid).collect(Collectors.toList()));
     }
 }

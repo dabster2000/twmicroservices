@@ -1,8 +1,6 @@
 package dk.trustworks.invoicewebui.web.time.layouts;
 
 
-import com.gs.collections.impl.block.factory.HashingStrategies;
-import com.gs.collections.impl.utility.ListIterate;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
@@ -23,6 +21,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
+import dk.trustworks.invoicewebui.network.rest.CultureRestService;
 import dk.trustworks.invoicewebui.network.rest.WeekRestService;
 import dk.trustworks.invoicewebui.repositories.ReceiptsRepository;
 import dk.trustworks.invoicewebui.services.*;
@@ -51,12 +50,8 @@ import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.WeekFields;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
@@ -88,6 +83,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private final ReceiptsRepository receiptsRepository;
 
+    private final CultureRestService cultureRestService;
+
     private final ResponsiveLayout responsiveLayout;
 
     private LocalDate currentDate = LocalDate.now().with(DayOfWeek.MONDAY);
@@ -105,7 +102,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
     private final List<TaskTitle> weekRowTaskTitles = new ArrayList<>();
 
     @Autowired
-    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WorkService workService, TimeService timeService, WeekRestService weekRestService, BudgetService budgetService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository) {
+    public TimeManagerLayout(ProjectService projectService, UserService userService, ClientService clientService, WorkService workService, TimeService timeService, WeekRestService weekRestService, BudgetService budgetService, ContractService contractService, PhotoService photoService, ReceiptsRepository receiptsRepository, CultureRestService cultureRestService) {
         this.projectService = projectService;
         this.userService = userService;
         this.clientService = clientService;
@@ -115,6 +112,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         this.photoService = photoService;
         this.contractService = contractService;
         this.receiptsRepository = receiptsRepository;
+        this.cultureRestService = cultureRestService;
 
         footerButtons = new FooterButtons();
         dateButtons = new DateButtons();
@@ -169,7 +167,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
             userComboBox.addStyleName("floating");
             userComboBox.setEmptySelectionAllowed(false);
             userComboBox.setEmptySelectionCaption("Select colleague...");
-            List<User> users = userService.findCurrentlyEmployedUsers(true);
+            List<User> users = userService.findCurrentlyEmployedUsersInclExternalConsultants(true);
             userComboBox.setItems(users);
             UserSession userSession = VaadinSession.getCurrent().getAttribute(UserSession.class);
 
@@ -330,14 +328,28 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         if(userSession == null) return new ResponsiveLayout();
 
-        List<User> users = userService.findCurrentlyEmployedUsers(true);
-        dateButtons.getSelActiveUser().setItemCaptionGenerator(User::getUsername);
-        dateButtons.getSelActiveUser().setItems(users);
-        // find userSession user
-        for (User user : users) {
-            if(user.getUuid().equals(userSession.getUser().getUuid())) dateButtons.getSelActiveUser().setSelectedItem(user);
+        List<User> users;
+        if(UserService.get().isExternal(userSession.getUser())) {
+            users = Collections.singletonList(userService.findByUUID(userSession.getUser().getUuid(), false));
+        } else {
+            users = userService.findCurrentlyEmployedUsersInclExternalConsultants(true);
         }
-        User user = dateButtons.getSelActiveUser().getSelectedItem().get();
+        dateButtons.getSelActiveUser().setItemCaptionGenerator(User::getUsername);
+        System.out.println("users.size() = " + users.size());
+        System.out.println("userSession.getUser() = " + userSession.getUser());
+        System.out.println("UserService.get().isExternal(userSession.getUser()) = " + UserService.get().isExternal(userSession.getUser()));
+
+        dateButtons.getSelActiveUser().setItems(users);
+
+        User user = null;
+        for (User u : users) {
+            if (u.getUuid().equals(userSession.getUser().getUuid())) {
+                dateButtons.getSelActiveUser().setSelectedItem(u);
+                user = u;
+            }
+        }
+        System.out.println("user = " + user);
+        //user = dateButtons.getSelActiveUser().getSelectedItem().get();
 
         loadTimeview(user);
 
@@ -351,12 +363,18 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void loadTimeview(User user) {
         responsiveLayout.removeAllComponents();
+        log.info("createTitleRow()");
         createTitleRow();
+        log.info("createBudgetRow()");
         createBudgetRow();
+        log.info("createHeadlineRow()");
         createHeadlineRow();
+        log.info("createTimesheet()");
         createTimesheet(user);
+        log.info("createFooterRow()");
         createFooterRow();
-        createReceiptRow();
+        log.info("Done creating timeview");
+        //createReceiptRow();
     }
 
     private void createReceiptRow() {
@@ -453,7 +471,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         List<Week> weeks = weekRestService.findByWeeknumberAndYearAndUseruuidOrderBySortingAsc(currentDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()), currentDate.get(WeekFields.of(Locale.getDefault()).weekBasedYear()), user.getUuid());
         LocalDate startOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
         LocalDate endOfWeek = currentDate.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 7);
-        List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek, user.getUuid());
+        List<Work> workResources = workService.findByPeriodAndUserUUID(startOfWeek, endOfWeek.plusDays(1), user.getUuid());
         for (Work workResource : workResources.stream().filter(work -> work.getWorkduration() > 0.0).collect(Collectors.toList())) {
             if(weeks.stream().noneMatch(week -> week.getTaskuuid().equals(workResource.getTaskuuid()))) {
                 Week week = new Week(UUID.randomUUID().toString(),
@@ -494,7 +512,66 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         weekRowTaskTitles.clear();
         for (WeekItem weekItem : weekItems) {
-            createTimeline(weekItem);
+            log.info("weekItem = " + weekItem);
+            List<Lesson> lessons = cultureRestService.findByUserAndProject(weekItem.getUser().getUuid(), weekItem.getTask().getProjectuuid());
+            log.info("lessons.size() = " + lessons.size());
+            boolean illegibleForLessonFramed = user.getUsername().equals("hans.lassen") &&
+                    !weekItem.getTask().getProject().getClientuuid().equals("40c93307-1dfa-405a-8211-37cbda75318b") &&
+                    weekItem.getWorkas() == null;
+            log.info("illegibleForLessonFramed = " + illegibleForLessonFramed);
+            if (illegibleForLessonFramed && lessons.size() == 0) { // Start of project
+                log.info("Start of project");
+                createLessonFramedTimeline(weekItem.getTask().getName(), weekItem.getTask().getProject(), "projectstart");
+            } else if (illegibleForLessonFramed && lessons.stream().max(Comparator.comparing(Lesson::getRegistered)).get().getRegistered().isBefore(LocalDate.now().minusMonths(3))) { // 3 months since last registration
+                log.info("3 months");
+                createLessonFramedTimeline(weekItem.getTask().getName(), weekItem.getTask().getProject(), "3months");
+            } else {
+                log.info("*timeline");
+                createTimeline(weekItem);
+            }
+        }
+
+        // Find contracts that ended last month
+        if(user.getUsername().equals("hans.lassen")) {
+            log.info("LessonFramed");
+            // Find all contracts that ended last month for current consultant
+            for (Contract contract : contractService.findTimeActiveConsultantContracts(user, LocalDate.now().minusMonths(1)).stream().filter(contract -> contract.getActiveTo().isBefore(LocalDate.now().withDayOfMonth(1))).collect(Collectors.toList())) {
+                log.info("Contract: "+contract);
+                // Get the projects that are related to the contract as this project is likely ending for the consulant
+                for (Project project : contractService.findProjectsByContractuuid(contract.getUuid())) {
+                    log.info("project = " + project);
+                    // Verify that the project doesn't continue in other contracts for the same consultant, so get all contracts for that project
+                    for (Contract projectContract : project.getContracts()) {
+                        log.info("projectContract = " + projectContract);
+                        // If the projectContract (test) is before current contract then it is not relevant and current contract might still be the last one for the project and consultant.
+                        if(projectContract.getActiveTo().isBefore(contract.activeTo)) {
+                            log.info("projectContract is before current contract");
+                            continue;
+                        }
+                        // Verify that the contract is related to the consultant
+                        for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
+                            log.info("contractConsultant = " + contractConsultant);
+                            if(contractConsultant.getUseruuid().equals(user.getUuid())) {
+                                // This contract is extending the current project, so it does not end after all. Lesson Framed should not be shown.
+                                log.info("Project "+project.getUuid()+" is extended in contract "+projectContract.getUuid() +" for user "+user.getUsername());
+                                return;
+                            }
+                        }
+                    }
+
+
+                    log.info("Project: "+project);
+                    // Find Lesson entered in this month, when the project has ended. This would be the last Lesson entry for the project.
+                    List<Lesson> lessons = cultureRestService.findByUserAndProject(user.getUuid(), project.getUuid());
+                    log.info("lessons.size() = " + lessons.size());
+                    lessons.forEach(System.out::println);
+                    Optional<Lesson> any = lessons.stream().filter(lesson -> lesson.getRegistered().isAfter(LocalDate.now().withDayOfMonth(1).minusDays(1))).findAny();
+
+                    log.info("Lesson: "+any);
+                    //if (!any.isPresent()) UI.getCurrent().getNavigator().navigateTo(LessonFramedView.VIEW_NAME + "/" + project.getUuid()+"/projectend");
+                    if (!any.isPresent()) createLessonFramedTimeline("", project, "projectend");
+                }
+            }
         }
     }
 
@@ -554,8 +631,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
                     .filter(work -> work.getRegistered().withDayOfMonth(1).isEqual(budgetDocument.getMonth().withDayOfMonth(1)) &&
                             work.getUseruuid().equals(budgetDocument.getUser().getUuid()))
                     .mapToDouble(Work::getWorkduration).sum();
-            if(budgetDocument.getGrossBudgetHours()<=0.0) continue;
-            TopCardImpl topCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_ur.svg", budgetDocument.getClient().getName(), "contract "+budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")), workSum+" / "+Math.round(budgetDocument.getGrossBudgetHours()), "dark-blue"));
+            if(budgetDocument.getBudgetHours()<=0.0) continue;
+            TopCardImpl topCard = new TopCardImpl(new TopCardContent("images/icons/trustworks_icon_ur.svg", budgetDocument.getClient().getName(), "contract "+budgetDocument.getMonth().format(DateTimeFormatter.ofPattern("MMMM")), workSum+" / "+Math.round(budgetDocument.getBudgetHours()), "dark-blue"));
             budgetRow.addColumn()
                     .withDisplayRules(6, 6, 4,3)
                     .withComponent(topCard, ResponsiveColumn.ColumnComponentAlignment.CENTER);
@@ -677,22 +754,9 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
     private void createTimeline(WeekItem weekItem) {
         weekDaySums.addWeekItem(weekItem);
-/*
-        ResponsiveRow lessonFramedButtonRow = responsiveLayout.addRow()
-                .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
-                .withVerticalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
-                .withMargin(true)
-                .withMargin(ResponsiveRow.MarginSize.SMALL)
-                .withAlignment(Alignment.MIDDLE_CENTER);
-        lessonFramedButtonRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new MButton("Click to evaluate project").withFullWidth().withListener(event -> {
-            UI.getCurrent().getNavigator().navigateTo(LessonFramedView.VIEW_NAME+"/"+weekItem.getTask().getProjectuuid());
-        }));
-
- */
-
 
         ResponsiveRow time1Row = responsiveLayout.addRow()
-                .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL,true)
+                .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
                 .withVerticalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
                 .withMargin(true)
                 .withMargin(ResponsiveRow.MarginSize.SMALL)
@@ -706,23 +770,23 @@ public class TimeManagerLayout extends ResponsiveLayout {
         taskTitle.getTxtTaskname().setValue(taskName);
         taskTitle.getBtnDelete().setIcon(MaterialIcons.DELETE);
         taskTitle.getBtnDelete().addClickListener(event -> {
-            if(weekItem.getWeekItemSum() > 0.0) {
+            if (weekItem.getWeekItemSum() > 0.0) {
                 Notification.show("Cannot remove row!", "Cannot remove row as long as you have registered hours on the task this week", Notification.Type.WARNING_MESSAGE);
                 return;
             }
             weekRestService.delete(weekItem.getWeek().getUuid());
             responsiveLayout.removeComponent(time1Row);
         });
-        Photo photo = photoService.getRelatedPhoto(weekItem.getTask().getProject().getClient().getUuid());
-        if(photo!=null && photo.getPhoto().length > 0) {
+        File photo = photoService.getRelatedPhoto(weekItem.getTask().getProject().getClient().getUuid());
+        if (photo != null && photo.getFile() != null && photo.getFile().length > 0) {
             taskTitle.getImgLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
-                    new ByteArrayInputStream(photo.getPhoto()),
-                    photo.getRelateduuid()+".jpg"));
+                    new ByteArrayInputStream(photo.getFile()),
+                    photo.getRelateduuid() + ".jpg"));
         } else {
             taskTitle.getImgLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
 
-        if(weekItem.isLocked()) {
+        if (weekItem.isLocked()) {
             Image image = new Image();
             image.setSource(new ThemeResource("images/icons/lock.png"));
             image.setDescription("No active contract");
@@ -739,7 +803,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
 
         weekRowTaskTitles.add(taskTitle);
 
-        User workingAs = (weekItem.getWorkas()!=null)?weekItem.getWorkas():weekItem.getUser();
+        User workingAs = (weekItem.getWorkas() != null) ? weekItem.getWorkas() : weekItem.getUser();
         Task task = weekItem.getTask();
 
         final MLabel lblWeekItemSum = new MLabel(NumberUtils.round(weekItem.getBudgetleft(), 2) + "").withStyleName("h5");
@@ -748,110 +812,146 @@ public class TimeManagerLayout extends ResponsiveLayout {
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(taskTitle, ResponsiveColumn.ColumnComponentAlignment.LEFT);
 
-        if(false) {
-            time1Row.addColumn().withDisplayRules(12,12,7,7).withComponent(new MButton("Click to evaluate project").withFullWidth().withListener(event -> {
-                UI.getCurrent().getNavigator().navigateTo(LessonFramedView.VIEW_NAME+"/"+weekItem.getTask().getProjectuuid());
-            }));
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1, 1)
+                .withComponent(checkIfDisabled(1, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getMon(), event -> {
+                            double delta = updateTimefield(weekItem, 0, event);
+                            weekDaySums.mon += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                            updateSums();
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
+
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1, 1)
+                .withComponent(checkIfDisabled(2, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getTue(), event -> {
+                            double delta = updateTimefield(weekItem, 1, event);
+                            weekDaySums.tue += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                            updateSums();
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1, 1)
+                .withComponent(checkIfDisabled(3, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getWed(), event -> {
+                            double delta = updateTimefield(weekItem, 2, event);
+                            weekDaySums.wed += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                            updateSums();
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1, 1)
+                .withComponent(checkIfDisabled(4, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getThu(), event -> {
+                            double delta = updateTimefield(weekItem, 3, event);
+                            weekDaySums.thu += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                            updateSums();
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1, 1)
+                .withComponent(checkIfDisabled(5, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getFri(), event -> {
+                            double delta = updateTimefield(weekItem, 4, event);
+                            weekDaySums.fri += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                            updateSums();
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1, 1)
+                .withComponent(checkIfDisabled(6, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getSat(), event -> {
+                            double delta = updateTimefield(weekItem, 5, event);
+                            weekDaySums.sat += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                            updateSums();
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 1, 1)
+                .withComponent(checkIfDisabled(7, weekItem, workingAs, task,
+                        new MTextField(null, weekItem.getSun(), event -> {
+                            double delta = updateTimefield(weekItem, 6, event);
+                            weekDaySums.sun += delta;
+                            weekItem.addBudget(delta);
+                            lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
+                            updateSums();
+                        }).withValueChangeMode(ValueChangeMode.BLUR)
+                                .withWidth(100, PERCENTAGE)
+                                .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
+                                .withStyleName("floating")));
+
+
+            time1Row.addColumn()
+                    .withVisibilityRules(false, false, true, true)
+                    .withDisplayRules(12, 12, 1, 1)
+                    .withComponent(lblWeekItemSum, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+
+    }
+
+    private void createLessonFramedTimeline(String taskname, Project project, String action) {
+        ResponsiveRow time1Row = responsiveLayout.addRow()
+                .withHorizontalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
+                .withVerticalSpacing(ResponsiveRow.SpacingSize.SMALL, true)
+                .withMargin(true)
+                .withMargin(ResponsiveRow.MarginSize.SMALL)
+                .withAlignment(Alignment.MIDDLE_CENTER);
+
+        TaskTitle taskTitle = new TaskTitle();
+        taskTitle.getLblDescription().setValue(project.getCustomerreference());
+        taskTitle.getTxtProjectname().setValue(project.getName());
+        taskTitle.getTxtTaskname().setValue(taskname);
+        taskTitle.getBtnDelete().setIcon(MaterialIcons.DELETE);
+        taskTitle.getBtnDelete().setEnabled(false);
+        File photo = photoService.getRelatedPhoto(project.getClientuuid());
+        if (photo != null && photo.getFile().length > 0) {
+            taskTitle.getImgLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
+                    new ByteArrayInputStream(photo.getFile()),
+                    photo.getRelateduuid() + ".jpg"));
         } else {
-
-            time1Row.addColumn()
-                    .withDisplayRules(12, 12, 1, 1)
-                    .withComponent(checkIfDisabled(1, weekItem, workingAs, task,
-                            new MTextField(null, weekItem.getMon(), event -> {
-                                double delta = updateTimefield(weekItem, 0, event);
-                                weekDaySums.mon += delta;
-                                weekItem.addBudget(delta);
-                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
-                                updateSums();
-                            }).withValueChangeMode(ValueChangeMode.BLUR)
-                                    .withWidth(100, PERCENTAGE)
-                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                    .withStyleName("floating")));
-
-            time1Row.addColumn()
-                    .withDisplayRules(12, 12, 1, 1)
-                    .withComponent(checkIfDisabled(2, weekItem, workingAs, task,
-                            new MTextField(null, weekItem.getTue(), event -> {
-                                double delta = updateTimefield(weekItem, 1, event);
-                                weekDaySums.tue += delta;
-                                weekItem.addBudget(delta);
-                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
-                                updateSums();
-                            }).withValueChangeMode(ValueChangeMode.BLUR)
-                                    .withWidth(100, PERCENTAGE)
-                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                    .withStyleName("floating")));
-            time1Row.addColumn()
-                    .withDisplayRules(12, 12, 1, 1)
-                    .withComponent(checkIfDisabled(3, weekItem, workingAs, task,
-                            new MTextField(null, weekItem.getWed(), event -> {
-                                double delta = updateTimefield(weekItem, 2, event);
-                                weekDaySums.wed += delta;
-                                weekItem.addBudget(delta);
-                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
-                                updateSums();
-                            }).withValueChangeMode(ValueChangeMode.BLUR)
-                                    .withWidth(100, PERCENTAGE)
-                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                    .withStyleName("floating")));
-            time1Row.addColumn()
-                    .withDisplayRules(12, 12, 1, 1)
-                    .withComponent(checkIfDisabled(4, weekItem, workingAs, task,
-                            new MTextField(null, weekItem.getThu(), event -> {
-                                double delta = updateTimefield(weekItem, 3, event);
-                                weekDaySums.thu += delta;
-                                weekItem.addBudget(delta);
-                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
-                                updateSums();
-                            }).withValueChangeMode(ValueChangeMode.BLUR)
-                                    .withWidth(100, PERCENTAGE)
-                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                    .withStyleName("floating")));
-            time1Row.addColumn()
-                    .withDisplayRules(12, 12, 1, 1)
-                    .withComponent(checkIfDisabled(5, weekItem, workingAs, task,
-                            new MTextField(null, weekItem.getFri(), event -> {
-                                double delta = updateTimefield(weekItem, 4, event);
-                                weekDaySums.fri += delta;
-                                weekItem.addBudget(delta);
-                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
-                                updateSums();
-                            }).withValueChangeMode(ValueChangeMode.BLUR)
-                                    .withWidth(100, PERCENTAGE)
-                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                    .withStyleName("floating")));
-            time1Row.addColumn()
-                    .withDisplayRules(12, 12, 1, 1)
-                    .withComponent(checkIfDisabled(6, weekItem, workingAs, task,
-                            new MTextField(null, weekItem.getSat(), event -> {
-                                double delta = updateTimefield(weekItem, 5, event);
-                                weekDaySums.sat += delta;
-                                weekItem.addBudget(delta);
-                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
-                                updateSums();
-                            }).withValueChangeMode(ValueChangeMode.BLUR)
-                                    .withWidth(100, PERCENTAGE)
-                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                    .withStyleName("floating")));
-            time1Row.addColumn()
-                    .withDisplayRules(12, 12, 1, 1)
-                    .withComponent(checkIfDisabled(7, weekItem, workingAs, task,
-                            new MTextField(null, weekItem.getSun(), event -> {
-                                double delta = updateTimefield(weekItem, 6, event);
-                                weekDaySums.sun += delta;
-                                weekItem.addBudget(delta);
-                                lblWeekItemSum.setValue(NumberUtils.round(weekItem.getBudgetleft(), 2) + "");
-                                updateSums();
-                            }).withValueChangeMode(ValueChangeMode.BLUR)
-                                    .withWidth(100, PERCENTAGE)
-                                    .withStyleName(ValoTheme.TEXTAREA_ALIGN_CENTER)
-                                    .withStyleName("floating")));
+            taskTitle.getImgLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
+
+        weekRowTaskTitles.add(taskTitle);
+
+        final MLabel lblWeekItemSum = new MLabel(NumberUtils.round(0.0, 2) + "").withStyleName("h5");
+
+        time1Row.addColumn()
+                .withDisplayRules(12, 12, 4, 4)
+                .withComponent(taskTitle, ResponsiveColumn.ColumnComponentAlignment.LEFT);
+
+        time1Row.addColumn().withDisplayRules(12, 12, 7, 7).withComponent(new MButton("Click this button to evaluate project").withFullWidth().withListener(event ->
+                UI.getCurrent().getNavigator().navigateTo(LessonFramedView.VIEW_NAME + "/" + project.getUuid() + "/" + action)));
 
         time1Row.addColumn()
                 .withVisibilityRules(false, false, true, true)
                 .withDisplayRules(12, 12, 1, 1)
                 .withComponent(lblWeekItemSum, ResponsiveColumn.ColumnComponentAlignment.RIGHT);
+
     }
 
     private MTextField checkIfDisabled(int weekday, WeekItem weekItem, User workingAs, Task task, MTextField mTextField) {
@@ -868,7 +968,6 @@ public class TimeManagerLayout extends ResponsiveLayout {
         if(!isLocked) return mTextField.withEnabled(true);
         if(isLastMonth && !isProjectOwner) return mTextField.withEnabled(false);
 
-        System.out.println("opened");
         return mTextField;
     }
 
@@ -878,6 +977,7 @@ public class TimeManagerLayout extends ResponsiveLayout {
         try {
             if (event.getValue().trim().equals("")) {
                 saveWork(weekItem, event, workDate);
+                ((TextField) event.getComponent()).getValueChangeTimeout();
                 return -nf.parse(event.getOldValue()).doubleValue();
             }
         } catch (ParseException e) {
@@ -909,7 +1009,8 @@ public class TimeManagerLayout extends ResponsiveLayout {
             }
             workService.save(work);
             if(!event.getValue().equals("")) event.getSource().setValue(nf.format(newValue));
-        } catch (ParseException e) {
+        } catch (Exception e) {
+            Notification.show("Error saving work", e.getMessage(), Notification.Type.ERROR_MESSAGE);
             log.error("Could not create work for weekItem " + weekItem, e);
         }
     }

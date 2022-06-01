@@ -1,9 +1,9 @@
 package dk.trustworks.invoicewebui.network.rest;
 
+import com.vaadin.ui.UI;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,7 +46,7 @@ public class SystemRestService {
             String url = apiGatewayUrl + "/login?username=" + username + "&password=" + password;
             loginToken = restTemplate.getForObject(url, LoginToken.class);
             logger.info("loginToken: "+loginToken);
-        } catch (ResourceAccessException e) {
+        } catch (RestClientException e) {
             loginToken = new LoginToken();
         }
         return loginToken;
@@ -63,13 +61,18 @@ public class SystemRestService {
             loginToken = restTemplate.getForObject(url, LoginToken.class);
             logger.info("relogin loginToken: "+loginToken);
             systemToken = loginToken;
-        } catch (ResourceAccessException e) {
+        } catch (RestClientException e) {
             loginToken = new LoginToken();
+            UI.getCurrent().getNavigator().navigateTo("login");
         }
         return loginToken;
     }
 
-    public void unsafeCall(String url) {
+    public void unsafePutCall(String url) {
+        restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(new HttpHeaders()), Void.class);
+    }
+
+    public void unsafePostCall(String url) {
         restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(new HttpHeaders()), Void.class);
     }
 
@@ -95,9 +98,27 @@ public class SystemRestService {
         }
     }
 
+    public ResponseEntity secureCallGZip(String url, HttpMethod method, Class c, Object payload) {
+        try {
+            HttpEntity entity = new HttpEntity(payload, createGZipHeaders(UserService.get().getLoggedInUserToken().get().getToken()));
+            return restTemplate.exchange(url, method, entity, c);
+        } catch (RestClientException e) {
+            systemToken = relogin();
+            HttpEntity entity = new HttpEntity(payload, createHeaders(UserService.get().getLoggedInUserToken().get().getToken()));
+            return restTemplate.exchange(url, method, entity, c);
+        }
+    }
+
     private HttpHeaders createHeaders(String token){
         HttpHeaders headers = new HttpHeaders();
         headers.set( "Authorization", "Bearer " + token);
+        return headers;
+    }
+
+    private HttpHeaders createGZipHeaders(String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set( "Authorization", "Bearer " + token);
+        headers.set("Content-Encoding", "gzip");
         return headers;
     }
 }

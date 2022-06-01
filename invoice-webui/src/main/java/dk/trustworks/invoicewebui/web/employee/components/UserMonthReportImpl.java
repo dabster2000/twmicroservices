@@ -46,7 +46,7 @@ public class UserMonthReportImpl extends UserMonthReportDesign {
     }
 
     private void loadProjectReport(LocalDate localDate) {
-        List<Work> workList = workService.findByPeriodAndUserUUID(localDate.withDayOfMonth(1), localDate.withDayOfMonth(localDate.lengthOfMonth()), user.getUuid());
+        List<Work> workList = workService.findByPeriodAndUserUUID(localDate.withDayOfMonth(1), localDate.withDayOfMonth(1).plusMonths(1), user.getUuid());
 
         Map<String, UserHourItem> userHourItemMap = new HashMap<>();
 

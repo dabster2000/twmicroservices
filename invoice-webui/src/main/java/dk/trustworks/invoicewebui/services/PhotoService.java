@@ -5,9 +5,8 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
-import dk.trustworks.invoicewebui.model.Photo;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.network.rest.PhotoRestService;
+import dk.trustworks.invoicewebui.model.File;
+import dk.trustworks.invoicewebui.network.rest.FileRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,21 +16,21 @@ import java.io.ByteArrayInputStream;
 public class PhotoService {
 
     @Autowired
-    private PhotoRestService photoRestService;
+    private FileRestService fileRestService;
 
     public Image getRoundMemberImage(String useruuid, boolean isOwner) {
         return getRoundMemberImage(useruuid, isOwner, 75, Sizeable.Unit.PIXELS);
     }
 
     public Image getRoundMemberImage(String useruuid, boolean isOwner, int width, Sizeable.Unit unit) {
-        Photo photo = photoRestService.findPhotoByRelateduuid(useruuid);
+        File photo = fileRestService.findPhotoByRelateduuid(useruuid);
 
         Image image = new Image();
         //image.setDescription(member.getFirstname()+" "+member.getLastname());
-        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto()!=null) {
+        if(photo!=null && photo.getFile()!=null && photo.getFile()!=null) {
             image.setSource(
                     new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(photo.getPhoto()),
+                            new ByteArrayInputStream(photo.getFile()),
                             useruuid + System.currentTimeMillis() + ".jpg"));
         } else {
             image.setSource(new ThemeResource("images/clients/missing-logo.jpg"));
@@ -44,13 +43,13 @@ public class PhotoService {
     }
 
     public Image getRoundImage(String uuid, boolean isOwner, int width, Sizeable.Unit unit) {
-        Photo photo = photoRestService.findPhotoByRelateduuid(uuid);
+        File photo = fileRestService.findPhotoByRelateduuid(uuid);
 
         Image image = new Image();
-        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto()!=null) {
+        if(photo!=null && photo.getFile()!=null && photo.getFile()!=null) {
             image.setSource(
                     new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(photo.getPhoto()),
+                            new ByteArrayInputStream(photo.getFile()),
                             uuid + System.currentTimeMillis() + ".jpg"));
         } else {
             image.setSource(new ThemeResource("images/clients/missing-logo.jpg"));
@@ -62,25 +61,25 @@ public class PhotoService {
     }
 
     public Resource getRelatedPhotoResource(String relatedUUID) {
-        Photo photo;
+        File photo;
         try {
-            photo = photoRestService.findPhotoByRelateduuid(relatedUUID);
+            photo = fileRestService.findPhotoByRelateduuid(relatedUUID);
         } catch (Exception e) {
             return new ThemeResource("images/clients/missing-logo.jpg");
         }
-        if(photo!=null && photo.getPhoto()!=null && photo.getPhoto().length > 0) {
+        if(photo!=null && photo.getFile()!=null && photo.getFile().length > 0) {
             return new StreamResource((StreamResource.StreamSource) () ->
-                    new ByteArrayInputStream(photo.getPhoto()), System.currentTimeMillis() + ".jpg");
+                    new ByteArrayInputStream(photo.getFile()), System.currentTimeMillis() + ".jpg");
         } else {
             return new ThemeResource("images/clients/missing-logo.jpg");
         }
     }
 
-    public Photo getRelatedPhoto(String relatedUUID) {
-        return photoRestService.findPhotoByRelateduuid(relatedUUID);
+    public File getRelatedPhoto(String relatedUUID) {
+        return fileRestService.findPhotoByRelateduuid(relatedUUID);
     }
 
-    public void save(Photo photo) {
-        photoRestService.update(photo);
+    public void save(File photo) {
+        fileRestService.update(photo);
     }
 }

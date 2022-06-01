@@ -75,6 +75,8 @@ public class LoginView extends VerticalLayout implements View {
         addComponent(responsiveLayout);
 
         login.getHlResetPassword().addLayoutClickListener(event -> {
+            // slack://channel?id=U01GHJJG0E6&team=T036JELTL
+            //getUI().getPage().setLocation("slack://channel?id=U01GHJJG0E6&team=T036JELTL");
             loginRow.setVisible(false);
             resetLoginRow.setVisible(true);
         });

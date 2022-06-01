@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.network.rest;
 
 import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
+import dk.trustworks.invoicewebui.model.dto.EmployeeAggregateData;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,7 @@ import static org.springframework.http.HttpMethod.GET;
 
 @JBossLog
 @Service
-public class BiRestService {
+public class   BiRestService {
 
     @Value("#{environment.APIGATEWAY_URL}")
     private String apiGatewayUrl;
@@ -28,10 +29,15 @@ public class BiRestService {
         this.systemRestService = systemRestService;
     }
 
-    public List<CompanyAggregateData> getMonthRevenueData(LocalDate fromdate, LocalDate todate) {
+    public List<CompanyAggregateData> getCompanyAggregateData(LocalDate fromdate, LocalDate todate) {
         String url = apiGatewayUrl +"/bi/company?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
-        System.out.println("url = " + url);
         ResponseEntity<CompanyAggregateData[]> result = systemRestService.secureCall(url, GET, CompanyAggregateData[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public List<EmployeeAggregateData> getEmployeeAggregateData(LocalDate fromdate, LocalDate todate) {
+        String url = apiGatewayUrl +"/bi/employees?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
+        ResponseEntity<EmployeeAggregateData[]> result = systemRestService.secureCall(url, GET, EmployeeAggregateData[].class);
         return Arrays.asList(result.getBody());
     }
 

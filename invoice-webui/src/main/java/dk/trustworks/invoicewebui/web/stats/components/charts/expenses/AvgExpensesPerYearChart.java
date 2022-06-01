@@ -7,8 +7,6 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.dto.UserExpenseDocument;
-import dk.trustworks.invoicewebui.services.StatisticsService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,13 +21,6 @@ import java.util.List;
 @SpringComponent
 @SpringUI
 public class AvgExpensesPerYearChart {
-
-    private final StatisticsService statisticsService;
-
-    @Autowired
-    public AvgExpensesPerYearChart(StatisticsService statisticsService) {
-        this.statisticsService = statisticsService;
-    }
 
     public Chart createChart() {
         LocalDate periodStart = LocalDate.of(2016, 7, 1);

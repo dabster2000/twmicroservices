@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -9,15 +11,6 @@ import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.User;
 
 import java.time.LocalDate;
-
-import java.util.HashMap;
-import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BudgetDocument {
@@ -34,21 +27,12 @@ public class BudgetDocument {
     private Contract contract;
     @JsonProperty("rate")
     private double rate;
-    @JsonProperty("grossBudgetHours")
-    private double grossBudgetHours;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    @JsonProperty("budgetHours")
+    private double budgetHours;
+    @JsonProperty("budgetHoursWithNoAvailabilityAdjustment")
+    private double budgetHoursWithNoAvailabilityAdjustment;
 
     public BudgetDocument() {
-    }
-
-    public BudgetDocument(LocalDate month, Client client, User user, Contract contract, double budgetHours, double rate) {
-        this.month = month;
-        this.client = client;
-        this.user = user;
-        this.contract = contract;
-        this.grossBudgetHours = budgetHours;
-        this.rate = rate;
     }
 
     @JsonProperty("month")
@@ -105,24 +89,19 @@ public class BudgetDocument {
         this.rate = rate;
     }
 
-    @JsonProperty("grossBudgetHours")
-    public double getGrossBudgetHours() {
-        return grossBudgetHours;
+    @JsonProperty("budgetHours")
+    public double getBudgetHours() {
+        return budgetHours;
+    }
+
+    @JsonProperty("getBudgetHoursWithNoAvailabilityAdjustment")
+    public double getBudgetHoursWithNoAvailabilityAdjustment() {
+        return budgetHoursWithNoAvailabilityAdjustment;
     }
 
     @JsonProperty("grossBudgetHours")
-    public void setGrossBudgetHours(double grossBudgetHours) {
-        this.grossBudgetHours = grossBudgetHours;
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
+    public void setBudgetHours(double budgetHours) {
+        this.budgetHours = budgetHours;
     }
 
     @Override
@@ -133,8 +112,7 @@ public class BudgetDocument {
                 ", user=" + user.getUsername() +
                 ", contract=" + contract.getUuid() +
                 ", rate=" + rate +
-                ", grossBudgetHours=" + grossBudgetHours +
-                ", additionalProperties=" + additionalProperties +
+                ", grossBudgetHours=" + budgetHours +
                 '}';
     }
 }

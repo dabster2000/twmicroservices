@@ -2,19 +2,19 @@ package dk.trustworks.invoicewebui.web.admin.components;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
-import dk.trustworks.invoicewebui.model.Document;
+import dk.trustworks.invoicewebui.model.File;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.enums.DocumentType;
-import dk.trustworks.invoicewebui.repositories.DocumentRepository;
-import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.utils.FileUtils;
+import dk.trustworks.invoicewebui.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
@@ -26,15 +26,12 @@ public class DocumentUploadImpl extends DocumentUpload {
     private byte[] bytes = null;
 
     private String filename = null;
-
-    private final FileUtils fileUtils;
+    private List<User> users;
 
     @Autowired
-    public DocumentUploadImpl(DocumentRepository documentRepository, DocumentListImpl documentList, UserService userService, FileUtils fileUtils) {
-        this.fileUtils = fileUtils;
+    public DocumentUploadImpl(DocumentService documentService, DocumentListImpl documentList) {
         getBtnUpload().setEnabled(false);
         getVlUploadComplete().setVisible(false);
-
 
         getUploadComponent().setWidth(100, PERCENTAGE);
         getUploadComponent().setReceivedCallback(this::uploadReceived);
@@ -50,7 +47,6 @@ public class DocumentUploadImpl extends DocumentUpload {
         });
 
         getCbUser().setItemCaptionGenerator(User::getUsername);
-        getCbUser().setItems(userService.findAll(true));
 
         getBtnRemoveUpload().addClickListener(event -> {
             bytes = null;
@@ -64,11 +60,13 @@ public class DocumentUploadImpl extends DocumentUpload {
 
         getBtnUpload().addClickListener(event -> {
             if(bytes == null || getTxtName().getValue().equals("") || getCbUser().isEmpty()) return;
-            Document document = new Document(getCbUser().getValue(), getTxtName().getValue(), filename, DocumentType.CONTRACT, LocalDate.now(), bytes);
-            documentRepository.save(document);
+            //Document document = new Document(getCbUser().getValue(), getTxtName().getValue(), filename, DocumentType.CONTRACT, LocalDate.now(), bytes);
+            File document = new File(UUID.randomUUID().toString(), getCbUser().getValue().getUuid(), "DOCUMENT", getTxtName().getValue(), filename, LocalDate.now(), bytes);
+            //documentRepository.save(document);
+            documentService.saveDocument(document.getRelateduuid(), document);
             getTxtName().clear();
             getCbUser().clear();
-            documentList.reload();
+            documentList.init(users);
             bytes = null;
             filename = null;
             getBtnUpload().setEnabled(false);
@@ -77,10 +75,16 @@ public class DocumentUploadImpl extends DocumentUpload {
         });
     }
 
+    public Component init(List<User> users) {
+        this.users = users;
+        getCbUser().setItems(users);
+        return this;
+    }
+
     private void uploadReceived(String filename, Path file) {
         Notification.show("Upload finished: " + filename, Notification.Type.HUMANIZED_MESSAGE);
         try {
-            bytes = fileUtils.compressPDF(Files.readAllBytes(file));
+            bytes = Files.readAllBytes(file);//fileUtils.compressPDF(Files.readAllBytes(file));
             this.filename = filename;
             getVlUploadComplete().setVisible(true);
             getUploadComponent().setVisible(false);

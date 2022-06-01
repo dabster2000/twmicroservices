@@ -1,5 +1,8 @@
 package dk.trustworks.invoicewebui.network.rest;
 
+import com.vaadin.server.Page;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.utils.DateUtils;
@@ -7,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -57,7 +61,15 @@ public class InvoiceRestService {
                 "&projectuuid="+projectSummary.getProjectuuid()+
                 "&type="+projectSummary.getProjectSummaryType()+
                 "&month="+DateUtils.stringIt(month.withDayOfMonth(1));
-        ResponseEntity<Invoice> result = systemRestService.secureCall(url, POST, Invoice.class, projectSummary);
+        ResponseEntity<Invoice> result = null;
+        try {
+            result = systemRestService.secureCall(url, POST, Invoice.class, projectSummary);
+        } catch (HttpClientErrorException e) {
+            Notification notification=new Notification("Error creating draft",
+                    e.getMessage() +" : "+ e.getStatusText(), Notification.Type.TRAY_NOTIFICATION);
+            notification.show(Page.getCurrent());
+        }
+        assert result != null;
         return result.getBody();
     }
 

@@ -2,10 +2,7 @@ package dk.trustworks.invoicewebui.utils;
 
 import lombok.experimental.UtilityClass;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
@@ -49,10 +46,14 @@ public class DateUtils {
      * @param to
      * @return
      */
-    public static boolean isBetween(LocalDate testDate, LocalDate from, LocalDate to) {
+    public static boolean isBetween(final LocalDate testDate, final LocalDate from, final LocalDate to) {
         if(testDate.isEqual(from)) return true;
         if(testDate.isEqual(to)) return true;
         return testDate.isAfter(from) && testDate.isBefore(to);
+    }
+
+    public static boolean isOverlapping(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
+        return ((startDate1.isBefore(endDate2) || startDate1.isEqual(endDate2)) && (startDate2.isBefore(endDate1) || startDate2.isEqual(endDate1)));
     }
 
     /**
@@ -71,6 +72,11 @@ public class DateUtils {
             localDate = localDate.plusDays(1);
         } while (localDate.isBefore(dateTo));
         return weekDays - getVacationDaysInPeriod(dateFrom, dateTo);
+    }
+
+    public static int getDiffYears(LocalDate first, LocalDate last) {
+        Period period = first.until(last);
+        return period.getYears();
     }
 
     public static boolean isWeekendDay(LocalDate localDate) {

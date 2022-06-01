@@ -10,7 +10,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Notification;
-import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.File;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.repositories.NotificationRepository;
 import dk.trustworks.invoicewebui.services.PhotoService;
@@ -102,18 +102,25 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
                 .withComponent(new Label());
 
         topMenuUserDesign = new TopMenuUserDesign();
-        Photo photo;
+        File photo;
         Image image;
         if((photo = photoService.getRelatedPhoto(user.getUuid())) != null) {
             image = new Image(null,
                     new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(photo.getPhoto()),
+                            new ByteArrayInputStream(photo.getFile()),
                             user.getUsername()+System.currentTimeMillis()+".jpg"));
             image.setStyleName("img-circle");
             image.setWidth(75, Unit.PIXELS);
             image.setHeight(75, Unit.PIXELS);
+            if(user.getUsername().equals("hans.lassen")) {
+                com.vaadin.ui.Notification.show("Add photo", "Please add a nice photo of yourself. If you where just recently employed, you can use something like the one from LinkedIn. Otherwise use the one taken here at Trustworks. Photos are added on your Info page", com.vaadin.ui.Notification.Type.ASSISTIVE_NOTIFICATION);
+            }
+
         } else {
             image = new Image(null, MaterialIcons.ACCOUNT_CIRCLE);
+            if(user.getUsername().equals("hans.lassen")) {
+                com.vaadin.ui.Notification.show("Add photo", "Please add a nice photo of yourself. If you where just recently employed, you can use something like the one from LinkedIn. Otherwise use the one taken here at Trustworks. Photos are added on your Info page", com.vaadin.ui.Notification.Type.ASSISTIVE_NOTIFICATION);
+            }
         }
         topMenuUserDesign.addComponent(image);
         topMenuUserDesign.getBtnNotification().setIcon(MaterialIcons.SMS_FAILED);

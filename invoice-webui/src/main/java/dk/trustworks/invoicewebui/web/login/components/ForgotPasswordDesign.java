@@ -21,6 +21,8 @@ public class ForgotPasswordDesign extends CssLayout {
     private Image imgTop;
     private VerticalLayout vlReset;
     private TextField txtUsername;
+    private TextField txtPassword;
+    private TextField txtConfirmPassword;
     private Button btnLogin;
     private HorizontalLayout hlBackToLogin;
     private VerticalLayout vlConfirmation;
@@ -43,6 +45,14 @@ public class ForgotPasswordDesign extends CssLayout {
 
     public TextField getTxtUsername() {
         return txtUsername;
+    }
+
+    public TextField getTxtPassword() {
+        return txtPassword;
+    }
+
+    public TextField getTxtConfirmPassword() {
+        return txtConfirmPassword;
     }
 
     public Button getBtnLogin() {

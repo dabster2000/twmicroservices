@@ -1,21 +1,21 @@
 package dk.trustworks.invoicewebui.web.employee.model;
 
-import dk.trustworks.invoicewebui.model.Document;
+import dk.trustworks.invoicewebui.model.File;
 
 import java.time.LocalDate;
 
-public class DocumentWithOwner extends Document {
+public class DocumentWithOwner extends File {
 
-    private Document document;
+    private File document;
     private String username;
 
-    public DocumentWithOwner(Document document, String username) {
+    public DocumentWithOwner(File document, String username) {
         this.username = username;
         this.document = document;
     }
 
-    public int getId() {
-        return document.getId();
+    public String getUuid() {
+        return document.getUuid();
     }
 
     public String getName() {

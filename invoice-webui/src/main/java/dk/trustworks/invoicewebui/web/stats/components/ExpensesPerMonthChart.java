@@ -66,7 +66,7 @@ public class ExpensesPerMonthChart {
         tooltip.setFormatter("this.series.name +': '+ Highcharts.numberFormat(this.y/1000, 0) +' tkr'");
         chart.getConfiguration().setTooltip(tooltip);
 
-        List<CompanyAggregateData> data = biService.getBudgetsByPeriod(periodStart, periodEnd);
+        List<CompanyAggregateData> data = biService.getCompanyAggregateDataByPeriod(periodStart, periodEnd);
 
         Map<String, Range<Integer>> listSeriesRangeMap = new HashMap<>();
 

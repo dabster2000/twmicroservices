@@ -4,6 +4,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.services.EmailSender;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -20,28 +21,38 @@ import java.util.UUID;
 @SpringUI
 public class ForgotPasswordImpl extends ForgotPasswordDesign {
 
-    private static Map<String, User> uuidMap = new HashMap();
-
     @Autowired
-    public ForgotPasswordImpl(UserService userService, EmailSender emailSender) {
+    public ForgotPasswordImpl(UserService userService) {
         System.out.println("ForgotPasswordImpl.ForgotPasswordImpl");
 
         getImgTop().setSource(new ThemeResource("images/password-card.jpg"));
         getBtnLogin().addClickListener(clickEvent -> {
-            User user = userService.findByUsername(getTxtUsername().getValue());
-            String uuid = UUID.randomUUID().toString();
-            uuidMap.put(uuid, user);
-            System.out.println("uuid = " + uuid);
+            if(!getTxtPassword().getValue().equals(getTxtConfirmPassword().getValue())) {
+                Notification.show("Password error",
+                        "Passwords does not match",
+                        Notification.Type.ERROR_MESSAGE);
+                getTxtPassword().clear();
+                getTxtConfirmPassword().clear();
+                return;
+            }
+            //User user = userService.findByUsername(getTxtUsername().getValue());
+            //String uuid = UUID.randomUUID().toString();
+            //uuidMap.put(uuid, user);
+            //System.out.println("uuid = " + uuid);
+            userService.updateUserPassword(getTxtUsername().getValue().toLowerCase(), getTxtPassword().getValue());
             getVlReset().setVisible(false);
             getVlConfirmation().setVisible(true);
-            emailSender.sendResetPassword(user, uuid);
+            //userService.updateUserPassword(user.getUuid(), getTxtPassword().getValue());
+            //emailSender.sendResetPassword(user, uuid);
             //getUI().getNavigator().navigateTo("login");
         });
         getBtnLogin().setClickShortcut(ShortcutAction.KeyCode.ENTER);
     }
-
+/*
     public User getResetUser(String uuid) {
         if(!uuidMap.containsKey(uuid)) return null;
         return uuidMap.remove(uuid);
     }
+
+ */
 }

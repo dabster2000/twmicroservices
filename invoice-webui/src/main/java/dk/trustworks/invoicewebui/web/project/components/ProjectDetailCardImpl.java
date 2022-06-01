@@ -4,10 +4,9 @@ import com.vaadin.data.*;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.datefield.DateResolution;
-import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.File;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.repositories.NewsRepository;
 import dk.trustworks.invoicewebui.services.ProjectService;
 import dk.trustworks.invoicewebui.services.UserService;
 
@@ -27,13 +26,13 @@ public class ProjectDetailCardImpl extends ProjectDetailCardDesign {
     private final ProjectService projectService;
     private final Binder<Project> projectBinder;
 
-    public ProjectDetailCardImpl(Project project, List<User> users, Photo photo, ProjectService projectService, UserService userService) {
+    public ProjectDetailCardImpl(Project project, List<User> users, File photo, ProjectService projectService, UserService userService) {
         this.project = project;
         this.projectService = projectService;
 
-        if(photo !=null && photo.getPhoto()!=null && photo.getPhoto().length > 0) {
+        if(photo !=null && photo.getFile()!=null && photo.getFile().length > 0) {
             getLogo().setSource(new StreamResource((StreamResource.StreamSource) () ->
-                    new ByteArrayInputStream(photo.getPhoto()),
+                    new ByteArrayInputStream(photo.getFile()),
                     "logo.jpg"));
         } else {
             getLogo().setSource(new ThemeResource("images/clients/missing-logo.jpg"));

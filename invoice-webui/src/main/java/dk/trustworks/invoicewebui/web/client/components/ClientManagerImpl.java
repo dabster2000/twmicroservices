@@ -12,7 +12,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
-import dk.trustworks.invoicewebui.model.Photo;
+import dk.trustworks.invoicewebui.model.File;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
@@ -210,11 +210,11 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
     private Image createCompanyLogo(Client client) {
         Image logo;
-        Photo photo = photoService.getRelatedPhoto(client.getUuid());
-        if(photo!=null && photo.getPhoto().length > 0) {
+        File photo = photoService.getRelatedPhoto(client.getUuid());
+        if(photo!=null && photo.getFile() != null && photo.getFile().length > 0){
             logo = new Image(null,
                     new StreamResource((StreamResource.StreamSource) () ->
-                            new ByteArrayInputStream(photo.getPhoto()),
+                            new ByteArrayInputStream(photo.getFile()),
                             "logo.jpg"));
         } else {
             logo = new Image("Upload logo please", new ThemeResource("images/clients/missing-logo.jpg"));

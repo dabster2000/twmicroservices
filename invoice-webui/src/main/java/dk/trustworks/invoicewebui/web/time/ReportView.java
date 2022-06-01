@@ -20,7 +20,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.USER})
+@AccessRules(roleTypes = {RoleType.USER, RoleType.EXTERNAL})
 @SpringView(name = ReportView.VIEW_NAME)
 public class ReportView extends VerticalLayout implements View {
 

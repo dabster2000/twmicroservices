@@ -10,6 +10,7 @@ import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Role;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.LoginToken;
+import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.network.clients.LoginClient;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
@@ -67,7 +68,12 @@ public class LoginImpl extends LoginDesign {
             newCookie.setMaxAge(2592000);
             newCookie.setPath(VaadinService.getCurrentRequest() .getContextPath());
             VaadinService.getCurrentResponse().addCookie(newCookie);
-            getUI().getNavigator().navigateTo("mainmenu");
+            if(user.getRoleList().stream().anyMatch(role -> role.getRole().equals(RoleType.EXTERNAL))) {
+                getUI().getNavigator().navigateTo("timeregistration2");
+                //getUI().getNavigator().navigateTo("mainmenu");
+            } else {
+                getUI().getNavigator().navigateTo("mainmenu");
+            }
         });
         
         getBtnLogin().setClickShortcut(ShortcutAction.KeyCode.ENTER);

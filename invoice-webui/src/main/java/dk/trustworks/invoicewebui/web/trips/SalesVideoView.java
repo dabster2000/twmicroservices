@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.VTV})
+@AccessRules(roleTypes = {RoleType.USER})
 @SpringView(name = SalesVideoView.VIEW_NAME)
 public class SalesVideoView extends VerticalLayout implements View {
 

@@ -106,7 +106,7 @@ public class SalesHeatMap {
                 for (BudgetDocument budget : budgets) {
                     userAllocationPerAssignmentMap.putIfAbsent(user.getUuid(), new HashMap<>());
                     userAllocationPerAssignmentMap.get(user.getUuid()).putIfAbsent(budget.getClient().getUuid(), new double[12]);
-                    userAllocationPerAssignmentMap.get(user.getUuid()).get(budget.getClient().getUuid())[i] +=  (budget.getGrossBudgetHours());
+                    userAllocationPerAssignmentMap.get(user.getUuid()).get(budget.getClient().getUuid())[i] +=  (budget.getBudgetHours());
                 }
             }
         }
@@ -122,7 +122,7 @@ public class SalesHeatMap {
 
                 double budget = budgetDocumentList.stream()
                         .filter(budgetDocument -> budgetDocument.getUser().getUuid().equals(user.getUuid()) && budgetDocument.getMonth().isEqual(finalLocalDate.withDayOfMonth(1)))
-                        .mapToDouble(BudgetDocument::getGrossBudgetHours).sum();
+                        .mapToDouble(BudgetDocument::getBudgetHours).sum();
                 monthAvailabilites[m] += budget;
 
                 AvailabilityDocument availabilityDocument = availabilityDocuments.stream().filter(ad ->
@@ -202,7 +202,7 @@ public class SalesHeatMap {
         config.setSeries(rs);
 
         chart.drawChart(config);
-        chart.setHeight("700px");
+        chart.setHeight("1200px");
 
         return chart;
     }
@@ -211,7 +211,7 @@ public class SalesHeatMap {
         int monthPeriod = (int) ChronoUnit.MONTHS.between(localDateStart, localDateEnd)+1;
         String[] monthNames = getMonthNames(localDateStart, localDateEnd);
         Chart chart = new Chart(ChartType.AREASPLINE);
-        chart.setHeight("450px");
+
 
         Configuration conf = chart.getConfiguration();
 
@@ -254,7 +254,7 @@ public class SalesHeatMap {
         conf.addSeries(listSeries);
 
         chart.drawChart(conf);
-        chart.setHeight("700px");
+        chart.setHeight("1200px");
 
         return chart;
     }

@@ -7,6 +7,9 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
+import dk.trustworks.invoicewebui.model.Team;
+import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.network.rest.TeamRestService;
 import dk.trustworks.invoicewebui.services.AvailabilityService;
 import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.RevenueService;
@@ -37,12 +40,15 @@ public class ExpensesSalariesRevenuePerMonthChart {
 
     private final AvailabilityService availabilityService;
 
+    private final TeamRestService teamRestService;
+
     @Autowired
-    public ExpensesSalariesRevenuePerMonthChart(UserService userService, RevenueService revenueService, FinanceService financeService, AvailabilityService availabilityService) {
+    public ExpensesSalariesRevenuePerMonthChart(UserService userService, RevenueService revenueService, FinanceService financeService, AvailabilityService availabilityService, TeamRestService teamRestService) {
         this.userService = userService;
         this.revenueService = revenueService;
         this.financeService = financeService;
         this.availabilityService = availabilityService;
+        this.teamRestService = teamRestService;
     }
 
     public Chart createExpensesPerMonthChart() {
@@ -93,9 +99,13 @@ public class ExpensesSalariesRevenuePerMonthChart {
 
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            double consultantCount = availabilityService.countActiveConsultantsByMonth(currentDate);
+            //double consultantCount = availabilityService.countActiveConsultantsByMonth(currentDate);
 
-            double consultantSalariesByMonth = NumberUtils.round((userService.calcMonthSalaries(currentDate, CONSULTANT.toString()) / consultantCount), 0);
+            String[] teamList = teamRestService.getAllTeams().stream().filter(Team::isTeamleadbonus).map(Team::getUuid).toArray(String[]::new);
+            List<User> usersFromTeams = teamRestService.getUniqueUsersFromTeamsByMonth(currentDate, teamList);
+            double consultantCount = usersFromTeams.size();
+
+            double consultantSalariesByMonth = NumberUtils.round((UserService.calcMonthSalaries(usersFromTeams, currentDate, CONSULTANT.toString()) / consultantCount), 0);
             double sharedExpensesAndStaffSalariesByMonth =  NumberUtils.round((financeService.calcAllExpensesByMonth(currentDate) / consultantCount) - consultantSalariesByMonth, 0);
 
             //double sharedExpensesAndStaffSalariesByMonth = NumberUtils.round(statisticsService.getSharedExpensesAndStaffSalariesByMonth(currentDate) / consultantCount, 0);

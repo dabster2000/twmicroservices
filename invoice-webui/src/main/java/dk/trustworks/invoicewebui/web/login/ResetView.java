@@ -59,7 +59,7 @@ public class ResetView extends VerticalLayout implements View {
         System.out.println("event.getParameters() = " + event.getParameters());
         if (event.getParameters() != null
                 && !event.getParameters().isEmpty()) {
-            resetPassword.setUser(event.getParameters());
+            //resetPassword.setUser(event.getParameters());
         }
     }
 

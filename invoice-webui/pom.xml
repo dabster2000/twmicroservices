@@ -91,6 +91,8 @@
             <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
             <version>1.0.3</version>
         </dependency>
+        -->
+        <!--
         <dependency>
             <groupId>io.github.openfeign.opentracing</groupId>
             <artifactId>feign-opentracing</artifactId>
@@ -393,7 +395,7 @@
         <dependency>
             <groupId>com.slack.api</groupId>
             <artifactId>slack-api-client</artifactId>
-            <version>1.6.1</version>
+            <version>1.7.1</version>
         </dependency>
         <dependency>
             <groupId>javax.websocket</groupId>
@@ -429,7 +431,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -903,7 +905,7 @@
         <!-- ... -->
         <repository>
             <id>neuroph.sourceforge.net</id>
-            <url>http://neuroph.sourceforge.net/maven2/</url>
+            <url>https://neuroph.sourceforge.net/maven2/</url>
         </repository>
         <repository>
             <id>vaadin-prereleases</id>
@@ -912,7 +914,7 @@
         </repository>
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
+            <url>https://maven.vaadin.com/vaadin-addons</url>
         </repository>
         <repository>
             <id>jitpack.io</id>

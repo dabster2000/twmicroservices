@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.network.rest;
 
 import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -43,6 +44,12 @@ public class ClientRestService {
     public List<Client> findByActiveTrue() {
         String url = apiGatewayUrl +"/clients/active";
         ResponseEntity<Client[]> result = systemRestService.secureCall(url, GET, Client[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public List<GraphKeyValue> findClientFiscalBudgetSums(int fiscalYear) {
+        String url = apiGatewayUrl +"/clients/budgets/"+fiscalYear;
+        ResponseEntity<GraphKeyValue[]> result = systemRestService.secureCall(url, GET, GraphKeyValue[].class);
         return Arrays.asList(result.getBody());
     }
 

@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.USER})
+@AccessRules(roleTypes = {RoleType.USER, RoleType.EXTERNAL})
 @SpringView(name = TimeManagerViewSecond.VIEW_NAME)
 public class TimeManagerViewSecond extends VerticalLayout implements View {
 
@@ -56,6 +56,6 @@ public class TimeManagerViewSecond extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        authorizer.authorize(this, RoleType.USER);
+        //authorizer.authorize(this, RoleType.USER);
     }
 }

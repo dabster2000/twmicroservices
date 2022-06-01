@@ -1,14 +1,14 @@
 package dk.trustworks.invoicewebui.network.rest;
 
-import dk.trustworks.invoicewebui.model.GraphKeyValue;
+import dk.trustworks.invoicewebui.network.dto.ClientMarginResult;
 import dk.trustworks.invoicewebui.network.dto.MarginResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 import static org.springframework.http.HttpMethod.GET;
@@ -30,5 +30,11 @@ public class MarginRestService {
         String url = apiGatewayUrl + "/margin/" + useruuid + "/" + rate;
         ResponseEntity<MarginResult> result = systemRestService.secureCall(url, GET, MarginResult.class);
         return result.getBody().getMargin();
+    }
+
+    public List<ClientMarginResult> calculateMarginPerClient(int fiscalYear) {
+        String url = apiGatewayUrl + "/margin/clients?fiscalyear=" + fiscalYear;
+        ResponseEntity<ClientMarginResult[]> result = systemRestService.secureCall(url, GET, ClientMarginResult[].class);
+        return Arrays.asList(result.getBody());
     }
 }

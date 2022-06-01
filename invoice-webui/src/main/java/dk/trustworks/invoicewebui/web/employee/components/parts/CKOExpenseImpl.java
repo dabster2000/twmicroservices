@@ -78,9 +78,9 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
         binder.forField(getTxtPrice()).withConverter(new StringToIntegerConverter("Must enter a number")).bind(CKOExpense::getPrice, CKOExpense::setPrice);
         binder.forField(getTxtComments()).bind(CKOExpense::getComment, CKOExpense::setComment);
         binder.forField(getTxtDays()).withConverter(new MyConverter()).bind(CKOExpense::getDays, CKOExpense::setDays);
-        binder.forField(getCbPurpose()).bind(CKOExpense::getPurpose, CKOExpense::setPurpose);
-        binder.forField(getCbStatus()).bind(CKOExpense::getStatus, CKOExpense::setStatus);
-        binder.forField(getCbType()).bind(CKOExpense::getType, CKOExpense::setType);
+        binder.forField(getCbPurpose()).asRequired("You must select a purpose").bind(CKOExpense::getPurpose, CKOExpense::setPurpose);
+        binder.forField(getCbStatus()).asRequired("You must select a status").bind(CKOExpense::getStatus, CKOExpense::setStatus);
+        binder.forField(getCbType()).asRequired("You must select a type").bind(CKOExpense::getType, CKOExpense::setType);
 
         ckoExpense = new CKOExpense(user);
         binder.readBean(ckoExpense);
@@ -108,7 +108,7 @@ public class CKOExpenseImpl extends CKOExpenseDesign {
                 binder.readBean(ckoExpense = new CKOExpense(user));
                 getBtnAddSalary().setCaption("CREATE");
             } catch (ValidationException e) {
-                e.printStackTrace();
+                Notification.show("Expense could not be saved, please check error messages for each field.");
             }
             refreshExpenseCards(user, expenseBoard);
         });

@@ -2,12 +2,17 @@ package dk.trustworks.invoicewebui.services;
 
 
 import dk.trustworks.invoicewebui.model.Client;
+import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.network.rest.ClientRestService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+
+import static org.springframework.http.HttpMethod.GET;
 
 @Service
 public class ClientService implements InitializingBean {
@@ -31,6 +36,10 @@ public class ClientService implements InitializingBean {
 
     public List<Client> findByActiveTrue() {
         return clientRestService.findByActiveTrue();
+    }
+
+    public List<GraphKeyValue> findClientFiscalBudgetSums(int fiscalYear) {
+        return clientRestService.findClientFiscalBudgetSums(fiscalYear);
     }
 
     public Client save(Client client) {

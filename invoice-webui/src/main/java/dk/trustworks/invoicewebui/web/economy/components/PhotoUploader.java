@@ -1,23 +1,16 @@
 package dk.trustworks.invoicewebui.web.economy.components;
 
 import com.vaadin.server.Sizeable;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import dk.trustworks.invoicewebui.model.Photo;
-import dk.trustworks.invoicewebui.model.PhotoGlobal;
-import dk.trustworks.invoicewebui.model.enums.PhotoGlobalType;
-import dk.trustworks.invoicewebui.repositories.PhotoGlobalRepository;
+import dk.trustworks.invoicewebui.model.File;
 import dk.trustworks.invoicewebui.services.PhotoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.viritin.fields.MTextField;
 import server.droporchoose.UploadComponent;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static com.vaadin.ui.Notification.Type.*;
@@ -51,9 +44,42 @@ public class PhotoUploader {
     }
 
     private void uploadReceived(String fileName, Path file) {
+        Notification.show("Upload finished: " + fileName, HUMANIZED_MESSAGE);
+
+        File photo = photoService.getRelatedPhoto(relatedUuid.getValue());
+
+        try {
+            final byte[] bytes = Files.readAllBytes(file);
+
+            if(photo==null) {
+                photo = new File(UUID.randomUUID().toString(), relatedUuid.getValue(), "PHOTO", "", "", LocalDate.now(), bytes);
+            } else {
+                photo.setFile(bytes);
+            }
+            //StreamResource resource = new StreamResource(() -> new ByteArrayInputStream(bytes), "edited-image-" + System.currentTimeMillis() + ".jpg");
+            photoService.save(photo);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Notification.show("Upload failed", ERROR_MESSAGE);
+        }
+    }
+
+    private void uploadStarted(String fileName) {
+        Notification.show("Upload started: " + fileName, TRAY_NOTIFICATION);
+    }
+
+    private void uploadProgress(String fileName, long readBytes, long contentLength) {
+        Notification.show(String.format("Progress: %s : %d/%d", fileName, readBytes, contentLength), TRAY_NOTIFICATION);
+    }
+
+    private void uploadFailed(String fileName, Path file) {
+        Notification.show("Upload failed: " + fileName, ERROR_MESSAGE);
+    }
+/*
+    private void uploadReceived(String fileName, Path file) {
         Notification.show("New photo uploaded: " + fileName, HUMANIZED_MESSAGE);
         try {
-            photoService.save(new Photo(UUID.randomUUID().toString(), relatedUuid.getValue(), Files.readAllBytes(file)));
+            photoService.save(new File(UUID.randomUUID().toString(), relatedUuid.getValue(), "PHOTO", "", "", LocalDate.now(), Files.readAllBytes(file)));
         } catch (IOException e) {
             uploadFailed(fileName, file);
         }
@@ -70,4 +96,6 @@ public class PhotoUploader {
     private void uploadFailed(String fileName, Path file) {
         Notification.show("Upload failed: " + fileName, ERROR_MESSAGE);
     }
+
+ */
 }

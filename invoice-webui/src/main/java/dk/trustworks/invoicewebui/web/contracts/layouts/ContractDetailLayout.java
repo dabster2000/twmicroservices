@@ -214,9 +214,9 @@ public class ContractDetailLayout extends ResponsiveLayout {
 
     private StreamResource createResource(Contract contract) {
         return new StreamResource((StreamResource.StreamSource) () -> {
-            StringBuilder result = new StringBuilder("consultant;project;task;date;hours\n");
+            StringBuilder result = new StringBuilder("consultant;project;task;date;week;hours\n");
             for (Work work : workService.findWorkOnContract(contract.getUuid())) {
-                result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(NumberFormat.getInstance(new Locale("da", "DK")).format(work.getWorkduration())).append("\n");
+                result.append(work.getUser().getUsername()).append(";").append(work.getTask().getProject().getName()).append(";").append(work.getTask().getName()).append(";").append(work.getRegistered()).append(";").append(work.getRegistered().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())).append(";").append(NumberFormat.getInstance(new Locale("da", "DK")).format(work.getWorkduration())).append("\n");
             }
             return IOUtils.toInputStream(result.toString());
         }, "data.csv");
@@ -665,7 +665,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             User user = contractConsultant.getUser();
             ConsultantRowDesign consultantRowDesign = new ConsultantRowDesign();
             consultantRowDesign.getLblName().setValue(user.getFirstname() + " " + user.getLastname());
-            consultantRowDesign.getLblMargin().setValue("Margin: "+MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.floor(contractConsultant.getRate()))+"%");
+            consultantRowDesign.getLblMargin().setValue("Margin: "+MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.floor(contractConsultant.getRate()))+" kr");
             consultantRowDesign.getLblMargin().setVisible(true);
             consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate())+"");
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {

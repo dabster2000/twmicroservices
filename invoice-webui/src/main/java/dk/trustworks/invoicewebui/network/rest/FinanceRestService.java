@@ -78,4 +78,15 @@ public class FinanceRestService {
         String url = apiGatewayUrl +"/company/bonus?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate);
         return (GraphKeyValue[]) systemRestService.secureCall(url, GET, GraphKeyValue[].class).getBody();
     }
+
+    /* TODO
+
+    @GET
+    @Path("/expenses")
+    @RolesAllowed({"TEAMLEAD", "CXO", "ADMIN"})
+    public List<UserFinanceDocument> getConsultantsExpensesByMonth(LocalDate month) {
+        List<User> users = userAPI.findUsersByDateAndStatusListAndTypes(stringIt(month), "ACTIVE, NON_PAY_LEAVE", "CONSULTANT", "true");
+        return financeService.getUserFinanceData().stream().filter(userFinanceDocument -> users.stream().map(User::getUuid).anyMatch(s -> s.equals(userFinanceDocument.getUser().getUuid()))).collect(Collectors.toList());
+    }
+     */
 }

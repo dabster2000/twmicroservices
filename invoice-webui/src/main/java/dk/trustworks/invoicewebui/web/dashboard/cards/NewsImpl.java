@@ -28,7 +28,7 @@ import static com.google.common.hash.Hashing.sha512;
 /**
  * Created by hans on 11/08/2017.
  */
-public class NewsImpl extends NewsDesign implements Box {
+public class NewsImpl extends NewsDesign implements Component {
 
     private static final Logger log = LoggerFactory.getLogger(NewsImpl.class);
 
@@ -180,7 +180,7 @@ public class NewsImpl extends NewsDesign implements Box {
     }
 
     @Override
-    public Component getBoxComponent() {
+    public com.vaadin.ui.Component getBoxComponent() {
         return this;
     }
 

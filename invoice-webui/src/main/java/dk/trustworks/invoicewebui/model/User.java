@@ -2,21 +2,22 @@ package dk.trustworks.invoicewebui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.base.Objects;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
-import org.apache.commons.lang3.ArrayUtils;
+import dk.trustworks.invoicewebui.model.enums.StatusType;
+import lombok.Data;
 import org.apache.commons.text.WordUtils;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by hans on 23/06/2017.
  */
 
+@Data
 public class User {
 
     private String uuid;
@@ -25,16 +26,24 @@ public class User {
     private String email;
     private String firstname;
     private String lastname;
+    private String gender;
     private String password;
     private String username;
-    private String teamuuid;
     private String slackusername;
     private LocalDate birthday;
+    private String cpr;
+    private String phone;
+    private boolean pension;
+    private boolean healthcare;
+    private String pensiondetails;
+    private String defects;
+    private boolean photoconsent;
+    private String other;
+    private List<TeamRole> teamroles;
     private List<Salary> salaries;
     private List<UserStatus> statuses;
     private List<Role> roleList;
     private UserContactinfo userContactinfo;
-    private Team team;
 
     public User() {
         uuid = UUID.randomUUID().toString();
@@ -87,6 +96,14 @@ public class User {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getPassword() {
@@ -145,6 +162,78 @@ public class User {
         this.userContactinfo = userContactinfo;
     }
 
+    public UserStatus getUserStatus(LocalDate date) {
+        return getStatuses().stream().filter(value -> value.getStatusdate().isBefore(date)).max(Comparator.comparing(UserStatus::getStatusdate)).orElse(new UserStatus(ConsultantType.STAFF, StatusType.TERMINATED, date, 0));
+    }
+
+    public Salary getSalary(LocalDate date) {
+        return getSalaries().stream().filter(value -> value.getActivefrom().isBefore(date)).max(Comparator.comparing(Salary::getActivefrom)).orElse(new Salary(date, 0));
+    }
+
+    public String getCpr() {
+        return cpr;
+    }
+
+    public void setCpr(String cpr) {
+        this.cpr = cpr;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public boolean isPension() {
+        return pension;
+    }
+
+    public void setPension(boolean pension) {
+        this.pension = pension;
+    }
+
+    public boolean isHealthcare() {
+        return healthcare;
+    }
+
+    public void setHealthcare(boolean healthcare) {
+        this.healthcare = healthcare;
+    }
+
+    public String getPensiondetails() {
+        return pensiondetails;
+    }
+
+    public void setPensiondetails(String pensiondetails) {
+        this.pensiondetails = pensiondetails;
+    }
+
+    public String getDefects() {
+        return defects;
+    }
+
+    public void setDefects(String defects) {
+        this.defects = defects;
+    }
+
+    public boolean isPhotoconsent() {
+        return photoconsent;
+    }
+
+    public void setPhotoconsent(boolean photoconsent) {
+        this.photoconsent = photoconsent;
+    }
+
+    public String getOther() {
+        return other;
+    }
+
+    public void setOther(String other) {
+        this.other = other;
+    }
+
     @SuppressWarnings("unchecked")
     @JsonProperty("roleList")
     private void unpackNested(List<Map<String,Object>> roleList) {
@@ -180,23 +269,6 @@ public class User {
     }
 
     @Override
-    public String toString() {
-        return "User{" +
-                "uuid='" + uuid + '\'' +
-                ", active=" + active +
-                ", created=" + created +
-                ", email='" + email + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", password='" + password + '\'' +
-                ", username='" + username + '\'' +
-                ", slackusername='" + slackusername + '\'' +
-                ", birthday=" + birthday +
-                //", statusses=" + ArrayUtils.toString(getStatuses().stream().map(UserStatus::toString).toArray()) +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -209,20 +281,11 @@ public class User {
         return Objects.hashCode(getUuid());
     }
 
-
-    public String getTeamuuid() {
-        return teamuuid;
+    public List<TeamRole> getTeamroles() {
+        return teamroles;
     }
 
-    public void setTeamuuid(String teamuuid) {
-        this.teamuuid = teamuuid;
-    }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setTeamroles(List<TeamRole> teamroles) {
+        this.teamroles = teamroles;
     }
 }

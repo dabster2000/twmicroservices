@@ -19,6 +19,7 @@ public class InvoiceItem {
     @EqualsAndHashCode.Exclude public double rate;
     @EqualsAndHashCode.Exclude public double hours;
 
+
     public InvoiceItem() {
     }
 

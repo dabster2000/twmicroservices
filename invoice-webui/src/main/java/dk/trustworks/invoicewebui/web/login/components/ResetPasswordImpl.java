@@ -18,12 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SpringUI
 public class ResetPasswordImpl extends ResetPasswordDesign {
 
-    private User user;
-    private ForgotPasswordImpl forgotPassword;
+    //private User user;
+    //private ForgotPasswordImpl forgotPassword;
 
     @Autowired
-    public ResetPasswordImpl(UserService userService, ForgotPasswordImpl forgotPassword) {
-        this.forgotPassword = forgotPassword;
+    public ResetPasswordImpl(UserService userService) {
+        //this.forgotPassword = forgotPassword;
         System.out.println("LoginImpl.LoginImpl");
         getImgTop().setSource(new ThemeResource("images/password-card.jpg"));
         getBtnSave().addClickListener(clickEvent -> {
@@ -36,9 +36,10 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
                 //getTxtVerifyPassword().setValue("");
                 //getTxtVerifyPassword().setWidth(100, Unit.PERCENTAGE);
             } else if (getTxtPassword().getValue().equals(getTxtVerifyPassword().getValue())) {
-                User userDb = userService.findByUUID(user.getUuid(), true);
-                userDb.setPassword(BCrypt.hashpw(getTxtPassword().getValue(), BCrypt.gensalt()));
-                userService.update(userDb);
+                //User userDb = userService.findByUUID(user.getUuid(), true);
+                //userDb.setPassword(BCrypt.hashpw(getTxtPassword().getValue(), BCrypt.gensalt()));
+                //userService.update(userDb);
+                userService.updateUserPassword(getTxtUsername().getValue().toLowerCase(), BCrypt.hashpw(getTxtPassword().getValue(), BCrypt.gensalt()));
                 getUI().getNavigator().navigateTo("login");
                 Notification.show("Succes",
                         "Your may now use your new password.",
@@ -58,8 +59,10 @@ public class ResetPasswordImpl extends ResetPasswordDesign {
         getBtnSave().setClickShortcut(ShortcutAction.KeyCode.ENTER);
     }
 
+    /*
     public void setUser(String uuid) {
         user = forgotPassword.getResetUser(uuid);
         getTxtUsername().setValue(user.getUsername());
     }
+     */
 }

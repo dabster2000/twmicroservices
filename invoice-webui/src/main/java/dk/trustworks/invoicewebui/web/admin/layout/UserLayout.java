@@ -8,17 +8,16 @@ import com.vaadin.addon.charts.model.Credits;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Grid;
-import dk.trustworks.invoicewebui.model.Salary;
-import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.model.UserStatus;
+import com.vaadin.ui.*;
+import com.vaadin.ui.components.grid.HeaderRow;
+import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.network.rest.TeamRestService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.admin.components.*;
 import dk.trustworks.invoicewebui.web.admin.model.Employee;
@@ -27,17 +26,19 @@ import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardContent;
 import dk.trustworks.invoicewebui.web.dashboard.cards.TopCardImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
+import org.vaadin.viritin.layouts.MWindow;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static dk.trustworks.invoicewebui.utils.DateUtils.getDiffYears;
+import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 
 @SpringUI
 @SpringComponent
@@ -45,6 +46,9 @@ public class UserLayout {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TeamRestService teamRestService;
 
     @Autowired
     private UserInfoCardImpl userInfoCard;
@@ -56,12 +60,19 @@ public class UserLayout {
     private UserStatusCardImpl userStatusCard;
 
     @Autowired
+    private TeamRolesCardImpl teamRolesCard;
+
+    @Autowired
     private UserPhotoCardImpl userPhotoCard;
 
     @Autowired
     private RoleCardImpl roleCard;
 
-    ComboBox<User> userComboBox;
+    private ResponsiveRow employeeContentRow;
+
+    private ListDataProvider<Employee> dataProvider;
+
+    private String selectedUseruuid;
 
     public void createEmployeeLayout(final ResponsiveRow contentRow) {
         ResponsiveLayout responsiveLayout = new ResponsiveLayout();
@@ -71,7 +82,7 @@ public class UserLayout {
 
         ResponsiveRow cardsContentRow = responsiveLayout.addRow();
         ResponsiveRow selectionContentRow = responsiveLayout.addRow();
-        ResponsiveRow employeeContentRow = responsiveLayout.addRow();
+        employeeContentRow = responsiveLayout.addRow();
 
         cardsContentRow.addColumn()
                 .withDisplayRules(12, 12, 3, 3)
@@ -86,15 +97,50 @@ public class UserLayout {
                 .withDisplayRules(12, 12, 3, 3)
                 .withComponent(new TopCardImpl(new TopCardContent("images/icons/ic_people_black_48dp_2x.png", "Former", "CO2", userService.findByStatus(StatusType.TERMINATED).size()+"", "dark-grey")));
 
+        ComboBox<User> userComboBox = new ComboBox<>();
+
         MButton addUserButton = new MButton("add user").withStyleName("flat", "friendly").withListener((Button.ClickListener) event -> {
-            User user = new User();
-            user.setUsername("new.new");
-            userService.create(user);
-            userComboBox.setItems(userService.findAll(false));
-            userComboBox.setSelectedItem(user);
+
+            final Window window = new MWindow("Window").withCenter().withModal(true);
+            window.setWidth(400.0f, Sizeable.Unit.PIXELS);
+            window.setHeight(400.0f, Sizeable.Unit.PIXELS);
+            final FormLayout content = new FormLayout();
+
+            TextField firstname = new MTextField("First name").withFullWidth();
+            TextField lastname = new MTextField("Last name").withFullWidth();
+            ComboBox<String> gender = new ComboBox<>("Gender");
+            gender.setItems("FEMALE", "MALE");
+            gender.setSizeFull();
+            TextField username = new MTextField("Username").withAutoCapitalizeOff().withFullWidth();
+
+            Button btnCreate = new MButton("Create", createEvent -> {
+                User user = new User();
+                user.setUuid(UUID.randomUUID().toString());
+                user.setFirstname(firstname.getValue());
+                user.setLastname(lastname.getValue());
+                user.setUsername(username.getValue());
+                user.setEmail(username.getValue()+"@trustworks.dk");
+                user.setGender(gender.getValue());
+
+                userService.create(user);
+                window.close();
+                userComboBox.setItems(userService.findAll(false));
+                userComboBox.setSelectedItem(user);
+            }).withFullWidth();
+            Button btnCancel = new MButton("Cancel", cancel -> window.close()).withFullWidth();
+
+            content.addComponent(firstname);
+            content.addComponent(lastname);
+            content.addComponent(gender);
+            content.addComponent(username);
+            content.addComponent(new MVerticalLayout(btnCreate, btnCancel).withFullWidth());
+
+            content.setMargin(true);
+            window.setContent(content);
+
+            UI.getCurrent().addWindow(window);
         });
 
-        userComboBox = new ComboBox<>();
         userComboBox.setItems(userService.findAll(false));
         userComboBox.setItemCaptionGenerator(User::getUsername);
         userComboBox.setEmptySelectionAllowed(false);
@@ -105,18 +151,18 @@ public class UserLayout {
                 .withOffset(ResponsiveLayout.DisplaySize.LG, 4)
                 .withComponent(new MHorizontalLayout().withFullWidth().add(userComboBox).add(addUserButton));
         userComboBox.addValueChangeListener(event -> {
+            selectedUseruuid = event.getValue().getUuid();
             employeeContentRow.removeAllComponents();
             loadData(employeeContentRow);
         });
 
-        employeeContentRow.addColumn().withDisplayRules(12, 12, 8, 8).withComponent(new BoxImpl().instance(getGrid()).witHeight(400, PIXELS));
-        employeeContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new BoxImpl().instance(getChart()).witHeight(400, PIXELS));
+        employeeContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new BoxImpl().instance(getGrid()).witHeight(400, PIXELS));
+        employeeContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new BoxImpl().instance(getChart()).witHeight(400, PIXELS));
     }
 
     protected Component getChart() {
         Chart chart = new Chart();
-        chart.setSizeFull();//.setWidth(100, PERCENTAGE);
-        //chart.setHeight(380, PIXELS);
+        chart.setSizeFull();
         LocalDate periodStart = LocalDate.of(2014, 2, 1);
         LocalDate periodEnd = LocalDate.now();
         int months = (int)ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -149,34 +195,78 @@ public class UserLayout {
 
     private Grid<Employee> getGrid() {
         Grid<Employee> grid = new Grid<>();
-        //grid.setWidth(100, PERCENTAGE);
         grid.setSizeFull();
-        //grid.setHeight(400, PIXELS);
 
         ArrayList<Employee> employees = new ArrayList<>();
-        // Set the data provider (ListDataProvider<CompanyBudgetHistory>)
         for (User user : userService.findAll(false)) {
             Optional<Salary> salary = user.getSalaries().stream().max(Comparator.comparing(Salary::getActivefrom));
             if(!salary.isPresent()) continue;
             Optional<UserStatus> userStatus = user.getStatuses().stream().max((Comparator.comparing(UserStatus::getStatusdate)));
             if(!userStatus.isPresent()) continue;
-            Employee employee = new Employee(user.getFirstname() + " " + user.getLastname(),
+            LocalDate now = LocalDate.now();
+            UserContactinfo userContactinfo = userService.findUserContactinfo(user.getUuid());
+            Employee employee = new Employee(
+                        user.getUuid(),
+                        userService.getUserStatus(user, now).getType().name(),
+                        teamRestService.findByRoles(user.getUuid(), now, "MEMBER").stream().findFirst().orElse(new Team("", "NONE", "", "", true, true)).getName(),
+                        user.getFirstname() + " " + user.getLastname(),
+                        user.getCpr(),
+                        getDiffYears(user.getBirthday(), LocalDate.now())+"",
+                        stringIt(userService.findEmployedDate(user).orElse(LocalDate.now())),
+                        userContactinfo.getStreetname() + ", " + userContactinfo.getPostalcode()+ " "+userContactinfo.getCity(), //user.getUserContactinfo().getStreetname(),
+                        user.getPhone(),
+                        user.getEmail(),
+                        userStatus.get().getAllocation()+"",
+                        salary.get().getSalary(),
+                        24000,
+                        user.isPension()+"",
+                        user.isHealthcare()+"",
+                        user.isPhotoconsent()+"",
+                        user.getPensiondetails(),
+                        user.getDefects(),
+                        user.getOther(),
+                        userStatus.get().getStatus().name()
+                    );
+            /*,
                     userStatus.get().getStatus().name(),
                     userStatus.get().getAllocation(),
-                    salary.get().getSalary());
+                    salary.get().getSalary());*/
             employees.add(employee);
         }
 
-        ListDataProvider<Employee> dataProvider = new ListDataProvider<>(employees);
+        dataProvider = new ListDataProvider<>(employees);
         grid.setDataProvider(dataProvider);
 
         // Set the selection mode
         grid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        HeaderRow filterRow = grid.appendHeaderRow();
 
-        grid.addColumn(Employee::getName).setCaption("Name");
-        grid.addColumn(Employee::getStatus).setCaption("Status");
-        grid.addColumn(Employee::getHours).setCaption("Hours");
-        grid.addColumn(Employee::getSalary).setCaption("Salary");
+        TextField filterRole = singleFilterTextField(grid.addColumn(Employee::getRole).setCaption("Role"), filterRow);
+        filterRole.addValueChangeListener(event -> dataProvider.setFilter((item) -> item.getRole().toLowerCase().contains(filterRole.getValue().toLowerCase())));
+
+        TextField filterTeam = singleFilterTextField(grid.addColumn(Employee::getTeam).setCaption("Team"), filterRow);
+        filterTeam.addValueChangeListener(event -> dataProvider.setFilter((item) -> item.getTeam().toLowerCase().contains(filterTeam.getValue().toLowerCase())));
+
+        TextField filterName = singleFilterTextField(grid.addColumn(Employee::getName).setCaption("Name"), filterRow);
+        filterName.addValueChangeListener(event -> dataProvider.setFilter((item) -> item.getName().toLowerCase().contains(filterName.getValue().toLowerCase())));
+
+        grid.addColumn(Employee::getCpr).setCaption("CPR");
+        grid.addColumn(Employee::getAge).setCaption("Age");
+        grid.addColumn(Employee::getEmployedDate).setCaption("Employed");
+        grid.addColumn(Employee::getAdresse).setCaption("Address");
+        grid.addColumn(Employee::getPhone).setCaption("Phone");
+        grid.addColumn(Employee::getEmail).setCaption("Email");
+        grid.addColumn(Employee::getAllocation).setCaption("Allocation");
+        grid.addColumn(Employee::getMonthSalary).setCaption("Salary");
+        grid.addColumn(Employee::getPension).setCaption("Pension");
+        grid.addColumn(Employee::getHealthcare).setCaption("Healthcare");
+        grid.addColumn(Employee::getAddedPension).setCaption("Pension details");
+        grid.addColumn(Employee::getDefects).setCaption("Defects");
+        grid.addColumn(Employee::getPhotoconsent).setCaption("Photo consent");
+        grid.addColumn(Employee::getOther).setCaption("Other");
+
+        TextField filterStatus = singleFilterTextField(grid.addColumn(Employee::getStatus).setCaption("Status"), filterRow);
+        filterStatus.addValueChangeListener(event -> dataProvider.setFilter((item) -> item.getStatus().toLowerCase().contains(filterStatus.getValue().toLowerCase())));
 
         grid.getDataProvider().refreshAll();
 
@@ -184,7 +274,22 @@ public class UserLayout {
 
         grid.getColumns().forEach(column -> column.setHidable(true));
 
+        grid.addItemClickListener(event -> {
+            if(!event.getMouseEventDetails().isDoubleClick()) return;
+            selectedUseruuid = event.getItem().getUuid();
+            employeeContentRow.removeAllComponents();
+            loadData(employeeContentRow);
+        });
+
         return grid;
+    }
+
+    private TextField singleFilterTextField(Grid.Column<Employee, String> column, HeaderRow filterRow){
+        TextField filterField = new TextField();
+        filterField.setValueChangeMode(ValueChangeMode.EAGER);
+        filterField.setWidth("100%");
+        filterRow.getCell(column).setComponent(new MHorizontalLayout(filterField));
+        return filterField;
     }
 
     private void loadData(ResponsiveRow employeeContentRow) {
@@ -193,10 +298,11 @@ public class UserLayout {
         createRoleCard(employeeContentRow);
         createUserStatusCard(employeeContentRow);
         createUserPhotoCard(employeeContentRow);
+        createTeamRolesCard(employeeContentRow);
     }
 
     private void createUserSalaryCard(ResponsiveRow employeeContentRow) {
-        userSalaryCard.init(userComboBox.getSelectedItem().get().getUuid());
+        userSalaryCard.init(selectedUseruuid);
         employeeContentRow
                 .addColumn()
                 .withDisplayRules(12, 12, 6, 4)
@@ -204,7 +310,7 @@ public class UserLayout {
     }
 
     private void createUserInfoCard(ResponsiveRow employeeContentRow) {
-        userInfoCard.init(userComboBox.getSelectedItem().get().getUuid());
+        userInfoCard.init(selectedUseruuid);
         employeeContentRow
                 .addColumn()
                 .withDisplayRules(12, 12, 6, 4)
@@ -212,7 +318,7 @@ public class UserLayout {
     }
 
     private void createRoleCard(ResponsiveRow employeeContentRow) {
-        roleCard.init(userComboBox.getSelectedItem().get().getUuid());
+        roleCard.init(selectedUseruuid);
 
         employeeContentRow
                 .addColumn()
@@ -221,7 +327,7 @@ public class UserLayout {
     }
 
     private void createUserStatusCard(ResponsiveRow employeeContentRow) {
-        userStatusCard.init(userComboBox.getSelectedItem().get().getUuid());
+        userStatusCard.init(selectedUseruuid);
 
         employeeContentRow
                 .addColumn()
@@ -229,8 +335,17 @@ public class UserLayout {
                 .withComponent(userStatusCard);
     }
 
+    private void createTeamRolesCard(ResponsiveRow employeeContentRow) {
+        teamRolesCard.init(selectedUseruuid);
+
+        employeeContentRow
+                .addColumn()
+                .withDisplayRules(12, 12, 8, 8)
+                .withComponent(teamRolesCard);
+    }
+
     private void createUserPhotoCard(ResponsiveRow employeeContentRow) {
-        userPhotoCard.init(userComboBox.getSelectedItem().get().getUuid());
+        userPhotoCard.init(selectedUseruuid);
 
         employeeContentRow
                 .addColumn()

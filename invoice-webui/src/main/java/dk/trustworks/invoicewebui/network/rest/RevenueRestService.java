@@ -51,6 +51,12 @@ public class RevenueRestService {
         return Arrays.asList(result.getBody());
     }
 
+    public List<GraphKeyValue> getSumOfRegisteredRevenueByClientByFiscalYear(int fiscalYear) {
+        String url = apiGatewayUrl + "/revenue/registered/clients/fiscalyear/"+fiscalYear;
+        ResponseEntity<GraphKeyValue[]> result = systemRestService.secureCall(url, GET, GraphKeyValue[].class);
+        return Arrays.asList(result.getBody());
+    }
+
     public GraphKeyValue getRegisteredRevenueForSingleMonthAndSingleConsultant(String useruuid, LocalDate month) {
         String url = apiGatewayUrl + "/revenue/registered/consultants/"+useruuid+"/months/"+stringIt(month);
         ResponseEntity<GraphKeyValue> result = systemRestService.secureCall(url, GET, GraphKeyValue.class);
@@ -97,5 +103,17 @@ public class RevenueRestService {
         String url = apiGatewayUrl + "/revenue/profits/consultants/"+useruuid+"?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate)+"&interval="+interval;
         ResponseEntity<GraphKeyValue[]> result = systemRestService.secureCall(url, GET, GraphKeyValue[].class);
         return Arrays.asList(result.getBody());
+    }
+
+    public GraphKeyValue getTotalTeamProfits(int fiscalYear, List<String> teamuuids) {
+        String url = apiGatewayUrl +"/revenue/profits/teams?fiscalyear="+fiscalYear+"&teamuuids="+String.join(",", teamuuids);
+        ResponseEntity<GraphKeyValue> result = systemRestService.secureCall(url, GET, GraphKeyValue.class);
+        return result.getBody();
+    }
+
+    public GraphKeyValue getTotalTeamProfitsByPeriod(LocalDate fromdate, LocalDate todate, List<String> teamuuids) {
+        String url = apiGatewayUrl +"/revenue/profits/teams?fromdate="+stringIt(fromdate)+"&todate="+stringIt(todate)+"&teamuuids="+String.join(",", teamuuids);
+        ResponseEntity<GraphKeyValue> result = systemRestService.secureCall(url, GET, GraphKeyValue.class);
+        return result.getBody();
     }
 }

@@ -17,10 +17,13 @@ import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
 
+import static dk.trustworks.invoicewebui.model.enums.RoleType.ADMIN;
+import static dk.trustworks.invoicewebui.model.enums.RoleType.PARTNER;
+
 /**
  * Created by hans on 16/08/2017.
  */
-@AccessRules(roleTypes = {RoleType.ADMIN})
+@AccessRules(roleTypes = {ADMIN, PARTNER})
 @SpringView(name = TrustworksStatsView.VIEW_NAME)
 public class TrustworksStatsView extends VerticalLayout implements View {
 

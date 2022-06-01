@@ -12,7 +12,7 @@ public class Test {
     public static void main(String[] args) throws Exception {
         int monthsBetween = DateUtils.countMonthsBetween(LocalDate.of(LocalDate.now().getYear(), 1, 1), LocalDate.of(2020, 3, 15).withDayOfMonth(1));
         int maxBudgetFirstYear = 24000 - (monthsBetween<0?0:(monthsBetween * 2000));
-        System.out.println("maxBudgetFirstYear = " + maxBudgetFirstYear);
+        //System.out.println("maxBudgetFirstYear = " + maxBudgetFirstYear);
     }
 
 }

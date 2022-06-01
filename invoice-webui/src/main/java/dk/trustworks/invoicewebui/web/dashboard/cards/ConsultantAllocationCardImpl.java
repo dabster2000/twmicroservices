@@ -4,7 +4,6 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.UserStatus;
 import dk.trustworks.invoicewebui.model.dto.BudgetDocument;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * Created by hans on 11/08/2017.
  */
-public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign implements Box {
+public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign implements Component {
 
     private int priority;
     private int boxWidth;
@@ -105,7 +104,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
                     .collect(Collectors.toList());
             for (BudgetDocument budget : budgets) {
                 budgetRowList.putIfAbsent(budget.getClient().getName(), new double[12]);
-                budgetRowList.get(budget.getClient().getName())[i] +=  (budget.getGrossBudgetHours());
+                budgetRowList.get(budget.getClient().getName())[i] +=  (budget.getBudgetHours());
             }
 
         }
@@ -125,7 +124,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
                 }
 
                 int weekDays = DateUtils.getWeekdaysInPeriod(localDate, localDate.plusMonths(1));
-                assert userStatus != null;
+                if (userStatus == null) throw new AssertionError("UserStatus is null");
                 double budget = Math.round((weekDays * (userStatus.getAllocation() / 5.0)) - hoursPerMonth[m]);
                 if (budget < 0.0) budget = 0.0;
                 budget = Math.round(budget / Math.round(weekDays * (userStatus.getAllocation() / 5.0)) * 100.0);
@@ -207,7 +206,7 @@ public class ConsultantAllocationCardImpl extends ConsultantAllocationCardDesign
     }
 
     @Override
-    public Component getBoxComponent() {
+    public com.vaadin.ui.Component getBoxComponent() {
         return this;
     }
 

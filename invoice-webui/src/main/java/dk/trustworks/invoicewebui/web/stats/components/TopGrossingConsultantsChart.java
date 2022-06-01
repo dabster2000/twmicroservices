@@ -7,16 +7,16 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.GraphKeyValue;
 import dk.trustworks.invoicewebui.model.User;
-import dk.trustworks.invoicewebui.services.RevenueService;
-import dk.trustworks.invoicewebui.services.StatisticsService;
+import dk.trustworks.invoicewebui.model.dto.EmployeeAggregateData;
+import dk.trustworks.invoicewebui.network.rest.TeamRestService;
+import dk.trustworks.invoicewebui.services.BiService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.utils.DateUtils;
+import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,24 +24,30 @@ import java.util.stream.Collectors;
  * Created by hans on 20/09/2017.
  */
 
+@JBossLog
 @SpringComponent
 @SpringUI
 public class TopGrossingConsultantsChart {
 
-    private final StatisticsService statisticsService;
-
-    private final RevenueService revenueService;
+    private final BiService biService;
 
     private final UserService userService;
 
+    private final TeamRestService teamRestService;
+
     @Autowired
-    public TopGrossingConsultantsChart(StatisticsService statisticsService, RevenueService revenueService, UserService userService) {
-        this.statisticsService = statisticsService;
-        this.revenueService = revenueService;
+    public TopGrossingConsultantsChart(UserService userService, BiService biService, TeamRestService teamRestService) {
+        this.biService = biService;
+        //this.revenueService = revenueService;
         this.userService = userService;
+        this.teamRestService = teamRestService;
     }
 
     public Chart createTopGrossingConsultantsChart(LocalDate periodStart, LocalDate periodEnd) {
+        return createTopGrossingConsultantsChart(periodStart, periodEnd, null);
+    }
+
+    public Chart createTopGrossingConsultantsChart(LocalDate periodStart, LocalDate periodEnd, String... teamuuids) {
         Chart chart = new Chart();
         chart.setSizeFull();
 
@@ -54,18 +60,16 @@ public class TopGrossingConsultantsChart {
         chart.getConfiguration().getyAxis().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(false);
 
-        List<GraphKeyValue> amountPerItemList = new ArrayList<>();//graphKeyValueRepository.findConsultantRevenueByPeriod(periodStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), periodEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        List<GraphKeyValue> amountPerItemList = new ArrayList<>();
 
-        for (User user : userService.findAll(true)) {
-            LocalDate currentDate = periodStart;
-            GraphKeyValue gkv = new GraphKeyValue(user.getUuid(), user.getInitials(), 0);
-            HashMap<String, Double> revenueMap = revenueService.getRegisteredRevenueByPeriodAndSingleConsultant(user.getUuid(), periodStart, periodEnd);
-            do {
-                double revenue = revenueMap.getOrDefault(DateUtils.stringIt(currentDate), 0.0); //revenueService.getRegisteredRevenueForSingleMonthAndSingleConsultant(user.getUuid(), currentDate);
-                gkv.addValue((int) Math.round(revenue));
-                currentDate = currentDate.plusMonths(1);
-            } while (currentDate.isBefore(periodEnd.plusMonths(1)));
-            if(gkv.getValue()>0) amountPerItemList.add(gkv);
+        List<User> consultants = (teamuuids==null)?
+                userService.getActiveConsultantsByFiscalYear(periodStart.getYear()):
+                teamRestService.getUniqueUsersFromTeamsByFiscalYear(periodStart.getYear(), teamuuids);
+
+        for (User user : consultants) {
+            double sum = biService.getEmployeeAggregateDataByPeriod(periodStart, periodEnd).stream().filter(e -> e.getUseruuid().equals(user.getUuid())).mapToDouble(EmployeeAggregateData::getRegisteredAmount).sum();//revenueService.getRegisteredRevenueByPeriodAndSingleConsultant(user.getUuid(), periodStart, periodEnd).values().stream().mapToDouble(Double::doubleValue).sum();
+            GraphKeyValue gkv = new GraphKeyValue(user.getUuid(), user.getInitials(), sum);
+            amountPerItemList.add(gkv);
         }
 
         double sumRevenue = 0.0;

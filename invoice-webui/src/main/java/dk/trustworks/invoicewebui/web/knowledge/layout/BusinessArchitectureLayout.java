@@ -101,7 +101,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
                 userService.getLoggedInUser().get().getUsername().equals("brian.flaskager") ||
                 userService.getLoggedInUser().get().getUsername().equals("anna.mette.hansen") ||
                 userService.getLoggedInUser().get().getUsername().equals("sebastian.frandsen") ||
-                userService.getLoggedInUser().get().getUsername().equals("jan.borg") ||
+                userService.getLoggedInUser().get().getUsername().equals("kurt.hansen") ||
                 userService.getLoggedInUser().get().getUsername().equals("lars.albert")
         ) editButton.setVisible(true);
 
@@ -111,9 +111,9 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
         VerticalLayout firstColumn = getTitleComponent("bg-grey", new VerticalLayout(new MLabel("-").withStyleName("align-center large bold")));
         firstColumn.addComponents(
-                createVerticalHeadline("Konceptuel", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-                createVerticalHeadline("Logisk", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."),
-                createVerticalHeadline("Fysisk", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+                createVerticalHeadline("Konceptuel", "Overbliksniveau"),
+                createVerticalHeadline("Logisk", "Designniveau"),
+                createVerticalHeadline("Fysisk", "Realiseringsniveau (implementerbart)")
         );
 
         for (KnowledgeArchitectureColumn archiColumn : knowArchiColumnRepository.findAll()) {
@@ -225,14 +225,21 @@ public class BusinessArchitectureLayout extends VerticalLayout {
         );
         descLayout.addLayoutClickListener(layoutClickEvent -> {
             final Window window = new Window();
-            TextArea title = new TextArea("description", item.getDescription());
+            TextArea title = new TextArea("Description", item.getDescription());
             title.setWidth(300, Unit.PIXELS);
-            window.setContent(new MVerticalLayout(title, new MButton("Save", clickEvent -> {
-                item.setDescription(title.getValue());
-                knowArchiColumnRepository.save(archiColumn);
-                window.close();
-                drawDetailPage(archiColumn, item);
-            })));
+            window.setContent(new MVerticalLayout(title,
+                    new MHorizontalLayout(
+                        new MButton("Save", clickEvent -> {
+                            item.setDescription(title.getValue());
+                            knowArchiColumnRepository.save(archiColumn);
+                            window.close();
+                            drawDetailPage(archiColumn, item);
+                        }),
+                        new MButton("Cancel", clickEvent -> {
+                            window.close();
+                        })
+                    )
+            ));
             window.setModal(true);
             window.setDraggable(false);
             window.setClosable(false);

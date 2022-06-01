@@ -2,15 +2,12 @@ package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
-import com.vaadin.addon.charts.model.style.SolidColor;
-import com.vaadin.ui.Component;
 import dk.trustworks.invoicewebui.model.Project;
 import dk.trustworks.invoicewebui.model.TrustworksColor;
 import dk.trustworks.invoicewebui.services.ProjectService;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,7 +15,7 @@ import static com.vaadin.addon.charts.model.ChartType.COLUMNRANGE;
 import static java.time.LocalDate.now;
 import static java.util.Comparator.comparing;
 
-public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
+public class ProjectTimelineImpl extends ProjectTimelineDesign implements Component {
 
     private ProjectService projectService;
     private int priority;
@@ -34,12 +31,12 @@ public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
 
     public ProjectTimelineImpl init() {
         List<Project> projects = projectService.findAllByActiveTrueOrderByNameAsc();
-        Component chart = getChart(projects);
+        com.vaadin.ui.Component chart = getChart(projects);
         getContainer().addComponent(chart);
         return this;
     }
 
-    private Component getChart(List<Project> projects) {
+    private com.vaadin.ui.Component getChart(List<Project> projects) {
         Chart chart = new Chart(COLUMNRANGE);
         projects.sort(comparing(o -> o.getClient().getName()));
 
@@ -157,7 +154,7 @@ public class ProjectTimelineImpl extends ProjectTimelineDesign implements Box {
     }
 
     @Override
-    public Component getBoxComponent() {
+    public com.vaadin.ui.Component getBoxComponent() {
         return this;
     }
 }

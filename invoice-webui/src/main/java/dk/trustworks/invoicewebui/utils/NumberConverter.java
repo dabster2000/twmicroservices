@@ -17,6 +17,8 @@ public class NumberConverter {
         return NumberFormat.getCurrencyInstance().format(d);
     }
 
+    public static String formatPercentage(double d) { return NumberFormat.getPercentInstance().format(d); }
+
     public static double parseDouble(String d) {
         try {
             return NumberFormat.getInstance().parse(d).doubleValue();

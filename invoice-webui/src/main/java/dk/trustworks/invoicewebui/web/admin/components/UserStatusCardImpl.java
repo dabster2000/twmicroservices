@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.admin.components;
 
+import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import dk.trustworks.invoicewebui.model.UserStatus;
@@ -48,9 +49,10 @@ public class UserStatusCardImpl extends UserStatusCardDesign {
             userService.create(useruuid, userStatus);
             getGridSalaries().setItems(userService.findUserStatusList(useruuid));
         });
+        getDfDate().setResolution(DateResolution.MONTH);
         getCbStatus().setItems(StatusType.values());
         getCbType().setItems(ConsultantType.values());
-        getCbStatus().setItemCaptionGenerator(StatusType::name);
+        getCbStatus().setItemCaptionGenerator(StatusType::toString);
     }
 
     @Transactional

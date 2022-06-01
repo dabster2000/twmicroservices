@@ -6,6 +6,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.admin.layout.DocumentLayout;
 import dk.trustworks.invoicewebui.web.admin.layout.PurposeLayout;
 import dk.trustworks.invoicewebui.web.admin.layout.TalentPassionLayout;
@@ -24,6 +25,9 @@ import javax.annotation.PostConstruct;
 @SpringUI
 @SpringComponent
 public class AdminManagerImpl extends VerticalLayout {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserLayout userLayout;
@@ -111,7 +115,7 @@ public class AdminManagerImpl extends VerticalLayout {
 
         userLayout.createEmployeeLayout(employeeContentRow);
         purposeLayout.createEmployeeLayout(purposeContentRow);
-        docsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(documentLayout);
+        docsContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(documentLayout.init(userService.findAll(true)));
         budgContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(itBudgetTab.getTabLayout());
         talentPassionContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(talentPassionLayout.getLayout());
         addComponent(responsiveLayout);

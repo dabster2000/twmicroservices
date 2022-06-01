@@ -2,7 +2,6 @@ package dk.trustworks.invoicewebui.web.dashboard.cards;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import dk.trustworks.invoicewebui.model.TrustworksEvent;
 import dk.trustworks.invoicewebui.model.enums.EventType;
@@ -19,7 +18,7 @@ import java.util.Random;
 /**
  * Created by hans on 11/08/2017.
  */
-public class BirthdayCardImpl extends BirthdayCardDesign implements Box {
+public class BirthdayCardImpl extends BirthdayCardDesign implements Component {
 
 
     private int priority;
@@ -120,7 +119,7 @@ public class BirthdayCardImpl extends BirthdayCardDesign implements Box {
     }
 
     @Override
-    public Component getBoxComponent() {
+    public com.vaadin.ui.Component getBoxComponent() {
         return this;
     }
 

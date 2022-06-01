@@ -1,47 +1,31 @@
 package dk.trustworks.invoicewebui.web.admin.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Employee {
+    String uuid;
+    String role;
+    String team;
     String name;
+    String cpr;
+    String age;
+    String employedDate;
+    String adresse;
+    String phone;
+    String email;
+    String allocation;
+    int monthSalary;
+    int yearSalary;
+    String pension;
+    String healthcare;
+    String photoconsent;
+    String addedPension;
+    String defects;
+    String other;
     String status;
-    int hours;
-    int salary;
-
-    public Employee(String name, String status, int hours, int salary) {
-        this.name = name;
-        this.status = status;
-        this.hours = hours;
-        this.salary = salary;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public int getHours() {
-        return hours;
-    }
-
-    public void setHours(int hours) {
-        this.hours = hours;
-    }
-
-    public int getSalary() {
-        return salary;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
-    }
 }

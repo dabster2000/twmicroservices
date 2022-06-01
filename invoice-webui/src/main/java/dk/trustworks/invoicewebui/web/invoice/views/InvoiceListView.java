@@ -47,28 +47,10 @@ public class InvoiceListView extends VerticalLayout implements View {
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
 
-        //Broadcaster.register(this);
         //mainTemplate.setMainContent(invoiceListComponent, VIEW_ICON, MENU_NAME, "Everything that we ever billed - atleast since Juli 1. 2017", VIEW_BREADCRUMB);
-    }
-
-    public void receiveBroadcast(String message) {
-        logger.debug("MainWindowImpl.receiveBroadcast");
-        logger.debug("message = " + message);
-        /*
-        int numberOfDrafts = invoiceClient.findByStatus(DRAFT).size();
-        System.out.println("numberOfDrafts = " + numberOfDrafts);
-        getUI().access(() -> {
-            invoiceListComponent.reloadData();
-            if(numberOfDrafts>0) getMenuButton4().setCaption("DRAFTS ("+numberOfDrafts+")");
-            else getMenuButton4().setCaption("DRAFTS");
-        });
-        */
     }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        //Authorizer.authorize(this);
-        //invoiceListComponent.loadInvoicesToGrid();
-        //leftMenu.getMenuItems().get(VIEW_NAME).getParent().foldOut();
     }
 }
