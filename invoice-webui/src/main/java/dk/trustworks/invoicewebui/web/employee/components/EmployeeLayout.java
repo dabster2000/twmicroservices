@@ -9,6 +9,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.AmbitionCategory;
 import dk.trustworks.invoicewebui.model.CkoCourseStudent;
@@ -17,6 +18,7 @@ import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.network.rest.KnowledgeRestService;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.services.*;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.common.ImageCardDesign;
 import dk.trustworks.invoicewebui.web.common.ImageListItem;
@@ -28,6 +30,7 @@ import dk.trustworks.invoicewebui.web.employee.components.cards.EmployeeContactI
 import dk.trustworks.invoicewebui.web.employee.components.cards.KeyPurposeHeadlinesCardController;
 import dk.trustworks.invoicewebui.web.employee.components.charts.AmbitionSpiderChart;
 import dk.trustworks.invoicewebui.web.employee.components.charts.BillableConsultantHoursPerMonthChart;
+import dk.trustworks.invoicewebui.web.employee.components.charts.ContractUtilizationPerMonthChart;
 import dk.trustworks.invoicewebui.web.employee.components.parts.CKOExpenseImpl;
 import dk.trustworks.invoicewebui.web.employee.components.parts.KeyPurposeNoteImpl;
 import dk.trustworks.invoicewebui.web.employee.components.parts.SpeedDateImpl;
@@ -45,6 +48,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @SpringComponent
@@ -85,6 +89,8 @@ public class EmployeeLayout extends VerticalLayout {
 
     private final BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart;
 
+    private final ContractUtilizationPerMonthChart contractUtilizationPerMonthChart;
+
     private final ItBudgetTab itBudgetTab;
 
     private final DocumentTab documentTab;
@@ -105,7 +111,7 @@ public class EmployeeLayout extends VerticalLayout {
     private final UserMonthReportImpl monthReport;
 
     @Autowired
-    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, KnowledgeRestService knowledgeRestService, NotesRepository notesRepository, BubbleService bubbleService, ReminderHistoryRepository reminderHistoryRepository, CKOCertificationsRepository ckoCertificationsRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
+    public EmployeeLayout(UserService userService, AvailabilityService availabilityService, KeyPurposeHeadlinesCardController keyPurposeHeadlinesCardController, AchievementCardController achievementCardController, KnowledgeRestService knowledgeRestService, NotesRepository notesRepository, BubbleService bubbleService, ReminderHistoryRepository reminderHistoryRepository, CKOCertificationsRepository ckoCertificationsRepository, ReminderRepository reminderRepository, AmbitionSpiderChart ambitionSpiderChart, AmbitionCategoryRepository ambitionCategoryRepository, PhotoService photoService, BillableConsultantHoursPerMonthChart billableConsultantHoursPerMonthChart, MicroCourseStudentRepository microCourseStudentRepository, BudgetService budgetService, ContractUtilizationPerMonthChart contractUtilizationPerMonthChart, ItBudgetTab itBudgetTab, DocumentTab documentTab, EmployeeContactInfoCardController employeeContactInfoCardController, UserMonthReportImpl monthReport) {
         this.userService = userService;
         this.availabilityService = availabilityService;
         this.keyPurposeHeadlinesCardController = keyPurposeHeadlinesCardController;
@@ -122,6 +128,7 @@ public class EmployeeLayout extends VerticalLayout {
         this.billableConsultantHoursPerMonthChart = billableConsultantHoursPerMonthChart;
         this.microCourseStudentRepository = microCourseStudentRepository;
         this.budgetService = budgetService;
+        this.contractUtilizationPerMonthChart = contractUtilizationPerMonthChart;
         this.itBudgetTab = itBudgetTab;
         this.documentTab = documentTab;
         this.employeeContactInfoCardController = employeeContactInfoCardController;
@@ -185,16 +192,44 @@ public class EmployeeLayout extends VerticalLayout {
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnBudget);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnDocuments);
         //buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(new MButton().withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon","icon-align-top"));
-        workContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign"));
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseImpl(user, notesRepository, reminderRepository));
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, userService));
-        int adjustStartYear = 0;
-        if(LocalDate.now().getMonthValue() <= 6)  adjustStartYear = 1;
-        LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
-        LocalDate localDateEnd = localDateStart.plusYears(1);
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
-        //workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(vacationPerYearChart.createExpensePerMonthChart(user)));
-        workContentRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthReport);
+
+        ResponsiveLayout workContentLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        workContentRow.addColumn().withDisplayRules(12,12,12,12).withComponent(workContentLayout);
+        ResponsiveRow socialRow = workContentLayout.addRow();
+        ResponsiveRow searchRow = workContentLayout.addRow();
+        ResponsiveRow chartRow = workContentLayout.addRow();
+
+        socialRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new ConsultantAllocationCardImpl(availabilityService, budgetService, 2, 6, "consultantAllocationCardDesign"));
+        socialRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new TouchBaseImpl(user, notesRepository, reminderRepository));
+        socialRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new SpeedDateImpl(user, reminderHistoryRepository, userService));
+
+        AtomicReference<LocalDate> currentFiscalYear = new AtomicReference<>(DateUtils.getCurrentFiscalStartDate());
+        createConsultantCharts(currentFiscalYear.get(), chartRow);
+
+        Button btnFiscalYear = new MButton(createFiscalYearText(currentFiscalYear))
+                .withStyleName("tiny", "flat", "large-icon","icon-align-top")
+                .withHeight(125, Unit.PIXELS)
+                .withFullWidth()
+                .withIcon(MaterialIcons.INSERT_INVITATION);
+
+        Button btnDescFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_LEFT, " ", event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().minusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createConsultantCharts(currentFiscalYear.get(), chartRow);
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
+
+        Button btnIncFiscalYear = new MButton(MaterialIcons.KEYBOARD_ARROW_RIGHT, " ", event -> {
+            chartRow.removeAllComponents();
+            currentFiscalYear.set(currentFiscalYear.get().plusYears(1));
+            btnFiscalYear.setCaption(createFiscalYearText(currentFiscalYear));
+            createConsultantCharts(currentFiscalYear.get(), chartRow);
+        }).withHeight(125, Unit.PIXELS).withStyleName("tiny", "icon-only", "flat", "large-icon").withFullWidth();
+
+        searchRow.addColumn().withDisplayRules(12,12,12,12).withComponent(new Label(""));
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnDescFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnFiscalYear);
+        searchRow.addColumn().withDisplayRules(4, 4, 4, 4).withComponent(btnIncFiscalYear);
 
         for (Note note : notesRepository.findByUseruuidOrderByNotedateDesc(user.getUuid())) {
             purpContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(new KeyPurposeNoteImpl(note));
@@ -235,6 +270,20 @@ public class EmployeeLayout extends VerticalLayout {
         knowContentRow.addColumn().withDisplayRules(12, 12, 4, 4).withComponent(signedCoursesCard);
 
         monthReport.init();
+    }
+
+    private void createConsultantCharts(LocalDate localDateStart, ResponsiveRow row) {
+        //int adjustStartYear = 0;
+        //if(localDateStart.getMonthValue() <= 6)  adjustStartYear = 1;
+        LocalDate localDateEnd = localDateStart.plusYears(1);
+
+        row.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(billableConsultantHoursPerMonthChart.createBillableConsultantHoursPerMonthChart(user, localDateStart, localDateEnd)));
+        row.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(new BoxImpl().instance(contractUtilizationPerMonthChart.createContractUtilizationPerMonthChart(user, localDateStart, localDateEnd)));
+        row.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(monthReport);
+    }
+
+    private String createFiscalYearText(AtomicReference<LocalDate> currentFiscalYear) {
+        return "Fiscal year " + currentFiscalYear.get().getYear() + "/" + currentFiscalYear.get().plusYears(1).format(DateTimeFormatter.ofPattern("yy"));
     }
 
     private ImageCardDesign getTrustworksAcademyCard(String type, String headline, String byline) {

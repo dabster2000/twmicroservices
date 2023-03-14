@@ -67,7 +67,6 @@ public class UserRestService {
     //@Cacheable("user")
     public List<User> findUsersByDateAndStatusListAndTypes(String date, String[] consultantStatusList, boolean shallow, String... consultantTypes) {
         String url = apiGatewayUrl+"/users/search/findUsersByDateAndStatusListAndTypes?date="+date+"&consultantStatusList="+String.join(",",consultantStatusList)+"&consultantTypes="+String.join(",", consultantTypes)+"&shallow="+shallow;
-        if(date.equals("2022-03-01")) System.out.println("url = " + url);
         ResponseEntity<User[]> result = systemRestService.secureCall(url, GET, User[].class);
         return Arrays.asList(result.getBody());
     }

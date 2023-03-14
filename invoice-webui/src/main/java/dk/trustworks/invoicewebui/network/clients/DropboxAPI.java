@@ -40,6 +40,7 @@ public class DropboxAPI {
 
     private final DbxTeamClientV2 client;
 
+
     @Autowired
     public DropboxAPI(@Value("${dropboxToken}") final String dropboxToken) {
         DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/java-tutorial").build();
@@ -96,7 +97,6 @@ public class DropboxAPI {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             thumbnail.download(outputStream);
             return new DropboxFile(outputStream.toByteArray(), metadata.getPathLower());
-
         } catch (DbxException | IOException e) {
             e.printStackTrace();
         }
@@ -158,8 +158,8 @@ public class DropboxAPI {
 
     public void uploadInvoice(StreamResource resource, LocalDate invoicedate) {
         // /Shared/Administration/Fakturering/2019/201904 April
-
         DbxUserFilesRequests files = client.asMember("dbmid:AADXwqazXGNcBlqO-nhTZEHxyJNYga2FtLM").files();
+
         try {
             files.uploadBuilder("/Shared/Administration/Fakturering/" +
                     invoicedate.getYear() + "/" +

@@ -6,19 +6,17 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import dk.trustworks.invoicewebui.TrustworksConfiguration;
-import dk.trustworks.invoicewebui.model.Team;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.utils.DateUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
 @NoArgsConstructor
@@ -55,8 +53,9 @@ public class EmployeeAggregateData {
     public double budgetHours;
     @JsonProperty("budgetHoursWithNoAvailabilityAdjustment")
     private double budgetHoursWithNoAvailabilityAdjustment; // done
-    @JsonProperty("budgetDocuments")
-    private List<BudgetDocument> budgetDocuments = new ArrayList<>();
+    //@JsonProperty("budgetDocuments")
+    //private List<BudgetDocument> budgetDocuments = new ArrayList<>();
+
     @JsonProperty("salary")
     public double salary;
     @JsonProperty("sharedExpenses")
@@ -76,12 +75,31 @@ public class EmployeeAggregateData {
     @JsonProperty("statusType")
     public StatusType statusType;
     @JsonProperty("teamMemberOf")
-    private List<Team> teamMemberOf = new ArrayList<>();
+    private String teamMemberOf;
     @JsonProperty("teamLeaderOf")
-    private List<Team> teamLeaderOf = new ArrayList<>();
+    private String teamLeaderOf;
     @JsonProperty("teamSponsorOf")
-    private List<Team> teamSponsorOf = new ArrayList<>();
+    private String teamSponsorOf;
     @JsonProperty("teamGuestOf")
-    private List<Team> teamGuestOf = new ArrayList<>();
+    private String teamGuestOf;
 
+    public List<String> getTeamMemberOf() {
+        if(teamMemberOf==null || teamMemberOf.length()<2) return new ArrayList<>();
+        return Stream.of(teamMemberOf.split(",", -1)).collect(Collectors.toList());
+    }
+
+    public List<String> getTeamLeaderOf() {
+        if(teamMemberOf==null || teamLeaderOf.length()<2) return new ArrayList<>();
+        return Stream.of(teamLeaderOf.split(",", -1)).collect(Collectors.toList());
+    }
+
+    public List<String> getTeamSponsorOf() {
+        if(teamMemberOf==null || teamSponsorOf.length()<2) return new ArrayList<>();
+        return Stream.of(teamSponsorOf.split(",", -1)).collect(Collectors.toList());
+    }
+
+    public List<String> getTeamGuestOf() {
+        if(teamMemberOf==null || teamGuestOf.length()<2) return new ArrayList<>();
+        return Stream.of(teamGuestOf.split(",", -1)).collect(Collectors.toList());
+    }
 }

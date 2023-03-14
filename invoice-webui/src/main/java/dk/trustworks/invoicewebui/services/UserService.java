@@ -39,6 +39,7 @@ public class UserService implements InitializingBean {
     }
 
     public Optional<User> getLoggedInUser() {
+        if(VaadinSession.getCurrent().getAttribute(UserSession.class)==null) return Optional.empty();
         return Optional.of(VaadinSession.getCurrent().getAttribute(UserSession.class).getUser());
     }
 
@@ -188,7 +189,8 @@ public class UserService implements InitializingBean {
     }
 
     public List<UserStatus> findByUserAndTypeAndStatusOrderByStatusdateAsc(User user, ConsultantType type, StatusType status) {
-        return userRestService.findOne(user.getUuid(), true).getStatuses()
+        List<UserStatus> userStatuses = (user.getStatuses() == null || user.getStatuses().size() == 0) ? userRestService.findOne(user.getUuid(), true).getStatuses() : user.getStatuses();
+        return userStatuses
                 .stream()
                 .filter(userStatus -> userStatus.getStatus().equals(status) && userStatus.getType().equals(type))
                 .sorted(Comparator.comparing(UserStatus::getStatusdate).reversed())

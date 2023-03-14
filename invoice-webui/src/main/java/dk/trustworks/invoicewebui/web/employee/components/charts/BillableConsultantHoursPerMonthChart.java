@@ -74,7 +74,7 @@ public class BillableConsultantHoursPerMonthChart {
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
             revenueSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), revenueService.getRegisteredHoursForSingleMonthAndSingleConsultant(user.getUuid(), currentDate)));
-            if(user.getUsername().equals("marie.daugaard") || user.getUsername().equals("hans.lassen")) internalSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), workService.findByPeriodAndUserUUID(currentDate, currentDate.plusMonths(1), user.getUuid()).stream().filter(work -> work.getTaskuuid().equals("1d5902bf-f767-4984-a0bf-0c2d2a946ef4")).mapToDouble(value -> value.getWorkduration()).sum()));
+            if(user.getUsername().equals("marie.daugaard")) internalSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), workService.findByPeriodAndUserUUID(currentDate, currentDate.plusMonths(1), user.getUuid()).stream().filter(work -> work.getTaskuuid().equals("1d5902bf-f767-4984-a0bf-0c2d2a946ef4")).mapToDouble(value -> value.getWorkduration()).sum()));
             budgetSeries.add(new DataSeriesItem(stringIt(currentDate,"MMM-yyyy"), budgetService.getConsultantBudgetHoursByMonth(user.getUuid(), currentDate)));
 
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));

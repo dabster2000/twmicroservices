@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.network.rest;
 
 import dk.trustworks.invoicewebui.model.CKOExpense;
+import dk.trustworks.invoicewebui.model.ConferenceParticipant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.*;
@@ -29,6 +31,27 @@ public class KnowledgeRestService {
         String url = apiGatewayUrl+"/knowledge/expenses";
         ResponseEntity<CKOExpense[]> result = systemRestService.secureCall(url, GET, CKOExpense[].class);
         return Arrays.asList(result.getBody());
+    }
+
+    public List<ConferenceParticipant> findAllConferenceParticipants() {
+        String url = apiGatewayUrl+"/knowledge/conferences";
+        ResponseEntity<ConferenceParticipant[]> result = systemRestService.secureCall(url, GET, ConferenceParticipant[].class);
+        return Arrays.asList(result.getBody());
+    }
+
+    public void inviteParticipants(Collection<ConferenceParticipant> participants) {
+        String url = apiGatewayUrl+"/knowledge/conferences/invite";
+        systemRestService.secureCall(url, POST, Void.class, participants);
+    }
+
+    public void denyParticipants(Collection<ConferenceParticipant> participants) {
+        String url = apiGatewayUrl+"/knowledge/conferences/deny";
+        systemRestService.secureCall(url, POST, Void.class, participants);
+    }
+
+    public void withdrawParticipants(Collection<ConferenceParticipant> participants) {
+        String url = apiGatewayUrl+"/knowledge/conferences/withdraw";
+        systemRestService.secureCall(url, POST, Void.class, participants);
     }
 
     public List<CKOExpense> findCKOExpenseByUseruuid(String useruuid) {

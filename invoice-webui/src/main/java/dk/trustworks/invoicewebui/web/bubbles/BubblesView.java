@@ -5,6 +5,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
+import dk.trustworks.invoicewebui.model.enums.BubbleType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
@@ -45,7 +46,7 @@ public class BubblesView extends VerticalLayout implements View {
         this.setSpacing(false);
         this.addComponent(topMenu);
         this.addComponent(mainTemplate);
-        mainTemplate.setMainContent(bubblesLayout.init(), VIEW_ICON, MENU_NAME, "BLOW THEM BUBBLES!!!", VIEW_BREADCRUMB);
+        mainTemplate.setMainContent(bubblesLayout.init(BubbleType.KNOWLEDGE), VIEW_ICON, MENU_NAME, "BLOW THEM BUBBLES!!!", VIEW_BREADCRUMB);
     }
 
     @Override

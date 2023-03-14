@@ -25,15 +25,12 @@ public class BubblesCardImpl extends BubblesCardDesign {
         }
 
         for (Bubble bubble : bubbles) {
-            System.out.println("bubble.getName() = " + bubble.getName());
-            System.out.println("bubble.getBubbleMembers() = " + bubble.getBubbleMembers());
-            System.out.println("bubble.getBubbleMembers().size() = " + bubble.getBubbleMembers().size());
             BubbleRowDesign bubbleRow = new BubbleRowDesign();
             bubbleRow.setWidth(100, Unit.PERCENTAGE);
             bubbleRow.getLblName().setValue(bubble.getName());
             bubbleRow.getTxtMembers().setValue(bubble.getBubbleMembers().size()+"");
             bubbleRow.getImgBubblePhoto().setSource(photoService.getRelatedPhotoResource(bubble.getUuid()));
-            bubbleRow.getCssOwnerPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getOwner(), true, 35, Unit.PIXELS));
+            bubbleRow.getCssOwnerPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getOwner(), 1, 35, Unit.PIXELS));
             getVlBubbles().addComponent(bubbleRow);
         }
 

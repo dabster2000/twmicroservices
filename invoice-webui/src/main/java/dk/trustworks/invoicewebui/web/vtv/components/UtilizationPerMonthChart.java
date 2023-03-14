@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.vtv.components;
 
+import com.google.common.base.Stopwatch;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
@@ -53,6 +54,7 @@ public class UtilizationPerMonthChart {
     }
 
     public Chart createGroupUtilizationPerMonthChart(LocalDate periodStart, LocalDate periodEnd, String... teamuuids) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         System.out.println("UtilizationPerMonthChart.createUtilizationPerMonthChart");
         System.out.println("periodStart = " + periodStart + ", periodEnd = " + periodEnd + ", teamuuids = " + Arrays.deepToString(teamuuids));
         int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
@@ -142,10 +144,12 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().getxAxis().setCategories(StatisticsService.getMonthCategories(periodStart, periodEnd));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
+        System.out.println("stopwatch.createGroupUtilizationPerMonthChart = " + stopwatch.stop());
         return chart;
     }
 
     public Chart createConsultantUtilizationPerMonthChart(LocalDate periodStart, LocalDate periodEnd, User user) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         int monthPeriod = (int) ChronoUnit.MONTHS.between(periodStart, periodEnd);
 
         Chart chart = new Chart();
@@ -212,6 +216,7 @@ public class UtilizationPerMonthChart {
         chart.getConfiguration().getxAxis().setCategories(StatisticsService.getMonthCategories(periodStart, periodEnd));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
+        System.out.println("stopwatch.createConsultantUtilizationPerMonthChart = " + stopwatch.stop());
         return chart;
     }
 

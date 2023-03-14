@@ -450,7 +450,7 @@ public class ProjectManagerImpl extends ProjectManagerDesign {
                 consultantRowDesign.getTxtHours().setValue(round(contractConsultant.getHours()) + "");
                 consultantRowDesign.getTxtHours().setReadOnly(true);
                 consultantRowDesign.getVlHours().setVisible(mainContract.getContractType().equals(ContractType.PERIOD));
-                consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUseruuid(), false));
+                consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(contractConsultant.getUseruuid(), 0));
                 consultantRowDesign.getBtnDelete().setVisible(false);
                 if(mainContract.getActiveTo().isBefore(LocalDate.now().withDayOfMonth(1))) {
                     consultantRowDesign.getHlBackground().setStyleName("bg-grey");

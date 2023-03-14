@@ -5,7 +5,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontIcon;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.VerticalLayout;
-import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.mainmenu.components.MainTemplate;
 import dk.trustworks.invoicewebui.web.mainmenu.components.TopMenu;
@@ -53,5 +52,6 @@ public class TrustworksStatsView extends VerticalLayout implements View {
     }
 
     @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {}
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+    }
 }

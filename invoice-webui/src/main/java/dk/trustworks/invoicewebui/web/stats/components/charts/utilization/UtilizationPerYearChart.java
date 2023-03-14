@@ -1,5 +1,7 @@
 package dk.trustworks.invoicewebui.web.stats.components.charts.utilization;
 
+import com.google.common.base.Stopwatch;
+import com.google.common.base.Ticker;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.server.Sizeable;
@@ -16,6 +18,7 @@ import dk.trustworks.invoicewebui.services.StatisticsService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
+import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -30,6 +33,7 @@ import java.util.Optional;
 
 @SpringComponent
 @SpringUI
+@JBossLog
 public class UtilizationPerYearChart {
 
     private final UserService userService;
@@ -49,6 +53,7 @@ public class UtilizationPerYearChart {
     }
 
     public Chart createChart() {
+        Stopwatch timer = Stopwatch.createStarted();
         LocalDate periodStart = LocalDate.of(2016, 7, 1);
 
         Chart chart = new Chart();
@@ -69,12 +74,15 @@ public class UtilizationPerYearChart {
         chart.getConfiguration().setTooltip(tooltip);
 
         DataSeries actualDataSeries = new DataSeries("Actual utilization");
+        log.info("getAverageAllocationByYear start: "+timer.elapsed());
         actualDataSeries.setData(getAverageAllocationByYear(periodStart));
+        log.info("getAverageAllocationByYear end: "+timer.elapsed());
         chart.getConfiguration().addSeries(actualDataSeries);
 
         chart.getConfiguration().getxAxis().setCategories(statisticsService.getYearCategories(periodStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
         Credits c = new Credits("");
         chart.getConfiguration().setCredits(c);
+        log.info("UtilizationPerYearChart.createChart took: " + timer.stop());
         return chart;
     }
 

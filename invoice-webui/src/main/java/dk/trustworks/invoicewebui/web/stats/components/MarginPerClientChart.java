@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
+import com.google.common.base.Stopwatch;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.*;
 import com.vaadin.addon.charts.model.style.SolidColor;
@@ -66,8 +67,11 @@ public class MarginPerClientChart {
         yAxis.setTickPixelInterval(50);
         yAxis.setTitle("Margin (kr)");
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
         List<ClientMarginResult> clientMarginResult = marginService.calculateMarginPerCustomer(fiscalYear);
+        System.out.println("stopwatch.calculateMarginPerCustomer = " + stopwatch.elapsed());
         List<GraphKeyValue> clientFiscalBudgetSums = clientService.findClientFiscalBudgetSums(fiscalYear);
+        System.out.println("stopwatch.findClientFiscalBudgetSums = " + stopwatch.elapsed());
         //List<GraphKeyValue> revenueByClientList = revenueService.getSumOfRegisteredRevenueByClientByYear(fiscalYear);
 
         for (Client client : clientService.findAll()) {

@@ -7,6 +7,8 @@ import dk.trustworks.invoicewebui.model.dto.FinanceDocument;
 import dk.trustworks.invoicewebui.model.enums.ExcelExpenseType;
 import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
 import dk.trustworks.invoicewebui.network.dto.enums.EconomicAccountGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import static org.springframework.http.HttpMethod.GET;
 @Service
 public class FinanceRestService {
 
+    protected static Logger log = LoggerFactory.getLogger(FinanceRestService.class.getName());
+
     @Value("#{environment.APIGATEWAY_URL}")
     private String apiGatewayUrl;
 
@@ -34,7 +38,8 @@ public class FinanceRestService {
     }
 
     public List<ExpenseDetails> findExpenseDetailsByGroup(EconomicAccountGroup accountGroup) {
-        String url = apiGatewayUrl +"/company/expensesdetails/"+accountGroup.name();
+        String url = apiGatewayUrl +"/company/expenses/entries/"+accountGroup.name();
+        log.info("findExpenseDetailsByGroup: " + url);
         return Arrays.asList((ExpenseDetails[]) systemRestService.secureCall(url, GET, ExpenseDetails[].class).getBody());
     }
 

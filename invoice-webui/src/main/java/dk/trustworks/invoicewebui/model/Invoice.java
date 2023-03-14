@@ -9,7 +9,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
 import dk.trustworks.invoicewebui.model.enums.InvoiceType;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +32,7 @@ public class Invoice {
     public String attention;
     public int invoiceref;
     public int invoicenumber;
+    public int referencenumber;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate invoicedate;
@@ -340,5 +340,13 @@ public class Invoice {
         s += "}\n";
 
         return s;
+    }
+
+    public int getReferencenumber() {
+        return referencenumber;
+    }
+
+    public void setReferencenumber(int referencenumber) {
+        this.referencenumber = referencenumber;
     }
 }

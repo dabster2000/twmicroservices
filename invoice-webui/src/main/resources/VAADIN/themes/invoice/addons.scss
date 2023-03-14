@@ -21,10 +21,6 @@
 @import "../../../VAADIN/addons/materialicons/materialicons.scss";
 
 
-/* Provided by gantt-addon-1.0.4.jar */
-@import "../../../VAADIN/addons/gantt/gantt.scss";
-
-
 /* Provided by wt-pdf-viewer-2.0.0.jar */
 @import "../../../VAADIN/themes/wtpdfviewer/wtpdfviewer.scss";
 
@@ -36,7 +32,6 @@
 	@include product-tour;
 	@include fancylayouts;
 	@include materialicons;
-	@include gantt;
 	@include wtpdfviewer;
 }
 

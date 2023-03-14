@@ -30,9 +30,6 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
 
     protected final static Logger logger = LoggerFactory.getLogger(VaadinUI.class.getName());
 
-    //DefaultNotificationHolder notifications = new DefaultNotificationHolder();
-    //DefaultBadgeHolder badge = new DefaultBadgeHolder();
-
     private Panel springViewDisplay;
 
     @Autowired
@@ -61,7 +58,6 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         springViewDisplay.setSizeFull();
         root.addComponent(springViewDisplay);
         root.setExpandRatio(springViewDisplay, 1.0f);
-        Broadcaster.register(this);
 
         final String hostname = Page.getCurrent().getLocation().getHost();
         if(hostname.equals("event.trustworks.dk")) UI.getCurrent().getNavigator().navigateTo("birthdayevent");
@@ -128,17 +124,21 @@ public class VaadinUI extends UI implements Broadcaster.BroadcastListener, ViewD
         }
         */
         if(!authorizer.hasAccess(view)) this.getNavigator().navigateTo("login");
-/*
-        String hostname = Page.getCurrent().getLocation().getHost();
-        System.out.println("view.getViewComponent() = " + view.getViewComponent());
-        System.out.println("view.getViewComponent().getId() = " + view.getViewComponent().getId());
-        if(hostname.equals("localhost") && (view.getViewComponent().getId()==null || !view.getViewComponent().getId().equals("birthdayevent"))) {
-            UI.getCurrent().getNavigator().navigateTo("birthdayevent");
-            return;
-        }
-*/
 
+        //logger.info("view.getViewComponent() = " + view.getViewComponent());
+        //logger.info("view.getViewComponent().getId() = " + view.getViewComponent().getId());
+        //logger.info("Page.getCurrent().getUriFragment() = " + Page.getCurrent().getUriFragment());
+        //if(hostname.equals("localhost") && (view.getViewComponent().getId()==null || !view.getViewComponent().getId().equals("birthdayevent"))) {
+            //UI.getCurrent().getNavigator().navigateTo("birthdayevent");
+            //return;
+        //}
+
+
+
+        //Span span = tracer.buildSpan(Page.getCurrent().getUriFragment()).start();
         springViewDisplay.setContent((Component) view);
+        //span.finish();
+
     }
 
 

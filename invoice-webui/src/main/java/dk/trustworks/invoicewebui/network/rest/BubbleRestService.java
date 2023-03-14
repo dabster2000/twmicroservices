@@ -59,6 +59,7 @@ public class BubbleRestService {
     }
 
     public void updateBubble(Bubble bubble) {
+        log.info("Updating bubble: "+bubble);
         String url = apiGatewayUrl +"/bubbles";
         systemRestService.secureCall(url, PUT, Void.class, bubble);
     }

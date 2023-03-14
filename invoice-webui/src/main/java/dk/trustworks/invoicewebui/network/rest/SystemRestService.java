@@ -17,6 +17,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class SystemRestService {
@@ -29,6 +33,7 @@ public class SystemRestService {
     private final RestTemplate restTemplate;
 
     private LoginToken systemToken;
+
 
     @Autowired
     public SystemRestService(RestTemplate restTemplate) {
@@ -44,6 +49,7 @@ public class SystemRestService {
         LoginToken loginToken;
         try {
             String url = apiGatewayUrl + "/login?username=" + username + "&password=" + password;
+            //String url = apiGatewayUrl + "/login?username=" + username + "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
             loginToken = restTemplate.getForObject(url, LoginToken.class);
             logger.info("loginToken: "+loginToken);
         } catch (RestClientException e) {

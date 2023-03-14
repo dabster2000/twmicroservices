@@ -413,7 +413,7 @@ public class TeamStatsLayout extends VerticalLayout {
         //String teamuuid = teamService.getTeamuuidsAsLeader(userService.getLoggedInUser().get()); //userService.getLoggedInUser().get().getTeamuuid();
 
         for (User employee : teamService.getUsersByTeamByMonth(team.getUuid(), LocalDate.now().withDayOfMonth(1))) {
-            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), false, 60, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), 0, 60, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 chartRow.removeAllComponents();
                 if(selectedEmployeeImage.get() != null) {
@@ -437,7 +437,7 @@ public class TeamStatsLayout extends VerticalLayout {
         //AtomicReference<User> selectedEmployee = new AtomicReference<>(null);
 
         for (User employee : teamService.getUsersByTeamByMonth(team.getUuid(), LocalDate.now().withDayOfMonth(1))) {
-            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), false, 60, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), 0, 60, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 chartRow.removeAllComponents();
                 if(selectedEmployeeImage.get() != null) {
@@ -613,7 +613,7 @@ public class TeamStatsLayout extends VerticalLayout {
             teamleads.addAll(teamService.findTeamleadersByMonth(team.getUuid(), currentDate));
         }
         for (User teamlead : teamleads) {
-            Image memberImage = photoService.getRoundMemberImage(teamlead.getUuid(), false, 100, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(teamlead.getUuid(), 0, 100, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 LocalDate endDate = startOfFiscalYear.plusYears(1);
                 Optional<TeamRole> teamRole = teamService.findUserTeamRoles(teamlead.getUuid()).stream().filter(t -> t.getTeammembertype().equals(LEADER) && DateUtils.isOverlapping(t.getStartdate(), t.getEnddate()==null?startOfFiscalYear.plusYears(1):t.getEnddate(), startOfFiscalYear, endDate)).findFirst();
@@ -692,6 +692,7 @@ public class TeamStatsLayout extends VerticalLayout {
         teamBonusForm.addComponent(new MTextField("Your team utilization", NumberConverter.formatPercentage(averageTeamAllocationByPeriod)).withReadOnly(true));
         float avgGoodPeopleByPeriod = teamService.getAvgGoodPeopleByPeriod(team.getUuid(), startDate, endDate);
         teamBonusForm.addComponent(new MTextField("Your team avg size", NumberConverter.formatDouble(avgGoodPeopleByPeriod)).withReadOnly(true));
+
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)

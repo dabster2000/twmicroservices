@@ -4,7 +4,6 @@ import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.Task;
 import dk.trustworks.invoicewebui.model.Work;
 import dk.trustworks.invoicewebui.network.dto.KeyValueDTO;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @Service
 public class WorkRestService {

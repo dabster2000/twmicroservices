@@ -230,7 +230,7 @@ public class ContractListLayout extends VerticalLayout {
             }
 
             for (ContractConsultant contractConsultant : contract.getContractConsultants()) {
-                contractDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(contractConsultant.getUseruuid(), false));
+                contractDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(contractConsultant.getUseruuid(), 0));
             }
 
             contractDesign.getBtnEdit().addClickListener(event3 -> {

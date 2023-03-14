@@ -1,7 +1,9 @@
 package dk.trustworks.invoicewebui.web.admin.components;
 
+import com.vaadin.data.Binder;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 import dk.trustworks.invoicewebui.model.Team;
 import dk.trustworks.invoicewebui.model.TeamRole;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
@@ -11,10 +13,8 @@ import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.web.admin.model.TeamRolesGridItem;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +48,18 @@ public class TeamRolesCardImpl extends TeamRolesCardDesign {
             getGridTeamRoles().setItems(getTeamRolesGridItems(useruuid));
         });
         getBtnCreate().addClickListener(event -> {
+            if(getCbTeam().getValue() == null) {
+                Notification.show("Please select Team", Notification.Type.ERROR_MESSAGE);
+                return;
+            }
+            if(getCbTeamRole().getValue() == null) {
+                Notification.show("Please select Team Role", Notification.Type.ERROR_MESSAGE);
+                return;
+            }
+            if(getDfStartDate().getValue() == null) {
+                Notification.show("Please select Start Date", Notification.Type.ERROR_MESSAGE);
+                return;
+            }
             TeamRole teamRole = new TeamRole(UUID.randomUUID().toString(), getCbTeam().getValue().getUuid(), useruuid, getDfStartDate().getValue(), getDfEndDate().getValue(), getCbTeamRole().getValue());
             teamRestService.addUserToTeam(getCbTeam().getValue().getUuid(), teamRole);
             getGridTeamRoles().setItems(getTeamRolesGridItems(useruuid));
@@ -57,6 +69,15 @@ public class TeamRolesCardImpl extends TeamRolesCardDesign {
         getCbTeam().setItemCaptionGenerator(Team::getName);
         getCbTeamRole().setItems(TeamMemberType.values());
         getCbTeamRole().setItemCaptionGenerator(TeamMemberType::name);
+
+        Binder<TeamRolesGridItem> binder = getGridTeamRoles().getEditor().getBinder();
+        Binder.Binding<TeamRolesGridItem, LocalDate> toDateBinding = binder.bind(getDfEndDate(), TeamRolesGridItem::getEnddate, TeamRolesGridItem::setEnddate);
+        getGridTeamRoles().getColumns().get(3).setEditorBinding(toDateBinding);
+        getGridTeamRoles().getEditor().setEnabled(true);
+        getGridTeamRoles().getEditor().addSaveListener(event -> {
+            teamRestService.deleteTeamRoles(event.getBean().getTeam(), Collections.singleton(new TeamRole(event.getBean().getUuid(), null, null, null, null, null)));
+            TeamRole teamRole = new TeamRole(UUID.randomUUID().toString(), event.getBean().getUuid(), useruuid, getDfStartDate().getValue(), getDfEndDate().getValue(), getCbTeamRole().getValue());
+        });
     }
 
     @Transactional
@@ -70,7 +91,6 @@ public class TeamRolesCardImpl extends TeamRolesCardDesign {
 
     private void getTeamRolesGridItemList(String useruuid) {
         List<TeamRolesGridItem> teamRolesGridItemList = getTeamRolesGridItems(useruuid);
-
         getGridTeamRoles().setItems(teamRolesGridItemList);
     }
 

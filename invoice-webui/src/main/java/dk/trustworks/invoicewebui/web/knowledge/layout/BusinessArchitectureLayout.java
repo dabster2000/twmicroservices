@@ -302,7 +302,7 @@ public class BusinessArchitectureLayout extends VerticalLayout {
 
                 for (String author : cardFile.getAuthors().split(",")) {
                     if(author.length()<2) continue;
-                    architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(author, false, 50, Unit.PIXELS));
+                    architectureCell1.getVlConsultants().addComponent(photoService.getRoundMemberImage(author, 0, 50, Unit.PIXELS));
                 }
                 architectureCell1.getImgCustomer().setSource(photoService.getRelatedPhotoResource(cardFile.getCustomeruuid()));
                 architectureCell1.getImgCustomer().setHeight(50, Unit.PIXELS);

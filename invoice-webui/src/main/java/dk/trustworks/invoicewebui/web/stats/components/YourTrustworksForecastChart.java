@@ -32,7 +32,7 @@ public class YourTrustworksForecastChart {
         this.financeService = financeService;
     }
 
-    public Chart createChart(LocalDate periodStart, LocalDate periodEnd) {
+    public Chart createYourTrustworksForecastChart(LocalDate periodStart, LocalDate periodEnd) {
         Chart chart = new Chart();
         chart.setSizeFull();
         periodEnd = (periodEnd.isBefore(LocalDate.now().withDayOfMonth(1))) ? periodEnd : LocalDate.now().withDayOfMonth(1);

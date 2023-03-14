@@ -2,8 +2,8 @@ package dk.trustworks.invoicewebui.network.rest;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.InvoiceReference;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +43,21 @@ public class InvoiceRestService {
         return Arrays.asList(result.getBody());
     }
 
-    public List<Invoice> getInvoicesForSingleMonth(LocalDate month) {
-        String url = apiGatewayUrl + "/invoices/months/"+ DateUtils.stringIt(month.withDayOfMonth(1));
+    /*
+    @GET
+    @Path("/search/bookingdate")
+    public List<Invoice> getInvoicesByBookingdate(@QueryParam("fromdate") String fromdate, @QueryParam("todate") String todate) {
+     */
+
+    public List<Invoice> getInvoicesForSingleMonthUsingBookingDate(LocalDate month) {
+        String url = apiGatewayUrl + "/invoices/search/bookingdate?fromdate="+DateUtils.stringIt(month.withDayOfMonth(1))+"&todate="+DateUtils.stringIt(month.withDayOfMonth(1).plusMonths(1));
         ResponseEntity<Invoice[]> result = systemRestService.secureCall(url, GET, Invoice[].class);
         return Arrays.asList(result.getBody());
     }
 
     public List<ProjectSummary> loadProjectSummaryByYearAndMonth(LocalDate month) {
         String url = apiGatewayUrl + "/invoices/candidates/months/"+DateUtils.stringIt(month);
+        System.out.println("url = " + url);
         ResponseEntity<ProjectSummary[]> result = systemRestService.secureCall(url, GET, ProjectSummary[].class);
         return Arrays.asList(result.getBody());
     }
@@ -111,5 +118,13 @@ public class InvoiceRestService {
         System.out.println("InvoiceRestService.findByLatestInvoiceByProjectuuid");
         System.out.println("projectuuid = " + projectuuid);
         return findProjectInvoices(projectuuid).get(0);
+    }
+
+    public void updateInvoiceReference(String invoiceuuid, InvoiceReference invoiceReference) {
+        String url = apiGatewayUrl + "/invoices/"+invoiceuuid+"/reference";
+        System.out.println("InvoiceRestService.updateInvoiceReference");
+        System.out.println("invoiceuuid = " + invoiceuuid + ", invoiceReference = " + invoiceReference);
+        systemRestService.secureCall(url, POST, InvoiceReference.class, invoiceReference);
+
     }
 }

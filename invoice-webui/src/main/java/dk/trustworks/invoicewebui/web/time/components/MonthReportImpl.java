@@ -31,7 +31,7 @@ public class MonthReportImpl extends MonthReportDesign {
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
     public void init(String projectUUID, LocalDate localDate) {
-        List<Work> workList = workService.findByPeriod(localDate.withDayOfMonth(1), localDate.withDayOfMonth(localDate.lengthOfMonth()));
+        List<Work> workList = workService.findByPeriod(localDate.withDayOfMonth(1), localDate.withDayOfMonth(1).plusMonths(1));
         List<UserHourItem> userHourItems = new ArrayList<>();
 
         for (Work work : workList) {

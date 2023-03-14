@@ -17,6 +17,7 @@ import com.vaadin.ui.*;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.BubbleType;
 import dk.trustworks.invoicewebui.services.BubbleService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
@@ -174,6 +175,21 @@ public class BubbleForm {
         TextField bubbleName = new TextField("Bubble name");
         bubbleName.setWidth(100, Sizeable.Unit.PERCENTAGE);
         bubbleBinder.forField(bubbleName).bind(Bubble::getName, Bubble::setName);
+
+        ComboBox<BubbleType> bubbleType = new ComboBox<>("Bubble type");
+        bubbleType.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        bubbleType.setEmptySelectionAllowed(false);
+        bubbleType.setItems(BubbleType.values());
+        bubbleType.setEnabled(prevBubble==null);
+        bubbleType.setItemCaptionGenerator(BubbleType::getName);
+        bubbleType.setDescription("<h2>Bubble Type</h2>" +
+                "<ul>" +
+                "<li><b>Knowledge:</b> People can freely enter and exit the bubble</li>" +
+                "<li><b>Account Team:</b> The bubble master must actively add and remove people from the bubble</li>" +
+                "<li><b>Social:</b> The bubble master must actively add and remove people from the bubble</li>" +
+                "</ul>", ContentMode.HTML);
+        bubbleBinder.forField(bubbleType).bind(Bubble::getType, Bubble::setType);
+
         ComboBox<String> applicationType = new ComboBox<>("Application type");
         applicationType.setWidth(100, Sizeable.Unit.PERCENTAGE);
         applicationType.setEmptySelectionAllowed(false);
@@ -184,6 +200,7 @@ public class BubbleForm {
                 "<li><b>Invitation:</b> The bubble master must actively add and remove people from the bubble</li>" +
                 "</ul>", ContentMode.HTML);
         bubbleBinder.forField(applicationType).bind(Bubble::getApplication, Bubble::setApplication);
+
         ComboBox<User> bubbleMaster = new ComboBox<>("Bubble master");
         bubbleMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
         List<User> currentlyEmployedUsers = userService.findCurrentlyEmployedUsers(true);
@@ -191,6 +208,22 @@ public class BubbleForm {
         bubbleMaster.setEmptySelectionAllowed(false);
         bubbleMaster.setItemCaptionGenerator(User::getUsername);
         bubbleBinder.forField(bubbleMaster).bind(b -> UserService.GetUserFromUUID(b.getOwner(), currentlyEmployedUsers), (b, u) -> b.setOwner(u.getUuid()));
+
+        ComboBox<User> bubbleCoMaster = new ComboBox<>("Bubble co-master");
+        bubbleCoMaster.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        bubbleCoMaster.setItems(currentlyEmployedUsers);
+        bubbleCoMaster.setEmptySelectionAllowed(false);
+        bubbleCoMaster.setItemCaptionGenerator(User::getUsername);
+        bubbleBinder.forField(bubbleCoMaster).bind(b -> UserService.GetUserFromUUID(b.getCoowner(), currentlyEmployedUsers), (b, u) -> b.setCoowner(u.getUuid()));
+
+        TextArea bubbleMeetingForm = new TextArea("Meeting form");
+        bubbleMeetingForm.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        bubbleBinder.forField(bubbleMeetingForm).bind(Bubble::getMeetingform, Bubble::setMeetingform);
+
+        TextArea bubblePreconditions = new TextArea("Conditions for participation");
+        bubblePreconditions.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        bubbleBinder.forField(bubblePreconditions).bind(Bubble::getPreconditions, Bubble::setPreconditions);
+
         RichTextArea description = new RichTextArea("Description");
         description.setWidth(100, Sizeable.Unit.PERCENTAGE);
         description.setHeight(300, Sizeable.Unit.PIXELS);
@@ -236,8 +269,18 @@ public class BubbleForm {
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(active);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(bubbleType);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(applicationType);
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(bubbleMaster);
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(bubbleCoMaster);
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(bubbleMeetingForm);
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
+        formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(bubblePreconditions);
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(new Label());
         formRow.addColumn().withDisplayRules(12, 12, 6, 6).withComponent(description);

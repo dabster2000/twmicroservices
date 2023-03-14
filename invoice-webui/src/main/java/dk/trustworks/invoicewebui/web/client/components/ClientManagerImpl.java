@@ -14,11 +14,13 @@ import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Clientdata;
 import dk.trustworks.invoicewebui.model.File;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.web.photoupload.components.PhotoUploader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,16 +45,19 @@ public class ClientManagerImpl extends ClientManagerDesign {
 
     private final RevenueService revenueService;
 
+    private final BiService biService;
+
     ResponsiveLayout responsiveLayout;
 
     @Autowired
-    public ClientManagerImpl(ClientService clientService, ClientdataService clientdataService, PhotoService photoService, ProjectService projectService, UserService userService, RevenueService revenueService) {
+    public ClientManagerImpl(ClientService clientService, ClientdataService clientdataService, PhotoService photoService, ProjectService projectService, UserService userService, RevenueService revenueService, BiService biService) {
         this.clientService = clientService;
         this.clientdataService = clientdataService;
         this.photoService = photoService;
         this.projectService = projectService;
         this.userService = userService;
         this.revenueService = revenueService;
+        this.biService = biService;
     }
 
     public ClientManagerImpl init() {

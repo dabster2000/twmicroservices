@@ -11,6 +11,7 @@ import com.vaadin.ui.Window;
 import dk.trustworks.invoicewebui.model.ITBudgetCategory;
 import dk.trustworks.invoicewebui.model.ItBudgetItem;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ItBudgetStatus;
 import dk.trustworks.invoicewebui.repositories.ITBudgetCategoryRepository;
 import dk.trustworks.invoicewebui.repositories.ITBudgetItemRepository;
@@ -123,6 +124,8 @@ public class ItBudgetTab {
 
     private void createEquipmentCards() {
         int budgetLeft = 25000;
+        if(userService.getUserStatus(user, LocalDate.now()).getType().equals(ConsultantType.STUDENT) ||
+                userService.getUserStatus(user, LocalDate.now()).getType().equals(ConsultantType.EXTERNAL)) budgetLeft = 0;
         budgetCardsRow.removeAllComponents();
         for (ItBudgetItem budgetItem : itBudgetItemRepository.findByUseruuid(user.getUuid())) {
             LocalDate tempDate = currentDate.minusMonths(budgetItem.getCategory().getLifespan());

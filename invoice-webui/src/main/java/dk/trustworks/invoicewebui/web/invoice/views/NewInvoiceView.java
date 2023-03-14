@@ -25,8 +25,8 @@ import javax.annotation.PostConstruct;
 public class NewInvoiceView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "invoice_new";
-    public static final String MENU_NAME = "Invoice";
-    public static final String VIEW_BREADCRUMB = "Economy / Invoice";
+    public static final String MENU_NAME = "Invoices";
+    public static final String VIEW_BREADCRUMB = "Economy / Invoices";
     public static final FontIcon VIEW_ICON = MaterialIcons.RECEIPT;
 
     protected static Logger logger = LoggerFactory.getLogger(NewInvoiceView.class.getName());

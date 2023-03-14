@@ -10,6 +10,7 @@ import dk.trustworks.invoicewebui.security.Authorizer;
 import dk.trustworks.invoicewebui.web.academy.BasicSkillsView;
 import dk.trustworks.invoicewebui.web.academy.CoursesView;
 import dk.trustworks.invoicewebui.web.admin.UserManagerView;
+import dk.trustworks.invoicewebui.web.bubbles.AccountTeamsView;
 import dk.trustworks.invoicewebui.web.bubbles.BubblesView;
 import dk.trustworks.invoicewebui.web.client.views.ClientManagerView;
 import dk.trustworks.invoicewebui.web.contracts.views.ContractManagerView;
@@ -136,6 +137,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("Economy", invoice);
         MenuItemContainer newInvoice = new MenuItemContainer(order++).createItem(NewInvoiceView.MENU_NAME, false, NewInvoiceView.VIEW_ICON, NewInvoiceView.VIEW_NAME, false, ACCOUNTING);
         menuItems.put(NewInvoiceView.VIEW_NAME, newInvoice);
+        MenuItemContainer invoiceList = new MenuItemContainer(order++).createItem(InvoiceListView.MENU_NAME, false, InvoiceListView.VIEW_ICON, InvoiceListView.VIEW_NAME, false, ACCOUNTING);
+        menuItems.put(InvoiceListView.VIEW_NAME, invoiceList);
 
         MenuItemContainer questions = new MenuItemContainer(order++).createItem("Questions ---", true, null, null, false, USER);
         menuItems.put("Questions", questions);
@@ -150,6 +153,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put(SalesView.VIEW_NAME, sales);
         MenuItemContainer tendermanagement = new MenuItemContainer(order++).createItem(TenderManagementView.MENU_NAME, false, TenderManagementView.VIEW_ICON, TenderManagementView.VIEW_NAME, false, VTV);
         menuItems.put(TenderManagementView.VIEW_NAME, tendermanagement);
+        MenuItemContainer customerEngagement = new MenuItemContainer(order++).createItem(AccountTeamsView.MENU_NAME, false, AccountTeamsView.VIEW_ICON, AccountTeamsView.VIEW_NAME, false, USER);
+        menuItems.put(AccountTeamsView.VIEW_NAME, customerEngagement);
         MenuItemContainer warStories = new MenuItemContainer(order++).createItem(SalesVideoView.MENU_NAME, false, SalesVideoView.VIEW_ICON, SalesVideoView.VIEW_NAME, false, USER);
         menuItems.put(SalesVideoView.VIEW_NAME, warStories);
 

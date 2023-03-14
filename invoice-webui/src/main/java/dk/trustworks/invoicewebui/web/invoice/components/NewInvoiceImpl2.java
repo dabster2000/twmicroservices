@@ -10,8 +10,8 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Client;
 import dk.trustworks.invoicewebui.model.Invoice;
-import dk.trustworks.invoicewebui.network.clients.DropboxAPI;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
+import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
@@ -22,6 +22,7 @@ import dk.trustworks.invoicewebui.web.model.YearMonthSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -46,11 +47,13 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
 
     protected static Logger logger = LoggerFactory.getLogger(NewInvoiceImpl2.class.getName());
 
+    private final FinanceService financeService;
+
     private final InvoiceService invoiceService;
 
     private final PhotoService photoService;
 
-    private final DropboxAPI dropboxAPI;
+    //private final DropboxAPI dropboxAPI;
 
     private ResponsiveRow statsRow;
     private ResponsiveRow invoicesRow;
@@ -60,10 +63,10 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     private InvoiceListItem selectedItem;
 
     @Autowired
-    public NewInvoiceImpl2(InvoiceService invoiceService, PhotoService photoService1, DropboxAPI dropboxAPI) {
+    public NewInvoiceImpl2(FinanceService financeService, InvoiceService invoiceService, PhotoService photoService1) {
+        this.financeService = financeService;
         this.invoiceService = invoiceService;
         this.photoService = photoService1;
-        this.dropboxAPI = dropboxAPI;
     }
 
     public NewInvoiceImpl2 init() {
@@ -96,9 +99,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(accordion);
 
-
         TabSheet tabSheet = new TabSheet();
-
 
         Client client = new Client();
         InvoiceListItem lastInvoiceListItem = null;
@@ -108,6 +109,8 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
         double registeredThisMonth = 0.0;
         double registeredByClient = 0.0;
         double invoicedByClient = 0.0;
+        int invoiceCount = 0;
+        int invoicesSynced = 0;
 
         for (ProjectSummary projectSummary : projectSummaries.stream().sorted(Comparator.comparing(ProjectSummary::getClientname)).collect(Collectors.toList())) {
             InvoiceListItem invoiceListItem = new InvoiceListItem();
@@ -117,12 +120,16 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
             invoiceListItem.getLblInvoicedAmount().setValue(NumberConverter.formatCurrency(projectSummary.getInvoicedamount()));
             invoiceListItem.addStyleName("grey-box-border");
 
+            // New client detected. Update previous tab with sums.
             if(!projectSummary.getClient().getUuid().equals(client.getUuid())) {
+                if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info(invoicesSynced + " of " + invoiceCount);
+                if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Ørsted");
                 invoiceListVerticalLayout = new MVerticalLayout().withSpacing(false);
                 if(!tabList.isEmpty()) {
                     InvoiceTab invoiceTab = tabList.get(tabList.size() - 1);
                     invoiceTab.getLblClientName().setValue(client.getName());
-                    if(client.getAccountManager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), false, 40, PIXELS));
+                    if(client.getAccountManager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), 0, 40, PIXELS));
+                    invoiceTab.getLblSynced().setValue(invoicesSynced + " of " + invoiceCount);
                     invoiceTab.getLblPercent().setValue(NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%");
                 }
                 final InvoiceTab tab = new InvoiceTab();
@@ -136,6 +143,8 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 client = projectSummary.getClient();
                 registeredByClient = 0.0;
                 invoicedByClient = 0.0;
+                invoiceCount = 0;
+                invoicesSynced = 0;
             }
 
             registeredByClient += projectSummary.getRegisteredamount();
@@ -155,6 +164,30 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 refreshTabs(tabSheet, projectSummary);
             });
 
+            if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Summary start: "+projectSummary);
+            invoiceCount += projectSummary.getInvoiceList().size();
+            if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("invoiceCount: " + invoiceCount);
+            if(projectSummary.getInvoiceList().size() > 0) {
+                if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Set green");
+                invoiceListItem.getTrafficLightRef().setStyleName("dark-green"); // dark-green
+            }
+            for (Invoice invoice : projectSummary.getInvoiceList()) {
+                if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Found invoice: "+invoice);
+                if(invoice.getReferencenumber()==0) {
+                    if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Set yellow");
+                    invoiceListItem.getTrafficLightRef().setStyleName("yellow"); // yellow
+                    if(invoice.invoicedate.isBefore(LocalDate.now().minusMonths(1))) {
+                        if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Set red");
+                        invoiceListItem.getTrafficLightRef().setStyleName("bg-secondary-1-2"); // red
+                    }
+                    if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Invoice Not Synced");
+                } else {
+                    invoicesSynced++;
+                    if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Invoice Synced: "+invoicesSynced);
+                }
+            }
+            if(projectSummary.getClient().getUuid().equals("2a44473b-d20d-4c0b-81ce-62a4d1368497")) logger.info("Summary done");
+
             if(projectSummary.getRegisteredamount()*0.2>projectSummary.getInvoicedamount()) {
                 invoiceListItem.getTrafficLight().addStyleName("bg-secondary-1-2"); // red
             } else if(projectSummary.getRegisteredamount()*0.95<=projectSummary.getInvoicedamount()) {
@@ -170,7 +203,8 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
         if(!tabList.isEmpty()) {
             InvoiceTab invoiceTab = tabList.get(tabList.size() - 1);
             invoiceTab.getLblClientName().setValue(client.getName());
-            if(client.getAccountManager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), false, 40, PIXELS));
+            if(client.getAccountManager()!=null) invoiceTab.getImgAccountManager().addComponent(photoService.getRoundMemberImage(client.getAccountmanager(), 0, 40, PIXELS));
+            invoiceTab.getLblSynced().setValue(invoicesSynced + " of " + invoiceCount);
             invoiceTab.getLblPercent().setValue(NumberConverter.convertDoubleToInt((invoicedByClient/registeredByClient)*100.0)+"%");
         }
         if(lastInvoiceListItem!=null) lastInvoiceListItem.removeStyleName("grey-box-border");
@@ -187,7 +221,6 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 .withDisplayRules(12, 12, 4, 4)
                 .withComponent(invoiceListLayout);
 
-
         VerticalLayout invoicePreviewVerticalLayout = new MVerticalLayout(tabSheet)
                 .withStyleName("card-1");
 
@@ -202,8 +235,8 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
     public void refreshTabs(TabSheet tabSheet, ProjectSummary projectSummary) {
         tabSheet.removeAllComponents();
         for (Invoice invoice : projectSummary.getInvoiceList().stream().sorted(Comparator.comparingInt(Invoice::getInvoicenumber).reversed()).collect(Collectors.toList())) {
-            DraftEditDesign invoiceEditDesign = new DraftEditImpl(invoice, invoiceService);
-            tabSheet.addTab(invoiceEditDesign, (invoice.getInvoicenumber()==0)?"Phantom":invoice.getType().name().substring(0,2)+"-"+StringUtils.convertInvoiceNumberToString(invoice.invoicenumber));
+            DraftEditDesign invoiceEditDesign = new DraftEditImpl(invoice, invoiceService, financeService);
+            tabSheet.addTab(invoiceEditDesign, (invoice.getInvoicenumber()==0)?"Phantom":invoice.getType().name().substring(0,2)+"-"+StringUtils.convertInvoiceNumberToString(invoice.invoicenumber), invoice.referencenumber==0?MaterialIcons.SYNC_PROBLEM:MaterialIcons.LINK);
 
             invoiceEditDesign.btnDownload.addClickListener(event -> {
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -225,15 +258,16 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
             invoiceEditDesign.btnDropbox.addClickListener(event -> {
                 uploadToDropbox(invoice);
             });
+            invoiceEditDesign.btnDropbox.setVisible(false);
             invoiceEditDesign.btnCreateCreditNote.addClickListener(event -> {
-                if(invoice.uuid == null && invoice.uuid.trim().length() == 0) return;
+                if(invoice.uuid == null || invoice.uuid.trim().length() == 0) return;
                 Invoice creditNota = invoiceService.createCreditNote(invoice);
                 projectSummary.getDraftInvoiceList().add(creditNota);
                 refreshTabs(tabSheet, projectSummary);
             });
         }
         for (Invoice invoice : projectSummary.getDraftInvoiceList().stream().sorted(Comparator.comparingInt(Invoice::getInvoicenumber).reversed()).collect(Collectors.toList())) {
-            DraftEditImpl invoiceEditDesign = new DraftEditImpl(invoice, invoiceService);
+            DraftEditImpl invoiceEditDesign = new DraftEditImpl(invoice, invoiceService, financeService);
             final TabSheet.Tab tab = tabSheet.addTab(invoiceEditDesign, "DRAFT");
             invoiceEditDesign.btnDelete.addClickListener(event -> {
                 invoiceService.delete(invoice.getUuid());
@@ -245,7 +279,7 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 savedInvoice = invoiceService.createInvoice(savedInvoice);
                 projectSummary.getInvoiceList().add(savedInvoice);
                 projectSummary.getDraftInvoiceList().remove(invoice);
-                uploadToDropbox(savedInvoice);
+                //uploadToDropbox(savedInvoice);
                 refreshTabs(tabSheet, projectSummary);
             });
             invoiceEditDesign.btnCreatePhantom.addClickListener(event -> {
@@ -288,7 +322,8 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                         ".pdf"
         );
 
-        dropboxAPI.uploadInvoice(resource, invoice.invoicedate);
+
+        //dropboxAPI.uploadInvoice(resource, invoice.invoicedate);
     }
 
     private void createStatCards(int value1, int value2, int value3, int value4) {

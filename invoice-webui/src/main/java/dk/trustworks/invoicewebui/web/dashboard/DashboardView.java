@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.alump.materialicons.MaterialIcons;
+import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -106,8 +107,6 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private final SpriteSheet spriteSheet;
 
-    private final KnowledgeChart knowledgeChart;
-
     private final BudgetService budgetService;
 
     private final AvailabilityService availabilityService;
@@ -128,7 +127,6 @@ public class   DashboardView extends VerticalLayout implements View {
         this.dashboardBoxCreator = dashboardBoxCreator;
         this.revenuePerMonthChart = revenuePerMonthChart;
         this.spriteSheet = spriteSheet;
-        this.knowledgeChart = knowledgeChart;
         this.budgetService = budgetService;
         this.availabilityService = availabilityService;
     }
@@ -144,58 +142,10 @@ public class   DashboardView extends VerticalLayout implements View {
         board.setSizeFull();
         board.setScrollable(true);
 
-        User randomFocusUser = userService.findCurrentlyEmployedUsers(true, CONSULTANT, STUDENT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(true, CONSULTANT, STUDENT).size() - 1));
-
-        BoxImpl knowledgeChartCard = new BoxImpl();
-        knowledgeChartCard.getContent().setDefaultComponentAlignment(Alignment.TOP_CENTER);
-
-        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
-        ResponsiveRow responsiveRow = responsiveLayout.addRow();
-        responsiveRow.addColumn().withDisplayRules(4,4,4,4).withComponent(photoService.getRoundImage(randomFocusUser.getUuid(), false, 100, Unit.PERCENTAGE));
-
-        String teamuuid = teamRestService.getTeamuuidsAsMember(randomFocusUser);
-
-        if(teamuuid!=null) {
-            Image teamImage = new Image(null, photoService.getRelatedPhotoResource(teamuuid));
-            teamImage.setWidth(100, Unit.PERCENTAGE);
-            responsiveRow.addColumn().withComponent(teamImage).withDisplayRules(8,8,8,8);
-        }
-
-        knowledgeChartCard.instance(responsiveLayout);
-
-        knowledgeChartCard.instance(
-                new MLabel(randomFocusUser.getFirstname()+" "+randomFocusUser.getLastname()+" is working at...")
-                        .withStyleName("h5 bold"));
-
-        List<Contract> contractList = contractService.findTimeActiveConsultantContracts(randomFocusUser, LocalDate.now());
-        int i = 0;
-        List<String> clients = new ArrayList<>();
-        HorizontalLayout hlayout = null;
-        for (Contract contract : contractList) {
-            if(clients.contains(contract.clientuuid)) continue;
-            else clients.add(contract.clientuuid);
-            if(i==0) {
-                hlayout = new HorizontalLayout();
-                hlayout.setSizeFull();
-                knowledgeChartCard.instance(hlayout);
-            }
-            Image image = new Image("", photoService.getRelatedPhotoResource(contract.getClientuuid()));
-            image.setWidth(100, Unit.PERCENTAGE);
-            hlayout.addComponent(image);
-            i++;
-            if(i==2) i=0;
-        }
-        knowledgeChartCard.instance(
-                new MLabel("")
-                        .withStyleName("h5 bold"));
-        knowledgeChartCard.instance(
-                new MLabel("Using this set of skills...")
-                        .withStyleName("h5 bold"));
-
-        knowledgeChartCard.instance(knowledgeChart.getChart(randomFocusUser));
+        BoxImpl knowledgeChartCard = showcaseRandomConsultant();
 
         PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
-        Component informationBanner = getInformationBanner();
+        //Component informationBanner = getInformationBanner();
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
         VideoCardImpl monthNewsCardDesign = new VideoCardImpl(2, 6 , "monthNewsCardDesign");
@@ -256,7 +206,7 @@ public class   DashboardView extends VerticalLayout implements View {
 
         ResponsiveRow row1 = mainLayout.addRow();
 
-        row1.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(informationBanner);
+        //row1.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(informationBanner);
 
         ResponsiveLayout responsiveColumn1Layout = new ResponsiveLayout();
         ResponsiveLayout responsiveColumn2Layout = new ResponsiveLayout();
@@ -298,20 +248,71 @@ public class   DashboardView extends VerticalLayout implements View {
         createNotifications();
     }
 
+    private BoxImpl showcaseRandomConsultant() {
+        User randomFocusUser = userService.findCurrentlyEmployedUsers(true, CONSULTANT, STUDENT).get(new Random(System.currentTimeMillis()).nextInt(userService.findCurrentlyEmployedUsers(true, CONSULTANT, STUDENT).size() - 1));
+
+        BoxImpl knowledgeChartCard = new BoxImpl();
+        knowledgeChartCard.getContent().setDefaultComponentAlignment(Alignment.TOP_CENTER);
+
+        ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
+        ResponsiveRow responsiveRow = responsiveLayout.addRow();
+        responsiveRow.addColumn().withDisplayRules(4,4,4,4).withComponent(photoService.getRoundImage(randomFocusUser.getUuid(), false, 100, Unit.PERCENTAGE));
+
+        String teamuuid = teamRestService.getTeamuuidsAsMember(randomFocusUser);
+
+        if(teamuuid!=null) {
+            Image teamImage = new Image(null, photoService.getRelatedPhotoResource(teamuuid));
+            teamImage.setWidth(100, Unit.PERCENTAGE);
+            responsiveRow.addColumn().withComponent(teamImage).withDisplayRules(8,8,8,8);
+        }
+
+        knowledgeChartCard.instance(responsiveLayout);
+
+        knowledgeChartCard.instance(
+                new MLabel(randomFocusUser.getFirstname()+" "+randomFocusUser.getLastname()+" is working at...")
+                        .withStyleName("h5 bold"));
+
+        List<Contract> contractList = contractService.findTimeActiveConsultantContracts(randomFocusUser, LocalDate.now());
+        int i = 0;
+        List<String> clients = new ArrayList<>();
+        HorizontalLayout hlayout = null;
+        for (Contract contract : contractList) {
+            if(clients.contains(contract.clientuuid)) continue;
+            else clients.add(contract.clientuuid);
+            if(i==0) {
+                hlayout = new HorizontalLayout();
+                hlayout.setSizeFull();
+                knowledgeChartCard.instance(hlayout);
+            }
+            Image image = new Image("", photoService.getRelatedPhotoResource(contract.getClientuuid()));
+            image.setWidth(100, Unit.PERCENTAGE);
+            hlayout.addComponent(image);
+            i++;
+            if(i==2) i=0;
+        }
+        knowledgeChartCard.instance(
+                new MLabel("")
+                        .withStyleName("h5 bold"));
+        //knowledgeChartCard.instance(new MLabel("Using this set of skills...").withStyleName("h5 bold"));
+
+        //knowledgeChartCard.instance(knowledgeChart.getChart(randomFocusUser));
+        return knowledgeChartCard;
+    }
+
     private Component getInformationBanner() {
         Component informationBanner = new VerticalLayout();
         switch (new Random().nextInt(2)) {
             case 1:
                 informationBanner = new BoxImpl().instance(new MVerticalLayout(
-                        new MLabel("Mål for team Q2/2022").withFullWidth().withStyleName("turquoise-font","h4", "center-label","bold", "wrap-label"),
-                                new MLabel("1-3 individuelle teammål (defineres af team sponsor)").withFullWidth().withStyleName("turquoise-font","h5", "center-label", "wrap-label")
+                        new MLabel("Mål for team Q3/2022").withFullWidth().withStyleName("turquoise-font","h4", "center-label","bold", "wrap-label"),
+                                new MLabel("1-3 individuelle teammål (defineres af COO & Teamleads)").withFullWidth().withStyleName("turquoise-font","h5", "center-label", "wrap-label")
                                 //new MLabel("Styr på butikken - helt ned til de mere lavpraktisk ting").withFullWidth().withStyleName("turquoise-font","h5", "center-label", "wrap-label"),
                                 //new MLabel("Det individuelle team mål (defineres af hvert team)").withFullWidth().withStyleName("turquoise-font","h5", "center-label", "wrap-label")
                         ).withFullWidth().withDefaultComponentAlignment(Alignment.MIDDLE_CENTER))
                         .withBgStyle("dark-grey");
                 break;
             case 0:
-                String[] informationBannerPhotoArray = {"images/cards/knowledge/lifecycle.png", "images/cards/knowledge/pejlemaerker.png"};
+                String[] informationBannerPhotoArray = {"images/cards/knowledge/trustworks_aarshjul.jpg", "images/cards/knowledge/pejlemaerker.png"};
                 informationBanner = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard").loadResourcePhoto(informationBannerPhotoArray[new Random().nextInt(2)]);
 
         }
@@ -320,6 +321,24 @@ public class   DashboardView extends VerticalLayout implements View {
 
     private void createNotifications() {
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
+
+        /*
+        Window aTeamWindow = new Window();
+        aTeamWindow.setModal(true);
+        aTeamWindow.setWidth(1300, PIXELS);
+        aTeamWindow.setHeight(790, PIXELS);
+        aTeamWindow.setResizable(false);
+        aTeamWindow.setClosable(false);
+        Image image = new Image();
+        image.setSource(new ThemeResource("images/ateam/Slide" + (new Random().nextInt(21) + 1) + ".PNG"));
+        aTeamWindow.setContent(new VerticalLayout(
+                image,
+            new MButton("AWESOME! BUT LET'S MOVE ON....", event -> aTeamWindow.close()).withHeight(30, PIXELS).withFullWidth()));
+
+        UI.getCurrent().addWindow(aTeamWindow);
+        System.out.println("A-TEAM");
+
+         */
 
         List<Notification> notificationList = notificationRepository.findByUseruuidAndAndExpirationdateAfter(user.getUuid(), LocalDate.now());
         for (Notification notification : notificationList) {

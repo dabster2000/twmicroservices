@@ -36,7 +36,7 @@ public class TalentPassionResultBox {
         this.userService = userService;
     }
 
-    public Component create() {
+    public Component createTalentPassionResultBox() {
 
         Component resultInstance = talentPassionResult.getResultBoard();
         talentPassionResult.showResultDescription();

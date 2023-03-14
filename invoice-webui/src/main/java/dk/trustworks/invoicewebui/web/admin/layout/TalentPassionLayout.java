@@ -58,7 +58,7 @@ public class TalentPassionLayout {
 
         for (User user : userService.findCurrentlyEmployedUsers(true, ConsultantType.CONSULTANT)) {
             TalentPassionScoringDesign scoringDesign = new TalentPassionScoringDesign();
-            Image roundMemberImage = photoService.getRoundMemberImage(user.getUuid(), false, 125, PIXELS);
+            Image roundMemberImage = photoService.getRoundMemberImage(user.getUuid(), 0, 125, PIXELS);
             scoringDesign.getImgUser().addComponent(roundMemberImage);
             scoringDesign.getImgDna().setSource(new ThemeResource("images/icons/trustworks_icon_kaffe.svg"));
             scoringDesign.getImgCustomer().setSource(new ThemeResource("images/icons/trustworks_icon_konsulent.svg"));

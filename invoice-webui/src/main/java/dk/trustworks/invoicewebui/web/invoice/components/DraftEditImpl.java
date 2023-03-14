@@ -4,9 +4,13 @@ import com.kbdunn.vaadin.addons.fontawesome.FontAwesome;
 import com.vaadin.data.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import dk.trustworks.invoicewebui.model.ExpenseDetails;
 import dk.trustworks.invoicewebui.model.Invoice;
 import dk.trustworks.invoicewebui.model.InvoiceItem;
+import dk.trustworks.invoicewebui.model.InvoiceReference;
 import dk.trustworks.invoicewebui.model.enums.InvoiceStatus;
+import dk.trustworks.invoicewebui.network.dto.enums.EconomicAccountGroup;
+import dk.trustworks.invoicewebui.services.FinanceService;
 import dk.trustworks.invoicewebui.services.InvoiceService;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
 import dk.trustworks.invoicewebui.utils.StringUtils;
@@ -17,6 +21,7 @@ import org.vaadin.viritin.label.MLabel;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by hans on 10/07/2017.
@@ -24,13 +29,15 @@ import java.util.*;
 public class DraftEditImpl extends DraftEditDesign {
 
     private InvoiceService invoiceService;
+    private FinanceService financeService;
     Map<Binder<InvoiceItem>, InvoiceItem> binders = new HashMap<>();
     Binder<Invoice> invoiceBinder;
     private Invoice invoice;
 
-    DraftEditImpl(Invoice invoice, InvoiceService invoiceService) {
+    DraftEditImpl(Invoice invoice, InvoiceService invoiceService, FinanceService financeService) {
         this(invoice);
         this.invoiceService = invoiceService;
+        this.financeService = financeService;
 
         btnDropbox.setIcon(MaterialIcons.CLOUD_UPLOAD);
         btnDelete.setIcon(MaterialIcons.DELETE_FOREVER);
@@ -48,7 +55,7 @@ public class DraftEditImpl extends DraftEditDesign {
 
             btnCreateCreditNote.setVisible(true);
             btnDownload.setVisible(true);
-            btnDropbox.setVisible(true);
+            btnDropbox.setVisible(false);
 
             txtAttention.setReadOnly(true);
             txtClientname.setReadOnly(true);
@@ -61,8 +68,16 @@ public class DraftEditImpl extends DraftEditDesign {
             dfInvoiceDate.setReadOnly(true);
 
             lblInvoiceNumber.setValue(StringUtils.convertInvoiceNumberToString(invoice.getInvoicenumber()));
-        } else {
 
+            ComboBox<ExpenseDetails> referenceComboBox = new ComboBox<>("Reference:");
+
+            List<ExpenseDetails> expenseDetails = financeService.findExpenseDetailsByGroup(EconomicAccountGroup.OMSAETNING_ACCOUNTS).stream().filter(e -> e.getAmount() == -getSumWithoutTax(invoice.getInvoiceitems())).collect(Collectors.toList());
+            referenceComboBox.setItems(expenseDetails);
+            referenceComboBox.setItemCaptionGenerator(item -> item.getInvoicenumber()+" | "+item.getExpensedate()+" | "+item.getAmount()+" | "+item.getText());
+            referenceComboBox.addValueChangeListener(event -> {
+                invoiceService.updateInvoiceReference(invoice.getUuid(), new InvoiceReference(event.getValue().getExpensedate(), event.getValue().getEntrynumber()));
+            });
+            hlInvoiceReference.addComponent(referenceComboBox);
         }
     }
 
@@ -143,7 +158,7 @@ public class DraftEditImpl extends DraftEditDesign {
     }
 
     private void calcSums(Set<InvoiceItem> invoiceItems) {
-        double sumWithoutTax = invoiceItems.stream().mapToDouble(o -> o.hours * o.rate).sum();
+        double sumWithoutTax = getSumWithoutTax(invoiceItems);
 
         NumberFormat currencyFormatter = NumberFormat.getInstance(Locale.getDefault());
         currencyFormatter.setMaximumFractionDigits(2);
@@ -153,6 +168,10 @@ public class DraftEditImpl extends DraftEditDesign {
         lblTax.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*0.25));
         lblSumWithTax.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*1.25));
         lblBalanceDue.setValue(currencyFormatter.format((sumWithoutTax-(sumWithoutTax*NumberConverter.parseDouble(txtDiscount.getValue())/100.0))*1.25));
+    }
+
+    private static double getSumWithoutTax(Set<InvoiceItem> invoiceItems) {
+        return invoiceItems.stream().mapToDouble(o -> o.hours * o.rate).sum();
     }
 
     private void createInvoiceLine(InvoiceItem invoiceItem, int atRow) {
@@ -246,6 +265,7 @@ public class DraftEditImpl extends DraftEditDesign {
     }
 
     public Invoice saveInvoice() {
+        if(!invoice.getStatus().equals(InvoiceStatus.DRAFT)) return invoice;
         try {
             for (Binder<InvoiceItem> binder : binders.keySet()) {
                 binder.writeBean(binders.get(binder));

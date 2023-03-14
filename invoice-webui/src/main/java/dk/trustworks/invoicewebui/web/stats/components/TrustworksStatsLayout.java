@@ -1,5 +1,6 @@
 package dk.trustworks.invoicewebui.web.stats.components;
 
+import com.google.common.base.Stopwatch;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.addon.charts.Chart;
@@ -28,11 +29,10 @@ import org.vaadin.viritin.button.MButton;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static dk.trustworks.invoicewebui.model.enums.ConsultantType.*;
-import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
+import static dk.trustworks.invoicewebui.model.enums.ConsultantType.CONSULTANT;
 
 
 /**
@@ -96,6 +96,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
     @Autowired
     private DashboardPreloader dashboardPreloader;
 
+
     private ResponsiveRow baseContentRow;
 
     private ResponsiveRow buttonContentRow;
@@ -136,29 +137,23 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createMonthReportCard() {
-
-        System.out.println("--- Start Dashboard Boxes ---");
-
-        long l = System.currentTimeMillis();
-
+        Stopwatch stopwatch = Stopwatch.createStarted();
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getGoodPeopleBox()));
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+        System.out.println("getGoodPeopleBox() = " + stopwatch.elapsed());
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getCumulativeGrossRevenue()));
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+        System.out.println("getCumulativeGrossRevenue() = " + stopwatch.elapsed());
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getPayout()));
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+        System.out.println("getPayout() = " + stopwatch.elapsed());
         baseContentRow.addColumn()
                 .withDisplayRules(12, 6, 3, 3)
                 .withComponent(new TopCardImpl(dashboardBoxCreator.getUserAllocationBox()));
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
-
-        System.out.println("--- Done Dashboard Boxes ---");
+        System.out.println("getUserAllocationBox() = " + stopwatch.elapsed());
 
         final Button btnCompany = new MButton(MaterialIcons.BUSINESS, "trustworks", event -> {
         }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top").withEnabled(false);
@@ -182,12 +177,25 @@ public class TrustworksStatsLayout extends VerticalLayout {
         final Button btnIndividuals = new MButton( MaterialIcons.FACE, "Individuals", event -> {
         }).withHeight(125, Unit.PIXELS).withFullWidth().withStyleName("tiny", "flat", "large-icon", "icon-align-top");
 
+        final boolean[] loaded = {false, false, false, false, false, false};
         btnCompany.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, companyContentRow));
-        btnTeam.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, consultantsContentRow));
-        btnHistory.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, historyContentRow));
+        btnTeam.addClickListener(event -> {
+            if(!loaded[1]) addConsultantCharts();
+            loaded[1] = true;
+            setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, consultantsContentRow);
+        });
+        btnHistory.addClickListener(event -> {
+            if(!loaded[2]) addHistoryCharts();
+            loaded[2] = true;
+            setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, historyContentRow);
+        });
         btnCustomers.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, customersContentRow));
         btnAdministration.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, administrationContentRow));
-        btnIndividuals.addClickListener(event -> setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, individualsContentRow));
+        btnIndividuals.addClickListener(event -> {
+            if(!loaded[5]) addIndividualCharts();
+            loaded[5] = true;
+            setNewButtonPressState(btnCompany, btnTeam, btnHistory, btnCustomers, btnAdministration, btnIndividuals, event, individualsContentRow);
+        });
 
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnCompany);
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnTeam);
@@ -197,12 +205,17 @@ public class TrustworksStatsLayout extends VerticalLayout {
         buttonContentRow.addColumn().withDisplayRules(6, 2, 2, 2).withComponent(btnIndividuals);
 
         addCompanyCharts();
-        addConsultantCharts();
-        addHistoryCharts();
-        addIndividualCharts();
+        System.out.println("addCompanyCharts() = " + stopwatch.elapsed());
+        //addConsultantCharts();
+        System.out.println("addConsultantCharts() = " + stopwatch.elapsed());
+        //addHistoryCharts();
+        System.out.println("addHistoryCharts() = " + stopwatch.elapsed());
+        //addIndividualCharts();
+        System.out.println("addIndividualCharts() = " + stopwatch.stop());
     }
 
     public void addCompanyCharts() {
+        //Span span = tracer.buildSpan("addCompanyCharts").start();
         ResponsiveLayout responsiveLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         companyContentRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(responsiveLayout);
         ResponsiveRow searchRow = responsiveLayout.addRow();
@@ -211,6 +224,8 @@ public class TrustworksStatsLayout extends VerticalLayout {
         AtomicReference<LocalDate> currentFiscalYear = createDateSelectorHeader(searchRow, chartRow);
 
         createCompanyCharts(chartRow, currentFiscalYear.get(), currentFiscalYear.get().plusYears(1));
+        //
+        // span.finish();
     }
 
     private AtomicReference<LocalDate> createDateSelectorHeader(ResponsiveRow searchRow, ResponsiveRow chartRow) {
@@ -244,32 +259,27 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createCompanyCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd) {
-        System.out.println("--- Start company charts ---");
-        long l = System.currentTimeMillis();
+        Stopwatch stopwatch = Stopwatch.createStarted();
         Box revenuePerMonthCard = new Box();
         revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd));
-
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+        System.out.println("createRevenuePerMonthChart() = " + stopwatch.elapsed());
 
         Box expensesPerMonthCard = new Box();
         expensesPerMonthCard.getContent().addComponent(expensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
-
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+        System.out.println("createExpensePerMonthChart() = " + stopwatch.elapsed());
 
         Box cumulativeRevenuePerMonthCard = new Box();
         cumulativeRevenuePerMonthCard.getContent().addComponent(cumulativeRevenuePerMonthChart.createCumulativeRevenuePerMonthChart(localDateStart, localDateEnd));
-
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
+        System.out.println("createCumulativeRevenuePerMonthChart() = " + stopwatch.elapsed());
 
         Box utilizationPerMonthCard = new Box();
         utilizationPerMonthCard.getContent().addComponent(utilizationPerMonthChart.createGroupUtilizationPerMonthChart(localDateStart, localDateEnd));
+        System.out.println("createGroupUtilizationPerMonthChart() = " + stopwatch.elapsed());
 
         Box marginPerClientCard = new Box();
         marginPerClientCard.getContent().addComponent(marginPerClientChart.createMarginPerClientChart(localDateStart.getYear()));
+        System.out.println("createMarginPerClientChart() = " + stopwatch.stop());
 
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
-
-        System.out.println("--- Done company charts ---");
 
         Box forecastRevenuePerMonthCard = new Box();
 
@@ -332,35 +342,33 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createConsultantCharts(ResponsiveRow chartRow, LocalDate localDateStart, LocalDate localDateEnd) {
-        System.out.println("--- Start consultant charts ---");
-        long l = System.currentTimeMillis();
-
+        Stopwatch s1 = Stopwatch.createStarted();
         Box topGrossingConsultantsBox = new Box();
         topGrossingConsultantsBox.getContent().addComponent(topGrossingConsultantsChart.createTopGrossingConsultantsChart(localDateStart, localDateEnd));
+        System.out.println("s1.createTopGrossingConsultantsChart = " + s1.stop());
 
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
-
+        Stopwatch s2 = Stopwatch.createStarted();
         Box avgExpensesPerMonthCard = new Box();
         avgExpensesPerMonthCard.getContent().addComponent(avgExpensesPerMonthChart.createExpensePerMonthChart(localDateStart, localDateEnd));
+        System.out.println("s2.createExpensePerMonthChart = " + s2.stop());
 
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
-
+        Stopwatch s3 = Stopwatch.createStarted();
         Box yourTrustworksForecastCard = new Box();
-        yourTrustworksForecastCard.getContent().addComponent(yourTrustworksForecastChart.createChart(localDateStart, localDateEnd));
+        yourTrustworksForecastCard.getContent().addComponent(yourTrustworksForecastChart.createYourTrustworksForecastChart(localDateStart, localDateEnd));
+        System.out.println("s3.createYourTrustworksForecastChart = " + s3.stop());
 
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
-
+        Stopwatch s4 = Stopwatch.createStarted();
         Box revenuePerMonthEmployeeAvgCard = new Box();
         revenuePerMonthEmployeeAvgCard.getContent().addComponent(revenuePerMonthEmployeeAvgChart.createRevenuePerMonthChart(localDateStart, localDateEnd.withDayOfMonth(1).minusMonths(1)));
+        System.out.println("s4.createRevenuePerMonthChart = " + s4.stop());
 
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
-
+        /*
+        Stopwatch s5 = Stopwatch.createStarted();
         Box talentPassionCard = new Box();
-        talentPassionCard.getContent().addComponent(talentPassionResultBox.create());
+        talentPassionCard.getContent().addComponent(talentPassionResultBox.createTalentPassionResultBox());
+        System.out.println("s5.createTalentPassionResultBox = " + s5.stop());
 
-        System.out.println("l - System.currentTimeMillis() = " + (l - System.currentTimeMillis()));
-
-        System.out.println("--- Done consultant charts ---");
+         */
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
@@ -374,9 +382,12 @@ public class TrustworksStatsLayout extends VerticalLayout {
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 6, 6)
                 .withComponent(revenuePerMonthEmployeeAvgCard);
+        /*
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(talentPassionCard);
+
+         */
 
     }
 
@@ -390,14 +401,20 @@ public class TrustworksStatsLayout extends VerticalLayout {
     }
 
     private void createHistoryCharts(ResponsiveRow chartRow) {
+        Stopwatch s1 = Stopwatch.createStarted();
         Box averageConsultantRevenueByYearCard = new Box();
         averageConsultantRevenueByYearCard.getContent().addComponent(averageConsultantRevenueByYearChart.createRevenuePerConsultantChart());
+        System.out.println("s1.averageConsultantRevenueByYearChart = " + s1.stop());
 
+        Stopwatch s2 = Stopwatch.createStarted();
         Box expensesPerEmployee = new Box();
         expensesPerEmployee.getContent().addComponent(expensesSalariesRevenuePerMonthChart.createExpensesPerMonthChart());
+        System.out.println("s2.averageConsultantRevenueByYearChart = " + s2.stop());
 
+        Stopwatch s3 = Stopwatch.createStarted();
         Box utilizationPerYearCard = new Box();
         utilizationPerYearCard.getContent().addComponent(utilizationPerYearChart.createChart());
+        System.out.println("s3.averageConsultantRevenueByYearChart = " + s3.stop());
 
         chartRow.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
@@ -420,7 +437,7 @@ public class TrustworksStatsLayout extends VerticalLayout {
         AtomicReference<Image> selectedEmployeeImage = new AtomicReference<>(null);
 
         for (User employee : userService.findCurrentlyEmployedUsers(true, CONSULTANT)) {
-            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), false, 60, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), 0, 60, Unit.PERCENTAGE);
             memberImage.addClickListener(event -> {
                 chartRow.removeAllComponents();
                 if(selectedEmployeeImage.get() != null) {

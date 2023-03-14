@@ -20,6 +20,9 @@ import com.vaadin.ui.declarative.Design;
 @SuppressWarnings("serial")
 public class InvoiceListItem extends HorizontalLayout {
     private VerticalLayout trafficLight;
+
+    private VerticalLayout trafficLightRef;
+
     private Label lblProjectName;
     private Label lblAmount;
     private Label lblDescription;
@@ -31,6 +34,10 @@ public class InvoiceListItem extends HorizontalLayout {
 
     public VerticalLayout getTrafficLight() {
         return trafficLight;
+    }
+
+    public VerticalLayout getTrafficLightRef() {
+        return trafficLightRef;
     }
 
     public Label getLblProjectName() {

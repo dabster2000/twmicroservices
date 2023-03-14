@@ -45,5 +45,6 @@ public class  StatsManagerView extends VerticalLayout implements View {
     }
 
     @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {}
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+    }
 }

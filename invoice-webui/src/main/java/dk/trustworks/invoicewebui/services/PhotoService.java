@@ -18,16 +18,18 @@ public class PhotoService {
     @Autowired
     private FileRestService fileRestService;
 
-    public Image getRoundMemberImage(String useruuid, boolean isOwner) {
-        return getRoundMemberImage(useruuid, isOwner, 75, Sizeable.Unit.PIXELS);
+    public Image getRoundMemberImage(String useruuid, int order) {
+        return getRoundMemberImage(useruuid, order, 75, Sizeable.Unit.PIXELS);
     }
 
-    public Image getRoundMemberImage(String useruuid, boolean isOwner, int width, Sizeable.Unit unit) {
+
+    public Image getRoundMemberImage(String useruuid, int order, int width, Sizeable.Unit unit) {
         File photo = fileRestService.findPhotoByRelateduuid(useruuid);
 
         Image image = new Image();
         //image.setDescription(member.getFirstname()+" "+member.getLastname());
-        if(photo!=null && photo.getFile()!=null && photo.getFile()!=null) {
+        //if(photo!=null && photo.getFile()!=null && photo.getFile()!=null) {
+        if(photo != null && photo.getFile() != null) {
             image.setSource(
                     new StreamResource((StreamResource.StreamSource) () ->
                             new ByteArrayInputStream(photo.getFile()),
@@ -35,7 +37,8 @@ public class PhotoService {
         } else {
             image.setSource(new ThemeResource("images/clients/missing-logo.jpg"));
         }
-        if(isOwner) image.setStyleName("img-circle-gold");
+        if(order==1) image.setStyleName("img-circle-gold");
+        else if(order==2) image.setStyleName("img-circle-grey");
         else image.setStyleName("img-circle");
         image.setWidth(width, unit);
         image.setHeight(width, unit);

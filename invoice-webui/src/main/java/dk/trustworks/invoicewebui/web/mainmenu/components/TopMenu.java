@@ -59,7 +59,6 @@ public class TopMenu extends CssLayout implements Broadcaster.BroadcastListener 
         }
         User user = userSession.getUser();
 
-        Broadcaster.register(this);
         setStyleName("v-component-group material");
         setWidth("100%");
         setHeight("75px");

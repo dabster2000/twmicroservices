@@ -15,9 +15,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
 import dk.trustworks.invoicewebui.model.*;
+import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.model.enums.TeamMemberType;
 import dk.trustworks.invoicewebui.network.rest.TeamRestService;
+import dk.trustworks.invoicewebui.services.BiService;
 import dk.trustworks.invoicewebui.services.UserService;
 import dk.trustworks.invoicewebui.web.admin.components.*;
 import dk.trustworks.invoicewebui.web.admin.model.Employee;
@@ -43,6 +46,9 @@ import static dk.trustworks.invoicewebui.utils.DateUtils.stringIt;
 @SpringUI
 @SpringComponent
 public class UserLayout {
+
+    @Autowired
+    private BiService biService;
 
     @Autowired
     private UserService userService;
@@ -179,10 +185,12 @@ public class UserLayout {
         String[] categories = new String[months];
         DataSeries revenueSeries = new DataSeries("Employees");
 
+        List<CompanyAggregateData> data = biService.getCompanyAggregateDataByPeriod(periodStart, periodEnd);
+
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            List<User> usersByLocalDate = userService.findEmployedUsersByDate(currentDate, true, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);
-            revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy")), usersByLocalDate.size()));
+            //List<User> usersByLocalDate = userService.findEmployedUsersByDate(currentDate, true, ConsultantType.CONSULTANT, ConsultantType.STAFF, ConsultantType.STUDENT);
+            revenueSeries.add(new DataSeriesItem(currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy")), data.stream().filter(d -> d.getMonth().isEqual(currentDate)).mapToInt(CompanyAggregateData::getNumOfEmployees).sum()));
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM yyyy"));
         }
 
@@ -218,7 +226,7 @@ public class UserLayout {
                         user.getEmail(),
                         userStatus.get().getAllocation()+"",
                         salary.get().getSalary(),
-                        24000,
+                        salary.get().getSalary()*12,
                         user.isPension()+"",
                         user.isHealthcare()+"",
                         user.isPhotoconsent()+"",

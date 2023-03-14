@@ -2,11 +2,7 @@ package dk.trustworks.invoicewebui.web.vtv.layouts;
 
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.addon.charts.model.style.Color;
-import com.vaadin.addon.charts.model.style.SolidColor;
-import com.vaadin.addon.charts.themes.ValoLightTheme;
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
-import com.vaadin.data.HasValue;
 import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
@@ -16,11 +12,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Contract;
 import dk.trustworks.invoicewebui.model.ContractConsultant;
+import dk.trustworks.invoicewebui.model.Team;
 import dk.trustworks.invoicewebui.model.User;
 import dk.trustworks.invoicewebui.model.dto.EmployeeAggregateData;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
+import dk.trustworks.invoicewebui.network.rest.TeamRestService;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberUtils;
@@ -28,6 +26,7 @@ import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.resourceplanning.components.SalesHeatMap;
 import dk.trustworks.invoicewebui.web.vtv.components.HoursPerConsultantChart;
+import dk.trustworks.invoicewebui.web.vtv.components.Pipeline;
 import dk.trustworks.invoicewebui.web.vtv.components.UtilizationPerMonthChart;
 import dk.trustworks.invoicewebui.web.vtv.model.MarginRow;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +53,9 @@ public class SalesLayout extends VerticalLayout {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TeamRestService teamRestService;
 
     @Autowired
     private ClientService clientService;
@@ -85,6 +86,8 @@ public class SalesLayout extends VerticalLayout {
         LocalDate localDateStart = LocalDate.now().withDayOfMonth(1);
 
         List<EmployeeAggregateData> employeeData = biService.getEmployeeAggregateDataByPeriod(localDateStart, localDateStart.plusMonths(2));
+        List<Team> teams = teamRestService.getAllTeams();
+
         for (int month = 0; month < 3; month++) {
             LocalDate actualDate = localDateStart.plusMonths(month);
             BoxImpl box = new BoxImpl().instance(new MLabel(DateUtils.stringIt(actualDate, "MMMM yyyy")+ " ( <=80% )").withStyleName("bold"));
@@ -93,13 +96,26 @@ public class SalesLayout extends VerticalLayout {
             employeeData.stream().filter(e ->
                     e.getContractUtilization()<=0.8 &&
                             e.getStatusType().equals(StatusType.ACTIVE) &&
-                            (e.getConsultantType().equals(ConsultantType.CONSULTANT) || e.getConsultantType().equals(ConsultantType.STUDENT)) &&
+                            (e.getConsultantType().equals(ConsultantType.CONSULTANT)) &&
                             e.getMonth().withDayOfMonth(1).isEqual(actualDate))
                     .collect(Collectors.toList()).forEach(e -> {
                 User user = userService.findByUUID(e.getUseruuid(), true);
-                String teamname = e.getTeamMemberOf().size()>0?e.getTeamMemberOf().get(0).getShortname():"None";
+                        String teamname = teams.stream().filter(t -> t.getUuid().equals(e.getTeamMemberOf())).findFirst().orElse(new Team("", "", "None", "", false, false)).getShortname();
                 box.getContent().addComponent(new Label(user.getFirstname()+" "+user.getLastname()+" ("+teamname+") ("+ NumberUtils.round(e.getContractUtilization()*100, 0)+"%)"));
             });
+            box.getContent().addComponent(new Label(" "));
+            box.getContent().addComponent(new Label("Students:"));
+            employeeData.stream().filter(e ->
+                            e.getContractUtilization()<=0.8 &&
+                                    e.getStatusType().equals(StatusType.ACTIVE) &&
+                                    (e.getConsultantType().equals(ConsultantType.STUDENT)) &&
+                                    e.getMonth().withDayOfMonth(1).isEqual(actualDate))
+                    .collect(Collectors.toList()).forEach(e -> {
+                        User user = userService.findByUUID(e.getUseruuid(), true);
+                        String teamname = teams.stream().filter(t -> t.getUuid().equals(e.getTeamMemberOf())).findFirst().orElse(new Team("", "", "None", "", false, false)).getShortname();
+                        //String teamname = e.getTeamMemberOf().size()>0?e.getTeamMemberOf().get(0).getShortname():"None";
+                        box.getContent().addComponent(new Label(user.getFirstname()+" "+user.getLastname()+" ("+teamname+") ("+ NumberUtils.round(e.getContractUtilization()*100, 0)+"%)"));
+                    });
         }
 
         Card hoursPerConsultantCard = new Card();
@@ -130,6 +146,7 @@ public class SalesLayout extends VerticalLayout {
         row.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(allocationChartCard);
 
         Card heatMapCard = new Card();
+        heatMapCard.getLblTitle().setValue("Utilization forecast");
         heatMapCard.getCardHolder().addComponent(salesHeatMap.getChart(localDateStart, LocalDate.now().withDayOfMonth(1).plusMonths(11)));
 
         row.addColumn()
@@ -161,6 +178,9 @@ public class SalesLayout extends VerticalLayout {
         row.addColumn()
                 .withDisplayRules(12, 12, 12, 12)
                 .withComponent(marginCard);
+
+        row.addColumn().withDisplayRules(12,12,12,12)
+                .withComponent(new Pipeline());
 
         this.addComponent(responsiveLayout);
         return this;

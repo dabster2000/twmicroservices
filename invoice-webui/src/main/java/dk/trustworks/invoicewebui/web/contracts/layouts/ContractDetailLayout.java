@@ -21,9 +21,11 @@ import dk.trustworks.invoicewebui.jobs.ChartCacheJob;
 import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.enums.ContractStatus;
 import dk.trustworks.invoicewebui.model.enums.ContractType;
+import dk.trustworks.invoicewebui.model.enums.SalesStatus;
 import dk.trustworks.invoicewebui.model.enums.TaskType;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.Card;
 import dk.trustworks.invoicewebui.web.contracts.components.*;
 import dk.trustworks.invoicewebui.web.model.LocalDatePeriod;
@@ -319,6 +321,8 @@ public class ContractDetailLayout extends ResponsiveLayout {
     }
 
     private void createContractForm(Contract contract) {
+        ContractSalesConsultant salesconsultant = contract.getSalesconsultant();
+        contract.setSalesconsultant(null);
         contractLayout.removeAllComponents();
         contractForm = new ContractFormDesign();
         contractLayout.addComponent(contractForm);
@@ -334,6 +338,23 @@ public class ContractDetailLayout extends ResponsiveLayout {
         contractBinder.forField(contractForm.getDfFrom()).bind(Contract::getActiveFrom, Contract::setActiveFrom);
         contractBinder.forField(contractForm.getDfTo()).bind(Contract::getActiveTo, Contract::setActiveTo);
         contractBinder.forField(contractForm.getTxtRefid()).bind(Contract::getRefid, Contract::setRefid);
+/*
+        List<User> currentlyEmployedUsers = userService.findCurrentlyEmployedUsers(true);
+        contractForm.getCbSalesConsultant().setItems(currentlyEmployedUsers);
+
+        contractBinder.forField(contractForm.getCbSalesConsultant()).bind(c -> {
+            Optional<User> salesConsultantOptional = currentlyEmployedUsers.stream().filter(u -> u.getUuid().equals(salesconsultant.getSalesconsultant())).findAny();
+            return salesConsultantOptional.orElse(null);
+        }, (c, u) -> {
+            c.setSalesconsultant(new ContractSalesConsultant(UUID.randomUUID().toString(), contract.getUuid(), u.getUuid(), SalesStatus.REVIEW, LocalDateTime.now()));
+        });
+/*
+        contractBinder.addValueChangeListener(event -> {
+            if(!event.isUserOriginated()) return;
+            if(event.getComponent().equals())
+        });
+        */
+
         contractBinder.forField(contractForm.getTxtNote()).bind(Contract::getNote, Contract::setNote);
         contractForm.getCbStatus().setItems(ContractStatus.values());
         contractBinder.forField(contractForm.getCbStatus()).bind(Contract::getStatus, Contract::setStatus);
@@ -667,7 +688,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
             consultantRowDesign.getLblName().setValue(user.getFirstname() + " " + user.getLastname());
             consultantRowDesign.getLblMargin().setValue("Margin: "+MarginService.get().calculateCapacityByMonthByUser(contractConsultant.getUseruuid(), (int) Math.floor(contractConsultant.getRate()))+" kr");
             consultantRowDesign.getLblMargin().setVisible(true);
-            consultantRowDesign.getTxtRate().setValue(Math.round(contractConsultant.getRate())+"");
+            consultantRowDesign.getTxtRate().setValue(NumberConverter.formatDouble(contractConsultant.getRate())+"");
             consultantRowDesign.getTxtRate().addValueChangeListener(event -> {
                 contractConsultant.setRate(NumberConverter.parseDouble(event.getValue()));
                 contractService.updateConsultant(contract, contractConsultant);
@@ -675,14 +696,14 @@ public class ContractDetailLayout extends ResponsiveLayout {
             });
             consultantRowDesign.getTxtRate().setValueChangeMode(ValueChangeMode.BLUR);
             consultantRowDesign.getTxtHours().setValueChangeMode(ValueChangeMode.BLUR);
-            consultantRowDesign.getTxtHours().setValue(Math.round(contractConsultant.getHours())+"");
+            consultantRowDesign.getTxtHours().setValue(contractConsultant.getHours()+"");
             consultantRowDesign.getTxtHours().addValueChangeListener(event -> {
                 contractConsultant.setHours(NumberConverter.parseDouble(event.getValue()));
                 contractService.updateConsultant(contract, contractConsultant);
                 updateData(contract);
             });
             consultantRowDesign.getVlHours().setVisible(contract.getContractType().equals(ContractType.PERIOD));
-            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user.getUuid(), false));
+            consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user.getUuid(), 0));
 
             consultantRowDesign.getBtnDelete().addClickListener(event -> removeConsultant(contract, contractConsultant));
 
@@ -768,7 +789,7 @@ public class ContractDetailLayout extends ResponsiveLayout {
         consultantRowDesign.getTxtRate().setValue("0");
         consultantRowDesign.getTxtHours().setValue("0");
         consultantRowDesign.getVlHours().setVisible(Contract.getContractType().equals(ContractType.PERIOD));
-        consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user.getUuid(), false));
+        consultantRowDesign.getImgPhoto().addComponent(photoService.getRoundMemberImage(user.getUuid(), 0));
         consultantRowDesign.getImgPhoto().setEnabled(false);
         consultantRowDesign.getBtnDelete().setIcon(MaterialIcons.ADD);
         consultantRowDesign.getBtnDelete().addClickListener(event -> {

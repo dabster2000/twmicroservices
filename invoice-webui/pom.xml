@@ -91,14 +91,11 @@
             <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
             <version>1.0.3</version>
         </dependency>
-        -->
-        <!--
         <dependency>
-            <groupId>io.github.openfeign.opentracing</groupId>
-            <artifactId>feign-opentracing</artifactId>
-            <version>0.3.0</version>
-        </dependency>
-        -->
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-instrumentation-annotations</artifactId>
+            <version>1.17.0-alpha</version>
+        </dependency>-->
 
         <!-- Spring / Vaadin -->
         <dependency>
@@ -157,11 +154,13 @@
             <artifactId>v-leaflet</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>locationtextfield</artifactId>
             <version>3.0.0</version>
         </dependency>
+        -->
         <dependency>
             <groupId>com.jarektoro</groupId>
             <artifactId>responsive-layout</artifactId>
@@ -253,21 +252,25 @@
             <artifactId>ilay</artifactId>
             <version>1.0.2</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>animator</artifactId>
             <version>3.0.0</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.vaadin.liveimageeditor</groupId>
             <artifactId>live-image-editor</artifactId>
             <version>2.1.0</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.tltv.gantt</groupId>
             <artifactId>gantt-addon</artifactId>
             <version>1.0.4</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.vaadin.haijian</groupId>
             <artifactId>exporter</artifactId>
@@ -402,11 +405,13 @@
             <artifactId>javax.websocket-api</artifactId>
             <version>1.1</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.glassfish.tyrus.bundles</groupId>
             <artifactId>tyrus-standalone-client</artifactId>
             <version>1.13</version>
         </dependency>
+        -->
         <!-- /group -->
 
         <!--
@@ -437,7 +442,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
+            <version>31.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -478,11 +483,13 @@
         <!-- DEEP LEARNING -->
 
         <!-- DL4J and ND4J Related Dependencies -->
+        <!--
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
             <artifactId>timeseriesForecasting</artifactId>
             <version>1.1.25</version>
         </dependency>
+        -->
         <!--
         <dependency>
             <groupId>org.nd4j</groupId>
@@ -643,14 +650,17 @@
         </dependency>
 
         <!-- metrics -->
+        <!--
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
             <version>4.1.0</version>
         </dependency>
+        -->
 
 
         <!-- Test -->
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -678,6 +688,7 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
         </dependency>
+        -->
     </dependencies>
 
 
@@ -761,7 +772,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.0</version>
                 <configuration>
                     <filesets>
                         <fileset>

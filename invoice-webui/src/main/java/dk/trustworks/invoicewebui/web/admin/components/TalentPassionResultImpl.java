@@ -109,7 +109,7 @@ public class TalentPassionResultImpl {
         int fieldSize = 200;
         int spriteSize = 50;
 
-        userImages.putIfAbsent(user.getUuid(), photoService.getRoundMemberImage(user.getUuid(), false, spriteSize, PIXELS));
+        userImages.putIfAbsent(user.getUuid(), photoService.getRoundMemberImage(user.getUuid(), 0, spriteSize, PIXELS));
         Image image = userImages.get(user.getUuid());
         image.addClickListener(event -> {
             if(!descriptionLayout.isVisible()) return;

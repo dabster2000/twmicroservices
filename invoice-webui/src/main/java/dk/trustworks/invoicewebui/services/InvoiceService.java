@@ -1,6 +1,7 @@
 package dk.trustworks.invoicewebui.services;
 
 import dk.trustworks.invoicewebui.model.Invoice;
+import dk.trustworks.invoicewebui.model.InvoiceReference;
 import dk.trustworks.invoicewebui.network.dto.ProjectSummary;
 import dk.trustworks.invoicewebui.network.rest.InvoiceRestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,12 @@ public class InvoiceService {
         return invoiceRestService.findAll();
     }
 
-    public List<Invoice> getInvoicesForSingleMonth(LocalDate month) {
-        return invoiceRestService.getInvoicesForSingleMonth(month);
+    public List<Invoice> findByPeriod(LocalDate fromdate, LocalDate todate) {
+        return invoiceRestService.findByPeriod(fromdate, todate);
+    }
+
+    public List<Invoice> getInvoicesForSingleMonthUsingBookingDate(LocalDate month) {
+        return invoiceRestService.getInvoicesForSingleMonthUsingBookingDate(month);
     }
 
     public Invoice findByLatestInvoiceByProjectuuid(String projectuuid) {
@@ -57,5 +62,9 @@ public class InvoiceService {
 
     public void delete(String uuid) {
         invoiceRestService.delete(uuid);
+    }
+
+    public void updateInvoiceReference(String invoiceuuid, InvoiceReference invoiceReference) {
+        invoiceRestService.updateInvoiceReference(invoiceuuid, invoiceReference);
     }
 }

@@ -5,18 +5,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import dk.trustworks.invoicewebui.services.UserService;
+import dk.trustworks.invoicewebui.model.enums.BubbleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -25,11 +21,19 @@ public class Bubble {
 
     private String uuid;
     private String name;
+    @Enumerated(EnumType.STRING)
+    private BubbleType type;
     private String description;
     private String application;
     private String slackchannel;
 
     private String owner;
+
+    private String coowner;
+
+    private String meetingform;
+
+    private String preconditions;
 
     private boolean active;
 

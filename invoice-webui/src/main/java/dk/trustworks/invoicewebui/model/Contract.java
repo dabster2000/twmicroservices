@@ -47,6 +47,9 @@ public class Contract {
     public String clientdatauuid;
     @JsonProperty("note")
     public String note;
+
+    @JsonProperty("salesconsultant")
+    private ContractSalesConsultant salesconsultant;
     @JsonProperty("contractConsultants")
     public List<ContractConsultant> contractConsultants = new ArrayList<>();
     @JsonProperty("contractProjects")
@@ -276,5 +279,13 @@ public class Contract {
                 ", note='" + note + '\'' +
                 ", contractConsultants=" + contractConsultants.size() +
                 '}';
+    }
+
+    public ContractSalesConsultant getSalesconsultant() {
+        return salesconsultant;
+    }
+
+    public void setSalesconsultant(ContractSalesConsultant salesconsultant) {
+        this.salesconsultant = salesconsultant;
     }
 }

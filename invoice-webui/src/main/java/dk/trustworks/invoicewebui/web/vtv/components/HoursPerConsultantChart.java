@@ -130,7 +130,7 @@ public class HoursPerConsultantChart {
         poc2.setColor(new SolidColor("#7084AC"));
         budgetHoursSeries.setPlotOptions(poc2);
         chart.getConfiguration().addSeries(budgetHoursSeries);
-
+/*
         chart.addPointClickListener(event -> {
             if(!event.getSeries().getId().equals("budget_hours")) return;
             Optional<EmployeeAggregateData> userData = dataList.stream().filter(e -> e.getUseruuid().equals(users.get(event.getPointIndex()).getUuid())).findFirst();
@@ -143,6 +143,8 @@ public class HoursPerConsultantChart {
             }
             Notification.show(event.getSeries().getId(), text.toString(), Notification.Type.TRAY_NOTIFICATION);
         });
+
+ */
 
         ListSeries hoursRegisteredSeries = new ListSeries("registered hours", revenueData);
         PlotOptionsColumn poc3 = new PlotOptionsColumn();

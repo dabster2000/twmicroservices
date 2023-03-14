@@ -168,7 +168,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
             for (ProjectDescriptionUser projectDescriptionUser : projectDescriptionUserRepository.findByProjectDescription(projectDescription).stream().sorted(Comparator.comparing(o -> o.getUser().getUsername())).collect(Collectors.toCollection(ArrayList::new))) {
                 userList.get(projectDescriptionUser.getUser()).add(column);
 
-                Image image = photoService.getRoundMemberImage(projectDescriptionUser.getUseruuid(), false);
+                Image image = photoService.getRoundMemberImage(projectDescriptionUser.getUseruuid(), 0);
                 Image triangle = new Image(null, new ThemeResource("images/triangle-medium-light-blue.png"));
                 triangle.setVisible(firstUser);
 
@@ -295,7 +295,7 @@ public class ProjectDescriptionLayout extends VerticalLayout {
 
     private TextArea createUserStorieForm(HashMap<User, TextArea> userStorieMap, ProjectDescriptionFormDesign formDesign, User user) {
         MHorizontalLayout horizontalLayout = new MHorizontalLayout().withFullWidth();
-        Image image = photoService.getRoundMemberImage(user.getUuid(), false);
+        Image image = photoService.getRoundMemberImage(user.getUuid(), 0);
         TextArea userDesc = new TextArea();
         userDesc.setHeight(75, Unit.PIXELS);
         userDesc.setWidth(100, Unit.PERCENTAGE);

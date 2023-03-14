@@ -6,42 +6,41 @@ import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
-import com.slack.api.methods.request.conversations.ConversationsHistoryRequest;
 import com.slack.api.methods.request.conversations.ConversationsInviteRequest;
 import com.slack.api.methods.request.conversations.ConversationsKickRequest;
-import com.slack.api.model.Message;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import dk.trustworks.invoicewebui.model.Bubble;
 import dk.trustworks.invoicewebui.model.BubbleMember;
 import dk.trustworks.invoicewebui.model.User;
+import dk.trustworks.invoicewebui.model.enums.BubbleType;
 import dk.trustworks.invoicewebui.model.enums.RoleType;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.BubbleService;
 import dk.trustworks.invoicewebui.services.PhotoService;
 import dk.trustworks.invoicewebui.services.UserService;
-import dk.trustworks.invoicewebui.web.bubbles.components.ActivityGauge;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubbleForm;
 import dk.trustworks.invoicewebui.web.bubbles.components.BubblesDesign;
+import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Collections;
-
-import static java.time.temporal.ChronoUnit.DAYS;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @SpringComponent
 @SpringUI
@@ -75,7 +74,7 @@ public class BubblesLayout extends VerticalLayout {
 
     @Transactional
     @AccessRules(roleTypes = {RoleType.USER})
-    public BubblesLayout init() {
+    public BubblesLayout init(BubbleType... types) {
         bubbleWebApiClient = Slack.getInstance().methods(bubbleSlackToken);
         bubbleUserBotClient = Slack.getInstance().methods(bubbleBotUserSlackToken);
         bubbleForm = new BubbleForm(userService, bubbleService, photoService, bubbleWebApiClient);
@@ -87,20 +86,31 @@ public class BubblesLayout extends VerticalLayout {
         bubblesRow = responsiveLayout.addRow();
         this.addComponent(responsiveLayout);
 
-        loadBubbles();
+        loadBubbles(types);
         return this;
     }
 
-    private void loadBubbles() {
+    private void loadBubbles(BubbleType... bubbleTypes) {
         bubblesRow.removeAllComponents();
         User user = VaadinSession.getCurrent().getAttribute(UserSession.class).getUser();
-        //User user = userRepository.findByUsername("hans.lassen");
+        BubbleType bubbleType = null;
 
-        for (Bubble bubble : bubbleService.findBubblesByActiveTrueOrderByCreatedDesc()) {
+        for (Bubble bubble : bubbleService.findBubblesByActiveTrueOrderByCreatedDesc().stream().sorted(Comparator.comparing(Bubble::getType).thenComparing(Bubble::getCreated)).collect(Collectors.toList())) {
+            if(!Arrays.asList(bubbleTypes).contains(bubble.getType())) continue;
+            if(bubbleType == null || !bubbleType.equals(bubble.getType())) {
+                BoxImpl box = new BoxImpl().instance(
+                                new MVerticalLayout(
+                                        new MLabel(bubble.getType().getName().toUpperCase()).withFullWidth().withStyleName("turquoise-font", "h4", "center-label", "bold", "wrap-label")).withFullWidth().withDefaultComponentAlignment(Alignment.MIDDLE_CENTER))
+                        .withBgStyle("dark-grey");
+                bubblesRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(box);
+                bubbleType = bubble.getType();
+            }
             BubblesDesign bubblesDesign = new BubblesDesign();
 
             bubblesDesign.getLblHeading().setValue(bubble.getName());
             bubblesDesign.getLblDescription().setValue(bubble.getDescription());
+            bubblesDesign.getLblMeetingform().setValue(bubble.getMeetingform().equalsIgnoreCase("")?"Not determined yet":bubble.getMeetingform());
+            bubblesDesign.getLblPreconditions().setValue(bubble.getPreconditions().equalsIgnoreCase("")?"None":bubble.getPreconditions());
 
             bubblesDesign.getBtnLeave().setVisible(false);
             bubblesDesign.getBtnEdit().setVisible(false);
@@ -128,15 +138,12 @@ public class BubblesLayout extends VerticalLayout {
                         .text("Hi "+owner.getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!")
                         .build();
 
-                //ChatPostMessageMethod applyMessage = new ChatPostMessageMethod(owner.getSlackusername(), "Hi "+owner.getFirstname()+", *"+user.getUsername()+"* would like to join your bubble "+bubble.getName()+"!");
-                //applyMessage.setAs_user(true);
                 try {
                     bubbleUserBotClient.chatPostMessage(request);
                 } catch (IOException | SlackApiException e) {
                     e.printStackTrace();
                 }
-                //bubbleUserBotClient.chatPostMessage()
-                //bubbleUserBotClient.postMessage(applyMessage);
+
                 Notification.show("You have now applied for membership. The bubble owner will get back to you soon!", Notification.Type.ASSISTIVE_NOTIFICATION);
             });
 
@@ -165,7 +172,7 @@ public class BubblesLayout extends VerticalLayout {
                 bubblesDesign.getBtnApply().setVisible(false);
                 bubblesDesign.getBtnJoin().setVisible(false);
             }
-            if(bubble.getOwner().equals(user.getUuid())) {
+            if(bubble.getOwner().equals(user.getUuid()) || (bubble.getCoowner() != null && bubble.getCoowner().equals(user.getUuid())) || user.getUuid().equals("7948c5e8-162c-4053-b905-0f59a21d7746")) {
                 bubblesDesign.getBtnEdit().setVisible(true);
                 bubblesDesign.getBtnApply().setVisible(false);
                 bubblesDesign.getBtnJoin().setVisible(false);
@@ -173,11 +180,12 @@ public class BubblesLayout extends VerticalLayout {
             }
 
             //List<User> users = userService.findAll(true);
-            bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getOwner(), true));
+            bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getOwner(), 1));
+            if(bubble.getCoowner()!=null) bubblesDesign.getPhotoContainer().addComponent(photoService.getRoundMemberImage(bubble.getCoowner(), 2));
             for (BubbleMember member : bubble.getBubbleMembers()) {
-                if(member.getUseruuid().equals(bubble.getOwner())) continue;
+                if(member.getUseruuid().equals(bubble.getOwner()) || (bubble.getCoowner() != null && bubble.getCoowner().equals(user.getUuid()))) continue;
                 if(userService.isEmployed(member.getUseruuid())) {
-                    Image image = photoService.getRoundMemberImage(member.getUseruuid(), false);
+                    Image image = photoService.getRoundMemberImage(member.getUseruuid(), 0);
                     bubblesDesign.getPhotoContainer().addComponent(image);
                 }
             }
@@ -185,10 +193,10 @@ public class BubblesLayout extends VerticalLayout {
             Resource resource = photoService.getRelatedPhotoResource(relatedUUID);
 
             bubblesDesign.getImgTop().setSource(resource);
-            if(bubble.getOwner().equals(user.getUuid()) || user.getUsername().equals("hans.lassen")) {
+            if(bubble.getOwner().equals(user.getUuid()) || (bubble.getCoowner() != null && bubble.getCoowner().equals(user.getUuid())) || user.getUsername().equals("hans.lassen")) {
                 bubblesDesign.getImgTop().addClickListener(event -> bubbleForm.editPhotoAction(bubble));
             }
-
+            /*
             Number[] activity = new Number[60];
             for (int i = 0; i < 60; i++) {
                 activity[i] = 0;
@@ -201,13 +209,17 @@ public class BubblesLayout extends VerticalLayout {
                     if (DAYS.between(date, LocalDate.now()) > 59) continue;
                     activity[(int) DAYS.between(date, LocalDate.now())] = (activity[(int) DAYS.between(date, LocalDate.now())].intValue() + 1);
                 }
-            } catch (SlackApiException | IOException e) {
-                e.printStackTrace();
+            } catch (SlackApiException | IOException | NullPointerException e) {
+                System.err.println(e);
             }
 
             bubblesDesign.getGaugeContainer().addComponent(ActivityGauge.getChart(activity));
-
-            bubblesRow.addColumn().withDisplayRules(12, 12, 6,4).withComponent(bubblesDesign);
+             */
+            if(bubbleType.equals(BubbleType.KNOWLEDGE)) {
+                bubblesRow.addColumn().withDisplayRules(12, 12, 6, 4).withComponent(bubblesDesign);
+            } else {
+                bubblesRow.addColumn().withDisplayRules(12, 12, 3, 3).withComponent(bubblesDesign);
+            }
         }
     }
 }

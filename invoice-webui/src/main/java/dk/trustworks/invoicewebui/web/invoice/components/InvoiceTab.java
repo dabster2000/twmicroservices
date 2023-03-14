@@ -22,6 +22,7 @@ import com.vaadin.ui.declarative.Design;
 public class InvoiceTab extends VerticalLayout {
     private HorizontalLayout hlTab;
     private Label lblClientName;
+    private Label lblSynced;
     private Label lblPercent;
     private CssLayout imgAccountManager;
     private VerticalLayout vlContent;
@@ -36,6 +37,10 @@ public class InvoiceTab extends VerticalLayout {
 
     public Label getLblClientName() {
         return lblClientName;
+    }
+
+    public Label getLblSynced() {
+        return lblSynced;
     }
 
     public Label getLblPercent() {

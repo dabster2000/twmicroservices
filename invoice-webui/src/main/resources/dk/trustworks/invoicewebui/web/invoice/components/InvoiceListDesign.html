@@ -9,6 +9,13 @@
   <vaadin-vertical-layout>
    <vaadin-horizontal-layout width-full>
     <vaadin-label style-name="h2" plain-text>
+     Invoices not matched with e-conomics
+    </vaadin-label>
+   </vaadin-horizontal-layout>
+   <vaadin-vertical-layout _id="vlNotConnected">
+   </vaadin-vertical-layout>
+   <vaadin-horizontal-layout width-full>
+    <vaadin-label style-name="h2" plain-text>
       Invoices 
     </vaadin-label>
     <vaadin-button style-name="friendly" plain-text _id="btnTour" :middle :right>
@@ -21,8 +28,8 @@
       <col column-id="clientname" sortable>
       <col column-id="projectname" sortable>
       <col column-id="invoicenumber" sortable>
+      <col column-id="referencenumber" sortable>
       <col column-id="invoicedate" sortable>
-      <col column-id="status" sortable>
       <col column-id="sumNoTax" sortable>
       <col column-id="sumWithTax" sortable>
      </colgroup>
@@ -31,8 +38,8 @@
        <th plain-text column-ids="clientname">Client Name</th>
        <th plain-text column-ids="projectname">Project Name</th>
        <th plain-text column-ids="invoicenumber">Invoice Number</th>
+       <th plain-text column-ids="referencenumber">Reference Number</th>
        <th plain-text column-ids="invoicedate">Invoice Date</th>
-       <th plain-text column-ids="status">Status</th>
        <th plain-text column-ids="sumNoTax">Amount</th>
        <th plain-text column-ids="sumWithTax">Amount w. Tax</th>
       </tr>
@@ -57,47 +64,6 @@
    <vaadin-label style-name="h2" plain-text>
      Sub totals 
    </vaadin-label>
-   <vaadin-grid width-full data-item-type="dk.trustworks.invoicewebui.web.model.SubTotal" _id="gridSubTotals">
-    <table>
-     <colgroup>
-      <col column-id="year" sortable>
-      <col column-id="jan" sortable>
-      <col column-id="feb" sortable>
-      <col column-id="mar" sortable>
-      <col column-id="apr" sortable>
-      <col column-id="may" sortable>
-      <col column-id="jun" sortable>
-      <col column-id="jul" sortable>
-      <col column-id="aug" sortable>
-      <col column-id="sep" sortable>
-      <col column-id="oct" sortable>
-      <col column-id="nov" sortable>
-      <col column-id="dec" sortable>
-      <col column-id="sumnotax" sortable>
-      <col column-id="sumwithtax" sortable>
-     </colgroup>
-     <thead>
-      <tr default>
-       <th plain-text column-ids="year">Year</th>
-       <th plain-text column-ids="jan">Jan</th>
-       <th plain-text column-ids="feb">Feb</th>
-       <th plain-text column-ids="mar">Mar</th>
-       <th plain-text column-ids="apr">Apr</th>
-       <th plain-text column-ids="may">May</th>
-       <th plain-text column-ids="jun">Jun</th>
-       <th plain-text column-ids="jul">Jul</th>
-       <th plain-text column-ids="aug">Aug</th>
-       <th plain-text column-ids="sep">Sep</th>
-       <th plain-text column-ids="oct">Oct</th>
-       <th plain-text column-ids="nov">Nov</th>
-       <th plain-text column-ids="dec">Dec</th>
-       <th plain-text column-ids="sumnotax">Sum</th>
-       <th plain-text column-ids="sumwithtax">Sum w. Tax</th>
-      </tr>
-     </thead>
-     <tbody></tbody>
-    </table>
-   </vaadin-grid>
   </vaadin-vertical-layout>
  </body>
 </html>

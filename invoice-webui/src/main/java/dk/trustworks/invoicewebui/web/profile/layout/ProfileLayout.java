@@ -117,7 +117,7 @@ public class ProfileLayout extends VerticalLayout {
         //row.addColumn().withDisplayRules(12,12,12,12).withComponent(new MLabel(""));
 
         for (User employee : teamRestService.getUsersByTeamByMonth(team.getUuid(), LocalDate.now().withDayOfMonth(1)).stream().sorted(Comparator.comparing(User::getLastname)).collect(Collectors.toList())) {
-            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), false, 100, Unit.PERCENTAGE);
+            Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), 0, 100, Unit.PERCENTAGE);
             memberImage.setDescription(employee.getFirstname()+" "+employee.getLastname());
             memberImage.addClickListener(event -> {
                 createUserViewRow(employee);
