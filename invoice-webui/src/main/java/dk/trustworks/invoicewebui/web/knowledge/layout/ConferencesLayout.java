@@ -3,7 +3,6 @@ package dk.trustworks.invoicewebui.web.knowledge.layout;
 import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
-import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -39,7 +38,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.vaadin.data.HasValue.*;
+import static com.vaadin.data.HasValue.ValueChangeEvent;
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
 
@@ -49,16 +48,12 @@ public class ConferencesLayout extends VerticalLayout {
 
     @Autowired
     private KnowledgeRestService knowledgeRestService;
-
     @Autowired
     private PhotoService photoService;
-
     private ResponsiveRow detailViewRow;
     private ResponsiveRow masterViewRow;
     private MButton backButton;
-
     private TextField nameFilter;
-
     private ListDataProvider<ConferenceGridItem> dataProvider;
 
     public ConferencesLayout init() {
@@ -199,7 +194,6 @@ public class ConferencesLayout extends VerticalLayout {
         });
 
         List<ConferenceGridItem> gridItems = gridItemList.stream().sorted(Comparator.comparing(ConferenceGridItem::getName, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
-        //ListDataProvider<ConferenceGridItem> dataProvider = new ListDataProvider<>(gridItems);
 
         Grid<ConferenceGridItem> grid = new Grid<>("", gridItems);
         dataProvider = (ListDataProvider<ConferenceGridItem>) grid.getDataProvider();

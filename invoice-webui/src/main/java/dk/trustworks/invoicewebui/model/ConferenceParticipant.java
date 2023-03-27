@@ -23,6 +23,7 @@ public class ConferenceParticipant {
     private String company;
     private String titel;
     private String email;
+    private String andet;
     private boolean samtykke;
     private ConferenceType type;
     private ConferenceApplicationStatus status;

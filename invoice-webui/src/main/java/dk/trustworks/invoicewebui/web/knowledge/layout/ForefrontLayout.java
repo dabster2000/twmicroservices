@@ -81,6 +81,9 @@ public class ForefrontLayout extends VerticalLayout {
         Grid.Column<ConferenceParticipant, String> emailGridCol = grid.addColumn(ConferenceParticipant::getEmail);
         emailGridCol.setCaption("Email");
 
+        Grid.Column<ConferenceParticipant, String> otherGridCol = grid.addColumn(ConferenceParticipant::getAndet);
+        otherGridCol.setCaption("Other");
+
         Grid.Column<ConferenceParticipant, String> samtykkeGridCol = grid.addColumn(c -> c.isSamtykke()?"ja":"nej");
         samtykkeGridCol.setCaption("Samtykke");
 
