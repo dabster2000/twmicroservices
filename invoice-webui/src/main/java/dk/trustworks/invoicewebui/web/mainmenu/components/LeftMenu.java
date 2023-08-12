@@ -112,14 +112,14 @@ public class LeftMenu extends ResponsiveRow {
 
         MenuItemContainer knowledge = new MenuItemContainer(order++).createItem("Knowledge ---", true, null, null, false, USER);
         menuItems.put("knowledge", knowledge);
-        MenuItemContainer businessArchitecture = new MenuItemContainer(order++).createItem(BusinessArchitectureView.MENU_NAME, false, BusinessArchitectureView.VIEW_ICON, BusinessArchitectureView.VIEW_NAME, false, USER);
-        menuItems.put(BusinessArchitectureView.VIEW_NAME, businessArchitecture);
+        //MenuItemContainer businessArchitecture = new MenuItemContainer(order++).createItem(BusinessArchitectureView.MENU_NAME, false, BusinessArchitectureView.VIEW_ICON, BusinessArchitectureView.VIEW_NAME, false, USER);
+        //menuItems.put(BusinessArchitectureView.VIEW_NAME, businessArchitecture);
         MenuItemContainer bubbles = new MenuItemContainer(order++).createItem(BubblesView.MENU_NAME, false, BubblesView.VIEW_ICON, BubblesView.VIEW_NAME, false, USER);
         menuItems.put(BubblesView.VIEW_NAME, bubbles);
         MenuItemContainer conferences = new MenuItemContainer(order++).createItem(ConferencesView.MENU_NAME, false, ConferencesView.VIEW_ICON, ConferencesView.VIEW_NAME, false, USER);
         menuItems.put(ConferencesView.VIEW_NAME, conferences);
-        MenuItemContainer keynotes = new MenuItemContainer(order++).createItem(KnowledgeView.MENU_NAME, false, KnowledgeView.VIEW_ICON, KnowledgeView.VIEW_NAME, false, USER);
-        menuItems.put(KnowledgeView.VIEW_NAME, keynotes);
+        //MenuItemContainer keynotes = new MenuItemContainer(order++).createItem(KnowledgeView.MENU_NAME, false, KnowledgeView.VIEW_ICON, KnowledgeView.VIEW_NAME, false, USER);
+        //menuItems.put(KnowledgeView.VIEW_NAME, keynotes);
         MenuItemContainer projectdescriptions = new MenuItemContainer(order++).createItem(ProjectDescriptionView.MENU_NAME, false, ProjectDescriptionView.VIEW_ICON, ProjectDescriptionView.VIEW_NAME, false, USER);
         menuItems.put(ProjectDescriptionView.VIEW_NAME, projectdescriptions);
         MenuItemContainer ckoadmin = new MenuItemContainer(order++).createItem(CkoAdminView.MENU_NAME, false, CkoAdminView.VIEW_ICON, CkoAdminView.VIEW_NAME, false, RoleType.MANAGER);
@@ -144,8 +144,8 @@ public class LeftMenu extends ResponsiveRow {
         menuItems.put("Questions", questions);
         MenuItemContainer faq = new MenuItemContainer(order++).createItem(FaqView.MENU_NAME, false, FaqView.VIEW_ICON, FaqView.VIEW_NAME, false, USER);
         menuItems.put(FaqView.VIEW_NAME, faq);
-        MenuItemContainer travel = new MenuItemContainer(order++).createItem(TripsView.MENU_NAME, false, TripsView.VIEW_ICON, TripsView.VIEW_NAME, false, USER);
-        menuItems.put(TripsView.VIEW_NAME, travel);
+        //MenuItemContainer travel = new MenuItemContainer(order++).createItem(TripsView.MENU_NAME, false, TripsView.VIEW_ICON, TripsView.VIEW_NAME, false, USER);
+        //menuItems.put(TripsView.VIEW_NAME, travel);
 
         MenuItemContainer coOps = new MenuItemContainer(order++).createItem("Sales ---", true, null, null, false, USER);
         menuItems.put("Sales", coOps);

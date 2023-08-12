@@ -4,6 +4,8 @@ import com.jarektoro.responsivelayout.ResponsiveColumn;
 import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
@@ -13,6 +15,7 @@ import dk.trustworks.invoicewebui.model.ConferenceParticipant;
 import dk.trustworks.invoicewebui.network.rest.KnowledgeRestService;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.haijian.Exporter;
 import org.vaadin.viritin.button.MButton;
 
 import java.util.Comparator;
@@ -42,7 +45,12 @@ public class ForefrontLayout extends VerticalLayout {
         Button btnWithdraw = new MButton("Withdraw from list",
                 event -> knowledgeRestService.withdrawParticipants(grid.getSelectedItems()));
 
-        this.addComponents(btnInvite, btnWithdraw, btnReject);
+        MButton btnExport = new MButton("Download as Excel");
+        StreamResource excelStreamResource = new StreamResource((StreamResource.StreamSource) () -> Exporter.exportAsExcel(grid), "forefront.xlsx");
+        FileDownloader excelFileDownloader = new FileDownloader(excelStreamResource);
+        excelFileDownloader.extend(btnExport);
+
+        this.addComponents(btnInvite, btnWithdraw, btnReject, btnExport);
 
         ResponsiveLayout mainLayout = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         this.addComponent(new BoxImpl().instance(mainLayout));

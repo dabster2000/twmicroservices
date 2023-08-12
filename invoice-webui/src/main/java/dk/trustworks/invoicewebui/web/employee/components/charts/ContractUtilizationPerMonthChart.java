@@ -64,7 +64,8 @@ public class ContractUtilizationPerMonthChart {
         List<EmployeeAggregateData> employeeData = biService.getEmployeeAggregateDataByPeriod(periodStart, periodEnd).stream().filter(e -> e.getUseruuid().equals(user.getUuid())).sorted(Comparator.comparing(EmployeeAggregateData::getMonth)).collect(Collectors.toList());
         for (int i = 0; i < months; i++) {
             LocalDate currentDate = periodStart.plusMonths(i);
-            contractUtilizationSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), employeeData.get(i).getContractUtilization()>0?(1.0 / employeeData.get(i).getContractUtilization())*employeeData.get(i).getActualUtilization()*100:100));
+            if(i < employeeData.size())
+                contractUtilizationSeries.add(new DataSeriesItem(stringIt(currentDate, "MMM-yyyy"), employeeData.get(i).getContractUtilization()>0?(1.0 / employeeData.get(i).getContractUtilization())*employeeData.get(i).getActualUtilization()*100:100));
 
             categories[i] = currentDate.format(DateTimeFormatter.ofPattern("MMM-yyyy"));
         }

@@ -26,6 +26,7 @@ import dk.trustworks.invoicewebui.network.dto.enums.EconomicAccountGroup;
 import dk.trustworks.invoicewebui.services.*;
 import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.NumberConverter;
+import dk.trustworks.invoicewebui.utils.NumberUtils;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.simplefiledownloader.SimpleFileDownloader;
@@ -214,7 +215,7 @@ public class InvoiceListImpl extends InvoiceListDesign {
         rowHeaders.addColumn().withDisplayRules(2,2,2,2).withComponent(new MLabel("").withStyleName("large bold"));
 
         List<Invoice> invoices = invoiceService.findByPeriod(startDate, LocalDate.now());
-
+        List<ExpenseDetails> allExpenseDetails = financeService.findExpenseDetailsByGroup(EconomicAccountGroup.OMSAETNING_ACCOUNTS);
         do {
             LocalDate finalStartDate = startDate;
             for (Invoice invoice : invoices.stream().filter(i -> i.getInvoicedate().withDayOfMonth(1).isEqual(finalStartDate.withDayOfMonth(1))).collect(Collectors.toList())) {
@@ -238,7 +239,14 @@ public class InvoiceListImpl extends InvoiceListDesign {
                 ComboBox<ExpenseDetails> referenceComboBox = new ComboBox<>();
                 referenceComboBox.setEnabled(invoice.getInvoicenumber()==0);
 
-                List<ExpenseDetails> expenseDetails = financeService.findExpenseDetailsByGroup(EconomicAccountGroup.OMSAETNING_ACCOUNTS).stream().filter(e -> e.getAmount() == -getSumWithoutTax(invoice.getInvoiceitems())).collect(Collectors.toList());
+                if(invoice.getUuid().equals("ac0cf716-eec9-45a4-aee2-46b6abca23bb")) {
+                    invoice.getInvoiceitems().forEach(invoiceItem -> System.out.println("invoiceItem = " + invoiceItem));
+                    System.out.println("getSumWithoutTax(invoice.invoiceitems) = " + getSumWithoutTax(invoice.invoiceitems));
+                    List<ExpenseDetails> expenseDetails = allExpenseDetails.stream().filter(e -> e.getAmount() == -getSumWithoutTax(invoice.getInvoiceitems())).collect(Collectors.toList());
+                    expenseDetails.forEach(e -> System.out.println("e = " + e));
+                }
+
+                List<ExpenseDetails> expenseDetails = allExpenseDetails.stream().filter(e -> e.getAmount() == -getSumWithoutTax(invoice.getInvoiceitems())).collect(Collectors.toList());
                 referenceComboBox.setItems(expenseDetails);
                 referenceComboBox.setItemCaptionGenerator(item -> item.getInvoicenumber()+" | "+item.getExpensedate()+" | "+item.getAmount()+" | "+item.getText());
                 referenceComboBox.addValueChangeListener(event -> {
@@ -263,7 +271,7 @@ public class InvoiceListImpl extends InvoiceListDesign {
     }
 
     private static double getSumWithoutTax(Set<InvoiceItem> invoiceItems) {
-        return invoiceItems.stream().mapToDouble(o -> o.hours * o.rate).sum();
+        return NumberUtils.round(invoiceItems.stream().mapToDouble(o -> o.hours * o.rate).sum(), 2);
     }
 
 }

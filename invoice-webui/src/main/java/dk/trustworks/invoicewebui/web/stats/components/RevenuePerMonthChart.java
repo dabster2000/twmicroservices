@@ -49,6 +49,7 @@ public class RevenuePerMonthChart {
     }
 
     public Chart createRevenuePerMonthChart(LocalDate periodStart, LocalDate periodEnd, boolean showEarnings) {
+        System.out.println("periodStart = " + periodStart + ", periodEnd = " + periodEnd + ", showEarnings = " + showEarnings);
         Chart chart = new Chart();
         chart.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
@@ -104,6 +105,7 @@ public class RevenuePerMonthChart {
 
         data.forEach(m -> {
             String name = DateUtils.stringIt(m.getMonth(), "MMM-yyyy");
+            System.out.println("name = " + name);
             budgetSeries.add(new DataSeriesItem(name, m.getBudgetAmount()));
             revenueSeries.add(new DataSeriesItem(name, m.getRegisteredAmount()));
             revenueOrInvoiceSeries.add(new DataSeriesItem(name, m.getInvoicedAmount()>0?m.getInvoicedAmount():m.getRegisteredAmount()));

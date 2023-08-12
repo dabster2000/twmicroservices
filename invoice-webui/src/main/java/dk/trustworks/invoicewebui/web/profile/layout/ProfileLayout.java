@@ -104,17 +104,9 @@ public class ProfileLayout extends VerticalLayout {
         ResponsiveLayout l = new ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID);
         l.setSizeFull();
         ImageBox box = new ImageBoxImpl().instance(photoService.getRelatedPhotoResource(team.getUuid()));
-
         box.getCardHolder().addComponent(new MVerticalLayout(l).withStyleName("v-scrollable").withHeight(300, PIXELS));
-        //box.getCardHolder().setHeight(750, Unit.PIXELS);
-
         viewRow.addColumn().withDisplayRules(12,12,6,4).withComponent(box);
-
         ResponsiveRow row = l.addRow();
-
-        //row.addColumn().withDisplayRules(12,12,12,12).withComponent(new MLabel(""));
-        //row.addColumn().withDisplayRules(12,12,12,12).withComponent(new MLabel(team.getName()).withStyleName("bold"), ResponsiveColumn.ColumnComponentAlignment.CENTER);
-        //row.addColumn().withDisplayRules(12,12,12,12).withComponent(new MLabel(""));
 
         for (User employee : teamRestService.getUsersByTeamByMonth(team.getUuid(), LocalDate.now().withDayOfMonth(1)).stream().sorted(Comparator.comparing(User::getLastname)).collect(Collectors.toList())) {
             Image memberImage = photoService.getRoundMemberImage(employee.getUuid(), 0, 100, Unit.PERCENTAGE);

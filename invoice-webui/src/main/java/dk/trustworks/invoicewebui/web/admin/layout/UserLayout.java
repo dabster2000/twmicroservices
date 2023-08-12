@@ -18,7 +18,6 @@ import dk.trustworks.invoicewebui.model.*;
 import dk.trustworks.invoicewebui.model.dto.CompanyAggregateData;
 import dk.trustworks.invoicewebui.model.enums.ConsultantType;
 import dk.trustworks.invoicewebui.model.enums.StatusType;
-import dk.trustworks.invoicewebui.model.enums.TeamMemberType;
 import dk.trustworks.invoicewebui.network.rest.TeamRestService;
 import dk.trustworks.invoicewebui.services.BiService;
 import dk.trustworks.invoicewebui.services.UserService;

@@ -32,11 +32,11 @@ public class DashboardPreloader {
 
     @Scheduled(fixedRate = 120000)
     public void loadNewPhoto() {
-        DropboxFile randomBinaryFile = dropboxAPI.getRandomBinaryFile("/Shared/Administration/Intra/Billeder/Intranet/photos");
-        randomPhoto = randomBinaryFile.getFileAsByteArray();
-        if(randomBinaryFile.getFilename().contains(".")) {
-            randomText = dropboxAPI.getSpecificTextFile(randomBinaryFile.getFilename().substring(0, randomBinaryFile.getFilename().lastIndexOf('.')) + ".html");
-        }
+        //DropboxFile randomBinaryFile = dropboxAPI.getRandomBinaryFile("/Shared/Administration/Intra/Billeder/Intranet/photos");
+        //randomPhoto = randomBinaryFile.getFileAsByteArray();
+        //if(randomBinaryFile.getFilename().contains(".")) {
+          //  randomText = dropboxAPI.getSpecificTextFile(randomBinaryFile.getFilename().substring(0, randomBinaryFile.getFilename().lastIndexOf('.')) + ".html");
+        //}
 
     }
 

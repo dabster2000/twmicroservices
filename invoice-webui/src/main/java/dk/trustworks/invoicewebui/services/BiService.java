@@ -22,12 +22,12 @@ public class BiService {
         this.biRestService = biRestService;
     }
 
-    @Cacheable("CompanyAggregateData")
+    //@Cacheable("CompanyAggregateData")
     public List<CompanyAggregateData> getCompanyAggregateDataByPeriod(LocalDate periodStart, LocalDate periodEnd) {
         return biRestService.getCompanyAggregateData(periodStart, periodEnd).stream().sorted(Comparator.comparing(CompanyAggregateData::getMonth)).collect(Collectors.toList());
     }
 
-    @Cacheable("EmployeeAggregateData")
+    //@Cacheable("EmployeeAggregateData")
     public List<EmployeeAggregateData> getEmployeeAggregateDataByPeriod(LocalDate periodStart, LocalDate periodEnd) {
         return biRestService.getEmployeeAggregateData(periodStart, periodEnd).stream().sorted(Comparator.comparing(EmployeeAggregateData::getMonth)).collect(Collectors.toList());
     }

@@ -48,6 +48,10 @@ public class InvoiceService {
         return invoiceRestService.createInvoice(invoice);
     }
 
+    public void regeneratePdf(String invoiceuuid) {
+        invoiceRestService.regeneratePdf(invoiceuuid);
+    }
+
     public Invoice createPhantomInvoice(Invoice phantomInvoice) {
         return invoiceRestService.createPhantomInvoice(phantomInvoice);
     }

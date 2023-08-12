@@ -5,10 +5,7 @@ import com.jarektoro.responsivelayout.ResponsiveLayout;
 import com.jarektoro.responsivelayout.ResponsiveRow;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontIcon;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.*;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
@@ -21,6 +18,7 @@ import dk.trustworks.invoicewebui.network.rest.TeamRestService;
 import dk.trustworks.invoicewebui.repositories.*;
 import dk.trustworks.invoicewebui.security.AccessRules;
 import dk.trustworks.invoicewebui.services.*;
+import dk.trustworks.invoicewebui.utils.DateUtils;
 import dk.trustworks.invoicewebui.utils.SpriteSheet;
 import dk.trustworks.invoicewebui.web.common.BoxImpl;
 import dk.trustworks.invoicewebui.web.contexts.UserSession;
@@ -36,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.vaadin.alump.labelbutton.LabelButton;
 import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.label.MLabel;
@@ -133,7 +132,7 @@ public class   DashboardView extends VerticalLayout implements View {
 
     @Transactional
     @PostConstruct
-    void init() {
+    public void init() {
         this.setMargin(false);
         this.setSpacing(false);
         this.addComponent(topMenu);
@@ -144,7 +143,7 @@ public class   DashboardView extends VerticalLayout implements View {
 
         BoxImpl knowledgeChartCard = showcaseRandomConsultant();
 
-        PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
+        //PhotosCardImpl photoCard = new PhotosCardImpl(dashboardPreloader, 1, 6, "photoCard");
         //Component informationBanner = getInformationBanner();
         NewsImpl newsCard = new NewsImpl(userService, newsRepository, 1, 12, "newsCard");
         DnaCardImpl dnaCard = new DnaCardImpl(10, 4, "dnaCard");
@@ -171,16 +170,16 @@ public class   DashboardView extends VerticalLayout implements View {
         //dnaCard.getBoxComponent().setHeight("600px");
         //cateringCard.getBoxComponent().setHeight("600px");
 
-        photoCard.loadRandomPhoto();
+        //photoCard.loadRandomPhoto();
 
         createTopBoxes(board);
 
         //Card revenuePerMonthCard = new Card();
         //revenuePerMonthCard.setHeight(300, PIXELS);
         //revenuePerMonthCard.getLblTitle().setValue("Revenue Per Month");
-        int adjustStartYear = 0;
-        if(LocalDate.now().getMonthValue() <= 6)  adjustStartYear = 1;
-        LocalDate localDateStart = LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
+        //int adjustStartYear = 0;
+        //if(LocalDate.now().getMonthValue() <= 6)  adjustStartYear = 1;
+        LocalDate localDateStart = DateUtils.getCurrentFiscalStartDate();//LocalDate.now().withMonth(7).withDayOfMonth(1).minusYears(adjustStartYear);
         LocalDate localDateEnd = localDateStart.plusYears(1);
         //revenuePerMonthCard.getContent().addComponent(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
         BoxImpl revenuePerMonthCard = new BoxImpl().instance(revenuePerMonthChart.createRevenuePerMonthChart(localDateStart, localDateEnd, false));
@@ -216,11 +215,18 @@ public class   DashboardView extends VerticalLayout implements View {
         ResponsiveRow leftRow = responsiveColumn1Layout.addRow();
         ResponsiveRow rightRow = responsiveColumn2Layout.addRow();
 
+        PhotosCardImpl photosCard = new PhotosCardImpl(dashboardPreloader, 1, 800, "Trustworks Internal Task Board").loadResourcePhoto("images/taskboard.jpg");
+        //photosCard.addLayoutClickListener(event -> getUI().getPage().open("https://tasks.office.com/trustworks.dk/EN-GB/Home/Planner#/plantaskboard?groupId=d68f427d-eeca-47af-8[…]ed7cddfe&planId=yOoPEXyyRE-mMFwIbpPh15YACE2O", "_blank"));
+        photosCard.getPhoto().addClickListener(event -> getUI().getPage().open("https://tasks.office.com/trustworks.dk/EN-GB/Home/Planner#/plantaskboard?groupId=d68f427d-eeca-47af-8[…]ed7cddfe&planId=yOoPEXyyRE-mMFwIbpPh15YACE2O", "_blank"));
+        //Image taskboardImage = new Image("", new ThemeResource("images/taskboard.jpg"));
+        //taskboardImage.addClickListener(event -> new BrowserWindowOpener("https://tasks.office.com/trustworks.dk/EN-GB/Home/Planner#/plantaskboard?groupId=d68f427d-eeca-47af-8[…]ed7cddfe&planId=yOoPEXyyRE-mMFwIbpPh15YACE2O"));
+
         // *** LEFT COLUMN ***
         if(!VimeoAPI.videoAge.isBefore(LocalDate.now().minusDays(7))) {
             leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(monthNewsCardDesign);
         } else {
-            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(photoCard);
+            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new BoxImpl().instance(photosCard));
+            //leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(photoCard);
         }
 
         leftRow.addColumn().withDisplayRules(12, 12, 12 ,12).withComponent(revenuePerMonthCard);
@@ -229,7 +235,8 @@ public class   DashboardView extends VerticalLayout implements View {
         if(VimeoAPI.videoAge.isBefore(LocalDate.now().minusDays(7))) {
             leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(monthNewsCardDesign);
         } else {
-            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(photoCard);
+            leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(new BoxImpl().instance(photosCard));
+            //leftRow.addColumn().withDisplayRules(12, 12, 12, 12).withComponent(photoCard);
         }
 
         // *** RIGHT COLUMN ***

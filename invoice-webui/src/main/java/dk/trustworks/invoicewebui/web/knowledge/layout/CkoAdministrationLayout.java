@@ -103,6 +103,7 @@ public class CkoAdministrationLayout extends VerticalLayout {
         box.getContent().addComponent(newsItems);
         for (News news : newsList) {
             TextArea textArea = new TextArea("Dashboard news text", news.getDescription());
+            textArea.setMaxLength(100);
             textArea.setWidth(100, Unit.PERCENTAGE);
             textArea.addBlurListener(event -> {
                 news.setDescription(textArea.getValue());

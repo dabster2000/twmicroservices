@@ -256,9 +256,11 @@ public class NewInvoiceImpl2 extends NewInvoiceDesign2 {
                 downloader.download();
             });
             invoiceEditDesign.btnDropbox.addClickListener(event -> {
-                uploadToDropbox(invoice);
+                //uploadToDropbox(invoice);
+                invoiceService.regeneratePdf(invoice.getUuid());
             });
-            invoiceEditDesign.btnDropbox.setVisible(false);
+            invoiceEditDesign.btnDropbox.setCaption("Regenerate Pdf");
+            invoiceEditDesign.btnDropbox.setVisible(true);
             invoiceEditDesign.btnCreateCreditNote.addClickListener(event -> {
                 if(invoice.uuid == null || invoice.uuid.trim().length() == 0) return;
                 Invoice creditNota = invoiceService.createCreditNote(invoice);

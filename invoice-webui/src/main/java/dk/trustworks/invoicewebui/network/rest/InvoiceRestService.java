@@ -91,6 +91,11 @@ public class InvoiceRestService {
         return result.getBody();
     }
 
+    public void regeneratePdf(String invoiceuuid) {
+        String url = apiGatewayUrl + "/invoices/regenerate/"+invoiceuuid;
+        systemRestService.secureCall(url, POST, Void.class);
+    }
+
     public Invoice createPhantomInvoice(Invoice draftInvoice) {
         String url = apiGatewayUrl + "/invoices/phantoms";
         ResponseEntity<Invoice> result = systemRestService.secureCall(url, POST, Invoice.class, draftInvoice);
